@@ -1,5 +1,5 @@
 # sbc-qsystem
-QSystem queue management system experiment.
+QSystem In Person Queue Management System.
 
 We are experimenting with this open-source queue management system with the hope of adapting to fit Service BC's needs.
 * Original source from https://bitbucket.org/Apertum/qsystem.
