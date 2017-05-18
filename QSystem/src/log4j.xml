@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+    <!-- FATAL, ERROR, WARN, INFO, DEBUG, TRACE -->
+    <!--
+    в данные аппендер будут писаться все сообщения уровней DEBUG и TRACE
+    -->
+    <appender name="CONSOLE-DEBUG" class="org.apache.log4j.ConsoleAppender">
+        <!--Указание кодировки -->
+        <!-- param name="encoding" value="cp866" / -->
+        <param name="target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="TRACE" />
+            <param name="LevelMax" value="DEBUG" />
+        </filter>
+    </appender>
+  
+    <!-- в данные аппендер будут писаться все сообщения уровней INFO -->
+    <appender name="CONSOLE-INFO" class="org.apache.log4j.ConsoleAppender">
+        <!--Указание кодировки -->
+        <!-- param name="encoding" value="cp866" / -->
+        <param name="target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO" />
+            <param name="LevelMax" value="INFO" />
+        </filter>
+    </appender>
+
+    <!-- аппендер для ошибок -->
+    <appender name="CONSOLE-WARN" class="org.apache.log4j.ConsoleAppender">
+        <!--Указание кодировки -->
+        <!-- param name="encoding" value="cp866" / -->
+        <param name="target" value="System.err" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="WARN" />
+            <param name="LevelMax" value="FATAL" />
+        </filter>
+    </appender>
+
+    <!-- параметр file задает имя файла -->
+    <appender name="LOG-FILE-APPENDER-SERVER" class="org.apache.log4j.RollingFileAppender">
+        <!--Указание кодировки для файлов -->
+        <param name="encoding" value="cp1251" />
+        <param name="file" value="logs/server.log" />
+        <!--Зададим максимальный размер лога файла, по умолчанию 10MB -->
+        <param name="MaxFileSize" value="20MB" />
+        <param name="MaxBackupIndex" value="20" />
+        <!--Зададим максимальное количество создаваемых архивных файлов логирования, по умолчанию 1 -->
+        <!--param name="MaxBackupIndex" value="5" /-->
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+    </appender>
+    <appender name="LOG-FILE-APPENDER-CLIENT" class="org.apache.log4j.RollingFileAppender">
+        <!--Указание кодировки для файлов -->
+        <param name="encoding" value="cp1251" />
+        <param name="file" value="logs/client.log" />
+        <param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="5" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+    </appender>
+    <appender name="LOG-FILE-APPENDER-REPORTS" class="org.apache.log4j.RollingFileAppender">
+        <!--Указание кодировки для файлов -->
+        <param name="encoding" value="cp1251" />
+        <param name="file" value="logs/reports.log" />
+        <param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="5" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+    </appender>
+    <appender name="LOG-FILE-APPENDER-QUSER" class="org.apache.log4j.RollingFileAppender">
+        <!--Указание кодировки для файлов -->
+        <param name="encoding" value="cp1251" />
+        <param name="file" value="logs/quser.log" />
+        <param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="5" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+    </appender>
+    <appender name="LOG-FILE-APPENDER-RECEPTION" class="org.apache.log4j.RollingFileAppender">
+        <!--Указание кодировки для файлов -->
+        <param name="encoding" value="cp1251" />
+        <param name="file" value="logs/reception.log" />
+        <param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="5" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+    </appender>
+    <appender name="LOG-FILE-APPENDER-ADMIN" class="org.apache.log4j.RollingFileAppender">
+        <!--Указание кодировки для файлов -->
+        <param name="encoding" value="cp1251" />
+        <param name="file" value="logs/admin.log" />
+        <param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="5" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+    </appender>
+    <appender name="LOG-FILE-APPENDER-WELCOME" class="org.apache.log4j.RollingFileAppender">
+        <!--Указание кодировки для файлов -->
+        <param name="encoding" value="cp1251" />
+        <param name="file" value="logs/welcome.log" />
+        <param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="10" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+    </appender>
+    <appender name="LOG-FILE-APPENDER-USER_BUTTONS" class="org.apache.log4j.RollingFileAppender">
+        <!--Указание кодировки для файлов -->
+        <param name="encoding" value="cp1251" />
+        <param name="file" value="logs/ub.log" />
+        <param name="MaxFileSize" value="5MB" />
+        <param name="MaxBackupIndex" value="5" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{MMM dd, HH:mm:ss}] %-5p %C{1}.%M() - %m%n" />
+        </layout>
+    </appender>
+    
+    <!--
+    Выдодит все сообщения в файл и информационные и отладочные на консоль
+    Иерархия для сервера.
+    -->
+    <category name="server.file.info.trace">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл и информационные на консоль-->
+    <category name="server.file.info">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-INFO" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл -->
+    <category name="server.file" additivity="false">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-SERVER" />
+    </category>
+    
+    
+    <!--
+    Выдодит все сообщения в файл и информационные и отладочные на консоль
+    Иерархия для клиента.
+    -->
+    <category name="client.file.info.trace">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл и информационные на консоль-->
+    <category name="client.file.info">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-INFO" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл -->
+    <category name="client.file" additivity="false">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-CLIENT" />
+    </category>
+    
+    <!--
+    Выдодит все сообщения в файл и информационные и отладочные на консоль
+    Иерархия для клиента.
+    -->
+    <category name="reception.file.info.trace">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл и информационные на консоль-->
+    <category name="reception.file.info">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-INFO" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл -->
+    <category name="reception.file" additivity="false">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-RECEPTION" />
+    </category>
+    
+    <!--
+    Выдодит все сообщения в файл и информационные и отладочные на консоль
+    Иерархия для клиента.
+    -->
+    <category name="admin.file.info.trace">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл и информационные на консоль-->
+    <category name="admin.file.info">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-INFO" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл -->
+    <category name="admin.file" additivity="false">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-ADMIN" />
+    </category>
+    
+    <!--
+    Выдодит все сообщения в файл и информационные и отладочные на консоль
+    Иерархия для клиента.
+    -->
+    <category name="welcome.file.info.trace">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл и информационные на консоль-->
+    <category name="welcome.file.info">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-INFO" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл -->
+    <category name="welcome.file" additivity="false">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-WELCOME" />
+    </category>
+    
+    <!--
+    Выдодит все сообщения в файл и информационные и отладочные на консоль
+    Иерархия для клиента.
+    -->
+    <category name="user_buttons.file.info.trace">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл и информационные на консоль-->
+    <category name="user_buttons.file.info">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-INFO" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл -->
+    <category name="user_buttons.file" additivity="false">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-USER_BUTTONS" />
+    </category>
+    
+    <!--
+    Выдодит все сообщения в файл и информационные и отладочные на консоль
+    Иерархия для отчетов.
+    -->
+    <category name="reports.file.info.trace">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл и информационные на консоль-->
+    <category name="reports.file.info">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-INFO" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл -->
+    <category name="reports.file" additivity="false">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-REPORTS" />
+    </category>
+    
+    <!--
+     QUSER
+    Выдодит все сообщения в файл и информационные и отладочные на консоль
+    Иерархия для отчетов.
+    QUSER
+    -->
+    <category name="quser.file.info.trace">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл и информационные на консоль-->
+    <category name="quser.file.info">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-INFO" />
+    </category>
+  
+    <!-- Выдодит все сообщения в файл -->
+    <category name="quser.file" additivity="false">
+        <priority value="TRACE" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-QUSER" />
+    </category>
+   
+    <!-- Выводит любое сообщение в файл -->
+    <root>
+        <priority value="WARN" />
+        <appender-ref ref="CONSOLE-WARN" />
+        <appender-ref ref="LOG-FILE-APPENDER-SERVER" />
+    </root>
+</log4j:configuration>

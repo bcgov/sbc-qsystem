@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="resultStateServicesPeriod_subreport1" pageWidth="572" pageHeight="752" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" resourceBundle="ru/apertum/qsystem/reports/templates/i3-label-rep" uuid="73506c89-8da9-4576-adbb-620b73071e9a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Arial_Normal" isDefault="true" fontName="Arial" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+	<parameter name="sd" class="java.util.Date"/>
+	<parameter name="ed" class="java.util.Date"/>
+	<parameter name="ed1" class="java.util.Date"/>
+	<parameter name="ext_serid" class="java.lang.Long"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT se.id serid2, se.name service, st.state_in state, count(state_in) cnt
+FROM
+statistic st
+
+join services se on  st.service_id = se.id  and st.client_stand_time >=$P{sd}  AND  st.client_stand_time <=$P{ed1}
+
+where st.service_id = $P{ext_serid}
+
+group by service, state
+
+order by state]]>
+	</queryString>
+	<field name="state" class="java.lang.Integer"/>
+	<field name="cnt" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement uuid="d7407d19-5cd2-48dd-acf1-442bb9cb5397" x="0" y="0" width="572" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{state}.toString().replaceAll( "10", $R{services_for} ).replaceAll( "11", $R{postponed_for} ).replaceAll( "6", $R{redirected_for} ).replaceAll( "0", $R{removed_for} ) +"  "+$F{cnt} +"  "+$R{clients_for}+"."]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

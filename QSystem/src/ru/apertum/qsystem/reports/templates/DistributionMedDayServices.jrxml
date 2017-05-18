@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DistributionJobDayService" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="ru/apertum/qsystem/reports/templates/i3-label-rep" uuid="f2932323-519a-4555-9578-5ee46bfc4ce6">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="sdate" class="java.lang.String"/>
+	<parameter name="date" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[SELECT
+     a.`advance_time` AS timex,
+     HOUR(a.`advance_time`)  AS H,
+     CONCAT(HOUR(a.`advance_time`), ':', SUBSTR(CONCAT(MINUTE(a.`advance_time`), '0123'),1,2)) as T,
+     a.`input_data` as inp,
+     a.`comments` as cmt,
+     s.`name` as serv
+FROM
+     `advance` a LEFT JOIN `services` s
+ON a.`service_id` = s.`id`
+WHERE a.`advance_time` >='$P!{sdate} 00:00:00'  AND  a.`advance_time` <='$P!{sdate} 23:59:00'
+ORDER BY serv, timex]]>
+	</queryString>
+	<field name="H" class="java.lang.String"/>
+	<field name="timex" class="java.sql.Time"/>
+	<field name="T" class="java.lang.String"/>
+	<field name="inp" class="java.lang.String"/>
+	<field name="cmt" class="java.lang.String"/>
+	<field name="serv" class="java.lang.String"/>
+	<variable name="amount" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[1]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<title>
+		<band height="68">
+			<line>
+				<reportElement uuid="0b516126-803d-400a-89f7-e9b321483f14" x="0" y="1" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="65a7a3df-27dc-4d63-86b8-8fc0c3057b41" positionType="FixRelativeToBottom" x="0" y="50" width="555" height="1"/>
+			</line>
+			<textField>
+				<reportElement uuid="50d8af0a-ba1d-4c2d-b41a-9a9c527b646c" x="0" y="2" width="555" height="24"/>
+				<textElement textAlignment="Center" markup="none">
+					<font fontName="SansSerif" size="18" isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{distribution_med_services}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="992883f2-59d4-4d87-9836-eb565c067022" x="0" y="26" width="555" height="24"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="18" isBold="true" isUnderline="false" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{on_date} + " " + (new java.text.SimpleDateFormat("dd.MM.yyyy")).format($P{date})]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="adc2582e-a620-46f2-afe8-baa9d9b9cbb0" x="0" y="51" width="555" height="17"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="false" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{count_pre_reg_on_date} + ": " + $V{amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<columnHeader>
+		<band height="18">
+			<textField>
+				<reportElement uuid="a24d0af6-9f74-4f5d-b0e2-972903d6c1b9" mode="Opaque" x="0" y="0" width="198" height="18" backcolor="#CCCCFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="koi8-r" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{service}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="c5b9bdfa-9bc5-408b-a85d-4d75abe19d3b" mode="Opaque" x="198" y="0" width="60" height="18" backcolor="#CCCCFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="koi8-r" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{time}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="5604b7e7-ca1b-48a2-a3a9-96d9d6205562" mode="Opaque" x="258" y="0" width="113" height="18" backcolor="#CCCCFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="koi8-r" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{info}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="ab7ae6d4-4dfd-47b4-826f-2ded27dfdb1e" mode="Opaque" x="371" y="0" width="184" height="18" backcolor="#CCCCFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font isBold="true" isUnderline="false" pdfFontName="tahoma.ttf" pdfEncoding="koi8-r" isPdfEmbedded="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{comment}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="19" splitType="Stretch">
+			<line>
+				<reportElement uuid="933ac348-3d8d-49e8-8a9c-b1b483be094b" positionType="FixRelativeToBottom" x="0" y="18" width="555" height="1" forecolor="#999999"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="25bc3686-01a0-4b53-b407-82330653734c" mode="Transparent" x="0" y="0" width="198" height="18"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{serv}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="9afe2fc5-23e0-4bf4-a86c-d83725b86fdc" mode="Opaque" x="198" y="0" width="60" height="18" backcolor="#F7F7F7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{T}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="643d80f6-7a96-4cfb-8c30-611e9f8688b0" mode="Transparent" x="258" y="0" width="113" height="18"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inp}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="c6c10680-4df5-4631-bcce-11350b2d7864" mode="Opaque" x="371" y="0" width="184" height="18" backcolor="#F7F7F7"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cmt}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="21">
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="310e63dd-f73f-4bd2-b4fd-a928dfa89d01" key="textField" x="516" y="2" width="36" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="06f9a156-d833-4a8b-97d1-3dfd0d6ec490" key="textField" x="215" y="2" width="297" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{page}+" " + $V{PAGE_NUMBER} + " "+$R{from}+" "]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="f41a6259-1dd4-44e1-bd09-77790f1368dc" key="textField" x="0" y="2" width="162" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
