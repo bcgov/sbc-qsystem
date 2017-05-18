@@ -1,0 +1,95 @@
+<!--
+    Document   : index - диалоговая страница выбора отчетов
+    Created on : 06.10.2008, 17:04:02
+    Author     : egorov
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html  xml:lang="ru" lang="ru">
+    <head>
+        <title>$R{header} QSystem</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="./js/datepicker.js"></script>
+        <!-- <link href="./css/demo.css"       rel="stylesheet" type="text/css" /> -->
+        <link href="./css/datepicker.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript">
+
+            function makeTwoChars(inp) {
+                return String(inp).length < 2 ? "0" + inp : inp;
+            }
+
+            function initialiseInputs() {
+                // Clear any old values from the inputs (that might be cached by the browser after a page reload)
+                document.getElementById("dt").value = "";
+
+                // Add the onchange event handler to the start date input
+                //datePickerController.addEvent(document.getElementById("date"), "change", setReservationDates);
+            }
+
+            var initAttempts = 0;
+
+            function removeInputEvents() {
+                // Remove the onchange event handler set within the function initialiseInputs
+                //datePickerController.removeEvent(document.getElementById("date"), "change", setReservationDates);
+            }
+
+            datePickerController.addEvent(window, 'load', initialiseInputs);
+            datePickerController.addEvent(window, 'unload', removeInputEvents);
+
+            //]]>
+        </script>
+        <style type="text/css">
+            body, html
+            {
+                height:100%;
+            }
+        </style>
+    </head>
+    <body text="#000000" bgcolor="#1177BB" background="resources/fp.png" link="#222277" alink="#333399" vlink="#222288" leftmargin="0" bottommargin="0" topmargin="0" onLoad="document.forms[0].user.value = document.forms[0].user_id.options[document.forms[0].user_id.selectedIndex].text">
+        <center>
+
+
+
+            <table border="0" width="0" cellspacing="0">
+                <tbody>
+                    <tr>
+                        <td><center><a href="http://www.qsystem.info" target="_blank"><img src="resources/top.jpg" width="800" height="222" alt="{Apertum}Projects - QSystem" border="0" vspace="0"/></a></center></td>
+                    </tr>
+                    <tr>
+                        <td height="85" valign="top"><H2><font color="#555555">
+                                    $R{header} #PROJECT_NAME_ANCHOR# #ERROR_INPUT_DATA#
+                                    <Hr>
+                        </font></H2></td>
+                    </tr>
+
+                    <tr><td><center>
+                                <form action="#DATA_FOR_REPORT#" name="form1" method="POST" onReset="user.value=user_id.options[0].text">
+                                    <h3>#DATA_FOR_TITLE#</h3>
+                                    <p><fieldset>
+                                            <label for="sd">$R{start_date} : </label> <br>
+                                            <input type="text" class="w8em divider-dot format-d-m-y highlight-days-67" name="sd" id="sd" value="" style="width: 130px" maxlength="10" /> <br>
+                                            <label for="ed">$R{finish_date} : </label>   <br>
+                                            <input type="text" class="w8em divider-dot format-d-m-y highlight-days-67" name="ed" id="ed" value="" style="width: 130px" maxlength="10" /> <br>
+                                            <label for="user">$R{service}:</label><br>
+                                            <select name="user_id" id="user_id" style="width: 180px" onChange="this.form.user.value=options[selectedIndex].text">
+                                               #DATA_FOR_USERS#
+                                            </select><br>
+                                            <input type="hidden" name="user"/>
+                                    </fieldset></p>
+                                    <p><input type="submit" value="$R{send}"><input type="reset" value="$R{clear}"></p>
+                                </form>
+                    </center></td></tr>
+
+                    <tr>
+                        <td height="100" valign="bottom"><center><H6><font color="#000000">
+                                        <Hr>
+                                        © Apertum Projects<br />
+                                        e-mail: <a href="mailto:info@apertum.ru">info@apertum.ru</a><br/>
+                                        $R{promo_bottom}
+                        </font></H6></center></td>
+                    </tr>
+                </tbody>
+            </table>
+        </center>
+    </body>
+
+</html>

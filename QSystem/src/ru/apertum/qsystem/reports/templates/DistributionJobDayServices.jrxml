@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DistributionJobDayService" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6c37e48b-7d40-4fd0-bc1f-9653368a0d43">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="sdate" class="java.lang.String"/>
+	<parameter name="date" class="java.util.Date"/>
+	<parameter name="service" class="java.lang.String"/>
+	<parameter name="service_id" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[(SELECT '00' AS H, COUNT(*) AS C FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 00:00:00' AND '$P!{sdate} 01:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '01', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 01:00:00' AND '$P!{sdate} 02:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '02', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 02:00:00' AND '$P!{sdate} 03:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '03', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 03:00:00' AND '$P!{sdate} 04:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '04', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 04:00:00' AND '$P!{sdate} 05:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '05', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 05:00:00' AND '$P!{sdate} 06:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '06', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 06:00:00' AND '$P!{sdate} 07:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '07', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 07:00:00' AND '$P!{sdate} 08:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '08', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 08:00:00' AND '$P!{sdate} 09:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '09', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 09:00:00' AND '$P!{sdate} 10:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '10', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 10:00:00' AND '$P!{sdate} 11:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '11', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 11:00:00' AND '$P!{sdate} 12:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '12', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 12:00:00' AND '$P!{sdate} 13:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '13', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 13:00:00' AND '$P!{sdate} 14:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '14', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 14:00:00' AND '$P!{sdate} 15:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '15', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 15:00:00' AND '$P!{sdate} 16:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '16', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 16:00:00' AND '$P!{sdate} 17:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '17', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 17:00:00' AND '$P!{sdate} 18:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '18', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 18:00:00' AND '$P!{sdate} 19:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '19', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 19:00:00' AND '$P!{sdate} 20:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '20', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 20:00:00' AND '$P!{sdate} 21:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '21', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 21:00:00' AND '$P!{sdate} 22:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '22', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 22:00:00' AND '$P!{sdate} 23:00:00' AND service_id=$P{service_id}) UNION ALL
+(SELECT '23', COUNT(*) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 23:00:00' AND '$P!{sdate} 23:59:59' AND service_id=$P{service_id})]]>
+	</queryString>
+	<field name="H" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="C" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="amount" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{C}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<title>
+		<band height="89">
+			<line>
+				<reportElement uuid="653a449c-6f4f-4b21-9ddb-80c545b0c5b4" x="0" y="8" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="39d8bbc9-1030-4aca-8b63-5ac896bbd845" positionType="FixRelativeToBottom" x="0" y="81" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="b799fd7a-2175-4f50-82e3-abe52d531b28" x="1" y="9" width="551" height="24"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="18" isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Распредение нагрузки внутри дня]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="10ea3153-4838-4a69-a86a-918eeee59a64" x="1" y="33" width="551" height="24"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="18" isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["для услуги \"" + $P{service} + "\""]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="1d9028a2-46c4-4db1-8991-98415e2b8865" x="1" y="57" width="551" height="24"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="18" isBold="true" isUnderline="false" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["на дату " + (new java.text.SimpleDateFormat("dd.MM.yyyy")).format($P{date})]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<columnHeader>
+		<band height="395">
+			<barChart>
+				<chart isShowLegend="false" evaluationTime="Report">
+					<reportElement uuid="e26c818f-4879-49a4-9bc7-2c5c40b99f57" x="0" y="0" width="555" height="340"/>
+					<chartTitle/>
+					<chartSubtitle>
+						<font fontName="SansSerif" size="14" isBold="false" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+					</chartSubtitle>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[new java.lang.Integer(1)]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{H}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{C}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowTickMarks="false">
+					<plot/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					<categoryAxisLabelExpression><![CDATA["часы"]]></categoryAxisLabelExpression>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA["количество посетителей"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+			<textField evaluationTime="Report">
+				<reportElement uuid="521a71be-8d03-462a-8eb1-0d9411c33d5f" x="1" y="340" width="555" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Количество посетителей услуги за день: " + $V{amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band height="21">
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="ea157420-ad20-4c13-9a07-3206d2595258" key="textField" x="516" y="2" width="36" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="f7cdce2d-4d69-4345-a62c-c4a9791aa2d2" key="textField" x="296" y="2" width="216" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Страница " + $V{PAGE_NUMBER} + " из "]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="e53d95f9-d719-416e-92a1-5ced8eb59fa1" key="textField" x="1" y="2" width="209" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
