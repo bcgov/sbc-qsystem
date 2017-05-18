@@ -159,7 +159,7 @@ import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.server.model.calendar.CalendarTableModel;
 import ru.apertum.qsystem.server.model.calendar.QCalendar;
 import ru.apertum.qsystem.server.model.calendar.QCalendarList;
-import ru.apertum.qsystem.server.model.calendar.TableСell;
+import ru.apertum.qsystem.server.model.calendar.TableCell;
 import ru.apertum.qsystem.server.model.calendar.FreeDay;
 import ru.apertum.qsystem.server.model.infosystem.QInfoItem;
 import ru.apertum.qsystem.server.model.infosystem.QInfoTree;
@@ -729,8 +729,8 @@ public class FAdmin extends javax.swing.JFrame {
         textFieldCalendarName.setText(item.getName());
 
         tableCalendar.setModel(new CalendarTableModel(item.getId()));
-        tableCalendar.setDefaultRenderer(FreeDay.class, new TableСell((Integer) (spinCalendarYear.getValue())));
-        tableCalendar.setDefaultRenderer(Object.class, new TableСell((Integer) (spinCalendarYear.getValue())));
+        tableCalendar.setDefaultRenderer(FreeDay.class, new TableCell((Integer) (spinCalendarYear.getValue())));
+        tableCalendar.setDefaultRenderer(Object.class, new TableCell((Integer) (spinCalendarYear.getValue())));
         tableCalendar.getColumnModel().getColumn(0).setPreferredWidth(500);
 
         listSpecSced.setModel(new DefaultComboBoxModel(item.getSpecSchedules().toArray()));
@@ -5600,8 +5600,8 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
     private void spinCalendarYearStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinCalendarYearStateChanged
         System.out.println(spinCalendarYear.getValue());
         tableCalendar.setModel((CalendarTableModel) tableCalendar.getModel());
-        tableCalendar.setDefaultRenderer(FreeDay.class, new TableСell((Integer) (spinCalendarYear.getValue())));
-        tableCalendar.setDefaultRenderer(Object.class, new TableСell((Integer) (spinCalendarYear.getValue())));
+        tableCalendar.setDefaultRenderer(FreeDay.class, new TableCell((Integer) (spinCalendarYear.getValue())));
+        tableCalendar.setDefaultRenderer(Object.class, new TableCell((Integer) (spinCalendarYear.getValue())));
 
         ((CalendarTableModel) tableCalendar.getModel()).fireTableDataChanged();
         ((CalendarTableModel) tableCalendar.getModel()).fireTableStructureChanged();
