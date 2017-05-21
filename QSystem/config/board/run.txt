@@ -1,0 +1,11 @@
+Добро пожаловать  Welcome  Mire se vini  Welkomma  Ahlan wa sahlan  Bari galoust  Xos gelmissiniz
+Akwaba  Ongi etorri  Шчыра запрашаем  Dobrodosli  Hosgeldiniz  ยินดีต้อนรับ   Vitame vas  Witajcie  Khosh amadid
+#Добро пожаловать! Подойдите к терминалу и получите талон с номером очереди!
+#Система электронной очереди поможет вам комфортно получить требуемые услуги.
+# sign "#" is comment of course
+# for using XML and XSLT you need to have first string = "xml", second string = "URL of xml file", third string = "URL of xsl file". Only three uncomment strings!
+# ##dd.MM.YYYY## - for inserting date in right format. Change this dd.MM.YYYY or remove ##xx.xx.xx## if you not need date.
+# example for XSLT below:
+#xml
+#http://www.bnm.org/md/official_exchange_rates?get_xml=1&date=##dd.MM.YYYY##
+#file:///E:/temp/Xslt/data/official_exchange_rates.xsl

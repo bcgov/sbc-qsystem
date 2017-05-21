@@ -22,6 +22,7 @@
 hs_err_pid*
 /QSystem/build
 /QSystem/target
-# !/QSystem/lib/*.jar
+!/QSystem/lib/*.jar
 !/QSystem/lib/CopyLibs/*.jar
+!/QSystem/languages/*.jar
 /QSystem/nbproject/

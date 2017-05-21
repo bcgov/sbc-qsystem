@@ -147,7 +147,7 @@ public class QServer extends Thread {
         WebServer.getInstance().startWebServer(ServerProps.getInstance().getProps().getWebServerPort());
         loadPool();
         // запускаем движок индикации сообщения для кастомеров
-        MainBoard.getInstance().showBoard();
+        //MainBoard.getInstance().showBoard();
         // test ServerProps.getInstance().getProps().getZoneBoardServAddrList();
         if (!(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getStartTime()).equals(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getFinishTime())))) {
             /**

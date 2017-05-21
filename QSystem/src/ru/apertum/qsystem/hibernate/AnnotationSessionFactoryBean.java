@@ -187,8 +187,16 @@ public class AnnotationSessionFactoryBean implements Action {
                 password = cur.getPassword();
                 name = cur.getName();
             }
+            else
+            {
+                driver = "com.mysql.jdbc.Driver";
+                url = "jdbc:mysql://" + System.getenv ("MYSQL_SERVICE");
+                user = System.getenv ("MYSQL_USER");
+                password = System.getenv ("MYSQL_PASSWORD");
+                name = System.getenv ("MYSQL_DATABASE");
+            }
             flag = false;
-            QLog.l().logger().info("DB server '" + name + " driver=" + driver + "' url=" + url);
+            QLog.l().logger().warn("DB server '" + name + " driver=" + driver + "' url=" + url);
         }
     }
 
