@@ -36,15 +36,16 @@ hs_err_pid*
 /QSmartboardPlugin/dist/
 !/QSmartboardPlugin/lib/CopyLibs/*.jar
 /QSmartboardPlugin/nbproject/private/
-/QSmartboard/nbproject/private/
 /QSmartboard/build/
 /QSmartboard/dist/
 !/QSmartboard/lib/CopyLibs/*.jar
-!/QSmartboard/lib/*.jar
+!/QSmartboard/lib/*.*
 /dist/*.jar
 /dist/*.war
 /dist/www
 /dist/config
 /dist/icons
 /dist/plugins
+!/QSmartboard/lib/javaee-endorsed-api-6.0/*.jar
+!/QSmartboard/lib/temp/*.*
 
