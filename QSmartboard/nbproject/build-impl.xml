@@ -903,7 +903,7 @@ exists or setup the property manually. For example like this:
     <target depends="init, deps-jar, -pre-pre-compile, -pre-compile, -copy-manifest, -copy-persistence-xml, -copy-webdir, library-inclusion-in-archive,library-inclusion-in-manifest" if="have.sources" name="-do-compile">
 	<echo message="*** CLASSPATH ***"/>
 	<echo message="${javac.classpath}"/>
-	<javac srcdir="src/java"
+	<javac srcdir="src/java" encoding="utf-8"
          destdir="${build.classes.dir}"
          classpath="${javac.classpath}:${javac.test.classpath}:${j2ee.platform.classpath}:${j2ee.platform.embeddableejb.classpath}"
          debug="on"
