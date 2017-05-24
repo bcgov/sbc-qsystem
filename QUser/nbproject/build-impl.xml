@@ -1197,7 +1197,7 @@ exists or setup the property manually. For example like this:
         </jar>
     </target>
     <target name="-post-dist">
-	     <copy todir="${dist.jar.dir}../../../dist/plugins">
+	     <copy todir="${dist.jar.dir}../../../dist/www/war">
             <fileset dir="${dist.jar.dir}" includes="**"/>
         </copy>
         <!-- Empty placeholder for easier customization. -->

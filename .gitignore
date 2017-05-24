@@ -36,9 +36,15 @@ hs_err_pid*
 /QSmartboardPlugin/dist/
 !/QSmartboardPlugin/lib/CopyLibs/*.jar
 /QSmartboardPlugin/nbproject/private/
+/QSmartboard/nbproject/private/
 /QSmartboard/build/
 /QSmartboard/dist/
-!/QSmartboardPlugin/lib/CopyLibs/*.jar
-/QSmartboard/nbproject/private/
+!/QSmartboard/lib/CopyLibs/*.jar
+!/QSmartboard/lib/*.jar
 /dist/*.jar
 /dist/*.war
+/dist/www
+/dist/config
+/dist/icons
+/dist/plugins
+

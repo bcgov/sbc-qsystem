@@ -401,6 +401,7 @@
           <execution>
             <phase>compile</phase>
             <configuration>
+			  <failOnError>false</failOnError>
               <target>
 				<ant target="dist" />
               </target>

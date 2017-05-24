@@ -1,0 +1,237 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "sbc-qsystem",
+    "annotations": {
+      "description": "Template for deploying QSystem",
+      "tags": "java",
+      "iconClass": "icon-java"
+    }
+  },
+  "labels": {
+    "template": "sbc-qsystem-environment"
+  },
+  "objects": [
+    {
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${DATABASE_SERVICE_NAME}-data"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${DATABASE_VOLUME_CAPACITY}"
+          }
+        }
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${QSYSTEM_SERVICE}",
+        "annotations": {
+          "description": "Exposes and load balances the application pods"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "web",
+            "port": 8080,
+            "targetPort": 8080
+          },
+		  {
+            "name": "reports",
+            "port": 8088,
+            "targetPort": 8088
+          }
+        ],
+        "selector": {
+          "name": "${QSYSTEM_SERVICE}"
+        }
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${QSYSTEM_SERVICE}"
+      },
+      "spec": {
+        "host": "${APPLICATION_DOMAIN}",
+        "to": {
+          "kind": "Service",
+          "name": "${QSYSTEM_SERVICE}"
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${QSYSTEM_SERVICE}",
+        "annotations": {
+          "description": "Defines how to deploy the application server"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling"
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${QSYSTEM_SERVICE}"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "namespace": "${APP_IMAGE_NAMESPACE}",
+                "name": "${APP_IMAGE_NAME}:${APP_DEPLOYMENT_TAG}"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${QSYSTEM_SERVICE}"
+        },
+        "template": {
+          "metadata": {
+            "name": "${QSYSTEM_SERVICE}",
+            "labels": {
+              "name": "${QSYSTEM_SERVICE}"
+            }
+          },
+          "spec": {		    
+            "containers": [
+              {
+                "name": "${QSYSTEM_SERVICE}",
+                "image": " ",
+                "ports": [
+                  {
+                    "containerPort": 80
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "MYSQL_SERVICE",
+                    "value": "${DATABASE_SERVICE_NAME}/${DATABASE_NAME}"
+                  },
+				  {
+                    "name": "MYSQL_USER",
+                    "value": "${DATABASE_USER}"
+                  },
+				  {
+                    "name": "MYSQL_PASSWORD",
+                    "value": "${DATABASE_PASSWORD}"
+                  },
+				  {
+                    "name": "MYSQL_DATABASE",
+                    "value": "${DATABASE_NAME}"
+                  }				  
+                ]
+                
+              }
+            ]
+          }
+        }
+      }
+    }
+
+  ],
+  "parameters": [
+    {
+      "name": "QSYSTEM_SERVICE",
+      "displayName": "QSystem Service Name",
+      "description": "The name assigned to all of the QSystem objects defined in this template.",
+      "required": true,
+      "value": "qsystem"
+    },
+    {
+      "name": "DATABASE_SERVICE_NAME",
+      "displayName": "Database Service Name",
+      "value": "mysql-qsystem"
+    },
+    {
+      "name": "DATABASE_USER",
+      "displayName": "DB Username",
+      "description": "Username for Database user that will be used for accessing the database.",
+      "generate": "expression",
+      "from": "user[A-Z0-9]{3}"
+    },
+    {
+      "name": "DATABASE_PASSWORD",
+      "displayName": "Database Password",
+      "description": "Password for the Database user.",
+      "generate": "expression",
+      "from": "[a-zA-Z0-9]{16}"
+    },
+    {
+      "name": "DATABASE_NAME",
+      "displayName": "Database Name",
+      "value": "qsystem"
+    },
+    {
+      "name": "DATABASE_ADMIN_PASSWORD",
+      "displayName": "Database Administrator Password",
+      "description": "Password for the database admin user.",
+      "generate": "expression",
+      "from": "[a-zA-Z0-9]{16}"
+    },
+    {
+      "name": "PORT",
+      "displayName": "Application port",
+      "description": "Port that application is listening on for requests.",
+      "value": "8080",
+      "required": true
+    },
+    {
+      "name": "DATABASE_VOLUME_CAPACITY",
+      "displayName": "Database Volume Capacity",
+      "description": "Volume space available for database, e.g. 512Mi, 2Gi.",
+      "value": "5Gi",
+      "required": true
+    },
+    {
+      "name": "APP_IMAGE_NAME",
+      "displayName": "Application image name.",
+      "description": "Application image name.",
+      "value": "qsystem",
+      "required": true
+    },
+    {
+      "name": "APP_IMAGE_NAMESPACE",
+      "displayName": "Namespace containing application images.",
+      "description": "Namespace containing application images.",
+      "value": "servicebc-customer-flow-tools",
+      "required": true
+    },
+    {
+      "name": "APP_DEPLOYMENT_TAG",
+      "displayName": "Image tag to watch for changes and trigger deployment.",
+      "description": "Image tag to watch for changes and trigger deployment.",
+      "value": "latest",
+      "required": true
+    },
+	{
+      "name": "APPLICATION_DOMAIN",
+      "displayName": "Application domain",
+      "description": "Application domain",
+      "value": "qsystem",
+      "required": true
+    }
+	
+  ]
+}
