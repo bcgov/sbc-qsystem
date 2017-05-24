@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?page title="QSystem"?>
+<zk xmlns="http://www.zkoss.org/2005/zul" >
+    <?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+    <style>
+        .act-button:active { 
+        background:	-webkit-linear-gradient(top, #FFFFFF 0%, #FFDDDD 100%); /* Chrome10+,Safari5.1+ */
+        background:	linear-gradient(to bottom, #FFFFFF 0%, #FFDDDD 100%); /* W3C */
+        ;
+        }
+        .act-button { 
+        background:	-webkit-linear-gradient(top, #FFFFFF 0%, #BBFFBB 100%); /* Chrome10+,Safari5.1+ */
+        background:	linear-gradient(to bottom, #FFFFFF 0%, #BBFFBB 100%); /* W3C */
+        -webkit-border-radius: 2em;
+        -moz-border-radius: 2em;
+        border-radius: 2em;
+        }
+        .act-button:disabled { 
+        background:	-webkit-linear-gradient(top, #FFFFFF 0%, #BBBBCC 100%); /* Chrome10+,Safari5.1+ */
+        background:	linear-gradient(to bottom, #FFFFFF 0%, #BBBBCC 100%); /* W3C */
+        }
+        .act-button:hover {
+        border-color: #FFFF00;
+        }
+        
+    </style>
+    <timer id="timer_ses" delay="0" repeats="true" running="true" onTimer=""/>
+ 
+    <borderlayout  sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
+        
+        <north size="80px" style="background-image:url(${c:encodeURL('/resources/img/small_vert_grad.png')})" border="0">
+            <vbox height="100%" pack="center">
+                <hbox width="100%" style="padding: 1px;" pack="center" align="center">
+                    <image id="" src="/resources/img/label48.png" width=""  height=""/>
+                    <label id="" style="padding: 30px; font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 300%;" value="QSystem"/>
+                    <!--label id="" style="position: absolute; right: 450px; top: 10px; margin:0px 0px 0px 0px; float:right;" value="QSystem11"/-->
+                    <hbox pack="center" align="center" style="position: absolute; left: 180; top: 10px; margin:0px 0px 0px 0px; float:left;">
+                        <label value="${c:l('language')}" class="boxlangs" />
+                        <image  src="@load(('/resources/img/flags/').concat(fmodel.lang.code).concat('.png'))" />
+                        <combobox id="cmbColor" autodrop="true" readonly="true" width="100px" model="@load(fmodel.langs)" onChange="@command('changeLang')" selectedItem="@bind(fmodel.lang)">
+                            <template name="model">
+                                <comboitem label="@load(each.name)" image="@load(('/resources/img/flags/').concat(each.code).concat('.png'))" />
+                            </template>
+                        </combobox>
+                        
+                    </hbox>
+                    <!-- Это форма для логирования, форма для показа залогированного пользователя -->
+                    <include src="/include/loginForm.zul"/>
+                </hbox>
+            </vbox>
+        </north>
+        
+        <west visible="false" title="Полезные материалы" size="25%" hflex="min" maxsize="250" splittable="true" collapsible="true">
+            <include src="/include/westUsefullStuff.zul"/>
+        </west>
+        
+        <center border="none" hflex="true">
+             <include id="incClientDashboard" src="/include/clientDashboard.zul"/>            
+        </center>
+        
+        <east title="${c:l('management')}" size="220px"  hflex="min">
+            <div align="center">
+                
+                <vlayout>
+                    <separator bar="false"/>
+                    <button sclass="act-button" image="/resources/img/next32.png" label="${c:l('invite_client')}" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="50px" width="210px">
+                    </button>
+                    <separator bar="false"/>
+                    <button sclass="act-button" label="${c:l('kill')}" image="/resources/img/stop32.png"  disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')" id="btn_kill" height="50px" width="210px">
+                    </button>
+                    <separator bar="false"/>
+                    <button sclass="act-button" class="act-button" label="${c:l('begin')}" image="/resources/img/start32.png" disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('begin')" id="btn_start" height="50px" width="210px">
+                    </button>
+                    <separator bar="false"/>
+                    <button sclass="act-button" label="${c:l('postpon')}" image="/resources/img/postpone32.png" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="50px" width="210px">
+                    </button>
+                    <separator bar="false"/>
+                    <button sclass="act-button" label="${c:l('redirect')}" image="/resources/img/redirect32.png" disabled="@load(fmodel.btnsDisabled[4])" onClick="@command('redirect')" id="btn_redirect" height="50px" width="210px">
+                    </button>
+                    <separator bar="false"/>
+                    <button sclass="act-button" label="${c:l('finish')}" image="/resources/img/ok32.png" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="70px" width="210px">
+                    </button>
+                    <image src="/resources/img/logo_simp.bmp" width=""  height=""/>
+                </vlayout>	
+            </div>
+        </east>
+        
+        
+        <south   size="40px" style="background-image:url(${c:encodeURL('/resources/img/small_vert_grad2.png')}) " border="0">
+            <toolbar mold="panel" align="center">
+                <toolbarbutton label="${c:l('forum')}" href="http://qsystem.info/index.php/forum/index" target="_blank" />
+                <toolbarbutton label="${c:l('man')}" onClick='alert("Not ready")'/>
+                <toolbarbutton label="${c:l('about')}" onClick="@command('about')"/>
+                <toolbarbutton label="{Apertum}Projects" href="http://apertum.ru" target="_blank" />
+                <toolbarbutton label="QSystem" href="http://qsystem.info" target="_blank" />
+                <toolbarbutton label="${c:l('support')}"  href="mailto:info@apertum.ru" target="_blank" />
+                <separator orient="vertical" bar="true" />
+                {Apertum}Projects Powered by ZK ${desktop.webApp.version} 
+            </toolbar>
+        </south>
+        
+        
+    </borderlayout>
+
+</zk>

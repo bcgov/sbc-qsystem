@@ -1,0 +1,79 @@
+kieli
+johto
+Kutsu seuraavan asiakkaan
+Poista jos ei ole tulossa
+Aloita palvelu
+tilapäisesti lykätä
+Redirecting asiakkaan
+Valmis palvelu
+foorumi
+manuaalinen
+noin
+tuki
+käyttäjä
+toimisto
+salasana
+Kirjaudu
+Kirjaudu ulos
+Tilan määritys laskennallisen
+Valitse tila
+käyttää
+peruuttaa
+Valitsemalla uuden prioriteetti
+Valitse prioriteetti
+Muutto asiakas otetaan luetteloon laskennallisten
+Valitse tuloksena työ-
+Oleskelu luetteloon laskennallisten
+rajoittamaton
+5 minuuttia
+10 minuuttia
+15 minuuttia
+20 minuuttia
+25 minuuttia
+30 minuuttia
+Valitsemalla palvelu suuntaamalla
+Valitse palvelu
+palvelut
+Tree palvelujen
+Kommentit
+Paluu jälkeen seuraava palvelu
+Laskennalliset asiakkaita
+numero
+Aika (min.)
+tila
+Muuta tila
+kutsu
+Kutsuttu asiakas
+Lukumäärä kutsuttu:
+Palvelut:
+Kommentit:
+edellyttäen palvelut
+odotus
+prioriteetti
+palvelun nimi
+Muuta prioriteettia
+Kutsu asiakas!
+Tärkeysjärjestyksen muuttaminen tämän palvelun on kielletty.
+Muuttaminen prioriteetti.
+Seuraava huolto
+Asiakas numero
+Jatkuu kanavanipun palvelut
+Line on tyhjä. Ei asiakkaita.
+Kutsu seuraava
+Asiakas oli lykätään
+minuuttia. Kutsuttiin, jonka tila
+Soita laskennallinen asiakas
+keskiasteen
+standardi
+korkea
+outo
+Haluatko kutsua laskennallisen asiakas?
+Kutsuminen asiakas
+Valittu palvelu on ryhmä, asiakas ei voi ohjata ryhmään.
+Valitse palvelu
+Käyttäjä ei löydy ollenkaan!
+Käyttäjä ei löytynyt
+Pääsy kielletty!
+Tämä käyttäjä on jo kirjautua sisään!
+Tämä käyttäjä ei löytynyt!
+Tämä käyttäjä on jo kirjautua sisään!

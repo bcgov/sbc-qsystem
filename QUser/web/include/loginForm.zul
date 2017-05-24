@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    
+    <div style="position: absolute; right: 10px; top: 10px; margin:0px 0px 0px 0px;" visible="@load(!fmodel.login)" 
+         form="@id('login_form') 
+                           @load(fmodel.user) 
+                           @save(fmodel.user, before='login') 
+                           @validator('ru.apertum.qsys.quser.UserLoginValidator')">
+        
+        <hbox>
+            <vbox>
+                <label value="${c:l('user')}" width="150px" />
+                <combobox width="200px" tabindex="1" model="@load(fmodel.usersForLogin)" forward="onOK=btnSubmit.onClick" value="@bind(login_form.name)">
+                    <comboitem label="@load(each)"/>
+                </combobox>
+            </vbox>
+            <vbox>
+                <label value="${c:l('password')}" width="150px" />
+                <textbox id="pwd" type="password" forward="onOK=btnSubmit.onClick" value="@bind(login_form.password)" width="200px" tabindex="2"/>
+            </vbox>
+        </hbox>
+        <div style="margin:3px 0px 0px 0px;">
+            <button width="120px" id="btnSubmit" label="${c:l('enter')}" onClick="@command('login')"  tabindex="3"/>
+            <label class="error" value="@bind(login_msgs['name'])" />
+        </div>
+    </div>
+    
+    <div style="position: absolute; right: 10px; top: 10px; margin:0px 0px 0px 0px;" visible="@load(fmodel.login)">
+        <hbox>
+            <div>
+                <label value="${c:l('user')}" style="margin:0px 7px 0px 0px;"/><label value="@load(fmodel.user.name)"/>
+                <separator  bar="true"/>
+                <label value="${c:l('office')}" style="margin:0px 7px 0px 0px;"/><label value="@load(fmodel.user.user.point)" />
+                <separator  bar="true"/>
+                <button width="120px" label="${c:l('out')}" onClick="@command('logout')">
+                </button>
+            </div>
+            <image id="" src="/resources/img/ok32_2.png"/>
+        </hbox>
+    </div>
+
+</zk>

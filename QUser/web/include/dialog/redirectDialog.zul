@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    
+    <window id="redirectDialog" 
+            title="${c:l('choosing_service_redirect')}" 
+            border="normal"
+            width="550px" 
+            position="center,center" closable="true"
+            onClose="self.visible = false; event.stopPropagation();"
+            action="show: slideDown;hide: slideUp">
+        <caption label="QSystem" image="/resources/img/logo32.png" />
+        <div style="margin:10px 10px 10px 10px;">
+            <vlayout>
+                <label value="${c:l('select_service')}" />
+                
+                <bandbox id="bd_redirect" readonly="true" autodrop="true" hflex="true">  
+                    <bandpopup>
+                        <groupbox id="TreeTest" >
+                            <caption label="${c:l('services')}" />
+                            <tree id="tree_redirect_service_choose"  zclass="z-dottree" style="white-space:nowrap;"
+                                  vflex="true" width="490px"
+                                  onSelect="bd_redirect.value=self.selectedItem.label; bd_redirect.close();"
+                                  selectedItem="@bind(fmodel.pickedRedirectServ)"
+                                  model="@load(fmodel.treeServs)">
+                                <treecols>
+                                    <treecol hflex="1" label="${c:l('tree_of_services')}" />
+                                </treecols>
+                                <template name="model">
+                                    <treeitem>
+                                        <treerow>
+                                            <treecell label="@load(each)"/>
+                                        </treerow>
+                                    </treeitem>
+                                </template>
+                            </tree>
+                        </groupbox>
+                    </bandpopup>
+                </bandbox>
+        
+                <div style="margin:10px 10px 10px 10px;"></div>
+                <label value="${c:l('comments')}"/>
+                <textbox id="tb_redirect" rows="10" value="" hflex="1" tabindex="2" />
+                <checkbox id="cb_redirect" label="${c:l('return_after_redirect')}" />
+                <div style="float:right; margin:10px 0px 0px 0px;">
+                    <hbox>
+                        <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeRedirectDialog')"/>
+                        <button id="closeRedirectBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="redirectDialog.visible = false; event.stopPropagation();"/>
+                    </hbox>
+                </div>
+            </vlayout>
+        </div>
+    </window>
+
+</zk>

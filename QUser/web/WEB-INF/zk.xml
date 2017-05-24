@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<zk>
+    <session-config>
+        <session-timeout>60</session-timeout>
+        <timer-keep-alive>true</timer-keep-alive>
+    </session-config>
+	<system-config>
+		<ui-factory-class>org.zkoss.zk.ui.http.SerializableUiFactory</ui-factory-class>
+	</system-config>
+</zk>

@@ -1042,15 +1042,30 @@ is divided into following sections:
     <target depends="init,compile,-pre-pre-jar,-pre-jar,-do-jar-create-manifest,-do-jar-copy-manifest,-do-jar-set-mainclass,-do-jar-set-profile,-do-jar-set-splashscreen,-do-jar-jar,-do-jar-delete-manifest" name="-do-jar-without-libraries"/>
     <target depends="init,compile,-pre-pre-jar,-pre-jar,-do-jar-create-manifest,-do-jar-copy-manifest,-do-jar-set-mainclass,-do-jar-set-profile,-do-jar-set-splashscreen,-do-jar-copylibs,-do-jar-delete-manifest" name="-do-jar-with-libraries"/>
     <target name="-post-jar">
+	    <copy todir="${dist.jar.dir}../../../dist">
+            <fileset dir="${dist.jar.dir}" includes="**"/>
+        </copy>
+	    <mkdir dir="${dist.jar.dir}../../../dist/icons"/>		
+		<copy todir="${dist.jar.dir}../../../dist/icons">
+            <fileset dir="${basedir}/icons" includes="**"/>
+        </copy>
+		<mkdir dir="${dist.jar.dir}../../../dist/www"/>		
+		<copy todir="${dist.jar.dir}../../dist/www">
+            <fileset dir="${basedir}/www" includes="**"/>
+        </copy>
+		<mkdir dir="${dist.jar.dir}../../../plugins"/>		
+		<copy todir="${dist.jar.dir}../../plugins">
+            <fileset dir="${basedir}/plugins" includes="*"/>
+        </copy>
 	    <mkdir dir="${dist.jar.dir}../../../languages"/>		
-		<copy todir="${dist.jar.dir}../../../languages">
+		<copy todir="${dist.jar.dir}../../languages">
             <fileset dir="${basedir}/languages" includes="*.jar"/>
         </copy>
-		<mkdir dir="${dist.jar.dir}../../../../config"/>
-		<copy todir="${dist.jar.dir}../../../../config">
+		<mkdir dir="${dist.jar.dir}../../../config"/>
+		<copy todir="${dist.jar.dir}../../../config">
             <fileset dir="${basedir}/config" includes="**"/>
         </copy>
-		<copy todir="${dist.jar.dir}../../../config">
+		<copy todir="${dist.jar.dir}../../../dist/config">
             <fileset dir="${basedir}/config" includes="**"/>
         </copy>
     </target>

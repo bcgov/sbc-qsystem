@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    
+    <window 
+        visible="true" 
+        
+        id="changePriorityDlg" 
+        title="${c:l('choose_priority')}" 
+        border="normal"
+        width="350px" 
+            
+        onClose="self.visible = false; event.stopPropagation();"
+            
+        position="center,center" closable="false"
+            
+        action="show: slideDown;hide: slideUp">
+        
+        <caption label="QSystem" image="/resources/img/logo32.png" />
+        <div style="margin:10px 10px 10px 10px;">
+            <vlayout>
+                <label value="${c:l('select_priority')}" />
+                <combobox model="@load(fmodel.prior_St)" selectedIndex="@bind(fmodel.pickedService.coefficient)"  readonly="true" hflex="1" tabindex="1" >
+                    <template name="model">
+                        <comboitem label="@load(each)"/>
+                    </template>
+                </combobox>
+                <div style="margin:10px 10px 10px 10px;"></div>
+                
+                <div style="float:right; margin:10px 0px 0px 0px;">
+                    <hbox>
+                        <button id="applyBtn" hflex="1" label="Ok" onClick="@command('closeChangePriorityDialog')"/>
+                    </hbox>
+                </div>
+            </vlayout>
+        </div>
+    </window>
+
+</zk>

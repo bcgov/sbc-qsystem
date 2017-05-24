@@ -1,0 +1,71 @@
+<html lang="ru-RU" xmlns="http://www.w3.org/1999/xhtml">
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta http-equiv="Refresh" content="61" />
+
+<title> Время дата</title>
+
+
+<script>
+  jQuery(function(){
+    jQuery(this).next().find('.line_text').html(this.value)}
+  })
+</script>
+
+<body bgcolor="#1177BB" background="back.jpg" leftmargin="0" bottommargin="0" topmargin="0">
+
+<table width="100%" align="right" >
+  <tr>
+  <td width="300"></td>
+    <td>
+
+ <script type="text/javascript">
+var day=new Date();
+var weekday=new Array(7);
+weekday[0]="Неділя";
+weekday[1]="Понеділок";
+weekday[2]="Вівторок";
+weekday[3]="Середа";
+weekday[4]="Четвер";
+weekday[5]="П'ятниця";
+weekday[6]="Субота";
+//document.write("Сегодня " + weekday[day.getDay()]);
+
+
+var d = new Date();
+
+var day=new Array("Неділя","Понеділок","Вівторок",
+"Середа","Четвер","П'ятниця","Субота");
+
+var month=new Array("січня","лютого","березня","квітня","травня","червня",
+"липня","серпня","вересня","жовтня","листопада","грудня");
+
+document.write("<span style='font-size:55.0pt;font-family: arial; color:white'>");
+document.write(" " + day[d.getDay()]+" " +d.getDate()+ " " + month[d.getMonth()]
++ " " + d.getFullYear() + " р.</span><span style='font-size:55.0pt; font-family: arial; color:white'>");
+
+function checkTime(i)
+{
+if (i<10) 
+{
+i="0" + i;
+}
+return i;
+}
+var t = new Date();
+document.write("       ");
+document.write(checkTime(t.getHours()));
+document.write(":");
+document.write(checkTime(t.getMinutes()));
+//document.write(".");
+//document.write(checkTime(t.getSeconds()));
+document.write("</span>");
+</script> 
+
+
+</td>
+  </tr>
+</table>
+
+
+</body>
+</html>
