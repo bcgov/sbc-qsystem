@@ -1,0 +1,256 @@
+﻿<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+		<meta http-equiv="refresh" content="600">
+        <title>QSystem board</title>
+        <link rel="stylesheet" href="jquery-ui.css" />
+        <script src="jquery-1.9.1.js"></script>
+        <script src="jquery-ui.js"></script>
+
+        <style>
+            .toggler { width: 270px; height: 200px; }
+            #effect { width: 240px; height: 100px; padding: 0.2em; position: relative; }
+            #effect h3 { margin: 0; padding: 0.2em; text-align: center; }
+
+            #effect2 { width: 240px; height: 100px; padding: 0.2em; position: relative; }
+            #effect2 h3 { margin: 0; padding: 0.2em; text-align: center; }
+
+            #effect3 { width: 240px; height: 100px; padding: 0.2em; position: relative; }
+            #effect3 h3 { margin: 0; padding: 0.2em; text-align: center; }
+
+            #effect4 { width: 240px; height: 100px; padding: 0.2em; position: relative; }
+            #effect4 h3 { margin: 0; padding: 0.2em; text-align: center; }
+
+            #effect5 { width: 240px; height: 100px; padding: 0.2em; position: relative; }
+            #effect5 h3 { margin: 0; padding: 0.2em; text-align: center; }
+        </style>
+        <script>
+            $(function() {
+                // run the currently selected effect
+                function runEffect() {
+                    // get effect type from
+                    var arr = new Array( "blind", "bounce", "clip","drop","explode","fold","highlight","puff","pulsate","scale","shake","size","slide")
+
+                    var randomnumber=Math.floor(Math.random()*13)
+                    //var selectedEffect = $( "#effectTypes" ).val();
+	  
+                    //alert (randomnumber);
+                    //alert (arr[randomnumber]);
+                    var selectedEffect = arr[randomnumber];
+ 
+                    // most effect types need no options passed by default
+                    var options = {};
+                    // some effects have required parameters
+                    if ( selectedEffect === "scale" ) {
+                        options = { percent: 100 };
+                    } else if ( selectedEffect === "size" ) {
+                        options = { to: { width: 280, height: 185 } };
+                    }
+ 
+                    // run the effect
+                    $( "#effect" ).show( selectedEffect, options, 500, callback );
+                };
+ 
+                //callback function to bring a hidden box back
+                function callback() {
+                    setTimeout(function() {
+                        $( "#effect:visible" ).removeAttr( "style" ).fadeOut();
+                    }, 1000 );
+                };
+ 
+                // set effect from select menu value
+            //    $( "#button" ).click(function() {
+         //           runEffect();
+         //           return false;
+         //       });
+ 
+     //           $( "#effect" ).hide();
+     //           $( "#effect2" ).hide();
+     //           $( "#effect3" ).hide();
+     //           $( "#effect4" ).hide();
+     //           $( "#effect5" ).hide();
+                
+            });
+        
+            // get effect type from
+            var arrEff = new Array( "blind", "bounce", "clip","drop","explode","fold","highlight","puff","pulsate","scale","shake","size","slide");
+            var arrNode = new Array("#effect" ,"#effect2" ,"#effect3" , "#effect4" , "#effect5" );
+            var arrNodeVis = new Array("#effect:visible","#effect2:visible","#effect3:visible","#effect4:visible","#effect5:visible");
+        
+            function runEffect() {
+                
+
+                var randomnumber=Math.floor(Math.random()*13)
+                var selectedEffect = arrEff[randomnumber];
+ 
+                // most effect types need no options passed by default
+                var options = {};
+                // some effects have required parameters
+                if ( selectedEffect === "scale" ) {
+                    options = { percent: 100 };
+                } else if ( selectedEffect === "size" ) {
+                    options = { to: { width: 280, height: 185 } };
+                }
+ 
+                var rnd=Math.floor(Math.random()*5);
+                // run the effect
+                $(arrNodeVis[rnd]).removeAttr( "style" ).fadeOut();
+                $(arrNode[rnd]).show( selectedEffect, options, 500, callback(arrNodeVis[rnd]) );
+            };
+            
+            function callback(nodVis) {
+              //  setTimeout(function() {
+              //      $(nodVis).removeAttr( "style" ).fadeOut();
+               // }, 1000 );
+            };
+            
+            function ru() {
+                //alert("12345");
+                runEffect();
+				var rnd=2000+Math.floor(Math.random()*5000);
+                setTimeout("ru()", rnd);
+            }
+            
+  
+            function update() {
+                //runEffect();
+                //alert("прошла секунда");
+                ////setInterval(runEffect(), 5000);
+                setTimeout("ru()", 1000);
+            }
+  
+
+        </script>
+    </head>
+    <body bgcolor="#1177BB" background="back.jpg" leftmargin="0" bottommargin="0" topmargin="0" onload="update()">
+
+        <table align="center">
+            <tr>
+                <td>
+                    <div class="toggler">
+                        <div id="effect" class="ui-widget-content ui-corner-all">
+                            <h3 class="ui-widget-header ui-corner-all">Currency</h3>
+                            <!--p>
+                                <span style='font-size:20.0pt;color:GREEN'>USD : 32.4 / 32.5<br>EUR : 42.5 / 42.7</span>
+                            </p-->
+							<!-- Информер курса валют -->
+
+							<img src="http://eduscan.net/i/plain_valute/valeurusd03.gif" width="240" height="70" border="0" alt="Курсы валют">
+							
+							
+                        </div>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="toggler">
+                        <div id="effect2" class="ui-widget-content ui-corner-all">
+                            <h3 class="ui-widget-header ui-corner-all">Quotes</h3>
+							
+							
+							
+							<table width="240" border="1" style="border-collapse: collapse; text-align:left; font-size:11px; color:#000000; ">
+							<tr bgcolor="" align="center"><td></td><td>LAST</td><td>CHANGE</td><td>%</td></tr>
+							<tr bgcolor="">
+							<td><a href="http://www.forexpf.ru/chart/sp500i/" title="S&P 500" target="_blank">S&P 500</a></td>
+							<td id="isp500b">0.00</td><td id="isp500a">0.00</td><td id="isp500c">0.00</td></tr><tr bgcolor="">
+							<td><a href="http://www.forexpf.ru/chart/nasdcomp/" title="nasdaq comp" target="_blank">Nasdaq Comp</a></td>
+							<td id="inasdb">0.00</td><td id="inasda">0.00</td><td id="inasdc">0.00</td></tr><tr bgcolor="">
+							<!--td><a href="http://www.forexpf.ru/chart/dax/" title="dax" target="_blank">DAX</a></td><td id="idaxb">0.00</td>
+							<td id="idaxa">0.00</td><td id="idaxc">0.00</td></tr><tr bgcolor=""-->
+							<td><a href="http://www.forexpf.ru/chart/rts/" title="rts" target="_blank">RTS</a></td><td id="irtsb">0.00</td>
+							<td id="irtsa">0.00</td><td id="irtsc">0.00</td>
+							</tr>
+							</table>
+							<script src="http://www.forexpf.ru/_informer_/indices.php?id=1259"></script>
+							
+							
+							
+							
+                            <!--p>
+							    <table>
+								<tr>
+								<td>
+                                <span style='font-size:12.0pt;color:red'>ММВБ - 1380<br>РТС - 1288<br>S&P500 - 1547</span>
+								</td>
+								<td width="25"></td>
+								<td>
+                                <span style='font-size:12.0pt;color:red'> NASD - 3380<br> FTSE - 6438<br> Brent - 109</span>
+								</td>
+								</tr>
+								</table>
+                            </p-->
+                        </div>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="toggler">
+                        <div id="effect3" class="ui-widget-content ui-corner-all">
+                            <h3 class="ui-widget-header ui-corner-all">News</h3>
+							
+							
+							<style type='text/css'>
+							#iinews20 {width:240px;font-family:Arial;border:0px #FFFFFF solid;padding:0px;background:#FFFFFF}
+							#iinews20 p {padding:0;margin:0}
+							#iinews20 a {color:#0000FF;text-decoration:none}
+							#iinews20 a:hover {color:#CC0000;text-decoration:none}
+							#iinews20 img {margin:3px 10px 0 0;display:none;width:100px !important;height:68px !important;border:0px #FFFFFF solid}
+							#iinews20 .feedTitle {font-size:12px;display:undefined}
+							#iinews20 ul {padding:0;margin:0;}
+							#iinews20 li {list-style-type:none;clear:both;float:none;padding-top:8px}
+							#iinews20 .headline {font-size:12px;font-weight:bold}
+							#iinews20 div {font-size:10px;color:#000000;}
+							#iinews20 .date {padding:0;margin:0;color:#000000;font-size:12px;}
+							#creditfooter {clear:both;display:undefined;padding-top:8px !important;font-size:12px;text-align:right}
+							</style>
+							<script type="text/javascript">var nItemsa = "1";var nItems = "1";var showImg = 0;var showTxt = 0;var fName = 0;var credit = 0;var links = 0;</script>
+							<script src="http://monavista.ru/informer1.js" type="text/javascript" charset="utf-8"></script><div style="padding-top:5px;font-size:11px;"></div>
+
+							
+							
+							
+                            <!--p>
+                                Сечин сообщил, что в текущем году инвестиции «Роснефти» в регион составят 52 млрд рублей.
+                            </p-->
+                        </div>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="toggler">
+                        <div id="effect4" class="ui-widget-content ui-corner-all" align="center">
+                            <h3 class="ui-widget-header ui-corner-all">The Weather</h3>
+							
+							<div style="margin: -10 auto;">
+							<!--img border="0" src="http://informer.gismeteo.ru/27786-10.GIF" /-->
+							
+							<a href="http://clck.yandex.ru/redir/dtype=stred/pid=7/cid=1228/*http://pogoda.yandex.ru/shumerlya"><img height="82" width="240" src="http://info.weather.yandex.net/shumerlya/2_white.ru.png" border="0" alt=""/></a>
+							
+							</div>
+                            <!--p>
+                                <span style='font-size:20.0pt;color:red'>Москва +20<br>ветер 1м/с СЗ</span>
+                            </p-->
+                        </div>
+                    </div>
+                </td>
+
+                <!-- td>
+                    <div class="toggler">
+                        <div id="effect5" class="ui-widget-content ui-corner-all">
+                            <h3 class="ui-widget-header ui-corner-all">Юмор</h3>
+                            <p>
+                                Жизнь надо прожить так, чтобы голуби, пролетая над твоим памятником, терпели из уважения.
+                            </p>
+                        </div>
+                    </div>
+                </td -->
+
+            </tr>
+        </table>
+
+        
+
+
+    </body>
+</html>

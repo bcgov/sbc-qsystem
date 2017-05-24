@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>ru.apertum</groupId>
+   <artifactId>qsmartboardplugin</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <packaging>jar</packaging>
+   <dependencies>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <version>1.8.0</version>
+            <scope>system</scope>
+            <systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
+        </dependency>		
+				
+		<dependency>
+           <groupId>dom4j</groupId>
+           <artifactId>dom4j</artifactId>
+		   <version>1.6.1</version>
+		</dependency>		
+				
+		<dependency>
+           <groupId>log4j</groupId>
+           <artifactId>log4j</artifactId>
+		   <version>1.2.17</version>
+		</dependency>	
+			
+       
+	<dependency>
+         <groupId>ru.apertum</groupId>
+         <artifactId>qsystem</artifactId>
+         <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+    
+    <properties>
+        <src.dir>src</src.dir>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <build>
+        <sourceDirectory>${src.dir}</sourceDirectory>
+        <plugins>
+
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}/lib</outputDirectory>
+                                    
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-classpath</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>build-classpath</goal>
+                                </goals>
+                                <configuration>
+                                    <outputFile>${project.basedir}/lib/classpath</outputFile>
+                                    <localRepoProperty>lib</localRepoProperty>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+               
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+              <target>
+				<ant target="jar" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+		<dependencies>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <version>1.8.0</version>
+            <scope>system</scope>
+            <systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
+        </dependency>
+		</dependencies>
+      </plugin>
+        </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>redhat-ga</id>
+      <url>https://maven.repository.redhat.com/ga</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+</project>

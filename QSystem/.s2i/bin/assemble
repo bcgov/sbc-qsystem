@@ -1,0 +1,14 @@
+# run the stock assemble script
+/usr/local/sti/assemble
+
+HOME=/opt/app-root/src
+
+# we will move any code provided by s2i to here
+LOCAL_SOURCE_DIR=${HOME}/source
+
+pushd $LOCAL_SOURCE_DIR &> /dev/null
+
+# call mvn deploy so that QSystem.jar is sent to the local nexus.
+mvn deploy
+
+popd &> /dev/null

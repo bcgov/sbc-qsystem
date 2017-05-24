@@ -1,0 +1,73 @@
+<html lang="ru-RU" xmlns="http://www.w3.org/1999/xhtml">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+        <meta http-equiv="Refresh" content="61" />
+
+        <title> Время дата</title>
+
+
+        <script>
+            jQuery(function () {
+                jQuery(this).next().find('.line_text').html(this.value);
+            }
+            );
+        </script>
+
+        <body bgcolor="#1177BB" background="back.jpg" leftmargin="0" bottommargin="0" topmargin="0">
+
+            <table width="100%">
+                <tr>
+                    <td align="center"><img src="logo.png" alt="Я захвачу весь мир!"/></td>
+                    <td width="65%">
+                        <a href="led-stroka.html"></a>
+
+                        <script type="text/javascript">
+                            var day = new Date();
+                            var weekday = new Array(7);
+                            weekday[0] = "Воскресенье";
+                            weekday[1] = "Понедельник";
+                            weekday[2] = "Вторник";
+                            weekday[3] = "Среда";
+                            weekday[4] = "Четверг";
+                            weekday[5] = "Пятница";
+                            weekday[6] = "Суббота";
+                            //document.write("Сегодня " + weekday[day.getDay()]);
+
+
+                            var d = new Date();
+
+                            var day = new Array("Воскресенье", "Понедельник", "Вторник",
+                                    "Среда", "Четверг", "Пятница", "Суббота");
+
+                            var month = new Array("января", "февраля", "марта", "апреля", "мая", "июня",
+                                    "июля", "августа", "сентября", "октября", "ноября", "декабря");
+
+                            document.write("<span style='font-size:34.0pt;color:YELLOW'>");
+                            document.write("Сегодня " + day[d.getDay()] + " " + d.getDate() + " " + month[d.getMonth()]
+                                    + " " + d.getFullYear() + " года</span><br><span style='font-size:34.0pt;color:RED'>");
+
+                            function checkTime(i)
+                            {
+                                if (i < 10)
+                                {
+                                    i = "0" + i;
+                                }
+                                return i;
+                            }
+                            var t = new Date();
+                            document.write("Время ");
+                            document.write(checkTime(t.getHours()));
+                            document.write(":");
+                            document.write(checkTime(t.getMinutes()));
+                            //document.write(".");
+                            //document.write(checkTime(t.getSeconds()));
+                            document.write("</span>");
+                        </script> 
+
+
+                    </td>
+                </tr>
+            </table>
+
+
+        </body>
+</html>

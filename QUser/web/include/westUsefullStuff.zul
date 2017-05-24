@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    
+    <vlayout spacing="0">
+                <separator bar="false"/>
+                <panel width="100%" border="normal" title="Новое окно">
+                    <panelchildren style="padding:5px;">
+                        <vbox>
+                            <toolbarbutton label="Home" href="http://rambler.ru" target="_blank"  />
+                            <toolbarbutton label="Sitemap" />
+                            <toolbarbutton label="Statement of Direction" />
+                            <toolbarbutton label="ZK Team" />
+                            <toolbarbutton label="Releases" />
+                            <toolbarbutton label="Calender" />
+                        </vbox>
+                    </panelchildren>
+                </panel>
+                <separator bar="false"/>
+                <panel width="100%" border="normal" id="pnl1" sclass="snl1cl" title="ZK!">
+                    <panelchildren>
+                        <html>
+                                <![CDATA[ <ul> <li>Productivity</li>
+                                <li>Security</li> <li>Performance</li>
+                                <li>Totally Control</li> <li>Auto
+                                Testing</li> <li>Scalability</li>
+                                <li>Flexibility</li> </ul> ]]>
+                        </html>
+                    </panelchildren>
+                </panel>
+                <separator bar="false"/>
+                <panel width="100%" border="normal" title="Features">
+                    <panelchildren>
+                        <html>
+                                <![CDATA[ <ul> <li>Server+client
+                                Fusion</li> <li>Ajax-as-a-Service</li>
+                                <li>The Event Queue</li> <li>jQuery
+                                Based</li> <li>SEO Friendly</li>
+                                <li>Auto Testing</li> </ul> ]]>
+                        </html>
+                    </panelchildren>
+                </panel>
+            </vlayout>
+
+</zk>
