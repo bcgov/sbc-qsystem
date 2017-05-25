@@ -6,8 +6,6 @@
 package ru.apertum.qsystem.qboard;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
@@ -21,11 +19,7 @@ import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Vbox;
 import ru.apertum.qsystem.common.CustomerState;
-import ru.apertum.qsystem.server.model.QPlanService;
 import ru.apertum.qsystem.smartboard.PrintRecords;
-import ru.apertum.qsystem.server.model.QServiceTree;
-import ru.apertum.qsystem.server.model.QUserList;
-import ru.apertum.qsystem.server.model.QUser;
 
 /**
  *
@@ -236,29 +230,6 @@ public class QBoard {
 
     public int getLinesCount() {
         return checkPlugin() ? PrintRecords.getInstance().getLinesCount() : 6;
-    }
-    
-    
-    private List<QPlanService> plan = new LinkedList<>();
-    public List<QPlanService> getPlan() {
-        return plan;
-    }
-
-    public void setPlan(List<QPlanService> plan) {
-        this.plan = plan;
-    }
-    public int getCustomersCount() {
-        int total = 0;
-         
-        for (QUser user : QUserList.getInstance().getItems()) {  
-          if (user.getName().equalsIgnoreCase("Smartboard")) {  
-                plan = user.getPlanServiceList().getServices();                 
-                total = plan.stream().map((plan1) -> QServiceTree.getInstance().getById(plan1.getService().getId()).getCountCustomers()).reduce(total, Integer::sum);
-                break;
-           }
-        }
-              
-        return total;   
     }
 
 }

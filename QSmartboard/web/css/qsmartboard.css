@@ -29,11 +29,6 @@ body { padding: 0 0; background-color: #F2F2F3;  }
     color: black;
 }
 
-.textDiv{
-    padding: 0px 0px 0px 0px; font-family: 'sans-serif'; font-size: 27pt;
-    color: black;
-}
-
 .no_blink {
     padding: 0px 0px 0px 0px; font-family: 'Arial'; font-size: 50pt;
     color: blue;

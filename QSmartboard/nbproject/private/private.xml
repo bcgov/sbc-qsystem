@@ -2,13 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/BCOLDev/New-NetBeans/QUser/src/java/ru/apertum/qsys/quser/Form.java</file>
-            <file>file:/C:/BCOLDev/New-NetBeans/QUser/src/java/ru/apertum/qsys/quser/UserLoginValidator.java</file>
-            <file>file:/C:/BCOLDev/New-NetBeans/QUser/src/java/ru/apertum/qsys/quser/User.java</file>
-            <file>file:/C:/BCOLDev/New-NetBeans/QUser/web/include/clientDashboard.zul</file>
-            <file>file:/C:/BCOLDev/New-NetBeans/QUser/src/java/ru/apertum/qsys/quser/forms/ChangeStatusDialogController.java</file>
-            <file>file:/C:/BCOLDev/New-NetBeans/QUser/web/index.zul</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
