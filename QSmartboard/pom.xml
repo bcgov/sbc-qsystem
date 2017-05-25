@@ -19,13 +19,11 @@
     </dependencies>
     
     <properties>
-        <src.dir>src/java</src.dir>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
-        <sourceDirectory>${src.dir}</sourceDirectory>
         <plugins>
 
                     <plugin>
@@ -81,32 +79,7 @@
         </dependency>
 		</dependencies>
       </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>				
-					<skip>true</skip> 
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.4.3</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
+            
   </build>
-  <repositories>
-    <repository>
-      <id>redhat-ga</id>
-      <url>https://maven.repository.redhat.com/ga</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+  
 </project>
