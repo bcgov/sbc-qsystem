@@ -3,7 +3,7 @@ node {
 //openshiftBuild(buildConfig: 'qsystem', showBuildLogs: 'true')
 
 stage('checkout source'){
-   git url: 'https://github.com/bcgov/sbc-qsystem.git'
+   git url: 'https://github.com/GeorgeWalker/sbc-qsystem.git' branch: 'sonar'
 }
 stage('sonar'){
 	   dir('sonar-runner'){ 
