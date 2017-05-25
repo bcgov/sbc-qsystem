@@ -47,5 +47,7 @@ hs_err_pid*
 /dist/icons
 /dist/plugins
 !/QSmartboard/lib/javaee-endorsed-api-6.0/*.jar
-!/QSmartboard/lib/temp/*.*
+!/QSmartboard/lib/ext/*.*
+!/QSmartboard/lib/theme/*.*
+!/QSmartboard/lib/zkforge/*.*
 

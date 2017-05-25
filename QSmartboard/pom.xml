@@ -4,15 +4,7 @@
    <groupId>ru.apertum</groupId>
    <artifactId>qsmartboard</artifactId>
    <version>1.0-SNAPSHOT</version>
-   <packaging>war</packaging>
-   <repositories>
-   <repository>
-     <id>ZK CE</id>
-     <name>ZK CE Repository</name>
-     <url>http://mavensync.zkoss.org/maven2/</url>
-   </repository>
- </repositories>
- 
+   <packaging>jar</packaging>
    <dependencies>
         <dependency>
             <groupId>com.sun</groupId>
@@ -22,390 +14,21 @@
             <systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
         </dependency>
 	
-		<dependency>
-         <groupId>mysql</groupId>
-         <artifactId>mysql-connector-java</artifactId>
-         <version>5.1.33</version>
-        </dependency>
-		<dependency>
-         <groupId>com.h2database</groupId>
-         <artifactId>h2</artifactId>
-         <version>1.4.185</version>
-        </dependency>
-        <dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-core</artifactId>
-		   <version>4.0.0.RELEASE</version>
-		</dependency>
-		<dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-beans</artifactId>
-		   <version>4.0.0.RELEASE</version>
-		</dependency>
-		<dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-context</artifactId>
-		   <version>4.0.0.RELEASE</version>
-		</dependency>
-		<dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-jdbc</artifactId>
-		   <version>4.0.0.RELEASE</version>
-		</dependency>
-		<dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-expression</artifactId>
-		   <version>4.0.0.RELEASE</version>
-		</dependency>
-		<dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-tx</artifactId>
-		   <version>4.0.0.RELEASE</version>
-		</dependency>
-		<dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-orm</artifactId>
-		   <version>4.0.0.RELEASE</version>
-		</dependency>
-		<dependency>
-           <groupId>org.hibernate</groupId>
-           <artifactId>hibernate-c3p0</artifactId>
-		   <version>4.3.6.Final</version>
-		</dependency>
-		<dependency>
-    <groupId>org.hibernate</groupId>
-    <artifactId>hibernate-core</artifactId>
-    <version>4.3.6.Final</version>
-</dependency>		
-		<dependency>
-           <groupId>org.hibernate.common</groupId>
-           <artifactId>hibernate-commons-annotations</artifactId>
-		   <version>4.0.5.Final</version>
-		</dependency>		<dependency>
-           <groupId>org.jboss.logging</groupId>
-           <artifactId>jboss-logging</artifactId>
-		   <version>3.1.4.GA</version>
-		</dependency>		<dependency>
-           <groupId>c3p0</groupId>
-           <artifactId>c3p0</artifactId>
-		   <version>0.9.1.2</version>
-		</dependency>		<dependency>
-           <groupId>org.hibernate.javax.persistence</groupId>
-           <artifactId>hibernate-jpa-2.1-api</artifactId>
-		   <version>1.0.0.Final</version>
-		</dependency>		<dependency>
-           <groupId>org.slf4j</groupId>
-           <artifactId>slf4j-api</artifactId>
-		   <version>1.6.1</version>
-		</dependency>		
-		<dependency>
-           <groupId>javax.transaction</groupId>
-           <artifactId>jta</artifactId>
-		   <version>1.1</version>
-		</dependency>		
-				
-		<dependency>
-           <groupId>org.javassist</groupId>
-           <artifactId>javassist</artifactId>
-		   <version>3.16.1-GA</version>
-		</dependency>		
-				
-		<dependency>
-           <groupId>dom4j</groupId>
-           <artifactId>dom4j</artifactId>
-		   <version>1.6.1</version>
-		</dependency>		
-				
-		<dependency>
-           <groupId>antlr</groupId>
-           <artifactId>antlr</artifactId>
-		   <version>2.7.7</version>
-		</dependency>						
-		<dependency>
-           <groupId>org.slf4j</groupId>
-           <artifactId>jcl-over-slf4j</artifactId>
-		   <version>1.6.1</version>
-		</dependency>		
-		<dependency>
-           <groupId>log4j</groupId>
-           <artifactId>log4j</artifactId>
-		   <version>1.2.17</version>
-		</dependency>	
-			
-		<dependency>
-           <groupId>com.lowagie</groupId>
-           <artifactId>itext</artifactId>
-		   <version>4.2.1</version>
-		</dependency>	
-			
-		<dependency>
-           <groupId>net.java.dev.beansbinding</groupId>
-           <artifactId>beansbinding</artifactId>
-		   <version>1.2.1</version>
-		</dependency>	
-			
-		<dependency>
-           <groupId>net.sourceforge.barbecue</groupId>
-           <artifactId>barbecue</artifactId>
-		   <version>1.5-beta1</version>
-		</dependency>	
-			
-		<dependency>
-           <groupId>com.google.zxing</groupId>
-           <artifactId>core</artifactId>
-		   <version>2.2</version>
-		</dependency>	
-			
-		<dependency>
-           <groupId>commons-collections</groupId>
-           <artifactId>commons-collections</artifactId>
-		   <version>3.2.1</version>
-		</dependency>	
-			
-		<dependency>
-           <groupId>commons-logging</groupId>
-           <artifactId>commons-logging</artifactId>
-		   <version>1.1.1</version>
-		</dependency>	
-		<dependency>
-           <groupId>commons-pool</groupId>
-           <artifactId>commons-pool</artifactId>
-		   <version>1.6</version>
-		</dependency>
-		<dependency>
-           <groupId>org.apache.commons</groupId>
-           <artifactId>commons-lang3</artifactId>
-		   <version>3.4</version>
-		</dependency>
-		<dependency>
-           <groupId>commons-beanutils</groupId>
-           <artifactId>commons-beanutils</artifactId>
-		   <version>1.9.2</version>
-		</dependency>
-		<dependency>
-           <groupId>commons-digester</groupId>
-           <artifactId>commons-digester</artifactId>
-		   <version>2.1</version>
-		</dependency>
-		<dependency>
-           <groupId>commons-dbcp</groupId>
-           <artifactId>commons-dbcp</artifactId>
-		   <version>1.4</version>
-		</dependency>
-		<dependency>
-           <groupId>org.apache.commons</groupId>
-           <artifactId>commons-configuration2</artifactId>
-		   <version>2.0</version>
-		</dependency>
-		<dependency>
-           <groupId>commons-codec</groupId>
-           <artifactId>commons-codec</artifactId>
-		   <version>1.9</version>
-		</dependency>
-       
-		<dependency>
-           <groupId>commons-cli</groupId>
-           <artifactId>commons-cli</artifactId>
-		   <version>1.3.1</version>
-		</dependency>
-       
-		<dependency>
-           <groupId>jfree</groupId>
-           <artifactId>jcommon</artifactId>
-		   <version>1.0.16</version>
-		</dependency>
-       
-		<dependency>
-           <groupId>jfree</groupId>
-           <artifactId>jfreechart</artifactId>
-		   <version>1.0.13</version>
-		</dependency>
-       
-		<dependency>
-           <groupId>javax.help</groupId>
-           <artifactId>javahelp</artifactId>
-		   <version>2.0.05</version>
-		</dependency>
-       
-		<dependency>
-           <groupId>com.googlecode.sli4j</groupId>
-           <artifactId>sli4j-slf4j-log4j</artifactId>
-		   <version>2.0</version>
-		</dependency>
-       
-		<dependency>
-           <groupId>org.apache.httpcomponents</groupId>
-           <artifactId>httpcore</artifactId>
-		   <version>4.1</version>
-		</dependency>
+	
 
-		<dependency>
-           <groupId>org.apache.httpcomponents</groupId>
-           <artifactId>httpcore-nio</artifactId>
-		   <version>4.1</version>
-		</dependency>
-
-		<dependency>
-           <groupId>net.sf.jasperreports</groupId>
-           <artifactId>jasperreports</artifactId>
-		   <version>5.2.0</version>
-		</dependency>
-
-		<dependency>
-           <groupId>net.sf.jasperreports</groupId>
-           <artifactId>jasperreports-fonts</artifactId>
-		   <version>4.0.0</version>
-		</dependency>
-
-		<dependency>
-           <groupId>com.google.code.gson</groupId>
-           <artifactId>gson</artifactId>
-		   <version>2.3</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-server</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-util</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-continuation</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-http</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-io</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-servlet</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-servlets</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-security</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-webapp</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-jsp</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-runner</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-xml</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-annotations</artifactId>
-		   <version>9.0.4.v20130625</version>
-		</dependency>
-		<dependency>
-           <groupId>org.glassfish</groupId>
-           <artifactId>javax.servlet</artifactId>
-		   <version>3.0</version>
-		</dependency>
-		<dependency>
-           <groupId>javax.mail</groupId>
-           <artifactId>mail</artifactId>
-		   <version>1.4.5</version>
-		</dependency>
-<dependency>
-    <groupId>org.jdesktop</groupId>
-    <artifactId>appframework</artifactId>
-    <version>1.0.3</version>
-</dependency>
-
-<dependency>
-    <groupId>junit</groupId>
-    <artifactId>junit</artifactId>
-    <version>4.5</version>
-</dependency>
-
-<dependency>
-    <groupId>org.zkoss.zk</groupId>
-    <artifactId>zk</artifactId>
-    <version>6.5.4</version>
-</dependency>
-<dependency>
-    <groupId>org.zkoss.zk</groupId>
-    <artifactId>zkbind</artifactId>
-    <version>6.5.4</version>
-</dependency>
-<dependency>
-    <groupId>org.zkoss.zk</groupId>
-    <artifactId>zul</artifactId>
-    <version>6.5.4</version>
-</dependency>
-<dependency>
-    <groupId>org.zkoss.zk</groupId>
-    <artifactId>zkplus</artifactId>
-    <version>6.5.4</version>
-</dependency>
-<dependency>
-    <groupId>org.zkoss.zk</groupId>
-    <artifactId>zhtml</artifactId>
-    <version>6.5.4</version>
-</dependency>
-<dependency>
-    <groupId>org.zkoss.zk</groupId>
-    <artifactId>zkex</artifactId>
-    <version>6.5.4</version>
-	<scope>system</scope>
-    <systemPath>${project.basedir}/lib/zkex.jar</systemPath>
-</dependency>
-<dependency>
-    <groupId>ru.apertum</groupId>
-    <artifactId>qsystem</artifactId>
-    <version>1.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/../QSystem/dist/QSystem.jar</systemPath>
-</dependency>
-<dependency>
-    <groupId>ru.apertum</groupId>
-    <artifactId>qsmartboard</artifactId>
-    <version>1.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/../QSmartboardPlugin/dist/QSmartboardPlugin.jar</systemPath>
-</dependency>
-     </dependencies>
+    </dependencies>
+    
     <properties>
         <src.dir>src/java</src.dir>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>	
+    </properties>
     <build>
-        <sourceDirectory>src/java</sourceDirectory>
+        <sourceDirectory>${src.dir}</sourceDirectory>
         <plugins>
- <plugin>
+
+                    <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>
@@ -431,8 +54,34 @@
                             </execution>
                         </executions>
                     </plugin>
-       
-       <plugin>
+               
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+              <target>
+				<ant target="dist" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+		<dependencies>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <version>1.8.0</version>
+            <scope>system</scope>
+            <systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
+        </dependency>
+		</dependencies>
+      </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
@@ -440,15 +89,23 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
-			<plugin>            
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-war-plugin</artifactId>
-  <configuration>
-    <webXml>${project.basedir}/web/WEB-INF/web.xml</webXml>        
-  </configuration>
-</plugin>
-           
-     </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
   </build>
-  
+  <repositories>
+    <repository>
+      <id>redhat-ga</id>
+      <url>https://maven.repository.redhat.com/ga</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>
