@@ -50,4 +50,6 @@ hs_err_pid*
 !/QSmartboard/lib/ext/*.*
 !/QSmartboard/lib/theme/*.*
 !/QSmartboard/lib/zkforge/*.*
+!/QSmartboard/lib/zkforge/*.*
+!/QSmartboard/web/WEB-INF/lib/*.*
 
