@@ -1,4 +1,4 @@
-node('maven') {
+node {
 stage 'build'
 openshiftBuild(buildConfig: 'qsystem', showBuildLogs: 'true')
 }
