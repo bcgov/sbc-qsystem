@@ -5,7 +5,7 @@ stage ('OpenShift Build')
 }
 
 stage('Copy Code'){
-   git url: 'https://github.com/GeorgeWalker/sbc-qsystem.git', branch: 'sonar'
+   git url: 'https://github.com/bcgov/sbc-qsystem.git'
 }
 
 stage('Sonar'){
