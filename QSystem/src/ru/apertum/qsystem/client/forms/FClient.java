@@ -1881,7 +1881,7 @@ public final class FClient extends javax.swing.JFrame {
             if (!moveToPostponed.isOK()) {
                 return;
             }
-            NetCommander.сustomerToPostpone(netProperty, user.getId(), customer.getId(), moveToPostponed.getResult(), moveToPostponed.getPeriod(), moveToPostponed.isMine());
+            NetCommander.customerToPostpone(netProperty, user.getId(), customer.getId(), moveToPostponed.getResult(), moveToPostponed.getPeriod(), moveToPostponed.isMine());
             // Показываем обстановку
             setSituation(NetCommander.getSelfServices(netProperty, user.getId()));
             // поддержка расширяемости плагинами

@@ -392,7 +392,7 @@ public class FWelcome extends javax.swing.JFrame {
         }
         final RpcGetAllServices.ServicesForWelcome servs;
         try {
-            servs = NetCommander.getServiсes(netProperty);
+            servs = NetCommander.getServices(netProperty);
         } catch (Throwable t) {
             QLog.l().logger().error("Start Welcome was failed.", t);
             System.exit(117);

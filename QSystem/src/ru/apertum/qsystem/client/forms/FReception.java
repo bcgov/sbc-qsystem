@@ -1923,7 +1923,7 @@ public class FReception extends javax.swing.JFrame {
         tableUsersMon.setModel(new UsersMonModel(users));
 
         try {
-            final ServicesForWelcome servs = NetCommander.getServiсes(netProperty);
+            final ServicesForWelcome servs = NetCommander.getServices(netProperty);
             final LinkedList<QService> slist = new LinkedList<>();
             QServiceTree.sailToStorm(servs.getRoot(), (TreeNode service) -> {
                 slist.add((QService) service);

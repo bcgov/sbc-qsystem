@@ -874,7 +874,7 @@ public class FIndicatorBoard extends javax.swing.JFrame {
         GridLayout la = new GridLayout(linesCount + (isMain ? 1 : 0), (isMain ? colsCount : 1), 10, 0);
         panelMain.setLayout(la);
         final ArrayList<JPanel> caps = new ArrayList<>();
-        for (int с = 0; с < colsCount; с++) {
+        for (int c = 0; c < colsCount; c++) {
             if (isMain) {
                 final JPanel panel_cap = new JPanel();
                 caps.add(panel_cap);
