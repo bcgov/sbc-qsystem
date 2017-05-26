@@ -16,7 +16,7 @@ stage('sonar'){
 				  sh 'ls -l -srt'
 			}	   
 			stage('execute sonar-runner'){
-				sh returnStdout: true, script: 'bash gradlew sonarqube -Dsonar.host.url=https://jenkins-pipeline-svc-servicebc-customer-flow-tools.pathfinder.gov.bc.ca -Dsonar.verbose=true --stacktrace'
+				sh returnStdout: true, script: './gradlew sonarqube -Dsonar.host.url=https://jenkins-pipeline-svc-servicebc-customer-flow-tools.pathfinder.gov.bc.ca -Dsonar.verbose=true --stacktrace'
 			}
 	   }
    }
