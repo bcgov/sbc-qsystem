@@ -60,7 +60,7 @@ public class FMoveToPostponed extends javax.swing.JDialog {
         cbOnlyMine.setSelected(false);
     }
 
-    public int getPeriod() {
+    public int getPeriod(){
         return comboBoxPeriod.getSelectedIndex() * 5;
     }
 

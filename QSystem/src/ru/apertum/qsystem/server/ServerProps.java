@@ -264,10 +264,10 @@ public class ServerProps {
      * @param deafultСomment этот коммент добавится к созданному параметру
      * @return найденный или созданный параметр.
      */
-    public QProperty getProperty(String section, String key, String deafultValue, String deafultСomment) {
+    public QProperty getProperty(String section, String key, String deafultValue, String deafultComment) {
         final QProperty p = getProperty(section, key);
         if (p == null) {
-            return saveOrUpdateProperty(section, key, deafultValue, deafultСomment);
+            return saveOrUpdateProperty(section, key, deafultValue, deafultComment);
         } else {
             return p;
         }

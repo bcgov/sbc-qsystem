@@ -86,7 +86,7 @@ public class FRedirect extends JDialog {
             setVisible(false);
         });
 
-        final QService service = NetCommander.getServiсes(netProperty).getRoot();
+        final QService service = NetCommander.getServices(netProperty).getRoot();
         if (service == null) {
             throw new ClientException("Невозможно получить список предлагаемых услуг.");
         }

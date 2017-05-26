@@ -52,4 +52,5 @@ hs_err_pid*
 !/QSmartboard/lib/zkforge/*.*
 !/QSmartboard/lib/zkforge/*.*
 !/QSmartboard/web/WEB-INF/lib/*.*
-
+!/sonar-runner/gradle/wrapper/*.*
+/Seeder/target/
