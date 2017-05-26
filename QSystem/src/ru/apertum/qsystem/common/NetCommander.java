@@ -253,7 +253,7 @@ public class NetCommander {
      * @param netProperty параметры соединения с сервером
      * @return XML-ответ
      */
-    public static RpcGetAllServices.ServicesForWelcome getServiсes(INetProperty netProperty) {
+    public static RpcGetAllServices.ServicesForWelcome getServices(INetProperty netProperty) {
         QLog.l().logger().info("Получение возможных услуг.");
         // загрузим ответ
         String res = null;
@@ -643,7 +643,7 @@ public class NetCommander {
      * @param postponedPeriod
      * @param isMine
      */
-    public static void сustomerToPostpone(INetProperty netProperty, long userId, Long customerId, String status, int postponedPeriod, boolean isMine) {
+    public static void customerToPostpone(INetProperty netProperty, long userId, Long customerId, String status, int postponedPeriod, boolean isMine) {
         QLog.l().logger().info("Перемещение вызванного юзером кастомера в пул отложенных.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
