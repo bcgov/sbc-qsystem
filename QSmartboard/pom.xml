@@ -122,10 +122,10 @@
 			<version>2.7.7</version>
 		</dependency>						
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.6.1</version>
-		</dependency>		
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>1.6.1</version>
+</dependency>		
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -226,19 +226,11 @@
 			<artifactId>javahelp</artifactId>
 			<version>2.0.05</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.googlecode.sli4j</groupId>
-			<artifactId>sli4j-slf4j-log4j</artifactId>
-			<version>2.0</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
 			<version>4.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore-nio</artifactId>
@@ -375,6 +367,17 @@
 			<version>6.5.4</version>
 		</dependency>
 		<dependency>
+			<groupId>org.zkoss.common</groupId>
+			<artifactId>zweb</artifactId>
+			<version>6.5.4</version>
+		</dependency>
+		<dependency>
+           <groupId>org.zkoss.common</groupId>
+           <artifactId>zel</artifactId>
+           <version>6.5.4</version>
+        </dependency>
+
+		<dependency>
 			<groupId>org.zkoss.zk</groupId>
 			<artifactId>zkex</artifactId>
 			<version>6.5.4</version>
@@ -406,32 +409,7 @@
 		<finalName>qsmartboard</finalName>
 		<sourceDirectory>src/java</sourceDirectory>
 		<plugins>
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.basedir}/lib</outputDirectory>
-
-						</configuration>
-					</execution>
-					<execution>
-						<id>build-classpath</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>build-classpath</goal>
-						</goals>
-						<configuration>
-							<outputFile>${project.basedir}/lib/classpath</outputFile>
-							<localRepoProperty>lib</localRepoProperty>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>       
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
