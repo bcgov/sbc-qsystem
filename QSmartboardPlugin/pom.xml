@@ -35,7 +35,6 @@
 
     </dependencies>
     <properties>
-	<finalName>QSmartboardPlugin</finalName>
         <src.dir>src</src.dir>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -43,6 +42,7 @@
     </properties>
     <build>
         <sourceDirectory>${src.dir}</sourceDirectory>
+		<finalName>QSmartboardPlugin</finalName>
 		<resources>
       <resource>
         <directory>${src.dir}</directory>
