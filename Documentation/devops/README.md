@@ -1,4 +1,4 @@
-# sbc-qsystem Devops
+# SBC-QSYSTEM DEVOPS
 
 Nexus
 -----
@@ -24,14 +24,23 @@ If no changes to the default parameters are required, the template can be proces
 `oc project servicebc-customer-flow-tools`
 `oc process -f sbc-qsystem-build-template.json | oc create -f -` 
 
-Deployment Template
--------------------
+Environment Template
+--------------------
 
 - `oc project servicebc-customer-flow-dev`
 - Allow the dev project to access the tools project
-`oc policy add-role-to-user system:image-puller system:serviceaccount:csnr-dmod-dev:default -n ervicebc-customer-flow-tools`
-- Process and create the Deployment Template
-- `oc process -f sbc-qsystem-deployment-template.json | oc create -f -`
+`oc policy add-role-to-user system:image-puller system:serviceaccount:csnr-dmod-dev:default -n servicebc-customer-flow-tools`
+- Process and create the Environment Template
+- `oc process -f sbc-qsystem-environment-template.json | oc create -f -`
+
+Jenkins
+-------
+
+Create a Jenkins server using the Jenkins Persistent template.  It is recommended you allocate more than the minimum 1GB of storage to Jenkins, as otherwise you will frequently have to cull files from Jenkins.
+
+Jenkins Slave
+-----------
+Slaves are created automatically by the master Jenkins server.  If this is not working then you likely are using the wrong Jenkins image.  Use openshift/jenkins:latest.
 
 Pipeline
 --------

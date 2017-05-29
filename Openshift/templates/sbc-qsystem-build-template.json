@@ -34,6 +34,52 @@
       }
     },
 	{
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata":
+      {
+        "name": "s2i-nginx",
+        "generation": 1,
+        "creationTimestamp": null
+      },
+      "spec":
+      {
+        "tags": [
+          {
+            "name": "s2i-nginx",
+            "annotations": null,
+            "generation": null,
+            "importPolicy": {}
+          }
+
+        ]
+      },
+      "status": {}
+    },
+	{
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata":
+      {
+        "name": "${NGINX_SERVICE_NAME}",
+        "generation": 1,
+        "creationTimestamp": null
+      },
+      "spec":
+      {
+        "tags": [
+          {
+            "name": "${NGINX_SERVICE_NAME}",
+            "annotations": null,
+            "generation": null,
+            "importPolicy": {}
+          }
+
+        ]
+      },
+      "status": {}
+    },
+	{
     "kind": "BuildConfig",
     "apiVersion": "v1",
     "metadata": {
@@ -75,6 +121,66 @@
         "lastVersion": 0
     }
 },
+{
+      "kind": "BuildConfig",
+      "apiVersion": "v1",
+      "metadata":
+      {
+        "name": "s2i-nginx",
+        "creationTimestamp": null,
+        "labels":
+        {
+          "app": "s2i-nginx"
+        },
+        "annotations":
+        {
+          "openshift.io/generated-by": "OpenShiftNewApp"
+        }
+      },
+      "spec":
+      {
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          }
+        ],
+        "runPolicy": "Serial",
+        "source":
+        {
+          "type": "Git",
+          "git":
+          {
+            "uri": "https://github.com/BCDevOps/s2i-nginx.git"
+          }
+        },
+        "strategy":
+        {
+          "type": "Docker",
+          "dockerStrategy":
+          {
+          }
+        },
+        "output":
+        {
+          "to":
+          {
+            "kind": "ImageStreamTag",
+            "name": "s2i-nginx:latest"
+          }
+        },
+        "resources": {},
+        "postCommit": {},
+        "nodeSelector": null
+      },
+      "status":
+      {
+        "lastVersion": 0
+      }
+    },
 	{
     "kind": "BuildConfig",
     "apiVersion": "v1",
@@ -101,7 +207,7 @@
             "git": {
                 "uri": "${SOURCE_REPOSITORY_URL}"
             },
-            "contextDir": "/QSystem"
+            "contextDir": "/"
         },
         "strategy": {
             "type": "Source",
@@ -127,6 +233,59 @@
     "status": {
         "lastVersion": 0
     }
+},
+{
+    "kind": "BuildConfig",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "${NGINX_SERVICE_NAME}",
+        "creationTimestamp": null,
+        "labels": {
+            "app": "${NGINX_SERVICE_NAME}"
+        }
+    },
+    "spec": {
+        "triggers": [            
+            {
+                "type": "ImageChange",
+                "imageChange": {}
+            },
+            {
+                "type": "ConfigChange"
+            }
+        ],
+        "runPolicy": "Serial",
+        "source": {
+            "type": "Git",
+            "git": {
+                "uri": "${SOURCE_REPOSITORY_URL}"
+            },
+            "contextDir": "/Nginx"
+        },
+        "strategy": {
+            "type": "Source",
+            "sourceStrategy": {
+                "from": {
+                    "kind": "ImageStreamTag",
+                    "name": "s2i-nginx:latest"
+                },
+                "forcePull": true
+            }
+        },
+        "output": {
+            "to": {
+                "kind": "ImageStreamTag",
+				"namespace": "servicebc-customer-flow-tools",
+                "name": "${NGINX_SERVICE_NAME}:latest"
+            }
+        },
+        "resources": {},
+        "postCommit": {},
+        "nodeSelector": null
+    },
+    "status": {
+        "lastVersion": 0
+    }
 }],
   "parameters": [
 	{
@@ -135,6 +294,13 @@
       "description": "The name assigned to all of the qsystem service objects defined in this template.",
       "required": true,
       "value": "qsystem"
+    },	
+	{
+      "name": "NGINX_SERVICE_NAME",
+      "displayName": "Name",
+      "description": "The name assigned to all of the nginx service objects defined in this template.",
+      "required": true,
+      "value": "cerberus"
     },	
     {
       "name": "S2I_NAMESPACE",
@@ -146,7 +312,7 @@
       "name": "SOURCE_REPOSITORY_URL",
       "displayName": "Git Repository URL",
       "description": "The URL of the repository with your application source code.",
-      "value": "https://github.com/GeorgeWalker/sbc-cfms.git"
+      "value": "https://github.com/bcgov/sbc-qsystem.git"
     },
     {
       "name": "SOURCE_REPOSITORY_REF",
