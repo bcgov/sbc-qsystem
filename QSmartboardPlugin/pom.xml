@@ -30,7 +30,7 @@
 			<artifactId>qsystem</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/../QSystem/dist/QSystem.jar</systemPath>
+			<systemPath>${project.basedir}/../dist/QSystem.jar</systemPath>
 		</dependency>
 
     </dependencies>

@@ -389,14 +389,14 @@
 			<artifactId>qsystem</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/../QSystem/dist/QSystem.jar</systemPath>
+			<systemPath>${project.basedir}/../dist/QSystem.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>ru.apertum</groupId>
 			<artifactId>qsmartboard</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/../QSmartboardPlugin/dist/QSmartboardPlugin.jar</systemPath>
+			<systemPath>${project.basedir}/../dist/plugins/QSmartboardPlugin.jar</systemPath>
 		</dependency>
 	</dependencies>
 	<properties>
