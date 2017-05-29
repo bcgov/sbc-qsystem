@@ -207,7 +207,7 @@
             "git": {
                 "uri": "${SOURCE_REPOSITORY_URL}"
             },
-            "contextDir": "/QSystem"
+            "contextDir": "/"
         },
         "strategy": {
             "type": "Source",
