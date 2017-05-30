@@ -73,6 +73,7 @@ public final class QConfig {
     private static final String KEY_BOARD_CFG = "board-config";
     private static final String KEY_BOARD_FX_CFG = "board-fx-config";
     private static final String KEY_S = "server-address";
+    private static final String KEY_WEB_SERVICE_URL = "web-service-url";
     private static final String KEY_S_PORT = "server-port";
     private static final String KEY_C_PORT = "client-port";
     private static final String KEY_USER = "user";
@@ -105,6 +106,7 @@ public final class QConfig {
         }
         options.addOption("?", "hey", false, "Show information about command line arguments");
         options.addOption("h", "help", false, "Show information about command line arguments");
+        options.addOption("wsu", KEY_WEB_SERVICE_URL, false, "Full URL to Web Service for HTTP RPC calls - eg HTTP://test.com");
 
         /*
          CLIENT: ide -s 127.0.0.1 -cport 3129 -sport 3128 -cfg config/clientboard.xml -cfgfx1 config/clientboardfx.properties -point1 234 debug -terminal1
@@ -378,6 +380,17 @@ public final class QConfig {
                 : config.getString(KEY_WELCOME_MODE, "touch");
     }
 
+    /**
+     * WebServiceURL is used when doing HTTP RPC calls.  
+     * Previously QSystem could only do such calls to IP addresses.
+     * @return The WebServiceURL
+     */
+    public String getWebServiceURL(){
+        return line.hasOption(KEY_WEB_SERVICE_URL)
+                ? line.getOptionValue(KEY_WEB_SERVICE_URL, "")
+                : config.getString(KEY_WEB_SERVICE_URL, "");
+    }
+    
     public boolean isChangeLangs() {
         return line.hasOption(KEY_CLANGS)
                 ? true

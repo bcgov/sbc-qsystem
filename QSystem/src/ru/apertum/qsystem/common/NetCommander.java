@@ -175,7 +175,7 @@ public class NetCommander {
 
     // HTTP POST request
     private static String sendPost(INetProperty netProperty, String outputData, JsonRPC20 jsonRpc) throws Exception {
-        String url = "http://" + netProperty.getAddress().getHostAddress() + ":" + QConfig.cfg().getHttpProtocol() + CommandHandler.CMD_URL_PATTERN;
+        String url = QConfig.cfg().getWebServiceURL()+ ":" + QConfig.cfg().getHttpProtocol() + CommandHandler.CMD_URL_PATTERN;
         QLog.l().logger().trace("HTTP POST request \"" + jsonRpc.getMethod() + "\" on " + url + "\n" + outputData);
         final URL obj = new URL(url);
         final HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -217,7 +217,7 @@ public class NetCommander {
     // HTTP GET request
     private static String sendGet(INetProperty netProperty, JsonRPC20 jsonRpc) throws Exception {
         final String p = jsonRpc.getParams() == null ? "" : jsonRpc.getParams().toString();
-        String url = "http://" + netProperty.getAddress().getHostAddress() + ":" + QConfig.cfg().getHttpProtocol() + CommandHandler.CMD_URL_PATTERN + "?"
+        String url = QConfig.cfg().getWebServiceURL()+ ":"  + QConfig.cfg().getHttpProtocol() + CommandHandler.CMD_URL_PATTERN + "?"
                 + CmdParams.CMD + "=" + URLEncoder.encode(jsonRpc.getMethod(), "utf-8") + "&"
                 + p;
         QLog.l().logger().trace("HTTP GET request \"" + jsonRpc.getMethod() + "\" on " + url + "\n" + p);
