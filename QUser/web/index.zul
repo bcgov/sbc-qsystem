@@ -4,20 +4,20 @@
     <?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
     <style>
         .act-button:active { 
-        background:	-webkit-linear-gradient(top, #FFFFFF 0%, #FFDDDD 100%); /* Chrome10+,Safari5.1+ */
-        background:	linear-gradient(to bottom, #FFFFFF 0%, #FFDDDD 100%); /* W3C */
+        background: -webkit-linear-gradient(top, #FFFFFF 0%, #FFDDDD 100%); /* Chrome10+,Safari5.1+ */
+        background: linear-gradient(to bottom, #FFFFFF 0%, #FFDDDD 100%); /* W3C */
         ;
         }
         .act-button { 
-        background:	-webkit-linear-gradient(top, #FFFFFF 0%, #BBFFBB 100%); /* Chrome10+,Safari5.1+ */
-        background:	linear-gradient(to bottom, #FFFFFF 0%, #BBFFBB 100%); /* W3C */
+        background: -webkit-linear-gradient(top, #FFFFFF 0%, #BBFFBB 100%); /* Chrome10+,Safari5.1+ */
+        background: linear-gradient(to bottom, #FFFFFF 0%, #BBFFBB 100%); /* W3C */
         -webkit-border-radius: 2em;
         -moz-border-radius: 2em;
         border-radius: 2em;
         }
         .act-button:disabled { 
-        background:	-webkit-linear-gradient(top, #FFFFFF 0%, #BBBBCC 100%); /* Chrome10+,Safari5.1+ */
-        background:	linear-gradient(to bottom, #FFFFFF 0%, #BBBBCC 100%); /* W3C */
+        background: -webkit-linear-gradient(top, #FFFFFF 0%, #BBBBCC 100%); /* Chrome10+,Safari5.1+ */
+        background: linear-gradient(to bottom, #FFFFFF 0%, #BBBBCC 100%); /* W3C */
         }
         .act-button:hover {
         border-color: #FFFF00;
@@ -80,8 +80,15 @@
                     <separator bar="false"/>
                     <button sclass="act-button" label="${c:l('finish')}" image="/resources/img/ok32.png" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="70px" width="210px">
                     </button>
-                    <image src="/resources/img/logo_simp.bmp" width=""  height=""/>
-                </vlayout>	
+                    <separator bar="false"/>
+                    <button sclass="act-button" label="${c:l('add_client')}" image="/resources/img/next32.png" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="50px" width="210px">
+                    </button>
+                    <separator bar="false"/>
+                    <button sclass="act-button" label="${c:l('add_next_service')}" image="/resources/img/next32.png" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('redirect')" id="btn_add_next_service" height="50px" width="210px">
+                    </button>
+
+                    <image src="/resources/img/bc_logo_resized.png" width=""  height=""/>
+                </vlayout>  
             </div>
         </east>
         

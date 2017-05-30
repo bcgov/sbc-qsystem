@@ -54,7 +54,6 @@ import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.server.model.postponed.QPostponedList;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
-import ru.apertum.qsystem.server.model.QServiceTree;
 
 /**
  *
@@ -100,11 +99,16 @@ public class Form {
 
     /**
      * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg")
-     *
+     * This is necessary to do include in the view and then bind
      * @param view
      */
     @AfterCompose
     public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
+        QLog.l().logQUser().debug("view :");
+        QLog.l().logQUser().debug(view.getClass());
+        QLog.l().logQUser().debug(view.toString());
+        
+        QLog.l().logQUser().debug("AFTER COMPOSE --- ---");
         Selectors.wireComponents(view, this, false);
     }
 
@@ -145,10 +149,10 @@ public class Form {
     }
 
     //*****************************************************
-    //**** Логин
+    //**** Логин Login
     //*****************************************************
     /**
-     * Залогиневшейся юзер
+     * Залогиневшейся юзер Logged user
      */
     private User user = new User();
 
@@ -247,7 +251,7 @@ public class Form {
                 return;
             }
         }
-        // тут уже ретурн может быть и есть
+        // тут уже ретурн может быть и есть There may already be a rethurn
     }
 
     public LinkedList<QUser> getUsersForLogin() {
@@ -261,19 +265,20 @@ public class Form {
     }
 
     //*********************************************************************************************************
-    //**** Кнопки и их события
+    //**** Кнопки и их события Buttons and their events
     //*********************************************************************************************************
     /**
-     * текущее состояние кнопок
+     * текущее состояние кнопок Current state of the buttons
      */
     private String keys_current = KEYS_OFF;
 
     /**
-     * Механизм включения/отключения кнопок
+     * Механизм включения/отключения кнопок Button on / off mechanism
      *
      * @param regim
      */
     public void setKeyRegim(String regim) {
+        
         keys_current = regim;
         btnsDisabled[0] = !(isLogin() && '1' == regim.charAt(0));
         btnsDisabled[1] = !(isLogin() && '1' == regim.charAt(1));
@@ -281,9 +286,11 @@ public class Form {
         btnsDisabled[3] = !(isLogin() && '1' == regim.charAt(3));
         btnsDisabled[4] = !(isLogin() && '1' == regim.charAt(4));
         btnsDisabled[5] = !(isLogin() && '1' == regim.charAt(5));
+        btnsDisabled[6] = !(isLogin() && '1' == regim.charAt(0));
+        btnsDisabled[7] = !(isLogin() && '1' == regim.charAt(0));
     }
 
-    private boolean[] btnsDisabled = new boolean[]{true, true, true, true, true, true};
+    private boolean[] btnsDisabled = new boolean[]{true, true, true, true, true, true, true, true};
 
     public boolean[] getBtnsDisabled() {
         return btnsDisabled;
@@ -393,6 +400,17 @@ public class Form {
         redirectCustomerDialog.setVisible(true);
         redirectCustomerDialog.doModal();
     }
+    
+    @Command
+    public void addClient(){
+            servicesDialogWindow.setVisible(true);
+            servicesDialogWindow.doModal();
+    }
+    
+    @Command
+    public void addNextService(){
+        QLog.l().logQUser().debug("Add Next Service");    
+    }
 
     @Command
     @NotifyChange(value = {"btnsDisabled", "customer"})
@@ -466,9 +484,9 @@ public class Form {
     public void refreshListServices() {
 
         if (isLogin()) {
-            // тут поддержание сессии как в веб приложении
+            // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
             UsersInside.getInstance().getUsersInside().put(user.getName() + user.getPassword(), new Date().getTime());
-            // тут поддержание сессии как залогинившегося юзера в СУО
+            // тут поддержание сессии как залогинившегося юзера в СУО Here the maintenance of the session as a logged user in the MSA
             QSessions.getInstance().update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
 
             final StringBuilder st = new StringBuilder();
@@ -487,7 +505,7 @@ public class Form {
     }
 
     //********************************************************************************************************************************************
-    //** Отложенные Отложить посетителя
+    //** Отложенные Отложить посетителя Postponed Postpone visitor
     //********************************************************************************************************************************************
     @Wire("#incClientDashboard #incPostponeCustomerDialog #postponeDialog")
     Window postponeCustomerDialog;
@@ -534,7 +552,7 @@ public class Form {
         this.pickedPostponed = pickedPostponed;
     }
 
-    // *** Диалоги изменения состояния и вызова лтложенных
+    // *** Диалоги изменения состояния и вызова лтложенных Dialogs for changing the state and calling ltalges
     @Wire("#incClientDashboard #incChangePostponedStatusDialog #changePostponedStatusDialog")
     Window changePostponedStatusDialog;
 
@@ -568,8 +586,9 @@ public class Form {
             QLog.l().logQUser().debug("Invite postponed by " + user.getName() + " customer " + pickedPostponed.getFullNumber());
             if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
                 final CmdParams params = new CmdParams();
-                // @param userId id юзера который вызывает
+                // @param userId id юзера который вызывает The user who causes
                 // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
+                // It is the ID of the caller which is called from the pool of deferred, it is because With a long-stroke tool we have been working for a long time
                 params.customerId = pickedPostponed.getId();
                 params.userId = user.getUser().getId();
                 Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
@@ -584,21 +603,78 @@ public class Form {
         });
     }
     //********************************************************************************************************************************************
-    //** Перенаправление
+    //** Перенаправление Redirection
     //********************************************************************************************************************************************
     private final TreeServices treeServs = new TreeServices();
 
     public TreeServices getTreeServs() {
         return treeServs;
     }
+    
+    @Wire("#incClientDashboard #incServicesDialog #servicesDialog")
+    Window servicesDialogWindow;
 
     @Wire("#incClientDashboard #incRedirectCustomerDialog #redirectDialog")
     Window redirectCustomerDialog;
 
     @Command
+    public void closeAddToQueueDialog(){
+        if (pickedRedirectServ != null) {
+            if (!pickedRedirectServ.isLeaf()) {
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+            
+            final CmdParams params = this.paramsForAddingInQueue();
+            this.addToQueue(params);
+            
+            customer = null;
+            setKeyRegim(KEYS_MAY_INVITE);
+            service_list.setModel(service_list.getModel());
+            servicesDialogWindow.setVisible(false);
+        }
+    }
+    
+    public CmdParams paramsForAddingInQueue() {
+        final CmdParams params = new CmdParams();
+
+        params.userId = user.getUser().getId();
+        params.serviceId = pickedRedirectServ.getId();
+        params.resultId = -1l;
+        params.textData = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
+            
+        return params;
+    }
+    
+    public RpcStandInService addToQueue(CmdParams params) {
+            final RpcStandInService res = (RpcStandInService)Executer.getInstance().getTasks().get(Uses.TASK_STAND_IN).process(params, "", new byte[4]);
+            return res;            
+    }
+
+    @Command
+    public void closeAddAndServeDialog(){
+        if (pickedRedirectServ != null) {
+            if (!pickedRedirectServ.isLeaf()) {
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+
+            final CmdParams params = this.paramsForAddingInQueue();
+            final RpcStandInService res = this.addToQueue(params);
+            customer = res.getResult();
+            Executer.getInstance().getTasks().get(Uses.TASK_SERVE_CUSTOMER).process(params, "", new byte[4],customer);
+            
+            customer = null;
+            setKeyRegim(KEYS_STARTED);
+            service_list.setModel(service_list.getModel());            
+            servicesDialogWindow.setVisible(false);
+
+        }
+    }
+    
+    @Command
     @NotifyChange(value = {"postponList", "customer", "btnsDisabled"})
     public void closeRedirectDialog() {
-
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
@@ -613,8 +689,8 @@ public class Form {
             params.resultId = -1l;
             params.textData = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
-            customer = null;
-
+            
+            customer = null;            
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
             redirectCustomerDialog.setVisible(false);
