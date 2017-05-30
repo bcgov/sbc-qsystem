@@ -50,6 +50,16 @@
             "name": "reports",
             "port": 8088,
             "targetPort": 8088
+          },
+		  {
+            "name": "server",
+            "port": 3128,
+            "targetPort": 3128
+          },
+		  {
+            "name": "client",
+            "port": 3129,
+            "targetPort": 3129
           }
         ],
         "selector": {
