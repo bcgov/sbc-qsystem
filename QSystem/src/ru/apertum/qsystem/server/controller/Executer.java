@@ -148,6 +148,7 @@ public final class Executer {
 
         protected final String name;
         protected CmdParams cmdParams;
+        protected QCustomer customerCreated;
 
         public Task(String name) {
             this.name = name;
@@ -157,7 +158,7 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logger().debug("Processing: \"" + name + "\"");
+            QLog.l().logger().debug("LINE: 160 Processing: \"" + name + "\"");
             QSessions.getInstance().update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
             this.cmdParams = cmdParams;
             return new JsonRPC20OK();
@@ -176,6 +177,15 @@ public final class Executer {
         @Override
         public long getUID() {
             return 777L;
+        }
+
+        @Override
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer customer) {
+            QLog.l().logger().debug("LINE: 184 Processing: \"" + name + "\"");
+            QSessions.getInstance().update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
+            this.cmdParams = cmdParams;
+            this.customerCreated = customer;
+            return new JsonRPC20OK();
         }
     }
     /**
@@ -202,41 +212,64 @@ public final class Executer {
             super.process(cmdParams, ipAdress, IP);
             final QService service = QServiceTree.getInstance().getById(cmdParams.serviceId);
             final QCustomer customer;
+            
             // синхронизируем работу с клиентом
+            // Synchronize the work with the client
             CLIENT_TASK_LOCK.lock();
             try {
-                // Создадим вновь испеченного кастомера                
+                // Создадим вновь испеченного кастомера
+                // Create a new baked custome    
                 customer = new QCustomer(service.getNextNumber());
+                
                 // Определим кастомера в очередь
+                // Define the customizer in the queue
                 customer.setService(service);                
+
                 if (service.getLink() != null) {
                     customer.setService(service.getLink());
                 }
+                
                 // время постановки проставляется автоматом при создании кастомера.
-                // Приоритет "как все"                
-                customer.setPriority(cmdParams.priority);
+                // Приоритет "как все"   
+                // the setting time is automatically inserted when creating a customizer.
+                // Priority "like everyone else"
+                customer.setPriority(Uses.PRIORITY_HI);
+                
                 // Введенные кастомером данные
+                // The data entered by the customizer
                 customer.setInput_data(cmdParams.textData);
+                
                 //добавим нового пользователя
+                // add a new user
                 (service.getLink() != null ? service.getLink() : service).addCustomer(customer);
+                
                 // Состояние у него "Стою, жду".
+                // His condition is "I'm standing, waiting."
                 customer.setState(CustomerState.STATE_WAIT);
             } catch (Exception ex) {
-                throw new ServerException("Ошибка при постановке клиента в очередь", ex);
+                throw new ServerException("Ошибка при постановке клиента в очередь ::: Error placing the client in the queue :", ex);
             } finally {
                 CLIENT_TASK_LOCK.unlock();
             }
-            QLog.l().logger().trace("С приоритетом " + customer.getPriority().get() + " К услуге \"" + cmdParams.serviceId + "\" -> " + service.getPrefix() + '\'' + service.getName() + '\'');
+
             // если кастомер добавился, то его обязательно отправить в ответ т.к.
             // он уже есть в системе
+            // if the customizer is added, then it must be sent in response.
+            // it already exists in the system
             try {
                 // сохраняем состояния очередей.
+                // store the state of the queues.
                 QServer.savePool();
+                
                 //разослать оповещение о том, что появился посетитель
                 //рассылаем широковещетельно по UDP на определенный порт
+                
+                // send out an alert that a visitor has appeared
+                // send out broadly by UDP to a specific port
                 Uses.sendUDPBroadcast(service.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
 
                 // Должно высветитьсяна основном табло в таблице ближайших
+                // Must be highlighted on the main scoreboard in the nearest table
                 MainBoard.getInstance().customerStandIn(customer);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
@@ -332,7 +365,7 @@ public final class Executer {
                     } catch (InterruptedException ex) {
                     }
                 }
-                // просигналим звуком
+                // просигналим звуком :: Sound with a sound
                 if (user.getCustomer() != null && (user.getCustomer().getState() == CustomerState.STATE_WAIT
                         || user.getCustomer().getState() == CustomerState.STATE_INVITED_SECONDARY
                         || user.getCustomer().getState() == CustomerState.STATE_INVITED
@@ -340,7 +373,7 @@ public final class Executer {
                         || user.getCustomer().getState() == CustomerState.STATE_WAIT_AFTER_POSTPONED
                         || user.getCustomer().getState() == CustomerState.STATE_WAIT_COMPLEX_SERVICE)) {
                     SoundPlayer.inviteClient(user.getCustomer().getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), isFrst);
-                    // Должно высветитьсяна основном табло
+                    // Должно высветитьсяна основном табло :: Must be highlighted on the main board
                     MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
                 }
                 usrs.remove(user);
@@ -502,26 +535,35 @@ public final class Executer {
     };
     /**
      * Пригласить кастомера из пула отложенных
+     * Invite a customizer from the pending pool
      */
     final Task invitePostponedTask = new Task(Uses.TASK_INVITE_POSTPONED) {
 
         /**
          * Cинхронизируем, а то вызовут одного и того же. А еще сдесь надо вызвать метод, который "проговорит" кого и куда вазвали. Может случиться ситуация
          * когда двое вызывают последнего кастомера, первому достанется, а второму нет.
+         * 
+         * Synchronize, and then cause the same. And still here you need to call a method that will "speak" whom and where to call. A situation may happen
+         * When two call the last custodian, the first will get it, but the second one does not.
          */
         @Override
         synchronized public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
             super.process(cmdParams, ipAdress, IP);
             // синхронизация работы с клиентом
+            // Synchronization of work with the client
 
             // Определить из какой очереди надо выбрать кастомера.
             // Пока без учета коэфициента.
             // Для этого смотрим первых кастомеров во всех очередях и ищем первого среди первых.
-            final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
+            // Determine from which queue you need to select a customizer.
+            // So far without taking into account the coefficient.
+            // To do this, we look at the first custodians in all queues and look for the first among the first.
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер ::User
             final QCustomer customer;
             POSTPONED_TASK_LOCK.lock();
             try {
                 // выберем отложенного кастомера по ид
+                // select the deferred custodian by id
                 customer = QPostponedList.getInstance().getById(cmdParams.customerId);
 
                 if (customer == null) {
@@ -530,14 +572,19 @@ public final class Executer {
                     QPostponedList.getInstance().removeElement(customer);
                 }
                 // определим юзеру кастомера, которого он вызвал.
+                // define the user of the custom that he called.
                 user.setCustomer(customer);
                 // Поставил кастомеру юзера, который его вызвал.
+                // Delivered the user's custom tool, which caused it.
                 customer.setUser(user);
                 // только что встал типо. Поросто время нахождения в отложенных не считаетка как ожидание очереди. Инвче в statistic ожидание огромное
+                // just got up Tipo. It's not like waiting for a queue. Invnt in the statistic expectation of a huge
                 customer.setStandTime(new Date());
                 // ставим время вызова
+                // put the call time
                 customer.setCallTime(new Date());
                 // ну и услугу определим если тот кто вызвал не работает с услугой, из которой отложили
+                // well, and define the service if the one who called does not work with the service, from which they postponed
                 boolean f = true;
                 for (QPlanService pl : user.getPlanServices()) {
                     if (pl.getService().getId().equals(customer.getService().getId())) {
@@ -549,25 +596,32 @@ public final class Executer {
                     customer.setService(QServiceTree.getInstance().getById(user.getPlanServices().get(0).getService().getId()));
                 }
                 // кастомер переходит в состояние "приглашенности"
+                // the customizer goes into the "invite" state
                 customer.setState(CustomerState.STATE_INVITED_SECONDARY);
                 // если кастомер вызвался, то его обязательно отправить в ответ
                 // он уже есть у юзера
+                // if the caller has volunteered, it must be sent back
+                // he already has a user
             } catch (Exception ex) {
-                throw new ServerException("Ошибка при вызове отложенного напрямую пользователем " + ex);
+                throw new ServerException("Ошибка при вызове отложенного напрямую пользователем ::: Error when calling pending directly by the user" + ex);
             } finally {
                 POSTPONED_TASK_LOCK.unlock();
             }
             try {
-                // просигналим звуком
+                // просигналим звуком ::: Sound with a sound
                 //SoundPlayer.play("/ru/apertum/qsystem/server/sound/sound.wav");
                 SoundPlayer.inviteClient(customer.getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), true);
-                // сохраняем состояния очередей.
+                // сохраняем состояния очередей.  ::: Save the state of the queues.
                 QServer.savePool();
                 //разослать оповещение о том, что появился вызванный посетитель
                 // Должно высветитьсяна основном табло
+                // send out an alert that a visitor has been called
+                // Must be highlighted on the main display
                 MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
                 //разослать оповещение о том, что отложенного вызвали, состояние очереди изменилось не изменилось, но пул отложенных изменился
                 //рассылаем широковещетельно по UDP на определенный порт
+                // send out an alert that the deferred has been called, the status of the queue has changed has not changed, but the pending pool has changed
+                // send out broadly by UDP to a specific port
                 Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
@@ -796,7 +850,7 @@ public final class Executer {
      */
     final Task getCheckSelfTask = new Task(Uses.TASK_GET_SELF_SERVICES_CHECK) {
         // надо запоминать название пунктов приема из БД для юзеров, не то перетрется клиентской настройкой и не восстановить
-
+        // we need to remember the name of the reception points from the database for users, it will not be reset by the client configuration and not restored      
         final HashMap<QUser, String> points = new HashMap<>();
 
         @Override
@@ -808,6 +862,7 @@ public final class Executer {
             hashState.remove(cmdParams.userId);
             super.process(cmdParams, ipAdress, IP);
             //от юзера может приехать новое название его кабинета, ну пересел чувак.
+            // from the user can come the new name of his office, well, moved the dude.
             if (points.get(QUserList.getInstance().getById(cmdParams.userId)) == null) {
                 points.put(QUserList.getInstance().getById(cmdParams.userId), QUserList.getInstance().getById(cmdParams.userId).getPoint());
             } else {
@@ -910,12 +965,15 @@ public final class Executer {
     private static final HashMap<String, Date> KILLED_CUSTOMERS = new HashMap<>();
     /**
      * Начать работу с вызванноым кастомером.
+     * Start work with the called customizer.
      */
     final Task getStartCustomerTask = new Task(Uses.TASK_START_CUSTOMER) {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
             super.process(cmdParams, ipAdress, IP);
+            QLog.l().logger().debug("TASK_START_CUSTOMER -------------- 975");
+
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             // Время старта работы с юзера с кастомером.
             user.getCustomer().setStartTime(new Date());
@@ -929,6 +987,59 @@ public final class Executer {
         }
     };
     /**
+     * Начать работу с вызванноым кастомером.
+     * Start work with the called customizer.
+     */
+    final Task startCustomerTask = new Task(Uses.TASK_START_CUSTOMER) {
+        
+        @Override
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer customer) {
+            super.process(cmdParams, ipAdress, IP, customer);
+            QLog.l().logger().debug("TASK_START_CUSTOMER -------------- 996");
+            //QLog.l().logQUser().debug("cmdParams :" + cmdParams.toString());
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+            
+            user.setCustomer(customer);
+                
+            // Поставил кастомеру юзера, который его вызвал.
+            // Delivered the user's custom tool, which caused it.
+            customer.setUser(user);
+            
+            // только что встал типо. Поросто время нахождения в отложенных не считаетка как ожидание очереди. Инвче в statistic ожидание огромное
+            // just got up Tipo. It's not like waiting for a queue. Invnt in the statistic expectation of a huge
+            customer.setStandTime(new Date());
+     
+            // ставим время вызова
+            // put the call time
+            customer.setCallTime(new Date());
+            customer.setState(CustomerState.STATE_INVITED);
+                    
+            try {
+                // просигналим звуком ::: Sound with a sound
+                //SoundPlayer.play("/ru/apertum/qsystem/server/sound/sound.wav");
+                SoundPlayer.inviteClient(customer.getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), true);
+
+                // сохраняем состояния очередей.  ::: Save the state of the queues.
+                QServer.savePool();
+                //разослать оповещение о том, что появился вызванный посетитель
+                // Должно высветитьсяна основном табло
+                // send out an alert that a visitor has been called
+                // Must be highlighted on the main display
+                MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
+                
+                //разослать оповещение о том, что отложенного вызвали, состояние очереди изменилось не изменилось, но пул отложенных изменился
+                //рассылаем широковещетельно по UDP на определенный порт
+                // send out an alert that the deferred has been called, the status of the queue has changed has not changed, but the pending pool has changed
+                // send out broadly by UDP to a specific port
+                Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
+            } catch (Exception ex) {
+                QLog.l().logger().error("Exception at 1036:" + ex);
+            }
+            
+            return new JsonRPC20OK();
+        }
+    };
+    /**
      * Перемещение вызванного юзером кастомера в пул отложенных.
      */
     final Task customerToPostponeTask = new Task(Uses.TASK_CUSTOMER_TO_POSTPON) {
@@ -936,9 +1047,10 @@ public final class Executer {
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
             super.process(cmdParams, ipAdress, IP);
-            // вот он все это творит
+            // вот он все это творит ::: Here he is doing it all
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             //переключение на кастомера при параллельном приеме, должен приехать customerID
+            // switch to the custodian with parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
                 final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
                 if (parallelCust == null) {
@@ -948,7 +1060,7 @@ public final class Executer {
                     QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
-            // вот над этим пациентом
+            // вот над этим пациентом 
             final QCustomer customer = user.getCustomer();
             // статус
             customer.setPostponedStatus(cmdParams.textData);
@@ -1194,11 +1306,16 @@ public final class Executer {
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
+            
+            QLog.l().logQUser().debug("::::::  ::::::  ::::::  ::::::");
+            QLog.l().logQUser().debug("::::::  ::::::  ::::::  ::::::");
+            QLog.l().logQUser().debug("pRIORITY ::::::" + cmdParams.priority);
             return new JsonRPC20OK();
         }
     };
     /**
      * Привязка услуги пользователю на горячую по команде. Это обработчик этой команды.
+     * Binding the service to the user on a hot on command. This is the handler for this command.
      */
     final Task setServiceFire = new Task(Uses.TASK_SET_SERVICE_FIRE) {
 
