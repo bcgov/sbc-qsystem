@@ -492,7 +492,7 @@
 							    <mkdir dir="${project.basedir}/../dist/temp"/>
 								<chmod perm="777" dir="${project.basedir}/../dist/temp" type="dir"/>
 							    <mkdir dir="${project.basedir}/../dist/logs"/>
-								<chmod perm="777" dir="${project.basedir}/../dist/temp" type="logs"/>
+								<chmod perm="777" dir="${project.basedir}/../dist/logs" type="dir"/>
 							</target>
 						</configuration>
 						<goals>
