@@ -14,6 +14,11 @@
 			<systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
 		</dependency>
 		<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.6.1</version>
+</dependency>
+		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.33</version>
@@ -458,11 +463,6 @@
 									<filtering>false</filtering>
 								</resource>	
 								<resource>
-									<targetPath>${project.basedir}/../dist/logs</targetPath>
-									<directory>${project.basedir}/logs</directory>
-									<filtering>false</filtering>
-								</resource>	
-								<resource>
 									<targetPath>${project.basedir}/../dist/plugins</targetPath>
 									<directory>${project.basedir}/plugins</directory>
 									<filtering>false</filtering>
@@ -489,7 +489,10 @@
 						<phase>compile</phase>
 						<configuration>
 							<target>
-								<chmod file="${project.basedir}/../dist/logs" perm="777"/>
+							    <mkdir dir="${project.basedir}/../dist/temp"/>
+								<chmod perm="777" dir="${project.basedir}/../dist/temp" type="dir"/>
+							    <mkdir dir="${project.basedir}/../dist/logs"/>
+								<chmod perm="777" dir="${project.basedir}/../dist/temp" type="logs"/>
 							</target>
 						</configuration>
 						<goals>
