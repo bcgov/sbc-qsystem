@@ -158,6 +158,10 @@
                     "value": "${DATABASE_USER}"
                   },
 				  {
+                    "name": "MYSQL_ROOT_USER",
+                    "value": "${DATABASE_ROOT_USER}"
+                  },
+				  {
                     "name": "MYSQL_PASSWORD",
                     "value": "${DATABASE_PASSWORD}"
                   },
@@ -461,6 +465,12 @@
       "description": "Username for Database user that will be used for accessing the database.",
       "generate": "expression",
       "from": "user[A-Z0-9]{3}"
+    },
+	{
+      "name": "DATABASE_ROOT_USER",
+      "displayName": "DB Root Username",
+      "description": "Username for Database user that will be used for accessing the database with root access.",
+      "value": "root"
     },
     {
       "name": "DATABASE_PASSWORD",

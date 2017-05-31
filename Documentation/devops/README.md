@@ -29,7 +29,7 @@ Environment Template
 
 - `oc project servicebc-customer-flow-dev`
 - Allow the dev project to access the tools project
-`oc policy add-role-to-user system:image-puller system:serviceaccount:csnr-dmod-dev:default -n servicebc-customer-flow-tools`
+`oc policy add-role-to-user system:image-puller system:serviceaccount:servicebc-customer-flow-dev:default -n servicebc-customer-flow-tools`
 - Process and create the Environment Template
 - `oc process -f sbc-qsystem-environment-template.json | oc create -f -`
 

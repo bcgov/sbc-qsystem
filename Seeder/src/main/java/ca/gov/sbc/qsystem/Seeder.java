@@ -32,6 +32,11 @@ public class Seeder {
             System.out.println ("URL is " + url);
             
             String user = System.getenv ("MYSQL_ROOT_USER");
+            if (user == null || user.isEmpty())
+            {
+                user = "root";
+            }
+            
             String password = System.getenv ("MYSQL_PASSWORD");
             String name = System.getenv ("MYSQL_DATABASE");
 
