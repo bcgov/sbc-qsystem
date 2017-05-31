@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Аналоговые часы на JavaScript</title>
+
+        <style type="text/css">   
+            .сlock {
+                position: relative;
+                height: 210px;
+                width: 210px;
+                margin-right: auto;
+                margin-left: auto;
+            }
+            .ciferblat {
+                position: absolute;
+            }
+            .hour {
+                position: absolute;
+                z-index: 20;
+            }
+            .sekond {
+                position: absolute;
+                z-index: 30;
+
+            }
+            .minute {
+                position: absolute;
+                z-index: 10;
+            }
+            .imgsrc{
+                width: 210px;
+                height: 210px;
+            }
+        </style>
+
+
+
+        <script>
+            function dysTime() {
+                var zones = [[0, 0], [4, 30], [9, 30]];
+
+                var d = new Date();
+                var sek = d.getSeconds();
+                var minut = d.getMinutes();
+                var hour = d.getHours();
+
+                var s = sek * 6;
+
+                var divS = document.getElementsByClassName("sekond");
+                for (var i = 0; i < divS.length; i++) {
+                    divS[i].style.webkitTransform = "rotate(" + s + "deg)";
+                    divS[i].style.MozTransform = "rotate(" + s + "deg)";
+                    divS[i].style.OTransform = "rotate(" + s + "deg)";
+                    divS[i].style.msTransform = "rotate(" + s + "deg)";
+                }
+                var divM = document.getElementsByClassName("minute");
+                for (var i = 0; i < divM.length; i++) {
+                    var m = (minut + zones[i][1]) * 6;
+                    divM[i].style.webkitTransform = "rotate(" + m + "deg)";
+                    divM[i].style.MozTransform = "rotate(" + m + "deg)";
+                    divM[i].style.OTransform = "rotate(" + m + "deg)";
+                    divM[i].style.msTransform = "rotate(" + m + "deg)";
+                }
+                var divH = document.getElementsByClassName("hour");
+                for (var i = 0; i < divH.length; i++) {
+                    if ((hour + zones[i][0]) > 12) {
+                        h = (hour + zones[i][0] - 12) * 30;
+                    }
+                    else {
+                        h = (hour + zones[i][0]) * 30;
+                    }
+                    var Hm = (minut + zones[i][1]) * 0.5;
+                    divH[i].style.webkitTransform = "rotate(" + (h + Hm) + "deg)";
+                    divH[i].style.MozTransform = "rotate(" + (h + Hm) + "deg)";
+                    divH[i].style.OTransform = "rotate(" + (h + Hm) + "deg)";
+                    divH[i].style.msTransform = "rotate(" + (h + Hm) + "deg)";
+                }
+                setTimeout(dysTime, 1000);
+            }
+
+            window.onload = dysTime;
+        </script>
+
+    </head>
+
+    <body>
+        <font size='24px'>
+
+        <table cellspacing="1" border="0" cellpadding="0">
+            <tr ><td width='500px'>
+
+                    <div class="сlock">
+                        <div class="minute"><img class="imgsrc" src="img/minute.png"></div>
+                        <div class="hour"><img class="imgsrc" src="img/hour.png"></div>
+                        <div class="sekond"><img class="imgsrc" src="img/sek.png"></div>
+                        <div class="ciferblat"><img class="imgsrc" src="img/Ciferblat.png">
+                        </div>
+                    </div>
+
+
+                </td><td>
+
+
+                    <div class="сlock">
+                        <div class="minute"><img class="imgsrc" src="img/minute.png"></div>
+                        <div class="hour"><img class="imgsrc" src="img/hour.png"></div>
+                        <div class="sekond"><img class="imgsrc" src="img/sek.png"></div>
+                        <div class="ciferblat"><img class="imgsrc" src="img/Ciferblat.png">
+                        </div>
+                    </div>
+
+
+
+
+                </td></tr>
+            <tr><td align='center'>МОСКВА</td><td align='center'>LONDON</td></tr>
+        </table>
+        
+        </font>
+
+    </body>
+</html>

@@ -1,0 +1,6 @@
+node('maven') {
+stage ('Promote to Test')
+{
+	openshiftTag(srcStream: 'qsystem', srcTag: 'latest', destStream: 'qsystem', destTag: 'test')
+}
+}

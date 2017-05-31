@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd" default-lazy-init="false" default-autowire="no" default-merge="false">
+	 
+    <bean id="conf" class="ru.apertum.qsystem.hibernate.AnnotationSessionFactoryBean"/>
+
+    <!-- Параметры коннекта к базе -->
+    <bean id="c3p0DataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <!--property name="driverClass" value="com.mysql.jdbc.Driver"/-->
+        <property name="driverClass" value="#{conf.driver}"/>
+        <property name="jdbcUrl" value="#{conf.url}"/>
+        <property name="user" value="#{conf.user}"/>
+        <property name="password" value="#{conf.password}"/>
+        <property name="checkoutTimeout" value="10000"/>
+        
+        <!--property name="driverClass" value="org.h2.Driver"/>
+        <property name="jdbcUrl" value="jdbc:h2:~/h2/QSystemDB"/>
+        <property name="jdbcUrl" value="jdbc:h2:./db/QSystemDB"/>
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+        <property name="checkoutTimeout" value="10000"/-->
+
+        <property name="idleConnectionTestPeriod">
+            <value>3600</value>
+        </property>
+        <!--property name="maxIdleTime"><value>1200000</value></property>
+        <property name="preferredTestQuery"><value>SELECT 1</value></property>
+        <property name="testConnectionOnCheckin"><value>true</value></property-->
+    </bean>
+
+    <!-- Фабрика получения сессии работы с БД. Перечисление аннотированных классов для hibernate. -->
+    <!-- база не требуется -->
+    <bean id="mySessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" lazy-init="false" autowire="default">
+        <!--property name="dataSource" ref="myDataSource"/-->
+        <property name="dataSource" ref="c3p0DataSource"/>
+        <property name="hibernateProperties">
+
+            <props merge="default">
+                <!--prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop-->
+                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">true</prop>
+            </props>
+        </property>
+		
+        <property name="annotatedClasses">
+            <list>
+                <value>ru.apertum.qsystem.server.model.QProperty</value>
+                <value>ru.apertum.qsystem.server.model.QNet</value>
+                <value>ru.apertum.qsystem.server.model.QStandards</value>
+                <value>ru.apertum.qsystem.server.model.QService</value>
+                <value>ru.apertum.qsystem.server.model.QServiceLang</value>
+                <value>ru.apertum.qsystem.server.model.QUser</value>
+                <value>ru.apertum.qsystem.common.model.QCustomer</value>
+                <value>ru.apertum.qsystem.server.model.QPlanService</value>
+                <value>ru.apertum.qsystem.reports.model.QReport</value>
+                <value>ru.apertum.qsystem.server.model.QAdvanceCustomer</value>
+                <value>ru.apertum.qsystem.server.model.QAuthorizationCustomer</value>
+                <value>ru.apertum.qsystem.server.model.infosystem.QInfoItem</value>
+                <value>ru.apertum.qsystem.server.model.response.QRespItem</value>
+                <value>ru.apertum.qsystem.server.model.response.QRespEvent</value>
+                <value>ru.apertum.qsystem.server.model.schedule.QSchedule</value>
+                <value>ru.apertum.qsystem.server.model.schedule.QSpecSchedule</value>
+                <value>ru.apertum.qsystem.server.model.schedule.QBreaks</value>
+                <value>ru.apertum.qsystem.server.model.schedule.QBreak</value>
+                <value>ru.apertum.qsystem.server.model.results.QResult</value>
+                <value>ru.apertum.qsystem.server.model.calendar.QCalendar</value>
+                <value>ru.apertum.qsystem.server.model.calendar.FreeDay</value>
+            </list>
+        </property>
+        
+    </bean>
+	
+	
+	
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="mySessionFactory" />
+    </bean>
+	
+</beans>

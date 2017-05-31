@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DistributionWaitDay" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="ru/apertum/qsystem/reports/templates/i3-label-rep" uuid="4e19db0a-6832-43f3-abab-36a51389435d">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="sdate" class="java.lang.String"/>
+	<parameter name="date" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[(SELECT '00' AS H, COUNT(*) AS C, AVG(client_wait_period) AS AVG FROM statistic WHERE state_in<>0 AND   client_stand_time BETWEEN '$P!{sdate} 00:00:00' AND '$P!{sdate} 01:00:00') UNION ALL
+(SELECT '01', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 01:00:00' AND '$P!{sdate} 02:00:00') UNION ALL
+(SELECT '02', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 02:00:00' AND '$P!{sdate} 03:00:00') UNION ALL
+(SELECT '03', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 03:00:00' AND '$P!{sdate} 04:00:00') UNION ALL
+(SELECT '04', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 04:00:00' AND '$P!{sdate} 05:00:00') UNION ALL
+(SELECT '05', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 05:00:00' AND '$P!{sdate} 06:00:00') UNION ALL
+(SELECT '06', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 06:00:00' AND '$P!{sdate} 07:00:00') UNION ALL
+(SELECT '07', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 07:00:00' AND '$P!{sdate} 08:00:00') UNION ALL
+(SELECT '08', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 08:00:00' AND '$P!{sdate} 09:00:00') UNION ALL
+(SELECT '09', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 09:00:00' AND '$P!{sdate} 10:00:00') UNION ALL
+(SELECT '10', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 10:00:00' AND '$P!{sdate} 11:00:00') UNION ALL
+(SELECT '11', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 11:00:00' AND '$P!{sdate} 12:00:00') UNION ALL
+(SELECT '12', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 12:00:00' AND '$P!{sdate} 13:00:00') UNION ALL
+(SELECT '13', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 13:00:00' AND '$P!{sdate} 14:00:00') UNION ALL
+(SELECT '14', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 14:00:00' AND '$P!{sdate} 15:00:00') UNION ALL
+(SELECT '15', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 15:00:00' AND '$P!{sdate} 16:00:00') UNION ALL
+(SELECT '16', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 16:00:00' AND '$P!{sdate} 17:00:00') UNION ALL
+(SELECT '17', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 17:00:00' AND '$P!{sdate} 18:00:00') UNION ALL
+(SELECT '18', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 18:00:00' AND '$P!{sdate} 19:00:00') UNION ALL
+(SELECT '19', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 19:00:00' AND '$P!{sdate} 20:00:00') UNION ALL
+(SELECT '20', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 20:00:00' AND '$P!{sdate} 21:00:00') UNION ALL
+(SELECT '21', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 21:00:00' AND '$P!{sdate} 22:00:00') UNION ALL
+(SELECT '22', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 22:00:00' AND '$P!{sdate} 23:00:00') UNION ALL
+(SELECT '23', COUNT(*), AVG(client_wait_period) FROM statistic WHERE state_in<>0 AND  client_stand_time BETWEEN '$P!{sdate} 23:00:00' AND '$P!{sdate} 23:59:59')]]>
+	</queryString>
+	<field name="H" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="C" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="AVG" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="amount" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{C}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="AVGSUM" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[new java.lang.Double($F{AVG}.doubleValue()*$F{C}.doubleValue())]]></variableExpression>
+	</variable>
+	<title>
+		<band height="67">
+			<line>
+				<reportElement uuid="e6902212-9df6-4a85-b89c-c60ad61b4e81" x="0" y="8" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="935de131-12a2-4866-915f-20909cd016b3" positionType="FixRelativeToBottom" x="0" y="59" width="555" height="1"/>
+			</line>
+			<textField>
+				<reportElement uuid="ace31870-1f50-4f6d-8bc6-36bc9fd1b8d8" x="1" y="9" width="554" height="24"/>
+				<textElement textAlignment="Center" markup="none">
+					<font fontName="SansSerif" size="18" isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{distribution_wait_day}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="432390e6-3e29-4554-90e6-2e853a4ce036" x="0" y="34" width="555" height="24"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="18" isBold="true" isUnderline="false" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{on_date} + " " + (new java.text.SimpleDateFormat("dd.MM.yyyy")).format($P{date})]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band/>
+	</pageHeader>
+	<columnHeader>
+		<band height="654">
+			<barChart>
+				<chart isShowLegend="false" evaluationTime="Report">
+					<reportElement uuid="cb0777e6-1930-411f-b401-20d632c8c8f4" x="0" y="0" width="555" height="634"/>
+					<chartTitle/>
+					<chartSubtitle>
+						<font fontName="SansSerif" size="14" isBold="false" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+					</chartSubtitle>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[new java.lang.Integer(1)]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{H}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{AVG}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowTickMarks="false">
+					<plot/>
+					<itemLabel/>
+					<categoryAxisLabelExpression><![CDATA[$R{hours}]]></categoryAxisLabelExpression>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA[$R{wait_avg}]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+			<textField evaluationTime="Report">
+				<reportElement uuid="fc5c808b-e609-443c-b238-c7054b114091" x="0" y="634" width="555" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{wait_avg_day}+": " + ($V{amount}.intValue() == 0 ? 0 : new java.lang.Double($V{AVGSUM}.doubleValue()/$V{amount}.doubleValue()).intValue())  + " "+$R{min}+"."]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band height="21">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="e28af887-f39c-4b92-a9d2-1bb6b9c38f0a" key="textField" x="201" y="2" width="354" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{page}+" " + $V{PAGE_NUMBER} + " "+$R{from}+" "+ $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="fa6aa379-8bd8-4017-9af9-6ef9183b1fff" key="textField" x="1" y="2" width="153" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

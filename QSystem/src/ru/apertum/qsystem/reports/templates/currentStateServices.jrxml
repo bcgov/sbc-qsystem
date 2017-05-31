@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Текущее состояние услуг" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="ru/apertum/qsystem/reports/templates/i3-label-rep" uuid="54c6e826-009c-4450-8f44-dd121cb9b50b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="SansSerif" isDefault="true" fontName="SansSerif" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="service_killed" class="java.lang.Integer"/>
+	<field name="service_worked" class="java.lang.Integer"/>
+	<field name="service_wait" class="java.lang.Integer"/>
+	<field name="service_average_work" class="java.lang.Long"/>
+	<field name="service_average_wait" class="java.lang.Long"/>
+	<field name="service" class="java.lang.String"/>
+	<field name="user" class="java.lang.String"/>
+	<field name="user_worked" class="java.lang.Integer"/>
+	<field name="user_average_work" class="java.lang.Long"/>
+	<field name="user_killed" class="java.lang.Integer"/>
+	<field name="worked" class="java.lang.Integer"/>
+	<field name="killed" class="java.lang.Integer"/>
+	<field name="avg_time_work" class="java.lang.Long"/>
+	<group name="StateGroup">
+		<groupExpression><![CDATA[$F{service}]]></groupExpression>
+		<groupHeader>
+			<band height="67">
+				<textField isBlankWhenNull="false">
+					<reportElement uuid="cd77bf84-7d4e-45f9-9e1b-9758775edafc" x="1" y="10" width="554" height="20"/>
+					<textElement>
+						<font fontName="SansSerif" size="12" isUnderline="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{service} + ":  " + $F{service}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="792cc8b7-f38a-4a5a-ac99-53b8cd23d378" x="48" y="48" width="507" height="18"/>
+					<textElement>
+						<font fontName="SansSerif" size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{served} + ":  " + $F{service_worked} + "  "+ $R{killed} +": " +  $F{service_killed} + "  "+ $R{work_avg} +": " + $F{service_average_work} + " "+ $R{min} +"."]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="218ca9b5-db21-4332-98dc-a46f69788cd3" x="48" y="30" width="507" height="18"/>
+					<textElement>
+						<font fontName="SansSerif" size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{waiting}+":  " + $F{service_wait} + "  "+ $R{wait_avg} +": " + $F{service_average_wait} + " "+ $R{min} +"."]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="6">
+				<line>
+					<reportElement uuid="afe6af6c-f88a-448f-89e3-b3ca1f39364d" x="0" y="3" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="2.0" lineStyle="Dashed"/>
+					</graphicElement>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="58">
+			<line>
+				<reportElement uuid="bec286b4-f351-4e28-8c79-17903f808cd0" x="0" y="4" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="5497229a-9330-4b78-a112-5a0a039b59e0" x="0" y="53" width="555" height="1"/>
+			</line>
+			<textField>
+				<reportElement uuid="c9d056b2-7698-46e6-a9b1-87da08ffdbd3" x="0" y="5" width="555" height="48"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="18" isBold="true" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{rep1_caption}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="21">
+			<line>
+				<reportElement uuid="39283bad-d64b-4551-b25c-72308b7fe1e0" x="0" y="17" width="555" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Solid" lineColor="#CCCCCC"/>
+				</graphicElement>
+			</line>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="6e36f3ce-0698-443f-aed1-3e2f7974d92b" key="textField" x="1" y="0" width="554" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{produced} +" "+new Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band/>
+	</columnHeader>
+	<detail>
+		<band height="41" splitType="Prevent">
+			<textField>
+				<reportElement uuid="fe7048ee-3c62-4ac2-9da4-6b5b82957651" x="26" y="2" width="529" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="12" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{user} + ":  " + $F{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="e2e789c3-10a4-4eff-a923-6cce046fb69b" x="48" y="22" width="507" height="18"/>
+				<textElement>
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{served} + ": " + $F{worked} + "  "+ $R{killed} +": " +  $F{killed} + "  "+ $R{work_avg} +": " + $F{avg_time_work} + " "+ $R{min} +"."]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="21">
+			<textField evaluationTime="Report" pattern="" isBlankWhenNull="false">
+				<reportElement uuid="116131f3-071d-4878-a311-74fbece54f5c" key="textField" x="516" y="2" width="36" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["" + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="6c6857d2-8a44-462a-ad1c-1d50bcc72c0e" key="textField" x="1" y="2" width="209" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement uuid="98c289ff-ef06-4b57-93cb-0cd3897f7bf0" key="textField" x="296" y="2" width="216" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" pdfFontName="tahoma.ttf" pdfEncoding="KOI8-R" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{page}+" " + $V{PAGE_NUMBER} + " "+$R{from}+" "]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/css/qsmartboard.css"?>
+<?script type="text/javascript" src="/js/qsmartboard.js"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul" xmlns:w="http://www.zkoss.org/2005/zk/client">
+    
+    <borderlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('fmodel') @init('ru.apertum.qsystem.qboard.QBoard')">
+        <north visible="@load(fmodel.topVisible)" height="@load(fmodel.topSize)"  border="none">
+            <iframe scrolling="false" id="1" src="@load(fmodel.topUrl)" width="100%" height="100%" style="overflow: hidden;"/>
+        </north>
+        <west visible="@load(fmodel.leftVisible)"  border="none" size="@load(fmodel.leftSize)">
+            <iframe scrolling="false" id="2" src="@load(fmodel.leftUrl)" width="100%" height="100%" />	
+        </west>
+        
+        
+        <center border="none" >
+            <div width="100%" height="100%" style="background:#B0E7A0;">
+                <timer id="timer_ses" delay="3000" repeats="true" running="true" onTimer="@command('clickMe')"/>
+
+                <!--button label="add item" w:onClick="DHTMLSound();"/-->
+                <!--button label="Click me" onClick="@command('clickMe')"/-->
+                
+                <columnlayout width="100%" height="100%">
+                    <columnchildren id="left" width="50%" height="100%" style="padding: 0px">
+                        <div class="headerDiv" width="100%" height="16%">
+                            <vbox  width="100%" height="100%" pack="center" align="center"> 
+                                <label class="headerLabel" value="@load(fmodel.columnFirst)"  /> 
+                            </vbox>
+                        </div>
+                        <!--div class="lineDivOdd" width="100%" height="14%" >
+                            <vbox id="str1a" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDiv" width="100%" height="14%">
+                            <vbox id="str2a" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDivOdd" width="100%" height="14%" >
+                            <vbox id="str3a" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDiv" width="100%" height="14%">
+                            <vbox id="str4a" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDivOdd" width="100%" height="14%" >
+                            <vbox id="str5a" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDiv" width="100%" height="14%">
+                            <vbox id="str6a" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div-->
+					
+                    </columnchildren>
+                    <columnchildren id="right" width="50%" height="100%" style="padding: 0px">
+                        <div class="headerDiv" width="100%" height="16%">
+                            <vbox width="100%" height="100%" pack="center" align="center"> 
+                                <label class="headerLabel" value="@load(fmodel.columnSecond)"/> 
+                            </vbox>
+                        </div>
+                        
+                        <!--div class="lineDivOdd" width="100%" height="14%">
+                            <vbox id="str1b" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDiv" width="100%" height="14%">
+                            <vbox id="str2b" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDivOdd" width="100%" height="14%">
+                            <vbox id="str3b" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDiv" width="100%" height="14%">
+                            <vbox id="str4b" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDivOdd" width="100%" height="14%">
+                            <vbox id="str5b" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div>
+                        <div class="lineDiv" width="100%" height="14%">
+                            <vbox id="str6b" width="100%" height="100%" pack="center" align="center">  </vbox>
+                        </div-->
+                    </columnchildren>
+                </columnlayout>
+                <include src="/resource/dummy.html" ></include>
+            </div>		
+        </center>
+        
+        
+        <east visible="@load(fmodel.rightVisible)" size="@load(fmodel.rightSize)" border="none" >
+            <iframe scrolling="false" id="3" src="@load(fmodel.rightUrl)" width="100%" height="100%" />
+        </east>
+        <south visible="@load(fmodel.bottomVisible)" height="@load(fmodel.bottomSize)"  border="none">
+            <iframe scrolling="false" id="4" src="@load(fmodel.bottomUrl)" width="100%" height="100%" />
+        </south>
+    </borderlayout>
+</zk>
