@@ -190,7 +190,8 @@ public class AnnotationSessionFactoryBean implements Action {
             else
             {
                 driver = "com.mysql.jdbc.Driver";
-                url = "jdbc:mysql://" + System.getenv ("MYSQL_SERVICE");
+                name = System.getenv ("MYSQL_DATABASE");
+                url = "jdbc:mysql://" + System.getenv ("MYSQL_SERVICE") + "/" + name ;
                 user = System.getenv ("MYSQL_USER");
                 password = System.getenv ("MYSQL_PASSWORD");
                 name = System.getenv ("MYSQL_DATABASE");
