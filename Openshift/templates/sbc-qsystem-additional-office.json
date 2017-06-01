@@ -1,0 +1,217 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "sbc-qsystem-office",
+    "annotations": {
+      "description": "Deploy an additional QSystem Office",
+      "tags": "java",
+      "iconClass": "icon-java"
+    }
+  },
+  "labels": {
+    "template": "sbc-qsystem-environment"
+  },
+  "objects": [
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${OFFICE_SERVICE}",
+        "annotations": {
+          "description": "Exposes and load balances the Office"
+        }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "web",
+            "port": 8080,
+            "targetPort": 8080
+          },
+		  {
+            "name": "reports",
+            "port": 8088,
+            "targetPort": 8088
+          },
+		  {
+            "name": "server",
+            "port": 3128,
+            "targetPort": 3128
+          },
+		  {
+            "name": "client",
+            "port": 3129,
+            "targetPort": 3129
+          }
+        ],
+        "selector": {
+          "name": "${OFFICE_SERVICE}"
+        }
+      }
+    },
+    
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${OFFICE_SERVICE}",
+        "annotations": {
+          "description": "Defines how to deploy the Office Service"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling"
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${OFFICE_SERVICE}"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "namespace": "${APP_IMAGE_NAMESPACE}",
+                "name": "${APP_IMAGE_NAME}:${APP_DEPLOYMENT_TAG}"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${OFFICE_SERVICE}"
+        },
+        "template": {
+          "metadata": {
+            "name": "${OFFICE_SERVICE}",
+            "labels": {
+              "name": "${OFFICE_SERVICE}"
+            }
+          },
+          "spec": {		    
+            "containers": [
+              {
+                "name": "${OFFICE_SERVICE}",
+                "image": " ",
+                "ports": [
+                  {
+                    "containerPort": 8080
+                  }
+                ],
+				"livenessProbe": {
+							  "timeoutSeconds": 1,
+							  "initialDelaySeconds": 30,
+							  "tcpSocket": {
+								"port": 8080
+							  }
+							},
+				"readinessProbe": {
+							  "timeoutSeconds": 1,
+							  "initialDelaySeconds": 30,
+							  "tcpSocket": {
+								"port": 8080
+							  }
+							},
+                "env": [
+                  {
+                    "name": "MYSQL_SERVICE",
+                    "value": "${DATABASE_SERVICE_NAME}"
+                  },
+				  {
+                    "name": "MYSQL_USER",
+                    "value": "${DATABASE_USER}"
+                  },
+				  {
+                    "name": "MYSQL_ROOT_USER",
+                    "value": "${DATABASE_ROOT_USER}"
+                  },
+				  {
+                    "name": "MYSQL_PASSWORD",
+                    "value": "${DATABASE_PASSWORD}"
+                  },
+				  {
+                    "name": "MYSQL_DATABASE",
+                    "value": "${DATABASE_NAME}"
+                  }				  
+                ]
+                
+              }
+            ]
+          }
+        }
+      }
+    }
+	
+  ],
+  "parameters": [
+	{
+      "name": "OFFICE_SERVICE",
+      "displayName": "Office Service Name",
+      "description": "The name assigned to all of the Office objects defined in this template.",
+      "required": true
+    },
+    {
+      "name": "DATABASE_SERVICE_NAME",
+      "displayName": "Database Service Name",
+      "value": "mysql",
+	  "required": true
+    },
+    {
+      "name": "DATABASE_USER",
+      "displayName": "DB Username",
+      "description": "Username for Database user that will be used for accessing the database.",
+      "required": true
+    },
+	{
+      "name": "DATABASE_ROOT_USER",
+      "displayName": "DB Root Username",
+      "description": "Username for Database user that will be used for accessing the database with root access.",
+      "value": "root"
+    },
+    {
+      "name": "DATABASE_PASSWORD",
+      "displayName": "Database Password",
+      "description": "Password for the Database user.",
+      "required": true
+    },
+    {
+      "name": "DATABASE_NAME",
+      "displayName": "Database Name",
+      "required": true
+    },
+    {
+      "name": "PORT",
+      "displayName": "Application port",
+      "description": "Port that application is listening on for requests.",
+      "value": "8080",
+      "required": true
+    },
+    {
+      "name": "APP_IMAGE_NAME",
+      "displayName": "Application image name.",
+      "description": "Application image name.",
+      "value": "qsystem",
+      "required": true
+    },
+    {
+      "name": "APP_IMAGE_NAMESPACE",
+      "displayName": "Namespace containing application images.",
+      "description": "Namespace containing application images.",
+      "value": "servicebc-customer-flow-tools",
+      "required": true
+    },
+    {
+      "name": "APP_DEPLOYMENT_TAG",
+      "displayName": "Image tag to watch for changes and trigger deployment.",
+      "description": "Image tag to watch for changes and trigger deployment.",
+      "value": "latest",
+      "required": true
+    }
+  ]
+}
