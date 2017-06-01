@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    
+    <vbox width="100%" height="100%" style="border:0px solid black;" align="center" pack="center">
+        
+
+        
+        <window xmlns:cl="client" title="QMS Apertum-QSystem" border="normal" width="550px" height="300px"
+                apply="org.zkoss.bind.BindComposer" 
+                viewModel="@id('vm') @init('ru.apertum.qsky.web.UserLoginForm')" 
+                validationMessages="@id('vmsgs')"
+                form="@id('fx') @load(vm.user) @save(vm.user, before='submit') @validator('ru.apertum.qsky.web.UserLoginValidator')">
+        
+            <caption label="${c:l('login_caption')}"/>
+            <div align="left">
+                <image id="img0" src="resources/img/label48.png" width=""  height=""/>
+                <hbox  style="position: relative; right: 10; top: 0px; margin:0px 0px 0px 0px; float:right;">
+                    <label value="${c:l('language')}" class="boxlangs" />
+                    <image  src="@load(('/resources/img/flags/').concat(vm.lang.code).concat('.png'))" />
+                    <combobox id="cmbColor" autodrop="true" readonly="true" width="100px" model="@load(vm.langs)" onChange="@command('changeLang')" selectedItem="@bind(vm.lang)">
+                        <template name="model">
+                            <comboitem label="@load(each.name)" image="@load(('/resources/img/flags/').concat(each.code).concat('.png'))" />
+                        </template>
+                    </combobox>
+                </hbox>
+            </div>
+            <label value= "${c:l('login_label')}"  style="font-size: 16pt;"/>
+        
+            <grid width="70%">
+                <columns>
+                    <column label="${c:l('login_data')}" width="30%"/>
+                    <column label="${c:l('login_enter')}"/>
+                </columns>
+                <rows>
+                    <row align="left">
+                        <cell>
+                            <label value="${c:l('user')}" width="150px" />
+                        </cell>
+                        <cell>
+                            <hlayout>
+                                <textbox id="usr" value="@bind(fx.name)" forward="onOK=btnSubmit.onClick" cl:onFocus="this.select()" width="200px" tabindex="1" />
+                                <label class="error" value="@load(vmsgs['name'])" />
+                            </hlayout>
+                        </cell>
+                    </row>
+                    
+                    <row align="left">
+                        <cell>
+                            <label value="${c:l('password')}" width="150px" />
+                        </cell>
+                        <cell>
+                            <hlayout width="100%">
+                                <textbox id="pwd" type="password" cl:onFocus="this.select()" forward="onOK=btnSubmit.onClick" value="@bind(fx.password)" width="200px" tabindex="2"/>
+                                <label class="error" value="@load(vmsgs['password'])" />
+                            </hlayout>
+                        </cell>
+                    </row>
+                    
+                    <row>
+                        <cell colspan="2" style="text-align:center">
+                            <vlayout>
+                                <label class="error" value="@load(vmsgs['login'])" />
+                                <button label="${c:l('login')}" id="btnSubmit" width="100px" height="30px" tabindex="2" onClick="@command('submit')" />
+                            </vlayout>
+                        </cell>
+                    </row>
+                    
+                </rows>
+            </grid>
+    
+        </window>
+    </vbox>
+        
+    
+</zk>

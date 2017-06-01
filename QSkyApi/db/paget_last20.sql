@@ -1,0 +1,1 @@
+SELECT * FROM `qsky`.`pager_results` order by event_time desc limit 240;

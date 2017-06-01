@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+-->
+<project xmlns:ivy="antlib:fr.jayasoft.ivy.ant" basedir=".." default="default" name="ivy-impl">
+    <target name="-check-ivy">
+        <available property="have.ivy" resource="fr/jayasoft/ivy/ant/antlib.xml"/>
+    </target>
+    <target depends="-check-ivy" name="-ivy-define" unless="have.ivy">
+        <echo level="debug" message="ivy.home : ${ivy.home}"/>
+        <taskdef resource="fr/jayasoft/ivy/ant/antlib.xml" uri="antlib:fr.jayasoft.ivy.ant">
+            <classpath>
+                <fileset dir="${ivy.home}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </taskdef>
+    </target>
+    <target name="-ant-contrib-define">
+        <echo level="debug" message="ant-contrib.lib: ${ant-contrib.lib}"/>
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath>
+                <pathelement location="${ant-contrib.lib}"/>
+            </classpath>
+        </taskdef>
+    </target>
+    <target name="-lib-path-init">
+        <echo level="debug" message="$${lib.dir} : ${lib.dir}"/>
+        <if>
+            <equals arg1="${lib.dir}" arg2="$${lib.dir}"/>
+            <then>
+                <if>
+                    <equals arg1="${build.classes.dir}" arg2="$${build.classes.dir}"/>
+                    <then>
+                        <property name="lib.dir" value="lib"/>
+                    </then>
+                    <else>
+                        <property name="lib.dir" value="jar"/>
+                    </else>
+                </if>
+            </then>
+        </if>
+        <echo level="debug" message="$${lib.dir} : ${lib.dir}"/>
+        <mkdir dir="${basedir}/${build.dir}/${lib.dir}"/>
+    </target>
+    <target depends="-ivy-define, -ant-contrib-define, -lib-path-init" name="-ivy-retrieve">
+        <ivy:settings file="ivysettings.xml"/>
+        <ivy:resolve file="ivy.xml"/>
+        <ivy:retrieve pattern="${basedir}/${build.dir}/${lib.dir}/[artifact]-[revision].[ext]" type="jar"/>
+        <path id="ivy.path">
+            <fileset dir="${basedir}/${build.dir}/${lib.dir}">
+                <include name="**/*.jar"/>
+            </fileset>
+        </path>
+        <pathconvert dirsep="/" pathsep="${path.separator}" property="ivy.classpath.computed">
+            <path refid="ivy.path"/>
+            <!--map from="${basedir}${file.separator}" to=""/-->
+        </pathconvert>
+        <property name="old.javac.classpath" value="${javac.classpath}"/>
+        <var name="javac.classpath" unset="true"/>
+        <if>
+            <equals arg1="${old.javac.classpath}" arg2=""/>
+            <then>
+                <property name="javac.classpath" value="${ivy.classpath.computed}"/>
+            </then>
+            <else>
+                <property name="javac.classpath" value="${old.javac.classpath}${path.separator}${ivy.classpath.computed}"/>
+            </else>
+        </if>
+        <echo level="debug" message="$${javac.classpath} : ${javac.classpath}"/>
+        <property name="old.javac.test.classpath" value="${javac.test.classpath}"/>
+        <var name="javac.test.classpath" unset="true"/>
+        <if>
+            <equals arg1="${old.javac.test.classpath}" arg2=""/>
+            <then>
+                <property name="javac.test.classpath" value="${ivy.classpath.computed}"/>
+            </then>
+            <else>
+                <property name="javac.test.classpath" value="${old.javac.test.classpath}${path.separator}${ivy.classpath.computed}"/>
+            </else>
+        </if>
+        <echo level="debug" message="$${javac.test.classpath} : ${javac.test.classpath}"/>
+        <property name="old.run.classpath" value="${run.classpath}"/>
+        <var name="run.classpath" unset="true"/>
+        <if>
+            <equals arg1="${old.run.classpath}" arg2="$${run.classpath}"/>
+            <then>
+                <property name="run.classpath" value="${ivy.classpath.computed}"/>
+            </then>
+            <else>
+                <property name="run.classpath" value="${old.run.classpath}${path.separator}${ivy.classpath.computed}"/>
+            </else>
+        </if>
+        <echo level="debug" message="$${run.classpath} : ${run.classpath}"/>
+        <property name="old.run.test.classpath" value="${run.test.classpath}"/>
+        <var name="run.test.classpath" unset="true"/>
+        <if>
+            <equals arg1="${old.run.test.classpath}" arg2="$${run.test.classpath}"/>
+            <then>
+                <property name="run.test.classpath" value="${ivy.classpath.computed}"/>
+            </then>
+            <else>
+                <property name="run.test.classpath" value="${old.run.test.classpath}${path.separator}${ivy.classpath.computed}"/>
+            </else>
+        </if>
+        <echo level="debug" message="$${run.test.classpath} : ${run.test.classpath}"/>
+        <property name="old.debug.classpath" value="${debug.classpath}"/>
+        <var name="debug.classpath" unset="true"/>
+        <if>
+            <equals arg1="${old.debug.classpath}" arg2="$${debug.classpath}"/>
+            <then>
+                <property name="debug.classpath" value="${ivy.classpath.computed}"/>
+            </then>
+            <else>
+                <property name="debug.classpath" value="${old.debug.classpath}${path.separator}${ivy.classpath.computed}"/>
+            </else>
+        </if>
+        <echo level="debug" message="$${debug.classpath} : ${debug.classpath}"/>
+    </target>
+    <target name="-ivy-publish">
+        <ivy:settings file="ivysettings.xml"/>
+        <ivy:resolve file="ivy.xml"/>
+        <ivy:publish forcedeliver="true" overwrite="true" resolver="local">
+            <artifacts pattern="${basedir}/${dist.dir}/[artifact].[ext]"/>
+        </ivy:publish>
+    </target>
+    <target name="-ivy-clean">
+        <!--delete dir="lib"/-->
+    </target>
+</project>

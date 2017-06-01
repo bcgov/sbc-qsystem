@@ -1,0 +1,21 @@
+/* 
+    Document   : qsys
+    Created on : Jul 14, 2012, 4:33:27 PM
+    Author     : Evgeniy Egorov
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.hightlight { color: #1469AB; font-weight: bold; } .error {
+    color: red; }
+
+
+.labelstyle {
+    font-weight: normal;
+    font-size: 14pt;
+    font-family: 'Verdana';
+    color: darkblue;
+}
+
+
+
