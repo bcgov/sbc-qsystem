@@ -72,6 +72,8 @@ Environment Template
 `oc policy add-role-to-user system:image-puller system:serviceaccount:servicebc-customer-flow-dev:default -n servicebc-customer-flow-tools`
 - Process and create the Environment Template
 - `oc process -f sbc-qsystem-environment-template.json | oc create -f -`
+- Load the new office template
+- `oc create -f sbc-qsystem-additional-office.json`
 
 
 
