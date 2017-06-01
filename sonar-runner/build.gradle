@@ -12,13 +12,13 @@ sonarqube {
         property "sonar.projectBaseDir", "../"
         property "sonar.sources", "./"
         property "sonar.lanuage", "java"
+		property "sonar.scm.provider","git"
         //property "sonar.tests", "test"
-        property "sourceEncoding", "UTF-8"
+        property "sonar.sourceEncoding", "UTF-8"
         //property "sonar.python.xunit.reportPath","nosetests.xml"
         //property "sonar.python.coverage.reportPath","coverage.xml"
         //property "sonar.python.coveragePlugin","cobertura"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-
     }
 }
 
@@ -26,6 +26,7 @@ allprojects {
   ext.baseVersion = "0.1"
   ext.snapshotVersion = true
 
+  
   group = "org.sonarqube"
   version = "$baseVersion" + (snapshotVersion ? "-SNAPSHOT" : "")
 }
