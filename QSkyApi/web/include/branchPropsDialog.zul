@@ -1,0 +1,75 @@
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    <?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+
+    <style><![CDATA[
+		.dialog .msg .z-label {
+		  font-weight: bold;
+		  font-style: italic;
+		  color: #008BB6;
+		}
+		.dialog .z-borderlayout,
+		.dialog .z-north, .dialog .z-south,
+		.dialog .z-east,  .dialog .z-west,
+		.dialog .z-center, .dialog .z-panel-children ,
+		.dialog.z-panel-noheader div.z-toolbar {
+			border: 0 none;
+			background:transparent;
+		}
+		.dialog .viewer .z-label {
+			font-weight: bold;
+		}
+		.dialog .viewer pre, .dialog .viewer .content {
+			font-weight: normal;
+			padding-left:20px;
+			margin: 0;
+		}
+		.z-south-splitter {
+			border: 0 none;
+		}
+	]]></style>
+    <window id="branchPropsDialog" 
+            width="400px"
+            height="260px" 
+            border="normal"
+            sclass="dialog"
+            position="center,center" 
+            closable="false"
+            action="show: slideDown">
+        <caption label="QSystem" image="/resources/img/label32.png" />
+        <borderlayout>
+                
+            <center border="none" flex="true">
+                <grid height="100%" width="100%" >
+                    <columns>
+                        <column label="${c:l('param')}" width="30%" />
+                        <column label="${c:l('value')}" width="70%"/>
+                    </columns>
+                    <rows>
+                        <row align="left">
+                            <label value="${c:l('name')}" width="150px" />
+                            <textbox  id="nameBranch" value="1"  width="95%" tabindex="1" />
+                        </row>
+                    
+                        <row align="left">
+                            <label value="${c:l('id')}" width="150px" />
+                            <intbox id="idBranch" value="1" width="95%" tabindex="2"/>
+                        </row>
+                        
+                        <row align="left">
+                            <label value="${c:l('time_diff')}" width="150px" />
+                            <intbox id="timeZone" value="1" width="95%" tabindex="3"/>
+                        </row>
+              
+                    
+                    </rows>
+                </grid>	
+            </center>
+            <south size="50px" border="none" flex="true">
+                <toolbar style="padding: 10px;" align="center">
+                    <button label="${c:l('save')}" width="100px" height="30px" onClick="@command('closeBranchPropsDialog')"/>
+                    <button id="closeBtn" label="${c:l('close')}" width="100px" height="30px" onClick="branchPropsDialog.setVisible(false);" />
+                </toolbar>	
+            </south>
+        </borderlayout>
+    </window>
+</zk>

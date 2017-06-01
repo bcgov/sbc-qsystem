@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="2">
+        <file>
+            <url>src/java/ru/apertum/qsky/web/Dashboard.java</url>
+            <bookmark id="1">
+                <name/>
+                <line>443</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>src/java/ru/apertum/qsky/ejb/CustomerEventsEJB.java</url>
+            <bookmark id="2">
+                <name/>
+                <line>546</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group/>
+    </open-files>
+</project-private>
