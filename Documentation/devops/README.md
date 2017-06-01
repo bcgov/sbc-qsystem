@@ -87,7 +87,8 @@ For example, if you were to set the root password to "Not Recommended", you woul
 
 1. `oc rsh <mysql pod name>`
 2. `mysql`
-3. `SET PASSWORD FOR 'root'@'127.0.0.1' = PASSWORD('Not Recommended');
+3. (In the following command, it is suggested you use the IP Range for the Openshift cluster, rather than 0.0.0.0 - also use the correct password for your mysql instance)
+3. `GRANT ALL PRIVILEGES ON *.* TO 'root'@'0.0.0.0' IDENTIFIED BY 'Not Recommended' WITH GRANT OPTION; FLUSH PRIVILEGES;   
 
 Once you have credentials you can add the office.
 
