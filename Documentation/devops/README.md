@@ -75,6 +75,39 @@ Environment Template
 - Load the new office template
 - `oc create -f sbc-qsystem-additional-office.json`
 
+Deploying to Additional Offices
+-------------------------------
+A key requirement when deploying to additional offices is that a database user with the ability to create databases must be present.  
+
+Due to the way jdbc and mysql work, you will need to adjust the credentials for this account if that process has not been done in the OpenShift Project environment you are working with.  The reason for this is MySQL stores credentials based on hostname.
+
+A further convention is the Root user uses the same password as the appication user.
+
+For example, if you were to set the root password to "Not Recommended", you would execute the following:
+
+1. `oc rsh <mysql pod name>`
+2. `mysql`
+3. `SET PASSWORD FOR 'root'@'127.0.0.1' = PASSWORD('Not Recommended');
+
+Once you have credentials you can add the office.
+
+It is recommended you do this via the web user interface.  Use the following procedure:
+1. Navigate to the OpenShift Project where you want to add an additional office.
+2. Click the "Add to Project" button
+3. Type sbc-qsystem-office to find the template
+	1. If no results are found, follow the instructions above in the Environment Template section to add the template.
+4. Carefully enter the required fields.
+	1. Office Service Name - very important, the service name for the new office.  Must be lowercase and in hostname format, for example office-10
+	2. Database Service Name - must match the database service name for the database in the project.
+	3. DB Username - must match the database user name for a regular user
+	4. DB Root Username - must match the database user name for a root user
+	5. Database Password - the database password (by design this password is used by both the root and unprivileged user)
+	6. Database Name - the new name for the database.  Must not be in use.  
+	7. Application Image Name - image name to use the office - the default should work.
+	8. Namespace containing application images - the default should work.
+	9. Image tag containing application images - change to the tag for the project you are working with.  For example, set to test if working on the test project.
+
+
 
 
 
