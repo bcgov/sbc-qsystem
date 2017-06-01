@@ -6,6 +6,8 @@
 package ru.apertum.qsystem.qboard;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
@@ -19,22 +21,29 @@ import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Vbox;
 import ru.apertum.qsystem.common.CustomerState;
+import ru.apertum.qsystem.server.model.QPlanService;
 import ru.apertum.qsystem.smartboard.PrintRecords;
+import ru.apertum.qsystem.server.model.QServiceTree;
+import ru.apertum.qsystem.server.model.QUserList;
+import ru.apertum.qsystem.server.model.QUser;
+import org.zkoss.bind.annotation.NotifyChange;
+import ru.apertum.qsystem.server.QSessions;
+import org.zkoss.zk.ui.Sessions;
 
 /**
  *
  * @author Evgeniy Egorov
  */
 public class QBoard {
-
+   
     /**
      * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg")
      *
      * @param view
      */
     @AfterCompose
-    public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
-
+    public void afterCompose(@ContextParam(ContextType.VIEW) Component view)  {
+        
         /*
          <!--div class="lineDivOdd" width="100%" height="14%" >
          <vbox id="str1a" width="100%" height="100%" pack="center" align="center">  </vbox>
@@ -172,7 +181,7 @@ public class QBoard {
     // Настройки табло
     // ************************************************************************************************************************************************
     // ************************************************************************************************************************************************
-    public String getTopSize() {
+   public String getTopSize() {
         return checkPlugin() ? PrintRecords.getInstance().getTopSize() : "0px";
     }
 
@@ -200,9 +209,17 @@ public class QBoard {
         return checkPlugin() ? PrintRecords.getInstance().getRightSize() : "0px";
     }
 
-    public boolean getRightVisible() {
-        return checkPlugin() ? !"".equals(PrintRecords.getInstance().getRightSize().replaceAll("0|%|(px)", "")) : false;
+    public String getRightVisible() {
+        String rt = "background:#B0E7A0;";
+        if ( checkPlugin() && "".equals(PrintRecords.getInstance().getRightSize().replaceAll("0|%|(px)", "") ) ) {
+            rt = "display:none";
+        }  
+        return rt;
     }
+    
+    public String getSouthHeight() {        
+        return "".equals(PrintRecords.getInstance().getRightSize().replaceAll("0|%|(px)", "") ) ? "200px" : "100px";
+    }   
 
     public String getRightUrl() {
         return checkPlugin() ? PrintRecords.getInstance().getRightUrl() : "";
@@ -231,5 +248,62 @@ public class QBoard {
     public int getLinesCount() {
         return checkPlugin() ? PrintRecords.getInstance().getLinesCount() : 6;
     }
+    
+    public String getCustomerDisplay() {        
+        return checkPlugin() ? PrintRecords.getInstance().getCustomerDisplay(): "padding:0px" ;
+    }   
 
+    
+    private List<QPlanService> plan = new LinkedList<>();
+    public List<QPlanService> getPlan() {
+        return plan;
+    }
+
+    public void setPlan(List<QPlanService> plan) {
+        this.plan = plan;
+    }
+    public int getCustomersCount() {
+        int total = 0;
+         
+        for (QUser user : QUserList.getInstance().getItems()) {  
+          if (user.getName().equalsIgnoreCase("Smartboard")) {  
+                plan = user.getPlanServiceList().getServices();                 
+                total = plan.stream().map((plan1) -> QServiceTree.getInstance().getById(plan1.getService().getId()).getCountCustomers()).reduce(total, Integer::sum);
+                break;
+           }
+        }
+              
+        return total;   
+    }
+
+    
+//    public int getEstimatedTime() {      
+//        int estimatedTime = 0;
+//        for (QUser user : QUserList.getInstance().getItems()) {  
+//          if (user.getName().equalsIgnoreCase("Smartboard")) {  
+//                plan = user.getPlanServiceList().getServices();  
+//                
+//                for (QPlanService qPlanService : plan) {  
+//                    //Following number 10 min is hard code here. It will be in TODO list in the future.
+//                     estimatedTime += (QServiceTree.getInstance().getById(qPlanService.getService().getId()).getCountCustomers()) * 10; 
+//                }   
+//           }
+//        }
+//        
+//        return estimatedTime;
+//    }
+//    
+    
+    
+    @Command
+    @NotifyChange(value = {"customersCount"})
+    public void refreshListServices() {
+        
+        for (QUser user : QUserList.getInstance().getItems()) {  
+          if (user.getName().equalsIgnoreCase("Smartboard")) {             
+                QSessions.getInstance().update(user.getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
+          }
+        }
+    }
+         
 }

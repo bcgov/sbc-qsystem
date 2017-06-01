@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.Properties;
 import ru.apertum.qsystem.server.controller.AIndicatorBoard;
 import ru.apertum.qsystem.server.model.QUser;
-import ru.apertum.qsystem.common.QLog;
 
 /**
  *
@@ -46,6 +45,8 @@ public class PrintRecords {
     private String columnFirst = "Clients column";
     private String columnSecond = "To point";
     private String columnExt = "Ext column";
+    private String customerDisplay="padding:0px";
+    private String display = "";
     private QUser user = null;
 
     public int getLinesCount() {
@@ -95,8 +96,12 @@ public class PrintRecords {
     public String getColumnExt() {
         return columnExt;
     }
-
-    private PrintRecords() {
+    
+    public String getCustomerDisplay() {        
+        return customerDisplay;
+    }    
+    
+    public PrintRecords() {
         File f = new File("config/QSmartboardPlugin.properties");
         if (f.exists()) {
             final FileInputStream inStream;
@@ -125,10 +130,11 @@ public class PrintRecords {
             columnFirst = settings.getProperty("column.first");
             columnSecond = settings.getProperty("column.second");
             columnExt = settings.getProperty("column.ext");
-
+            customerDisplay = settings.getProperty("customer.display");  
         }
     }
 
+       
     public static PrintRecords getInstance() {
         return PrintRecordsHolder.INSTANCE;
     }
@@ -164,5 +170,6 @@ public class PrintRecords {
         
     public void setCurrentUser(QUser user) {
         this.user = user;
-    }
+    }    
+  
 }
