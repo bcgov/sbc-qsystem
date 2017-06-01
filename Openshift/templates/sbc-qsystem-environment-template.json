@@ -151,7 +151,7 @@
                 "env": [
                   {
                     "name": "MYSQL_SERVICE",
-                    "value": "${DATABASE_SERVICE_NAME}/${DATABASE_NAME}"
+                    "value": "${DATABASE_SERVICE_NAME}"
                   },
 				  {
                     "name": "MYSQL_USER",
