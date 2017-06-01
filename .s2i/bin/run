@@ -7,4 +7,9 @@
 #	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
 #
 cd /opt/app-root/src/source/dist
-exec java -Djava.security.egd=file:/dev/./urandom -jar /opt/app-root/src/source/dist/QSystem.jar -t --http-server 8080 $APP_OPTIONS
+
+# Run the database and config file seeder
+java -Djava.security.egd=file:/dev/./urandom -jar Seeder.jar sql
+
+# Run QSystem
+exec java -Djava.security.egd=file:/dev/./urandom -jar QSystem.jar -t --http-server 8080 $APP_OPTIONS 

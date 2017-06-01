@@ -99,7 +99,7 @@
         "source": {
             "type": "Git",
             "git": {
-                "uri": "https://github.com/GeorgeWalker/s2i-java.git"
+                "uri": "https://github.com/bcgov/openshift-openjfx"
             }
         },
         "strategy": {

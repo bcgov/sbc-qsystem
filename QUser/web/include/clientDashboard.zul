@@ -86,4 +86,5 @@
     <include id="incPostponeCustomerDialog" src="/include/dialog/postponeDialog.zul"/>
     <include id="incRedirectCustomerDialog" src="/include/dialog/redirectDialog.zul"/>
     <include id="incChangePostponedStatusDialog" src="/include/dialog/changePostponedStatusDialog.zul"/>
+	<include id="incServicesDialog" src="/include/dialog/servicesDialog.zul"/>
 </zk>

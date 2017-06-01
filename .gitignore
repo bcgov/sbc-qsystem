@@ -22,6 +22,7 @@
 hs_err_pid*
 /QSystem/build
 /QSystem/target
+!/QSystem/logs
 /dist
 !/QSystem/nbproject/
 /QUser/build/
@@ -40,4 +41,5 @@ hs_err_pid*
 /dist/plugins
 !/QSmartboard/web/WEB-INF/lib/*.*
 !/sonar-runner/gradle/wrapper/*.*
+!/functional-tests/gradle/wrapper/*.*
 /Seeder/target/

@@ -290,6 +290,8 @@ public final class Uses {
     public static final String TASK_GET_PROPERTIES = "Все параметры из БД";
     public static final String TASK_SAVE_PROPERTIES = "Сохранить все параметры в БД";
     public static final String TASK_INIT_PROPERTIES = "Создать все параметры в БД";
+    public static final String TASK_SERVE_CUSTOMER = "serve_customer";
+    
     // Формат отчетов
     public static final String REPORT_FORMAT_HTML = "html";
     public static final String REPORT_FORMAT_RTF = "rtf";
