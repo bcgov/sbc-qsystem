@@ -233,7 +233,7 @@ public final class Executer {
                 // Приоритет "как все"   
                 // the setting time is automatically inserted when creating a customizer.
                 // Priority "like everyone else"
-                customer.setPriority(Uses.PRIORITY_HI);
+                customer.setPriority(cmdParams.priority);
                 
                 // Введенные кастомером данные
                 // The data entered by the customizer

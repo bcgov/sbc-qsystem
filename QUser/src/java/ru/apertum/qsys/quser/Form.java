@@ -625,7 +625,7 @@ public class Form {
                 return;
             }
             
-            final CmdParams params = this.paramsForAddingInQueue();
+            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
             this.addToQueue(params);
             
             customer = null;
@@ -635,13 +635,15 @@ public class Form {
         }
     }
     
-    public CmdParams paramsForAddingInQueue() {
+    public CmdParams paramsForAddingInQueue(Integer priority, Boolean isMine) {
         final CmdParams params = new CmdParams();
 
         params.userId = user.getUser().getId();
         params.serviceId = pickedRedirectServ.getId();
         params.resultId = -1l;
         params.textData = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
+        params.priority = priority;
+        params.isMine = isMine;
             
         return params;
     }
@@ -659,15 +661,17 @@ public class Form {
                 return;
             }
 
-            final CmdParams params = this.paramsForAddingInQueue();
+            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
             final RpcStandInService res = this.addToQueue(params);
             customer = res.getResult();
-            Executer.getInstance().getTasks().get(Uses.TASK_SERVE_CUSTOMER).process(params, "", new byte[4],customer);
-            
+
             customer = null;
-            setKeyRegim(KEYS_STARTED);
-            service_list.setModel(service_list.getModel());            
+            setKeyRegim(KEYS_MAY_INVITE);
+            service_list.setModel(service_list.getModel());
             servicesDialogWindow.setVisible(false);
+            
+            this.invite();
+            BindUtils.postNotifyChange(null, null, Form.this, "*");
 
         }
     }
