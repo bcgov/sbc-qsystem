@@ -986,19 +986,17 @@ public final class Executer {
             return new JsonRPC20OK();
         }
     };
-    /**
+        /**
      * Начать работу с вызванноым кастомером.
      * Start work with the called customizer.
      */
-    final Task startCustomerTask = new Task(Uses.TASK_START_CUSTOMER) {
+    final Task startCustomerTask = new Task(Uses.TASK_SERVE_CUSTOMER) {
         
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer customer) {
             super.process(cmdParams, ipAdress, IP, customer);
-            QLog.l().logger().debug("TASK_START_CUSTOMER -------------- 996");
-            //QLog.l().logQUser().debug("cmdParams :" + cmdParams.toString());
-            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
-            
+
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);            
             user.setCustomer(customer);
                 
             // Поставил кастомеру юзера, который его вызвал.
@@ -1012,7 +1010,8 @@ public final class Executer {
             // ставим время вызова
             // put the call time
             customer.setCallTime(new Date());
-            customer.setState(CustomerState.STATE_INVITED);
+            customer.setState(customer.getState() == CustomerState.STATE_WAIT ? CustomerState.STATE_INVITED : CustomerState.STATE_INVITED_SECONDARY);
+
                     
             try {
                 // просигналим звуком ::: Sound with a sound
@@ -1025,13 +1024,14 @@ public final class Executer {
                 // Должно высветитьсяна основном табло
                 // send out an alert that a visitor has been called
                 // Must be highlighted on the main display
-                MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
-                
+                MainBoard.getInstance().inviteCustomer(user, customer);
+               
                 //разослать оповещение о том, что отложенного вызвали, состояние очереди изменилось не изменилось, но пул отложенных изменился
                 //рассылаем широковещетельно по UDP на определенный порт
                 // send out an alert that the deferred has been called, the status of the queue has changed has not changed, but the pending pool has changed
                 // send out broadly by UDP to a specific port
-                Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
+//                Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
+
             } catch (Exception ex) {
                 QLog.l().logger().error("Exception at 1036:" + ex);
             }
