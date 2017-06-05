@@ -37,7 +37,19 @@ If no changes to the default parameters are required, the template can be proces
 Jenkins
 -------
 
-Create a Jenkins server using the Jenkins Persistent template.  It is recommended you allocate more than the minimum 1GB of storage to Jenkins, as otherwise you will frequently have to cull files from Jenkins.
+Create a Jenkins server using the Jenkins Persistent template.  It is recommended you allocate more than the minimum 1GB of persistent storage to Jenkins, as otherwise you will frequently have to cull files from Jenkins.
+
+**Important Note**
+
+By default the Kubernetes plugin does not override the OpenShift defaults for memory consumption.  In order for the build pipeline to work you will need to allocate **4Gi** of RAM to the **maven** node template.  (More may be required as the volume of code increases).  
+
+To increase the amount of RAM available in the maven node template, do the following:
+- login to Jenkins as administrator
+- Click on Manage Jenkins
+- Scroll down until you are at the maven kubernetes template area
+- Click the advanced button to expose the memory limit fields
+- Set the memory limit to 4Gi
+- Click save   
 
 Note:  On the OpenShift Dashboard you will see two deployment objects under the group Jenkins Persistent.  This is because the Jenkins server has two services.  One service is the main web based user interface, and the other is a JNLP interface that the slaves use to communicate with the main server.
 
