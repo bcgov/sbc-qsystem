@@ -403,13 +403,14 @@ public class Form {
     
     @Command
     public void addClient(){
-            servicesDialogWindow.setVisible(true);
-            servicesDialogWindow.doModal();
+        servicesDialogWindow.setVisible(true);
+        servicesDialogWindow.doModal();
     }
     
     @Command
     public void addNextService(){
-        QLog.l().logQUser().debug("Add Next Service");    
+        addNextServiceDialog.setVisible(true);
+        addNextServiceDialog.doModal();    
     }
 
     @Command
@@ -611,12 +612,42 @@ public class Form {
         return treeServs;
     }
     
+    @Wire("#incClientDashboard #incAddNextServiceDialog #addNextServiceDialog")
+    Window addNextServiceDialog;
+    
     @Wire("#incClientDashboard #incServicesDialog #servicesDialog")
     Window servicesDialogWindow;
 
     @Wire("#incClientDashboard #incRedirectCustomerDialog #redirectDialog")
     Window redirectCustomerDialog;
 
+    @Command
+    public void closeAddNextServiceDialog(){
+        if (pickedRedirectServ != null) {
+            if (!pickedRedirectServ.isLeaf()) {
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+
+            final CmdParams params = new CmdParams();
+
+            params.userId = user.getUser().getId();
+            params.serviceId = pickedRedirectServ.getId();
+            params.requestBack = Boolean.TRUE;
+            params.resultId = -1l;
+            params.textData = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
+            Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
+            
+            customer = null;            
+            setKeyRegim(KEYS_MAY_INVITE);
+            service_list.setModel(service_list.getModel());
+            addNextServiceDialog.setVisible(false);
+            
+            this.invite();
+            BindUtils.postNotifyChange(null, null, Form.this, "*");
+        }
+    }
+    
     @Command
     public void closeAddToQueueDialog(){
         if (pickedRedirectServ != null) {
