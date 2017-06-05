@@ -13,4 +13,11 @@ stage('Sonar'){
 			sh returnStdout: true, script: './gradlew sonarqube -Dsonar.host.url=http://sonarqube-servicebc-customer-flow-tools.pathfinder.gov.bc.ca -Dsonar.verbose=true --info --stacktrace'
 	   }
    }
+   
+stage('Functional Tests')
+{
+    dir('functional-tests'){
+      sh returnStdout: true, script: './gradlew phantomJsTest'
+   }
+}
 }
