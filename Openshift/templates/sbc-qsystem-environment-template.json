@@ -13,6 +13,20 @@
     "template": "sbc-qsystem-environment"
   },
   "objects": [
+  {
+      "kind": "Secret",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "sbc-secrets"
+      },
+      "stringData" : {
+        "database-user" : "${DATABASE_USER}",
+		"database-root-user" : "${DATABASE_ROOT_USER}",
+        "database-password" : "${DATABASE_PASSWORD}",
+        "database-root-password" : "${DATABASE_ROOT_PASSWORD}",
+		"database-server" : "${DATABASE_SERVICE_NAME}"
+      }
+    },
     {
       "kind": "PersistentVolumeClaim",
       "apiVersion": "v1",
@@ -151,19 +165,48 @@
                 "env": [
                   {
                     "name": "MYSQL_SERVICE",
-                    "value": "${DATABASE_SERVICE_NAME}"
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-server"
+                      }
+                    }
                   },
 				  {
                     "name": "MYSQL_USER",
-                    "value": "${DATABASE_USER}"
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-user"
+                      }
+                    }
                   },
 				  {
                     "name": "MYSQL_ROOT_USER",
-                    "value": "${DATABASE_ROOT_USER}"
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-root-user"
+                      }
+                    }
+                  },
+				  {
+                    "name": "MYSQL_ROOT_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-root-password"
+                      }
+                    }
                   },
 				  {
                     "name": "MYSQL_PASSWORD",
-                    "value": "${DATABASE_PASSWORD}"
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-password"
+                      }
+                    }
                   },
 				  {
                     "name": "MYSQL_DATABASE",
@@ -393,11 +436,30 @@
 								},
 								{
 									"name": "MYSQL_PASSWORD",
-									"value": "${DATABASE_PASSWORD}"
+									"valueFrom": {
+                                      "secretKeyRef" : {
+                                        "name" : "sbc-secrets",
+                                        "key" : "database-password"
+                                      }
+                                    }
+								},
+								{
+									"name": "MYSQL_ROOT_PASSWORD",
+									"valueFrom": {
+                                      "secretKeyRef" : {
+                                        "name" : "sbc-secrets",
+                                        "key" : "database-root-password"
+                                      }
+                                    }
 								},
 								{
 									"name": "MYSQL_USER",
-									"value": "${DATABASE_USER}"
+									"valueFrom": {
+                                      "secretKeyRef" : {
+                                        "name" : "sbc-secrets",
+                                        "key" : "database-user"
+                                      }
+                                    }
 								}
 							],
 							"readinessProbe": {
@@ -485,9 +547,9 @@
       "value": "qsystem"
     },
     {
-      "name": "DATABASE_ADMIN_PASSWORD",
-      "displayName": "Database Administrator Password",
-      "description": "Password for the database admin user.",
+      "name": "DATABASE_ROOT_PASSWORD",
+      "displayName": "Database Root Password",
+      "description": "Password for the database root user.",
       "generate": "expression",
       "from": "[a-zA-Z0-9]{16}"
     },
