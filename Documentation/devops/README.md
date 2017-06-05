@@ -39,6 +39,8 @@ Jenkins
 
 Create a Jenkins server using the Jenkins Persistent template.  It is recommended you allocate more than the minimum 1GB of storage to Jenkins, as otherwise you will frequently have to cull files from Jenkins.
 
+Note:  On the OpenShift Dashboard you will see two deployment objects under the group Jenkins Persistent.  This is because the Jenkins server has two services.  One service is the main web based user interface, and the other is a JNLP interface that the slaves use to communicate with the main server.
+
 Jenkins Slave
 -----------
 Slaves are created automatically by the master Jenkins server.  If this is not working then you likely are using the wrong Jenkins image.  Use openshift/jenkins:latest.
@@ -67,7 +69,17 @@ https://developer.github.com/webhooks/
 Environment Template
 --------------------
 
-- `oc project servicebc-customer-flow-dev`
+The environment template is used to create the objects used to deploy the application.
+
+These objects include:
+1. A secret, which is used to store various database credentials
+2. Persistent storage for the database
+3. The database server
+4. The first instance of QSystem.  Additional instances can be deployed using the process mentioned below in this document.
+
+To create the environment, execute the following commands when logged in via oc:
+
+- `oc project servicebc-customer-flow-dev` (or the name of the project you wish to deploy the environment)
 - Allow the dev project to access the tools project
 `oc policy add-role-to-user system:image-puller system:serviceaccount:servicebc-customer-flow-dev:default -n servicebc-customer-flow-tools`
 - Process and create the Environment Template
@@ -79,20 +91,9 @@ Deploying to Additional Offices
 -------------------------------
 A key requirement when deploying to additional offices is that a database user with the ability to create databases must be present.  
 
-Due to the way jdbc and mysql work, you will need to adjust the credentials for this account if that process has not been done in the OpenShift Project environment you are working with.  The reason for this is MySQL stores credentials based on hostname.
+The application will obtain the root credentials from the project secret.   
 
-A further convention is the Root user uses the same password as the appication user.
-
-For example, if you were to set the root password to "Not Recommended", you would execute the following:
-
-1. `oc rsh <mysql pod name>`
-2. `mysql`
-3. (In the following command, it is suggested you use the IP Range for the Openshift cluster, rather than 0.0.0.0 - also use the correct password for your mysql instance)
-3. `GRANT ALL PRIVILEGES ON *.* TO 'root'@'0.0.0.0' IDENTIFIED BY 'Not Recommended' WITH GRANT OPTION; FLUSH PRIVILEGES;   
-
-Once you have credentials you can add the office.
-
-It is recommended you do this via the web user interface.  Use the following procedure:
+It is recommended you add the office via the web user interface.  Use the following procedure:
 1. Navigate to the OpenShift Project where you want to add an additional office.
 2. Click the "Add to Project" button
 3. Type sbc-qsystem-office to find the template

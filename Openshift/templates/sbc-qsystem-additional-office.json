@@ -121,23 +121,43 @@
                 "env": [
                   {
                     "name": "MYSQL_SERVICE",
-                    "value": "${DATABASE_SERVICE_NAME}"
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-server"
+                      }
+                    }
                   },
 				  {
                     "name": "MYSQL_USER",
-                    "value": "${DATABASE_USER}"
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-user"
+                      }
+                    }
                   },
 				  {
                     "name": "MYSQL_ROOT_USER",
-                    "value": "${DATABASE_ROOT_USER}"
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-root-user"
+                      }
+                    }
                   },
 				  {
                     "name": "MYSQL_PASSWORD",
-                    "value": "${DATABASE_PASSWORD}"
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-password"
+                      }
+                    }
                   },
 				  {
                     "name": "MYSQL_DATABASE",
-                    "value": "${DATABASE_NAME}"
+                    "value": "${OFFICE_SERVICE}"
                   }				  
                 ]
                 
@@ -153,43 +173,14 @@
 	{
       "name": "OFFICE_SERVICE",
       "displayName": "Office Service Name",
-      "description": "The name assigned to all of the Office objects defined in this template.",
+      "description": "** The name assigned to the Deployment and Database for the new office.  Must start with a letter and be a valid hostname, for example office-01",
       "required": true
     },
     {
-      "name": "DATABASE_SERVICE_NAME",
-      "displayName": "Database Service Name",
-      "value": "mysql",
-	  "required": true
-    },
-    {
-      "name": "DATABASE_USER",
-      "displayName": "DB Username",
-      "description": "Username for Database user that will be used for accessing the database.",
-      "required": true
-    },
-	{
-      "name": "DATABASE_ROOT_USER",
-      "displayName": "DB Root Username",
-      "description": "Username for Database user that will be used for accessing the database with root access.",
-      "value": "root"
-    },
-    {
-      "name": "DATABASE_PASSWORD",
-      "displayName": "Database Password",
-      "description": "Password for the Database user.",
-      "required": true
-    },
-    {
-      "name": "DATABASE_NAME",
-      "displayName": "Database Name",
-      "required": true
-    },
-    {
-      "name": "PORT",
-      "displayName": "Application port",
-      "description": "Port that application is listening on for requests.",
-      "value": "8080",
+      "name": "APP_DEPLOYMENT_TAG",
+      "displayName": "Image tag",
+      "description": "** Image tag to watch for changes and trigger deployment.  For example, test",
+      "value": "latest",
       "required": true
     },
     {
@@ -205,13 +196,7 @@
       "description": "Namespace containing application images.",
       "value": "servicebc-customer-flow-tools",
       "required": true
-    },
-    {
-      "name": "APP_DEPLOYMENT_TAG",
-      "displayName": "Image tag to watch for changes and trigger deployment.",
-      "description": "Image tag to watch for changes and trigger deployment.",
-      "value": "latest",
-      "required": true
     }
+    
   ]
 }

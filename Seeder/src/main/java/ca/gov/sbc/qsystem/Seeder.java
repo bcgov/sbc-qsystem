@@ -31,19 +31,19 @@ public class Seeder {
             
             System.out.println ("URL is " + url);
             
-            String user = System.getenv ("MYSQL_ROOT_USER");
-            if (user == null || user.isEmpty())
+            String rootUser = System.getenv ("MYSQL_ROOT_USER");
+            if (rootUser == null || rootUser.isEmpty())
             {
-                user = "root";
+                rootUser = "root";
             }
             
-            String password = System.getenv ("MYSQL_PASSWORD");
+            String rootPassword = System.getenv ("MYSQL_ROOT_PASSWORD");
             String name = System.getenv ("MYSQL_DATABASE");
 
             // Create database if it does not exist
             String sql = "CREATE DATABASE IF NOT EXISTS " + name + " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci";
              
-            try (Connection conn = DriverManager.getConnection(url, user, password);
+            try (Connection conn = DriverManager.getConnection(url, rootUser, rootPassword);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.execute();
@@ -54,13 +54,11 @@ public class Seeder {
             // Flyway will need the database to be part of the URL  
             url = "jdbc:mysql://" + System.getenv ("MYSQL_SERVICE") + "/" + System.getenv ("MYSQL_DATABASE");
             
-            password = System.getenv ("MYSQL_PASSWORD");
-            
             // Create the Flyway instance
             Flyway flyway = new Flyway();
 
             // Point it to the database
-            flyway.setDataSource(url, user, password);
+            flyway.setDataSource(url, rootUser, rootPassword);
         
             File temp = new File (args[0]);
             String filepath = "filesystem:" + temp.getAbsolutePath();
