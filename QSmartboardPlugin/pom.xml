@@ -46,6 +46,9 @@
 		<resources>
       <resource>
         <directory>${src.dir}</directory>
+		<excludes>
+          <exclude>**/.java</exclude>
+		</excludes>
       </resource>
     </resources>
         <plugins>
