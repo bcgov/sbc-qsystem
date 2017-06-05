@@ -84,7 +84,7 @@
                     <button sclass="act-button" label="${c:l('add_client')}" image="/resources/img/next32.png" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="50px" width="210px">
                     </button>
                     <separator bar="false"/>
-                    <button sclass="act-button" label="${c:l('add_next_service')}" image="/resources/img/next32.png" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('redirect')" id="btn_add_next_service" height="50px" width="210px">
+                    <button sclass="act-button" label="${c:l('add_next_service')}" image="/resources/img/next32.png" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="50px" width="210px">
                     </button>
 
                     <image src="/resources/img/bc_logo_resized.png" width=""  height=""/>
