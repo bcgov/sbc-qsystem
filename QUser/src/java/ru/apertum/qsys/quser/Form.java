@@ -286,8 +286,8 @@ public class Form {
         btnsDisabled[3] = !(isLogin() && '1' == regim.charAt(3));
         btnsDisabled[4] = !(isLogin() && '1' == regim.charAt(4));
         btnsDisabled[5] = !(isLogin() && '1' == regim.charAt(5));
-        btnsDisabled[6] = !(isLogin() && '1' == regim.charAt(0));
-        btnsDisabled[7] = !(isLogin() && '1' == regim.charAt(0));
+        btnsDisabled[6] = !(isLogin() && '1' == regim.charAt(6));
+        btnsDisabled[7] = !(isLogin() && '1' == regim.charAt(7));
     }
 
     private boolean[] btnsDisabled = new boolean[]{true, true, true, true, true, true, true, true};
