@@ -10,7 +10,7 @@ stage('Copy Code'){
 
 stage('Sonar'){
 	   dir('sonar-runner'){ 
-			sh returnStdout: true, script: './gradlew sonarqube -Dsonar.host.url=http://sonarqube-servicebc-customer-flow-tools.pathfinder.gov.bc.ca -Dsonar.verbose=true --stacktrace'
+			sh returnStdout: true, script: './gradlew sonarqube -Dsonar.host.url=http://sonarqube-servicebc-customer-flow-tools.pathfinder.gov.bc.ca -Dsonar.verbose=true --info --stacktrace'
 	   }
    }
 }
