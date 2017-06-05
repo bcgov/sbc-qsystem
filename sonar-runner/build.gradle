@@ -5,12 +5,6 @@ plugins {
   id "org.sonarqube" version "1.2"
 }
 
-sonarRunner {
-    forkOptions {
-        maxHeapSize = '512m'
-    }
-}
-
 sonarqube {
     properties {
         property "sonar.projectName", "SBC - QSystem"
