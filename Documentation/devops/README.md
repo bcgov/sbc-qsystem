@@ -112,15 +112,10 @@ It is recommended you add the office via the web user interface.  Use the follow
 	1. If no results are found, follow the instructions above in the Environment Template section to add the template.
 4. Carefully enter the required fields.
 	1. Office Service Name - very important, the service name for the new office.  Must be lowercase and in hostname format, for example office-10
-	2. Database Service Name - must match the database service name for the database in the project.
-	3. DB Username - must match the database user name for a regular user
-	4. DB Root Username - must match the database user name for a root user
-	5. Database Password - the database password (by design this password is used by both the root and unprivileged user)
-	6. Database Name - the new name for the database.  Must not be in use.  
-	7. Application Image Name - image name to use the office - the default should work.
-	8. Namespace containing application images - the default should work.
-	9. Image tag containing application images - change to the tag for the project you are working with.  For example, set to test if working on the test project.
-
+	2. Image tag containing application images - change to the tag for the project you are working with.  For example, set to test if working on the test project. 
+	3. Application Image Name - image name to use the office - the default should work.
+	4. Namespace containing application images - the default should work.
+	
 
 
 
