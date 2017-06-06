@@ -41,7 +41,7 @@ public class Seeder {
             String name = System.getenv ("MYSQL_DATABASE");
 
             // Create database if it does not exist
-            String sql = "CREATE DATABASE IF NOT EXISTS " + name + " DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci";
+            String sql = "CREATE DATABASE IF NOT EXISTS `" + name + "` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci";
              
             try (Connection conn = DriverManager.getConnection(url, rootUser, rootPassword);
              PreparedStatement stmt = conn.prepareStatement(sql)) {

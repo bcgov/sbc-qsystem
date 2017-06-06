@@ -156,6 +156,15 @@
                     }
                   },
 				  {
+                    "name": "MYSQL_ROOT_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef" : {
+                        "name" : "sbc-secrets",
+                        "key" : "database-root-password"
+                      }
+                    }
+                  },
+				  {
                     "name": "MYSQL_DATABASE",
                     "value": "${OFFICE_SERVICE}"
                   }				  
@@ -186,14 +195,14 @@
     {
       "name": "APP_IMAGE_NAME",
       "displayName": "Application image name.",
-      "description": "Application image name.",
+      "description": "Application image name.  You should not need to change this.",
       "value": "qsystem",
       "required": true
     },
     {
       "name": "APP_IMAGE_NAMESPACE",
       "displayName": "Namespace containing application images.",
-      "description": "Namespace containing application images.",
+      "description": "Namespace containing application images. You should not need to change this.",
       "value": "servicebc-customer-flow-tools",
       "required": true
     }
