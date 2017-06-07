@@ -66,36 +66,34 @@ public class Seeder {
 
         System.out.println("QSystem Seeder");
 
-        if (args.length < 1) {
-            System.out.println("ERROR - no database script folder location specified as Parameter 1 to the Seeder command.");
+        if (args.length < 2) {
+            System.out.println("ERROR - no database script folder locations specified as Parameter 1 & 2 to the Seeder command.");
         } else {
             // get parameters from the environment
-            String driver = "com.mysql.jdbc.Driver";
-            String url = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE");
-
-            System.out.println("URL is " + url);
-
+            String databaseName = System.getenv("MYSQL_DATABASE");
+            String databaseUser = System.getenv("MYSQL_USER");
+            String mysqlService = System.getenv("MYSQL_SERVICE");
+            String rootPassword = System.getenv("MYSQL_ROOT_PASSWORD");
             String rootUser = System.getenv("MYSQL_ROOT_USER");
+            
             if (rootUser == null || rootUser.isEmpty()) {
                 rootUser = "root";
             }
-
-            String rootPassword = System.getenv("MYSQL_ROOT_PASSWORD");
-            String databaseUser = System.getenv("MYSQL_USER");
-            String name = System.getenv("MYSQL_DATABASE");
-
+            
+            String url = "jdbc:mysql://" + mysqlService;
+            
             // Create the QSystem Database
-            createDatabaseIfNotExist (name, url, rootUser, rootPassword);
+            createDatabaseIfNotExist (databaseName, url, rootUser, rootPassword);
             // Create the QSky Database
             createDatabaseIfNotExist ("qsky", url, rootUser, rootPassword);
 
             // Flyway will need the database to be part of the URL  
-            url = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + System.getenv("MYSQL_DATABASE");
+            url = "jdbc:mysql://" + mysqlService + "/" + databaseName;
             migrateDatabase(url, rootUser, rootPassword, args [0]);
-            grantPermissions (name, url, rootUser, rootPassword, databaseUser);
+            grantPermissions (databaseName, url, rootUser, rootPassword, databaseUser);
             
             // qsky migrations.
-            url = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/qsky"; 
+            url = "jdbc:mysql://" + mysqlService + "/qsky"; 
             migrateDatabase(url, rootUser, rootPassword, args [1]);
             grantPermissions ("qsky", url, rootUser, rootPassword, databaseUser);
             
