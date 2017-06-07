@@ -5,6 +5,7 @@ import javax.naming.NamingException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import ru.apertum.qsky.common.HibernateUtil;
 import ru.apertum.qsky.controller.branch_tree.BranchTreeNode;
 import ru.apertum.qsky.ejb.IHibernateEJBLocal;
 import ru.apertum.qsky.web.User;
@@ -14,18 +15,24 @@ public class BranchTreeModel {
     public final static String Category = "Category";
     public final static String Contact = "Contact";
 
-    private final BranchTreeNode root;
+    private BranchTreeNode root;
 
     private IHibernateEJBLocal hib;
 
     public BranchTreeModel(User user) {
+        
+        /*
         try {
             hib = (IHibernateEJBLocal) ((new javax.naming.InitialContext()).lookup("java:comp/env/" + "qskyapi/HibernateEJB"));
         } catch (NamingException ex) {
             throw new RuntimeException("No EJB Hib factory!");
         }
-
+        
         Session ses = hib.openSession();
+*/
+        root = null;
+        
+        Session ses = HibernateUtil.getSessionFactory().getCurrentSession();
         try {
             ses.beginTransaction();
             final List<Branch> list;
@@ -43,9 +50,19 @@ public class BranchTreeModel {
             }
 
             root = new BranchTreeNode(null, brs);
-        } finally {
+        }
+        catch (Exception e) {
+            
+                e.printStackTrace();
+        }
+        finally {
+            try {
             ses.getTransaction().rollback();
             ses.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
