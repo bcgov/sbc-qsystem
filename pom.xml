@@ -14,6 +14,7 @@
         <module>QUser</module>
 		<module>QSmartboardPlugin</module>
 		<module>QSmartboard</module>
+		<module>QSkyApi</module>  
         <module>Seeder</module>        
     </modules>
 </project>
