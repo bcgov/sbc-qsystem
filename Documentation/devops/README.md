@@ -116,6 +116,17 @@ It is recommended you add the office via the web user interface.  Use the follow
 	2. Image tag containing application images - change to the tag for the project you are working with.  For example, set to test if working on the test project. 
 	3. Application Image Name - image name to use the office - the default should work.
 	4. Namespace containing application images - the default should work.
+
+
+Removing an Office
+------------------
+
+To remove an office, do the following:
+- Delete the Deployment for the office with `oc delete svc <office-name>
+- Delete the Service for the office with `oc delete svc <office-name>
+- Delete the Service for the office
+- `oc rsh <mysql_podname>` and then `mysql`
+- `drop database <office-name>`
 	
 
 
