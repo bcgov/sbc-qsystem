@@ -58,6 +58,7 @@ import org.zkoss.zul.TreeitemRenderer;
 import org.zkoss.zul.Treerow;
 import org.zkoss.zul.Window;
 import org.zkoss.zul.event.TreeDataEvent;
+import ru.apertum.qsky.common.HibernateUtil;
 import ru.apertum.qsky.common.Multilingual;
 import ru.apertum.qsky.controller.branch_tree.AdvancedTreeModel;
 import ru.apertum.qsky.controller.branch_tree.BranchTreeNode;
@@ -255,7 +256,7 @@ public class Dashboard {
                         draggedValue.getData().setParent(((BranchTreeNode) treeItem.getValue()).getData());
                         ((BranchTreeNode) treeItem.getValue()).getData().getChildren().add(draggedValue.getData());
 
-                        final Session ses = getHib().openSession();
+                        final Session ses = HibernateUtil.getSessionFactory().openSession();
                         try {
                             ses.beginTransaction();
                             ses.saveOrUpdate(((BranchTreeNode) treeItem.getValue()).getData());
@@ -295,7 +296,7 @@ public class Dashboard {
             ((BranchTreeNode) tree.getSelectedItem().getValue()).add(node);
         }
 
-        final Session ses = getHib().openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             ses.save(br);
@@ -326,7 +327,7 @@ public class Dashboard {
                     if (br.getParent() != null && !br.getParent().getChildren().remove(br)) {
                         throw new RuntimeException("Not delete the child ");
                     }
-                    final Session ses = getHib().openSession();
+                    final Session ses = HibernateUtil.getSessionFactory().openSession();
                     try {
                         ses.beginTransaction();
                         ses.delete(br);
@@ -354,7 +355,7 @@ public class Dashboard {
             br.setBranchId(((Intbox) branchPropsDialog.getFellow("idBranch")).getValue().longValue());
             br.setTimeZone(((Intbox) branchPropsDialog.getFellow("timeZone")).getValue());
 
-            final Session ses = getHib().openSession();
+            final Session ses = HibernateUtil.getSessionFactory().openSession();
             try {
                 ses.beginTransaction();
                 ses.saveOrUpdate(br);
@@ -445,7 +446,7 @@ public class Dashboard {
         if (selectedBranch == null) {
             return;
         }
-        final Session ses = getHib().openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         final List<Customer> custs;
         try {
             ses.beginTransaction();
@@ -559,7 +560,7 @@ public class Dashboard {
             return;
         }
         final List<Step> stst;
-        final Session ses = getHib().openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             stst = statVM.loadStats(selectedBranch.getBranchId(), ses);
         } catch (Exception ex) {

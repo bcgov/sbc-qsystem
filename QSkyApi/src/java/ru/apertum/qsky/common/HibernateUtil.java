@@ -22,8 +22,21 @@ public class HibernateUtil {
     private static final SessionFactory sessionFactory = buildSessionFactory();
 
     private static SessionFactory buildSessionFactory() {
-        try {            
-            return new Configuration().configure().buildSessionFactory();
+        try {             
+            Configuration cfg = new Configuration();
+            // get configuration from hibernate.cfg.xml
+            cfg.configure();
+            // override hibernate configuration with environment variables.
+            String url = "jdbc:mysql://" + System.getenv ("MYSQL_SERVICE") + ":3306/qsky" ;
+            String user = System.getenv ("MYSQL_USER");
+            String password = System.getenv ("MYSQL_PASSWORD");
+
+            cfg.setProperty("hibernate.connection.url", url);
+            cfg.setProperty("hibernate.connection.username", user);
+            cfg.setProperty("hibernate.connection.password", password);
+            
+            return cfg.buildSessionFactory();
+            
         }
         catch (Throwable ex) {
             System.err.println("SessionFactory creation failed." + ex);
