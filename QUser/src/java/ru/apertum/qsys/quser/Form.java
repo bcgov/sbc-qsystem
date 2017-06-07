@@ -543,7 +543,7 @@ public class Form {
         return QResultList.getInstance().getItems();
     }
 
-    private QCustomer pickedPostponed;
+    private static QCustomer pickedPostponed;
 
     public QCustomer getPickedPostponed() {
         return pickedPostponed;

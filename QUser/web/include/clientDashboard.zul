@@ -16,9 +16,9 @@
                         </listhead>
                         <template name="model" var="pCust">
                             <listitem  context="postponeListPopup">
-                                <listcell label="@load(pCust.getFullNumber()  )" />
-                                <listcell label="@load((pCust.postponPeriod > 0 ) ? pCust.postponPeriod : fmodel.l('unlimit')  )" />
-                                <listcell label="@load(pCust.postponedStatus  )" />
+                                <listcell label="@load(pCust.getFullNumber()  )" visible="@load(fmodel.login)"/>
+                                <listcell label="@load((pCust.postponPeriod > 0 ) ? pCust.postponPeriod : fmodel.l('unlimit')  )" visible="@load(fmodel.login)"/>
+                                <listcell label="@load(pCust.postponedStatus  )" visible="@load(fmodel.login)"/>
                             </listitem>
                         </template>
                     </listbox>
