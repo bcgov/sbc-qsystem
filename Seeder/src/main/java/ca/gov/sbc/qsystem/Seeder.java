@@ -68,9 +68,10 @@ public class Seeder {
             flyway.setLocations(filepath);
             flyway.migrate();
 
+            String sqlGrant = "GRANT ALL ON `" + name + "`.* TO '"+ databaseUser +"'";
             // grant permissions            
             try (Connection conn = DriverManager.getConnection(url, rootUser, rootPassword);
-                    PreparedStatement stmtGrant = conn.prepareStatement(sqlCreate)) {
+                    PreparedStatement stmtGrant = conn.prepareStatement(sqlGrant)) {
 
                 stmtGrant.execute();
 
