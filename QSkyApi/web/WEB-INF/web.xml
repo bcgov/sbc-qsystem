@@ -7,6 +7,11 @@
         <description>ZK listener for session cleanup</description>
         <listener-class>org.zkoss.zk.ui.http.HttpSessionListener</listener-class>
     </listener>
+	<listener>
+        <listener-class>
+                com.sun.xml.ws.transport.http.servlet.WSServletContextListener
+        </listener-class>
+    </listener>
     <servlet>
         <description>ZK loader for ZUML pages</description>
         <servlet-name>zkLoader</servlet-name>
@@ -149,6 +154,19 @@
         <servlet-name>SetPagerData</servlet-name>
         <url-pattern>/setpagerdata</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <description>Customer events url</description>
+        <servlet-name>CustomerEventsWS</servlet-name>
+		 <servlet-class>
+        	com.sun.xml.ws.transport.http.servlet.WSServlet
+        </servlet-class>
+		<load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CustomerEventsWS</servlet-name>
+        <url-pattern>/customer_events/*</url-pattern>
+    </servlet-mapping>
+    
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
