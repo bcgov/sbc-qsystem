@@ -95,7 +95,8 @@ To create the environment, execute the following commands when logged in via oc:
 - Allow the dev project to access the tools project
 `oc policy add-role-to-user system:image-puller system:serviceaccount:servicebc-customer-flow-dev:default -n servicebc-customer-flow-tools`
 - Process and create the Environment Template
-- `oc process -f sbc-qsystem-environment-template.json | oc create -f -`
+- `oc process -f sbc-qsystem-environment-template.json  -p APP_DEPLOYMENT_TAG=<DEPLOYMENT TAG> | oc create -f -`
+	- Substitute test or prod for the <DEPLOYMENT TAG>
 - Load the new office template
 - `oc create -f sbc-qsystem-additional-office.json`
 
