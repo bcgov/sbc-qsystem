@@ -106,14 +106,14 @@
                 ],
 				"livenessProbe": {
 							  "timeoutSeconds": 1,
-							  "initialDelaySeconds": 30,
+							  "initialDelaySeconds": 60,
 							  "tcpSocket": {
 								"port": 8080
 							  }
 							},
 				"readinessProbe": {
 							  "timeoutSeconds": 1,
-							  "initialDelaySeconds": 30,
+							  "initialDelaySeconds": 60,
 							  "tcpSocket": {
 								"port": 8080
 							  }
