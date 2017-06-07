@@ -41,6 +41,7 @@ hs_err_pid*
 /dist/plugins
 !/QSmartboard/web/WEB-INF/lib/*.*
 !/QSkyApi/lib/zkex.jar
+!/QSkyApi/web/WEB-INF/lib/zkex.jar
 !/sonar-runner/gradle/wrapper/*.*
 !/functional-tests/gradle/wrapper/*.*
 /Seeder/target/
