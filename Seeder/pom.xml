@@ -80,9 +80,7 @@
 									<targetPath>${project.basedir}/../dist/sql</targetPath>
 									<directory>${project.basedir}/sql</directory>
 									<filtering>false</filtering>
-								</resource>  		
-							</resources> 	
-							<resources>                                        
+								</resource>  		                                   
 								<resource>
 									<targetPath>${project.basedir}/../dist/qskySql</targetPath>
 									<directory>${project.basedir}/qskySql</directory>
