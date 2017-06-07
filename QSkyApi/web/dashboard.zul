@@ -165,8 +165,8 @@
                                         <label value="@load(each.avgMin)" />
                                     </row>
                                 </template>
-             
                                 <!-- template for footer -->
+                                <!--
                                 <template name="model:groupfoot">
                                     <groupfoot>
                                         <cell colspan="4" style="text-align: right; padding-right: 15px">
@@ -174,7 +174,7 @@
                                         </cell>
                                     </groupfoot>
                                 </template>
-                                    
+                                 -->   
                                 <foot>
                                     <footer span="4" id="footer_category" class="footer_right" label="No data"/>
                                 </foot>
