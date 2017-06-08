@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import javax.naming.NamingException;
 import org.hibernate.Session;
+import ru.apertum.qsky.common.HibernateUtil;
 import ru.apertum.qsky.ejb.IHibernateEJBLocal;
 
 /**
@@ -16,19 +17,6 @@ import ru.apertum.qsky.ejb.IHibernateEJBLocal;
  * @author Evgeniy Egorov
  */
 public class Dicts {
-
-    private IHibernateEJBLocal hib;
-
-    private IHibernateEJBLocal getHib() {
-        try {
-            if (hib == null) {
-                hib = (IHibernateEJBLocal) ((new javax.naming.InitialContext()).lookup("java:comp/env/" + "qskyapi/HibernateEJB"));
-            }
-        } catch (NamingException ex) {
-            throw new RuntimeException("No EJB Hib factory! " + ex);
-        }
-        return hib;
-    }
 
     private Dicts() {
     }
@@ -50,7 +38,7 @@ public class Dicts {
         final long now = new Date().getTime();
         if (now - time > 1000 * 5 || servs == null || empls == null) {
 
-            final Session ses = getHib().openSession();
+            final Session ses = HibernateUtil.getSessionFactory().openSession();
             try {
                 ses.beginTransaction();
                 servs = ses.createCriteria(Service.class).list();

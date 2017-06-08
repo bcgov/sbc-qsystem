@@ -21,18 +21,9 @@ public class BranchTreeModel {
 
     public BranchTreeModel(User user) {
         
-        /*
-        try {
-            hib = (IHibernateEJBLocal) ((new javax.naming.InitialContext()).lookup("java:comp/env/" + "qskyapi/HibernateEJB"));
-        } catch (NamingException ex) {
-            throw new RuntimeException("No EJB Hib factory!");
-        }
-        
-        Session ses = hib.openSession();
-*/
         root = null;
         
-        Session ses = HibernateUtil.getSessionFactory().getCurrentSession();
+        Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             final List<Branch> list;

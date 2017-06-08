@@ -11,6 +11,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import ru.apertum.qsky.api.ICustomerEvents;
+import ru.apertum.qsky.ejb.CustomerEventsEJB;
 
 /**
  *
@@ -19,10 +20,9 @@ import ru.apertum.qsky.api.ICustomerEvents;
 // QSkyAPI  listening at address at http://<server_address>:8080/<serviceName>/<name>
 @WebService(name = "qskyapi/CustomerEventsWS", serviceName = "customer_events", portName = "qsky")
 public class CustomerEventsWS {
-
-    @EJB
-    private ICustomerEvents ejbRef;// Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Web Service Operation")
+    
+    private CustomerEventsEJB ejbRef = new CustomerEventsEJB();
+   
 
     @WebMethod(operationName = "changeCustomerStatus")
     @Oneway

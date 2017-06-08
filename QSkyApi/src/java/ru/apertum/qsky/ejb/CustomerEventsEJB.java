@@ -25,6 +25,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Property;
 import ru.apertum.qsky.api.ICustomerEvents;
 import ru.apertum.qsky.common.CustomerState;
+import ru.apertum.qsky.common.HibernateUtil;
 import ru.apertum.qsky.common.ServerProps;
 import ru.apertum.qsky.model.Branch;
 import ru.apertum.qsky.model.Customer;
@@ -40,8 +41,6 @@ import ru.apertum.qsky.model.Step;
 //@Local(ICustomerEvents.class)
 public class CustomerEventsEJB implements ICustomerEvents {
 
-    @EJB(mappedName = "ejb/qskyapi/hibernate_session_factory")
-    private IHibernateEJBLocal hib;
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
 
@@ -126,7 +125,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void standInService(Long branchId, Long serviceId, Long customerId, Integer status, Integer number, String prefix) {
         System.out.println("Start standInService");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -161,7 +160,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void kickCustomer(Long branchId, Long serviceId, Long customerId, Long employeeId, Integer status) {
         System.out.println("Start kickCustomer");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -191,7 +190,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void inviteCustomer(Long branchId, Long customerId, Long serviceId, Long employeeId, Integer status) {
         System.out.println("Start inviteCustomer");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -215,7 +214,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void inviteSecondary(Long branchId, Long customerId, Long serviceId, Long employeeId, Integer status) {
         System.out.println("Start inviteSecondary");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -238,7 +237,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void startWorkWithCustomer(Long branchId, Long customerId, Long serviceId, Long employeeId, Integer status) {
         System.out.println("Start startWorkWithCustomer");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -274,7 +273,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void startWorkSecondary(Long branchId, Long customerId, Long serviceId, Long employeeId, Integer status) {
         System.out.println("Start startWorkSecondary");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -309,7 +308,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void customerToPostponed(Long branchId, Long customerId, Long employeeId, Integer status) {
         System.out.println("Start customerToPostponed");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -348,7 +347,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void redirectCustomer(Long branchId, Long customerId, Long employeeId, Long serviceId, Integer status) {
         System.out.println("Start redirectCustomer");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -389,7 +388,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void moveToWaitCustomerAfterPostpone(Long branchId, Long customerId, Long serviceId, Integer status) {
         System.out.println("Start moveToWaitCustomerAfterPostpone");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -429,7 +428,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void moveToWaitNextComplexService(Long branchId, Long customerId, Long serviceId, Long employeeId, Integer status) {
         System.out.println("Start moveToWaitNextComplexService");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -470,7 +469,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void backInService(Long branchId, Long customerId, Long employeeId, Long serviceId, Integer status) {
         System.out.println("Start backInService");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -511,7 +510,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
 
     public void finishWorkWithCustomer(Long branchId, Long customerId, Long employeeId, Integer status) {
         System.out.println("Start finishWorkWithCustomer");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -544,7 +543,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
     @Override
     public synchronized void insertCustomer(Long branchId, Long serviceId, Long customerId, Long beforeCustId, Long afterCustId) {
         System.out.println("Start insertCustomer");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Customer customer = getCustomer(ses, branchId, customerId);
@@ -586,7 +585,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
     @Override
     public synchronized void removeCustomer(Long branchId, Long serviceId, Long customerId) {
         System.out.println("Start removeCustomer");
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
 
@@ -630,7 +629,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
     public synchronized void sendServiceName(Long branchId, Long serviceId, String name) {
         System.out.println("Invoke sendServiceName " + name);
         dataLock.lock();
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Service service = getService(ses, branchId, serviceId);
@@ -655,7 +654,7 @@ public class CustomerEventsEJB implements ICustomerEvents {
     public synchronized void sendUserName(Long branchId, Long employeeId, String name) {
         System.out.println("Invoke sendUserName " + name);
         dataLock.lock();
-        final Session ses = hib.openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         try {
             ses.beginTransaction();
             Employee employee = getEmployee(ses, branchId, employeeId);
