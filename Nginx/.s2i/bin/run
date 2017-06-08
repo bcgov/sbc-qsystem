@@ -15,11 +15,11 @@ envsubst_config() {
     echo "---> substituting environment variables in templates"
     for file in /opt/app-root/etc/nginx.conf.d/*.tmpl; do
       target_file="/opt/app-root/etc/nginx.conf.d/$(basename "$file" .tmpl)"
-      envsubst '$KUBERNETES_PORT_53_TCP_ADDR, $SEARCH_DOMAIN' < "$file" > "$target_file"
+      envsubst '$KUBERNETES_PORT_53_TCP_ADDR, $Searc' < "$file" > "$target_file"
     done
   fi
 }
 
 envsubst_config
 
-exec ${NGINX_BASE_DIR},/nginx -c "$NGINX_CONF"
+exec ${NGINX_BASE_DIR}/nginx -c "$NGINX_CONF"
