@@ -25,11 +25,14 @@ public class SkyService {
 
     private void recreateCustomerEvents() {
         if (!sUrl.equals(ServerProps.getInstance().getProps().getSkyServerUrl())) {
-            final CustomerEvents ce;
+            CustomerEvents ce;
+            
             try {
                 ce = new CustomerEvents(new URL(ServerProps.getInstance().getProps().getSkyServerUrl()));
             } catch (Exception ex) {
-                throw new ServerException("Impossible create access to web service. ", ex);
+                // empty customer events.
+               ce = new CustomerEvents();   
+                 // throw new ServerException("Impossible create access to web service. ", ex);
             }
             sUrl = ServerProps.getInstance().getProps().getSkyServerUrl();
             customerEvents = ce;

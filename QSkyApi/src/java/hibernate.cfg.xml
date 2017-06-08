@@ -14,8 +14,18 @@
     <property name="hibernate.connection.password">password</property>
     <!--<property name="hibernate.connection.datasource">jdbc/mysql/qsky</property> -->
 
+    
+    <property name="c3p0.min_size">5</property>
+      <property name="c3p0.max_size">20</property>
+
+      <property name="c3p0.timeout">300</property>
+      <property name="c3p0.max_statements">50</property>
+      <property name="c3p0.idle_test_period">3000</property>
+            <!--
 		<property name="hibernate.current_session_context_class">thread</property>
 		<property name="hibernate.connection.pool_size">128</property>
+		
+		-->
 		<property name="hibernate.show_sql">false</property>
 		<property name="hibernate.driverClassName">com.mysql.jdbc.Driver</property>
 		<!-- property name="hibernate.hbm2ddl.auto">create-trop</property -->
