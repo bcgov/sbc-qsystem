@@ -117,6 +117,13 @@ It is recommended you add the office via the web user interface.  Use the follow
 	3. Application Image Name - image name to use the office - the default should work.
 	4. Namespace containing application images - the default should work.
 
+Automatic Office Route
+----------------------
+Nginx has been configured such that new offices will automatically get a route.
+
+Navigate to <nginx url>/<office-name>/ to go to the office instance of QSystem.
+
+Navigate to <nginx url>/<office-name>/reports/ to go to the reports for that office.
 
 Removing an Office
 ------------------
