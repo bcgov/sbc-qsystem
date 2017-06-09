@@ -33,8 +33,8 @@
         </center>
                 
                 
-        <east size="550px" border="none" minsize="350"  hflex="min" splittable="true" >
-            <panel title="${c:l('invited_client')}" border="normal" height="100%" vflex="min">
+        <east size="550px" border="none" minsize="100"  hflex="max" splittable="true" >
+            <panel title="${c:l('invited_client')}" border="normal" height="100%" vflex="max">
                 <panelchildren style="overflow: auto">
                     <vbox style="padding: 10px 10px;">
                         <label id="nom_cap" value="${c:l('invited_num')}" style="text-decoration:underline;"/>
@@ -55,26 +55,32 @@
         
         
         <south hflex="min" splittable="true"  minsize="150" size="270px">
-            <panel title="${c:l('present_services')}" border="normal" height="100%">
+            <panel title="@load(fmodel.avaitColumn)" border="normal" height="100%">
                 <panelchildren>
-                    <listbox id="service_list" model="@load(fmodel.user.plan)" selectedItem="@bind(fmodel.pickedService)" width="100%" height="100%" onSelect="" vflex="min">
+                    <listbox id="service_list" model="@load(fmodel.user.customerList)" width="100%" height="100%" onSelect="" vflex="min">
                         <listhead>
-                            <listheader label="@load(fmodel.avaitColumn)" sort="auto" width="100px" align="center"/>
-                            <listheader label="${c:l('priority')}" sort="auto" width="120px" align="center"/>
-                            <listheader label="${c:l('service_name')}" sort="auto"/>
+                            <listheader label="Ticket Time" sort="auto" width="100px" align="center"/>
+                            <listheader label="Ticket No." sort="auto" width="100px" align="center"/>
+                            <listheader label="${c:l('service_name')}" sort="auto" width="100px" align="center"/>
+                            <listheader label="${c:l('priority')}" sort="auto" width="100px" align="center"/>
+                            <listheader label="State In" sort="auto" width="120px" align="center"/>
+                            <listheader label="${c:l('comments')}" sort="auto"/>
                         </listhead>
-                        <template name="model" var="planService">
-                            <listitem   context="servicesListPopup">
-                                <listcell label="@load(fmodel.user.getLineSize(planService.getService().getId())  )" />
-                                <listcell label="@load(  ''.concat(planService.getFlexible_coef() ? '* ' : '').concat(fmodel.user.getPriority(planService.getService().getId()))  )" />
-                                <listcell label="@load( ''.concat(planService.service.getPrefix()).concat(' ').concat(planService.service.getName()) )" />
+                        <template name="model" var="customerList">
+                            <listitem context="servicesListPopup">
+                                <listcell label="@load(customerList.getStandTime())" />
+                                <listcell label="@load(customerList.getFullNumber())" />
+                                <listcell label="@load(customerList.getService().getName())" />
+                                <listcell label="@load(customerList.getPriority().get())" />
+                                <listcell label="@load(customerList.getStateIn())" />
+                                <listcell label="@load(customerList.getTempComments())" />
                             </listitem>
                         </template>
                     </listbox>
                     <menupopup id="servicesListPopup">
                         <menuitem label="${c:l('changing_ptiority')}" onClick="@command('clickListServices')" visible="@load(fmodel.login)"/>
                     </menupopup>
-                    <timer id="timer_service_list" delay="10" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
+                    <timer id="timer_service_list" delay="700" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
                 </panelchildren>
                 <!-- Это окно для выора приоритета -->
                 

@@ -52,6 +52,7 @@ public class QResult implements IidGetter, Serializable {
     }
     /**
      * Текст результата работы клиента с пользователем
+     * The result text of the client's work with the user
      */
     @Column(name = "name")
     @Expose

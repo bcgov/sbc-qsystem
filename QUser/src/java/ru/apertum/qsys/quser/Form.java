@@ -49,6 +49,7 @@ import ru.apertum.qsystem.server.QSessions;
 import ru.apertum.qsystem.server.controller.Executer;
 import ru.apertum.qsystem.server.model.QPlanService;
 import ru.apertum.qsystem.server.model.QService;
+import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.server.model.postponed.QPostponedList;
@@ -449,14 +450,15 @@ public class Form {
     @Command
     //public void clickList(@BindingParam("st") String st) {
     public void clickListServices() {
-        if (pickedService != null) {
-            if (!pickedService.getFlexible_coef()) {
-                Messagebox.show(l("forbid_change_priority"), l("change_priority"), Messagebox.OK, Messagebox.INFORMATION);
-                return;
-            }
-            changeServicePriorityDialog.setVisible(true);
-            changeServicePriorityDialog.doModal();
-        }
+
+//        if (pickedService != null) {
+//            if (!pickedService.getFlexible_coef()) {
+//                Messagebox.show(l("forbid_change_priority"), l("change_priority"), Messagebox.OK, Messagebox.INFORMATION);
+//                return;
+//            }
+//            changeServicePriorityDialog.setVisible(true);
+//            changeServicePriorityDialog.doModal();
+//        }
     }
 
     public LinkedList<String> prior_St = new LinkedList(Uses.get_COEFF_WORD().values());
@@ -493,14 +495,24 @@ public class Form {
             final StringBuilder st = new StringBuilder();
             user.getPlan().forEach((QPlanService p) -> {
                 st.append(user.getLineSize(p.getService().getId()));
+                
+                /*
+                QLog.l().logQUser().error("p.getId() ----  ----: " + p.getId());
+                QLog.l().logQUser().error("p.getAvg_wait() ----: " + p.getAvg_wait());
+                QLog.l().logQUser().error("p.getAvg_work() ----: " + p.getAvg_work());
+                QLog.l().logQUser().error("p.getCoefficient() -: " + p.getCoefficient());
+                */
             });
-
+            
             if (!oldSt.equals(st.toString())) {
                 if ("".equals(oldSt.replaceAll("0+", "")) && customer == null) {
                     Clients.showNotification(l("do_invite"), Clients.NOTIFICATION_TYPE_WARNING, btn_invite, "start_center", 0, true);
                 }
+                
+                user.setCustomerList(user.getPlan());                
                 service_list.setModel(service_list.getModel());
                 oldSt = st.toString();
+                BindUtils.postNotifyChange(null, null, Form.this, "*");                
             }
         }
     }
@@ -635,7 +647,7 @@ public class Form {
             params.serviceId = pickedRedirectServ.getId();
             params.requestBack = Boolean.TRUE;
             params.resultId = -1l;
-            params.textData = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
+            params.comments = ((Textbox) redirectCustomerDialog.getFellow("tb_addInQueue")).getText();
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
             
             customer = null;            
@@ -672,10 +684,10 @@ public class Form {
         params.userId = user.getUser().getId();
         params.serviceId = pickedRedirectServ.getId();
         params.resultId = -1l;
-        params.textData = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
         params.priority = priority;
         params.isMine = isMine;
-            
+        params.comments = ((Textbox) servicesDialogWindow.getFellow("tb_addInQueue")).getText();
+        
         return params;
     }
     

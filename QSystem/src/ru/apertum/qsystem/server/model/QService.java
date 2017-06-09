@@ -82,6 +82,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
 
     /**
      * множество кастомеров, вставших в очередь к этой услуге
+     * A lot of custom-made people who are waiting for this service
      */
     @Transient
     private final PriorityQueue<QCustomer> customers = new PriorityQueue<>();
@@ -96,6 +97,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
 
     /**
      * Это все кастомеры стоящие к этой услуге в виде списка Только для бакапа на диск
+     * These are all the custodians standing for this service in the form of a list Only for bakap to disk
      *
      * @return
      */

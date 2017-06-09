@@ -233,10 +233,12 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         TransactionStatus status = Spring.getInstance().getTxManager().getTransaction(def);
         try {
             if (input_data == null) { // вот жеж черд дернул выставить констрейнт на то что введенные данные не нул, а они этот ввод редко нужкн
+//                /Here is the same zhed by the pull of the pull to set the contention that the entered data is not zero, and they rarely need this input
                 input_data = "";
             }
             Spring.getInstance().getHt().saveOrUpdate(this);
             // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
+            // Crutch. If the customizer left a comment before getting into the database, ie. While working with him.
             if (resps.size() > 0) {
                 Spring.getInstance().getHt().saveAll(resps);
                 resps.clear();
