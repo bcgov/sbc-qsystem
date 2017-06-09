@@ -54,10 +54,10 @@
         </east>
         
         
-        <south hflex="min" splittable="true"  minsize="150" size="270px">
+        <south hflex="min" splittable="true" minsize="150" maxsize="350" size="270px">
             <panel title="@load(fmodel.avaitColumn)" border="normal" height="100%">
                 <panelchildren>
-                    <listbox id="service_list" model="@load(fmodel.user.customerList)" width="100%" height="100%" onSelect="" vflex="min">
+                    <listbox id="service_list" model="@load(fmodel.user.customerList)" width="100%" height="100%" onSelect="" vflex="max" >
                         <listhead>
                             <listheader label="Ticket Time" sort="auto" width="100px" align="center"/>
                             <listheader label="Ticket No." sort="auto" width="100px" align="center"/>
