@@ -16,7 +16,6 @@ server {
 	
 	set $office $1;
 	set $remainder $2;
-	$request_uri ~ ^/[a-zA-Z0-9_-]+/reports/(?<remainder>.*)$
 	
 	# default deny
 	
