@@ -14,7 +14,7 @@ server {
 
 	location ~ ^/(?<office>[a-zA-Z0-9_-]+)\/reports/.*$ {
 	
-	$uri ~ ^/[a-zA-Z0-9_-]+/reports/(?<remainder>.*)$
+	$request_uri ~ ^/[a-zA-Z0-9_-]+/reports/(?<remainder>.*)$
 	
 	# default deny
 	
@@ -42,7 +42,7 @@ server {
 	
     location ~ ^/(?<office>[a-zA-Z0-9_-]+)/.*$ {
 	
-	$uri ~ ^/[a-zA-Z0-9_-]+/(?<remainder>.*)$
+	$request_uri ~ ^/[a-zA-Z0-9_-]+/(?<remainder>.*)$
 	
 	# default deny
 	
