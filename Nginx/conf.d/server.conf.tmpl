@@ -19,7 +19,8 @@ server {
 	
 	if ($office = "")
 	{
-	  $office = $1;
+	  set $office $1;
+	  set $remainder "";
 	}
 	
 	# default deny
@@ -53,7 +54,8 @@ server {
 
 	if ($office = "")
 	{
-	  $office = $1;
+	  set $office $1;
+	  set $remainder "";
 	}
 	
 	# default deny
