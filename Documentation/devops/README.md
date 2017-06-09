@@ -100,6 +100,14 @@ To create the environment, execute the following commands when logged in via oc:
 - Load the new office template
 - `oc create -f sbc-qsystem-additional-office.json`
 
+Configure NGINX
+---------------
+This product features a special nginx configuration that will automatically route traffic to offices as they are added.  However you will need to configure an environment variable in the NGINX pod before this will be enabled.
+
+The environment variable is `SEARCH_DOMAIN`.  This should be set to the default search domain for the OpenShift Project you are deploying to.  For example, `servicebc-customer-flow-dev.svc.cluster.local`.
+
+You should not need to set this value, as the environment template will configure it.
+
 Deploying to Additional Offices
 -------------------------------
 A key requirement when deploying to additional offices is that a database user with the ability to create databases must be present.  
@@ -117,6 +125,13 @@ It is recommended you add the office via the web user interface.  Use the follow
 	3. Application Image Name - image name to use the office - the default should work.
 	4. Namespace containing application images - the default should work.
 
+Automatic Office Route
+----------------------
+Nginx has been configured such that new offices will automatically get a route.
+
+Navigate to <nginx url>/<office-name>/ to go to the office instance of QSystem.
+
+Navigate to <nginx url>/<office-name>/reports/ to go to the reports for that office.
 
 Removing an Office
 ------------------

@@ -581,7 +581,7 @@ public class Dashboard {
         if (selectedBranch == null) {
             return;
         }
-        final Session ses = getHib().openSession();
+        final Session ses = HibernateUtil.getSessionFactory().openSession();
         final List<Customer> custs;
         try {
             ses.beginTransaction();

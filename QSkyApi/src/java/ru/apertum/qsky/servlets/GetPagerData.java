@@ -22,6 +22,7 @@ import org.apache.commons.codec.net.BCodec;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import ru.apertum.qsky.common.GsonPool;
+import ru.apertum.qsky.common.HibernateUtil;
 import ru.apertum.qsky.common.Uses;
 import ru.apertum.qsky.controller.PagerAlreadyDone;
 import ru.apertum.qsky.ejb.IHibernateEJBLocal;
@@ -34,8 +35,6 @@ import ru.apertum.qsky.model.pager.PagerResults;
  */
 public class GetPagerData extends HttpServlet {
 
-    @EJB(name = "qskyapi/HibernateEJB", mappedName = "ejb/qskyapi/hibernate_session_factory")
-    private IHibernateEJBLocal hib;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -51,7 +50,7 @@ public class GetPagerData extends HttpServlet {
             /* TODO output your page here. You may use following sample code. */
 
             final Gson g = GsonPool.getInstance().borrowGson();
-            final Session ses = hib.openSession();
+            final Session ses = HibernateUtil.getSessionFactory().openSession();;
             try {
                 ses.beginTransaction();
                 final Query query = ses.getNamedQuery("PagerData.findByActive");
