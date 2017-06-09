@@ -17,6 +17,11 @@ server {
 	set $office $1;
 	set $remainder $2;
 	
+	if ($office = "")
+	{
+	  $office = $1;
+	}
+	
 	# default deny
 	
 	set $allow false;
@@ -43,9 +48,14 @@ server {
 	
     location ~ ^/([a-zA-Z0-9_-]+)/(.*)$ {
 	
-	set $office $1;
-	set $remainder $2;
+	set $office $2;
+	set $remainder $1;
 
+	if ($office = "")
+	{
+	  $office = $1;
+	}
+	
 	# default deny
 	
 	set $allow false;
