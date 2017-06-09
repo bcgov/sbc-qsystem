@@ -38,7 +38,7 @@ server {
         proxy_cache globalcache;
     }
 	
-    location ~ "^/(?<office>[a-zA-Z0-9_-]++)/(?<remainder>.*)" {
+    location ~ "^/(?<office>[a-zA-Z0-9_-]+)/(?<remainder>.*)" {
 	
 	# default deny
 	
