@@ -8,6 +8,8 @@ import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.model.QCustomer;
+import ru.apertum.qsystem.server.model.QService;
 
 public class User {
 
@@ -19,6 +21,8 @@ public class User {
     private String password = "";
     private QUser user;
     private List<QPlanService> plan = new LinkedList<>();
+    private LinkedList<QCustomer> customerList = new LinkedList<>();
+    
 
     public String getName() {
         return name;
@@ -30,12 +34,14 @@ public class User {
         for (QUser us : QUserList.getInstance().getItems()) {           
             if (us.getName().equalsIgnoreCase(name)) {
                 user = us;
-                plan = user.getPlanServiceList().getServices();                
+                plan = user.getPlanServiceList().getServices(); 
+                setCustomerList(user.getPlanServiceList().getServices());
+                customerList = getCustomerList();
                 return;
             }
         }
     }
-
+    
     public String getPassword() {
         return password;
     }
@@ -59,6 +65,23 @@ public class User {
     public void setPlan(List<QPlanService> plan) {
         this.plan = plan;
     }
+    
+    public void setCustomerList(List<QPlanService> planServices) {
+        while (!customerList.isEmpty()) {
+            customerList.removeFirst();
+        }
+        planServices.forEach((QPlanService p) -> {
+            QService ser = QServiceTree.getInstance().getById(p.getService().getId());
+                    ser.getClients().stream().forEach((c) -> {
+                        customerList.add(c);
+                });            
+        });
+    }
+    
+    public LinkedList<QCustomer> getCustomerList(){
+        return customerList;
+    }
+
 
     public int getLineSize(long serviceId) {      
         return QServiceTree.getInstance().getById(serviceId).getCountCustomers();

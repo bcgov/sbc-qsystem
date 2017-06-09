@@ -37,6 +37,9 @@ import ru.apertum.qsystem.server.ServerProps;
  * нет привязки к юзерам, эта привязка вроде как односторонняя и еще имеется поле "коэффициент участия", которое будет игнориться при связи "многие-ко-многим".
  * Текстовое название услуги подтягиваеццо отдельно.
  *
+ * This is the class for downloading a set of services served by the user. Nothing tricky, many-to-many communication + participation rate. This is done because the services
+ * There is no binding to users, this binding is kind of one-sided and there is also a field "coefficient of participation", which will be ignored for many-to-many communication.
+ * The textual name of the service is pull-up separately.
  * @author Evgeniy Egorov
  */
 @Entity
@@ -48,7 +51,7 @@ public class QPlanService implements Serializable {
 
     public QPlanService(QService service, QUser user, Integer coefficient) {
         this.coefficient = coefficient;
-        this.service = service;
+        this.service = service; 
         this.user = user;
     }
     //@Id

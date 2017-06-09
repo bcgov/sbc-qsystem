@@ -45,6 +45,7 @@ import ru.apertum.qsystem.common.QLog;
 
 /**
  * Это пользователь. По большому счету роль и пользователь совпадают в системе. Класс пользователя системы.
+ * This is the user. By and large, the role and user are the same in the system. Class of the user of the system.
  *
  * @author Evgeniy Egorov
  */
@@ -54,6 +55,7 @@ public class QUser implements IidGetter, Serializable {
 
     /**
      * Конструктор для формирования из БД.
+     * The constructor for the formation of the database.
      */
     public QUser() {
     }
@@ -93,6 +95,7 @@ public class QUser implements IidGetter, Serializable {
     }
     /**
      * Удаленный или нет. Нельзя их из базы гасить чтоб констрейнты не поехали. 0 - удаленный 1 - действующий Только для БД.
+     * Remote or not. It is impossible to extinguish them from the database so that the contraints do not go. 0 - remote 1 - valid Only for the database.
      */
     @Expose
     @SerializedName("enable")
@@ -108,6 +111,7 @@ public class QUser implements IidGetter, Serializable {
     }
     /**
      * Параметр доступа к администрированию системы.
+     * Parameter of access to system administration.
      */
     @Expose
     @SerializedName("is_admin")
@@ -123,6 +127,7 @@ public class QUser implements IidGetter, Serializable {
     }
     /**
      * Параметр доступа к отчетам системы.
+     * Parameter of access to system reports.
      */
     @Expose
     @SerializedName("is_report_access")
@@ -139,6 +144,7 @@ public class QUser implements IidGetter, Serializable {
 
     /**
      * Параметр разрешения ведения парраллельного приема кустомеров.
+     * Parameter for allowing parallel parser reception of the handicap.
      */
     @Expose
     @SerializedName("is_parallel")
@@ -156,6 +162,7 @@ public class QUser implements IidGetter, Serializable {
 
     /**
      * Пароль пользователя. В программе хранится открыто. В базе и xml зашифрован.
+     * User password. The program is stored openly. In the database and xml is encrypted
      */
     @Expose
     @SerializedName("pass")
@@ -189,6 +196,7 @@ public class QUser implements IidGetter, Serializable {
     }
     /**
      * Идентификатор рабочего места пользователя.
+     * The identifier of the user's workplace.
      */
     @Expose
     @SerializedName("point")
@@ -204,6 +212,7 @@ public class QUser implements IidGetter, Serializable {
     }
     /**
      * Название пользователя.
+     * The name of the user.
      */
     @Expose
     @SerializedName("name")
@@ -245,6 +254,7 @@ public class QUser implements IidGetter, Serializable {
     
     /**
      * текст для вывода на главное табло в шаблоны панели вызванного и третью колонку пользователя
+     * Text to display on the main display in the templates of the panel called and the third column of the user
      */
     @Expose
     @SerializedName("tablo_text")
@@ -267,6 +277,7 @@ public class QUser implements IidGetter, Serializable {
     //************************************** Услуги юзера **************************************************************
     /**
      * Множество услуг, которые обрабатывает юзер. По наименованию услуги получаем Класс - описалово участия юзера в этой услуге/ Имя услуги - IProperty
+     * A lot of services that are processed by the user. By the name of the service we get Class - descriptive of the user's participation in this service / Service name - IProperty
      */
     //private QPlanServiceList serviceList = new QPlanServiceList();
     @Expose
@@ -283,6 +294,7 @@ public class QUser implements IidGetter, Serializable {
     @JoinColumn(name = "user_id", insertable = false, nullable = false, updatable = false)
     //MOSCOW
     @Fetch(FetchMode.SELECT) // Это отсечение дублирования при джойне таблици, т.к. в QPlanService есть @OneToOne к QService, и в нем есть @OneToMany к QServiceLang - дублится по количеству переводов
+    //This is the truncation of the duplication when the table joins, since In QPlanService there is @OneToOne to QService, and there is @OneToMany to QServiceLang - it is duplicated by the number of translations.
     public List<QPlanService> getPlanServices() {
         return planServices;
     }
@@ -290,6 +302,7 @@ public class QUser implements IidGetter, Serializable {
 
     /**
      * Только для отображения в админке в виде списка
+     * Only for display in the admin list
      *
      * @return
      */
@@ -308,6 +321,7 @@ public class QUser implements IidGetter, Serializable {
 
     /**
      * Найти сервис из списка обслуживаемых юзером.
+     * Find a service from the list of users served by the user.
      *
      * @param serviceId id искомого сервиса
      * @return

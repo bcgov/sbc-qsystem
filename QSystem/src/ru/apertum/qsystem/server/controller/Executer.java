@@ -237,7 +237,7 @@ public final class Executer {
                 
                 // Введенные кастомером данные
                 // The data entered by the customizer
-                customer.setInput_data(cmdParams.textData);
+                customer.setTempComments(cmdParams.comments);
                 
                 //добавим нового пользователя
                 // add a new user

@@ -40,7 +40,7 @@
         
                 <div style="margin:10px 10px 10px 10px;"></div>
                 <label value="${c:l('comments')}"/>
-                <textbox id="tb_redirect" rows="10" value="" hflex="1" tabindex="2" />
+                <textbox id="tb_addInQueue" rows="10" value="" hflex="1" tabindex="2" />
                 <div style="float:right; margin:10px 0px 0px 0px;">
                     <hbox>
                         <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')"/>

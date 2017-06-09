@@ -203,6 +203,7 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
                     });
                 }
                 // для получения правильной очередности хвоста
+                // to get the right order of the tail
                 final PriorityQueue<QCustomer> custs = new PriorityQueue<>();
                 final LinkedList<QCustomer> qeue = new LinkedList<>();
                 ss.getClients().stream().forEach((qCustomer) -> {
