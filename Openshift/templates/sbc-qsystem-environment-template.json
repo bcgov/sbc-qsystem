@@ -295,6 +295,12 @@
                     "containerPort": 8080
                   }
                 ],
+				"env": [
+                  {
+                    "name": "SEARCH_DOMAIN",
+                    "value": "servicebc-customer-flow-${APP_DEPLOYMENT_TAG}.svc.cluster.local"
+                  }
+				 ],
                 "livenessProbe": {
 							  "timeoutSeconds": 1,
 							  "initialDelaySeconds": 60,
