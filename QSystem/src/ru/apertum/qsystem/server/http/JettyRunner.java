@@ -156,7 +156,7 @@ public class JettyRunner implements Runnable {
         ContextHandler ctxResources = new ContextHandler(contextPrefix); /* the server uri path */
         ctxResources.setHandler (resource_handler);
         
-        ContextHandler ctxCommand = new ContextHandler(contextPrefix); /* the server uri path */
+        ContextHandler ctxCommand = new ContextHandler(contextPrefix + "/qsystem"); /* the server uri path */
         ctxCommand.setHandler (new CommandHandler());
         
         // Важный момент - поряд следования хандлеров

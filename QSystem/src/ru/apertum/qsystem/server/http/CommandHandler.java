@@ -42,9 +42,9 @@ import ru.apertum.qsystem.server.controller.Executer;
  */
 public class CommandHandler extends AbstractHandler {
 
-    public static final String CMD_URL_PATTERN = "/qsystem/command";
-    public static final String WS_URL_PATTERN = "/qsystem/ws";
-    public static final String INFO_URL_PATTERN = "/qsystem/info";
+    public static final String CMD_URL_PATTERN = "/command";
+    public static final String WS_URL_PATTERN = "/ws";
+    public static final String INFO_URL_PATTERN = "/info";
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
