@@ -56,7 +56,7 @@ server {
 		if ($http_x_forwarded_for ~ 142\..*$) {     
 		 set $allow true;
 		}
-		
+		set $allow true;
 		if ($allow = false) {    
 		 return 403; 
 		}
