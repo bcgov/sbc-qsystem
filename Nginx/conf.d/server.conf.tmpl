@@ -34,7 +34,7 @@ server {
         # proxy all traffic to this URL, 
         # note the trailing slash strips out the /proxy path on 
         # the request to the upstream server
-        proxy_pass http://$office.${SEARCH_DOMAIN}:8088$remainder/;
+        proxy_pass http://$office.${SEARCH_DOMAIN}:8088/$office$remainder/;
         
         # Ensure HTTP get passed thru
         proxy_pass_request_headers on;
@@ -70,7 +70,7 @@ server {
         # proxy all traffic to this URL, 
         # note the trailing slash strips out the /proxy path on 
         # the request to the upstream server
-        proxy_pass http://$office.${SEARCH_DOMAIN}:8080$remainder/;
+        proxy_pass http://$office.${SEARCH_DOMAIN}:8080/$office$remainder/;
         
         # Ensure HTTP get passed thru
         proxy_pass_request_headers on;

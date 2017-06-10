@@ -124,8 +124,15 @@ public class JettyRunner implements Runnable {
          qWebSocketHandler.setHandler(new DefaultHandler());
          * 
          */
+        
+        /* By Convention, the service name is the same as the database name.  This is convenient as there are no other environment variables containing the service name.
+        We need to set the context prefix to this in order for the nginx proxy to work.
+        */
+        
+        String contextPrefix = "/" + System.getenv("MYSQL_DATABASE");            
+            
         final ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        servletContext.setContextPath("/");
+        servletContext.setContextPath(contextPrefix);
         //При необходимости иметь сервлет, добавляяем их в обработчики вот так
         //servletContext.addServlet(new ServletHolder(new HelloServlet()), "/hell");
 
@@ -158,7 +165,7 @@ public class JettyRunner implements Runnable {
                 final String name = file.getName().substring(0, file.getName().lastIndexOf(".")).toLowerCase();
                 QLog.l().logger().debug("WAR " + name + ": " + file.getAbsolutePath());
                 final WebAppContext webapp = new WebAppContext();
-                webapp.setContextPath("/" + name);
+                webapp.setContextPath(contextPrefix + "/" + name);
                 webapp.setWar(file.getAbsolutePath());
                 handlers.addHandler(webapp);
             }
