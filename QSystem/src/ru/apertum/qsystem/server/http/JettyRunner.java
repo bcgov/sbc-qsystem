@@ -40,6 +40,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ServerException;
@@ -116,6 +117,7 @@ public class JettyRunner implements Runnable {
         resource_handler.setDirectoriesListed(true);
         resource_handler.setWelcomeFiles(new String[]{"index.html"});
         resource_handler.setResourceBase("www");
+        
 
         /*
          // WebSocket: Регистрируем ChatWebSocketHandler в сервере Jetty. такой метож сдох в jttty9
@@ -149,12 +151,20 @@ public class JettyRunner implements Runnable {
          */
         final HandlerList handlers = new HandlerList();
 
+        // wrap resource handler
+        
+        ContextHandler ctxResources = new ContextHandler(contextPrefix); /* the server uri path */
+        ctxResources.setHandler (resource_handler);
+        
+        ContextHandler ctxCommand = new ContextHandler(contextPrefix); /* the server uri path */
+        ctxCommand.setHandler (new CommandHandler());
+        
         // Важный момент - поряд следования хандлеров
         // по этому порядку будет передоваться запрос, если он еще не обработан
         // т.е. с начала ищется файл, если не найден, то урл передается на исполнение команды,
         // в комаедах учтено что урл для вебсокета нужно пробросить дальше, его поймает хандлер вебсокетов
         //handlers.setHandlers(new Handler[]{resource_handler, new CommandHandler(), qWebSocketHandler});
-        handlers.setHandlers(new Handler[]{resource_handler, new CommandHandler(), servletContext});
+        handlers.setHandlers(new Handler[]{ctxResources, ctxCommand, servletContext});
 
         // Загрузка war из папки 
         String folder = "./www/war/";
