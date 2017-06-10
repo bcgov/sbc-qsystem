@@ -103,7 +103,7 @@ Copyright (C) 2004 Potix Corporation. All Rights Reserved.
 	-->
 	<servlet-mapping>
 		<servlet-name>zkLoader</servlet-name>
-		<url-pattern>*./zk/*</url-pattern>
+		<url-pattern>/zk/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
