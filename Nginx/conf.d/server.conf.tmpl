@@ -43,7 +43,7 @@ server {
         proxy_cache globalcache;
     }
 	
-    location ~ ^/([a-zA-Z0-9_-]+)(/.*)$ {
+    location ~ ^/([a-zA-Z0-9_-]+)(.*)$ {
 	
 	set $office $1;
 	set $remainder $2;
@@ -55,11 +55,12 @@ server {
 	if ($http_x_forwarded_for ~ 142\..*$) {     
      set $allow true;
     }
+	set $allow true;
 	
     if ($allow = false) {    
      return 403; 
     }
-	set $allow true;
+	
 	
 #	if ($http_sm_authdirname = "") { 
 #		return 403; 
