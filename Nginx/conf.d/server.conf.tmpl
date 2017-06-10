@@ -33,6 +33,12 @@ server {
      return 403; 
     }
 
+		if ($http_cookie ~* "jsessionid=([^;]+)(?:;|$)") {
+			set $co "jsessionid=$1";
+			proxy_set_header Cookie "$co";
+		}
+
+	
         # proxy all traffic to this URL, 
         # note the trailing slash strips out the /proxy path on 
         # the request to the upstream server
@@ -41,8 +47,6 @@ server {
         # Ensure HTTP get passed thru
         proxy_pass_request_headers on;
         
-        # its helpful to cache these responses
-        proxy_cache globalcache;
     }
 	
     location ~ ^/([a-zA-Z0-9_-]+)(/.*)$ {
@@ -70,6 +74,12 @@ server {
 
 		#add_header Content-Type text/plain;
 
+		if ($http_cookie ~* "jsessionid=([^;]+)(?:;|$)") {
+			set $co "jsessionid=$1";
+			proxy_set_header Cookie "$co";
+		}
+		
+		
         # proxy all traffic to this URL, 
         # note the trailing slash strips out the /proxy path on 
         # the request to the upstream server
@@ -77,9 +87,7 @@ server {
         
         # Ensure HTTP get passed thru
         proxy_pass_request_headers on;
-        
-        # its helpful to cache these responses
-        proxy_cache globalcache;
+                
     }
 	
     
