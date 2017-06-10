@@ -466,6 +466,16 @@
 									<filtering>false</filtering>
 								</resource>	
 								<resource>
+									<targetPath>${project.basedir}/../dist/resources</targetPath>
+									<directory>${project.basedir}/resources</directory>
+									<filtering>false</filtering>
+								</resource>	
+								<resource>
+									<targetPath>${project.basedir}/../dist/media</targetPath>
+									<directory>${project.basedir}/media</directory>
+									<filtering>false</filtering>
+								</resource>	
+								<resource>
 									<targetPath>${project.basedir}/../dist/plugins</targetPath>
 									<directory>${project.basedir}/plugins</directory>
 									<filtering>false</filtering>
