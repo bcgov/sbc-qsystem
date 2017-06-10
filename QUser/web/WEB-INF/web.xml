@@ -90,6 +90,14 @@ Copyright (C) 2004 Potix Corporation. All Rights Reserved.
 		<servlet-name>zkLoader</servlet-name>
 		<url-pattern>*.mul</url-pattern>
 	</servlet-mapping>
+        <servlet-mapping>
+		<servlet-name>zkLoader</servlet-name>
+		<url-pattern>*.wks</url-pattern>
+	</servlet-mapping>
+        <servlet-mapping>
+		<servlet-name>zkLoader</servlet-name>
+		<url-pattern>*.wpd</url-pattern>
+	</servlet-mapping>
 
 	<!-- Optional. Uncomment it if you want to use richlets.
 	-->
@@ -122,7 +130,7 @@ Copyright (C) 2004 Potix Corporation. All Rights Reserved.
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>auEngine</servlet-name>
-		<url-pattern>*./zkau/*</url-pattern>
+		<url-pattern>/zkau/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- Uncomment if you want to use the ZK filter to post process the HTML output
