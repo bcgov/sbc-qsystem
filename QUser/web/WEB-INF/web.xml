@@ -48,7 +48,7 @@ Copyright (C) 2004 Potix Corporation. All Rights Reserved.
 		-->
 		<init-param>
 			<param-name>update-uri</param-name>
-			<param-value>zkau</param-value>
+			<param-value>/zkau</param-value>
 		</init-param>
 		<!-- [Optional] Specifies whether to compress the output
 		of the ZK loader. It speeds up the transmission over slow Internet.
