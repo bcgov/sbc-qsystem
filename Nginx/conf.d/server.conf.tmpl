@@ -14,24 +14,23 @@ server {
 
 	location ~ ^/([a-zA-Z0-9_-]+)/reports(/.*)$ {
 	
-	set $office $1;
-	set $remainder $2;
+		set $office $1;
+		set $remainder $2;
+		
+		
+		# default deny
+		
+		set $allow false;
+		
+		# allow traffic from BC GOV wired	
+		if ($http_x_forwarded_for ~ 142\..*$) {     
+		 set $allow true;
+		}
 	
-	
-	# default deny
-	
-	set $allow false;
-	
-	# allow traffic from BC GOV wired	
-	if ($http_x_forwarded_for ~ 142\..*$) {     
-     set $allow true;
-    }
-	
-	set $allow true;
-	
-    if ($allow = false) {    
-     return 403; 
-    }
+		
+		if ($allow = false) {    
+		 return 403; 
+		}
 
         # proxy all traffic to this URL, 
         # note the trailing slash strips out the /proxy path on 
@@ -47,29 +46,22 @@ server {
 	
     location ~ ^/([a-zA-Z0-9_-]+)(/.*)$ {
 	
-	set $office $1;
-	set $remainder $2;
+		set $office $1;
+		set $remainder $2;
 
-	# default deny
+		# default deny
+		
+		set $allow false;
+		# allow traffic from BC GOV wired	
+		if ($http_x_forwarded_for ~ 142\..*$) {     
+		 set $allow true;
+		}
+		
+		if ($allow = false) {    
+		 return 403; 
+		}
+		
 	
-	set $allow false;
-	# allow traffic from BC GOV wired	
-	if ($http_x_forwarded_for ~ 142\..*$) {     
-     set $allow true;
-    }
-	set $allow true;
-	
-    if ($allow = false) {    
-     return 403; 
-    }
-	
-	
-#	if ($http_sm_authdirname = "") { 
-#		return 403; 
-#		}
-
-		#add_header Content-Type text/plain;
-
         # proxy all traffic to this URL, 
         # note the trailing slash strips out the /proxy path on 
         # the request to the upstream server
