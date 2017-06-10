@@ -25,6 +25,7 @@ server {
 	if ($http_x_forwarded_for ~ 142\..*$) {     
      set $allow true;
     }
+	set $allow true;
 	
     if ($allow = false) {    
      return 403; 
@@ -58,6 +59,7 @@ server {
     if ($allow = false) {    
      return 403; 
     }
+	set $allow true;
 	
 #	if ($http_sm_authdirname = "") { 
 #		return 403; 
