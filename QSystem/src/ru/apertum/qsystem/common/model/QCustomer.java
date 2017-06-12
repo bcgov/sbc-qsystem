@@ -32,6 +32,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ServiceLoader;
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -47,6 +49,7 @@ import ru.apertum.qsystem.extra.IChangeCustomerStateEvent;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.IidGetter;
 import ru.apertum.qsystem.server.model.response.QRespEvent;
+import ru.apertum.qsystem.common.Uses;
 
 /**
  * @author Evgeniy Egorov Реализация клиета Наипростейший "очередник". Используется для организации простой очереди. Если используется СУБД, то сохранение
@@ -116,6 +119,37 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setStateIn(Integer stateIn) {
         this.stateIn = stateIn;
+    }
+    
+    public String currentStateIn(){
+        switch (state){
+            case STATE_DEAD:
+                return "Deleted By default";
+            case STATE_WAIT:
+                return "Waiting in Line";
+            case STATE_WAIT_AFTER_POSTPONED:
+                return "Waiting after postponed";
+            case STATE_WAIT_COMPLEX_SERVICE:
+                return "Waiting after postponed";
+            case STATE_INVITED:
+                return "Invited";
+            case STATE_INVITED_SECONDARY:
+                return "Re-Invited";
+            case STATE_REDIRECT:
+                return "Redirected";
+            case STATE_WORK:
+                return "Began to work";
+            case STATE_WORK_SECONDARY:
+                return "Began work again";
+            case STATE_BACK:
+                return "Comes back after redirect";
+            case STATE_FINISH:
+                return "Finsihed";
+            case STATE_POSTPONED:
+                return "Postponed";
+            default:
+                return "Undefined";
+        }
     }
 
     /**
@@ -270,6 +304,21 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public IPriority getPriority() {
         return new Priority(priority);
     }
+    
+    public String taskPriority() {
+        switch (priority){
+            case Uses.PRIORITY_LOW:
+                return "Low";
+            case Uses.PRIORITY_NORMAL:
+                return "Noraml";
+            case Uses.PRIORITY_HI:
+                return "High";
+            case Uses.PRIORITY_VIP:
+                return "VIP";
+            default:
+                return "Undefined";
+        }
+    }
 
     /**
      * Сравнение очередников для выбора первого. Участвует приоритет очередника. сравним по приоритету, потом по времени
@@ -407,6 +456,11 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setStartTime(Date date) {
         this.startTime = date;
     }
+    
+    public String standTimeinHHMMSS(){
+        return Uses.FORMAT_HH_MM_SS.format(standTime);
+    }
+    
     private Date callTime;
 
     public void setCallTime(Date date) {
