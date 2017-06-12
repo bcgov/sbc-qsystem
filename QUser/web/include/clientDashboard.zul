@@ -68,11 +68,11 @@
                         </listhead>
                         <template name="model" var="customerList">
                             <listitem context="servicesListPopup">
-                                <listcell label="@load(customerList.getStandTime())" />
+                                <listcell label="@load(customerList.standTimeinHHMMSS())" />
                                 <listcell label="@load(customerList.getFullNumber())" />
                                 <listcell label="@load(customerList.getService().getName())" />
-                                <listcell label="@load(customerList.getPriority().get())" />
-                                <listcell label="@load(customerList.getStateIn())" />
+                                <listcell label="@load(customerList.taskPriority())" />
+                                <listcell label="@load(customerList.currentStateIn())" />
                                 <listcell label="@load(customerList.getTempComments())" />
                             </listitem>
                         </template>
