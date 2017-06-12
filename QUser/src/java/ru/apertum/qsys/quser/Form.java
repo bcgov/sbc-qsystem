@@ -645,9 +645,9 @@ public class Form {
 
             params.userId = user.getUser().getId();
             params.serviceId = pickedRedirectServ.getId();
-            params.requestBack = Boolean.TRUE;
+            params.requestBack = Boolean.FALSE;
             params.resultId = -1l;
-            params.comments = ((Textbox) redirectCustomerDialog.getFellow("tb_addInQueue")).getText();
+            params.comments = ((Textbox) addNextServiceDialog.getFellow("tb_addInQueue")).getText();
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
             
             customer = null;            
