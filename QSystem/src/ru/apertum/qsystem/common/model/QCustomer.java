@@ -310,7 +310,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             case Uses.PRIORITY_LOW:
                 return "Low";
             case Uses.PRIORITY_NORMAL:
-                return "Noraml";
+                return "Normal";
             case Uses.PRIORITY_HI:
                 return "High";
             case Uses.PRIORITY_VIP:

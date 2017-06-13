@@ -15,7 +15,7 @@ import ru.apertum.qsystem.common.model.QCustomer;
  * @author jassingh
  */
 public class WaitingPanelComparator implements Comparator<Object>, Serializable{
-    private  static  final long serialVersionUID = -2127053833562854322L;
+    private  static  final long serialVersionUID = 1L;
     
     private boolean asc = true;
     private int type = 0;
@@ -41,7 +41,7 @@ public class WaitingPanelComparator implements Comparator<Object>, Serializable{
         case 1: // Ticket Time
             return customer1.standTimeinHHMMSS().compareTo(customer2.standTimeinHHMMSS()) * (asc ? 1 : -1);
         case 2: // Ticket Number
-            return customer1.getFullNumber().compareTo(customer2.getFullNumber()) * (asc ? 1 : -1);
+            return this.compareTicketNumber(customer1, customer2, asc);
         case 3: // Service Name
             return customer1.getService().getName().compareTo(customer2.getService().getName()) * (asc ? 1 : -1);
         case 4: // Priority
@@ -51,7 +51,18 @@ public class WaitingPanelComparator implements Comparator<Object>, Serializable{
         default: // Ticket Number //
             return customer1.standTimeinHHMMSS().compareTo(customer2.standTimeinHHMMSS()) * (asc ? 1 : -1);
         }
- 
+    }
+    
+    public int compareTicketNumber(QCustomer customer1, QCustomer customer2, boolean asc ){
+        if (customer1.getPrefix().equals(customer2.getPrefix()) && customer1.getFullNumber().length() != customer2.getFullNumber().length()) {
+            if (customer1.getNumber()>customer2.getNumber()){
+               return 1 * (asc ? 1: -1);
+           }else{
+               return -1 * (asc ? 1 : -1);
+           }
+        }else{
+            return customer1.getFullNumber().compareTo(customer2.getFullNumber()) * (asc ? 1 : -1);
+        }        
     }
     
 }
