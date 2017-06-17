@@ -506,8 +506,7 @@
 								<chmod perm="777" dir="${project.basedir}/../dist/temp" type="dir"/>
 							    <mkdir dir="${project.basedir}/../dist/logs"/>
 								<chmod perm="777" dir="${project.basedir}/../dist/logs" type="dir"/>
-							    <mkdir dir="${project.basedir}/../dist/logs"/>
-								<chmod perm="777" dir="${project.basedir}/../dist/config" type="dir"/>
+							    <chmod file="${project.basedir}/../dist/config/QSmartboardPlugin.properties" perm="777"/>
 							</target>
 						</configuration>
 						<goals>
