@@ -403,15 +403,7 @@ public final class Executer {
                 
                 // сохраняем состояния очередей.
                 QServer.savePool();
-                //разослать оповещение о том, что посетитель отложен
-                Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
-//                Uses.sendUDPBroadcast(Uses.TASK_RESTART, ServerProps.getInstance().getProps().getClientPort());
                 
-                //рассылаем широковещетельно по UDP на определенный порт. Должно высветитьсяна основном табло
-                // send out broadly by UDP to a specific port. Must be highlighted on the main board
-                
-                MainBoard.getInstance().killCustomer(user);
-                // MainBoard.getInstance().customerStandIn(customer);
             } catch (Throwable t) {
                 QLog.l().logger().error("Загнулось под конец.", t);
             }
