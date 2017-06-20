@@ -202,7 +202,7 @@ public class QPlanService implements Serializable {
 
     /**
      *
-     * @param work_time время работы с кастомером, с которым работали. в милисекундах
+     * @param work_time время работы с кастомером, с которым работали. в милисекундах ::Time of work with the custom tool with which they worked. In milliseconds
      */
     public synchronized void inkWorked(long work_time) {
         this.worked++;

@@ -253,6 +253,7 @@ public class Form {
             }
         }
         // тут уже ретурн может быть и есть There may already be a rethurn
+        
     }
 
     public LinkedList<QUser> getUsersForLogin() {
@@ -433,7 +434,21 @@ public class Form {
     }
 
     //********************************************************************************************************************************************
-    //**  Change priority
+    //**  Change priority - By Customer
+    //********************************************************************************************************************************************
+    private QCustomer pickedCustomer;
+
+    public QCustomer getPickedCustomer() {
+        return pickedCustomer;
+    }
+
+    public void setPickedCustomer(QCustomer pickedCustomer) {
+        this.pickedCustomer = pickedCustomer;
+    }
+
+    
+    //********************************************************************************************************************************************
+    //**  Change priority - By Service
     //********************************************************************************************************************************************
     @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg")
     Window changeServicePriorityDialog;
@@ -459,6 +474,33 @@ public class Form {
 //            changeServicePriorityDialog.setVisible(true);
 //            changeServicePriorityDialog.doModal();
 //        }
+    }
+    
+    @Command
+    public void inviteCustomerNow() {
+        // 1. Postpone the customer 
+        // 2. Pick the customer from Postponed list
+        
+        if (keys_current == KEYS_INVITED || keys_current== KEYS_STARTED || keys_current == KEYS_OFF){
+            return;
+        }
+        
+        final CmdParams params = new CmdParams();
+        params.userId = user.getUser().getId();
+        params.postponedPeriod = 1;
+        params.customerId = pickedCustomer.getId();
+        params.isMine = Boolean.TRUE;
+        user.getUser().setCustomer(pickedCustomer);
+        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_SELECTED_CUSTOMER).process(params, "", new byte[4],pickedCustomer);
+        customer = null;
+
+        service_list.setModel(service_list.getModel());
+
+        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
+        customer = user.getUser().getCustomer();
+
+        setKeyRegim(KEYS_INVITED);
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
     }
 
     public LinkedList<String> prior_St = new LinkedList(Uses.get_COEFF_WORD().values());

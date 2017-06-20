@@ -147,6 +147,8 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 return "Finsihed";
             case STATE_POSTPONED:
                 return "Postponed";
+            case STATE_POSTPONED_REDIRECT:
+                return "Postponed";
             default:
                 return "Undefined";
         }
@@ -230,24 +232,31 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             case STATE_FINISH:
                 QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
-                // сохраним кастомера в базе
+                // сохраним кастомера в базе :: Keep the customizer in the database
                 saveToSelfDB();
                 break;
             case STATE_POSTPONED:
                 QLog.l().logger().debug("Кастомер с номером \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
-                // сохраним кастомера в базе
+                // сохраним кастомера в базе :: Keep the customizer in the database
+                saveToSelfDB();
+                break;
+            case STATE_POSTPONED_REDIRECT:
+                QLog.l().logger().debug("Customer to postpone prefix \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
+                startTime = standTime;
+                getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
+                // сохраним кастомера в базе :: Keep the customizer in the database
                 saveToSelfDB();
                 break;
         }
 
-        // поддержка расширяемости плагинами
+        // поддержка расширяемости плагинами :: Support extensibility plug-ins
         for (final IChangeCustomerStateEvent event : ServiceLoader.load(IChangeCustomerStateEvent.class)) {
-            QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
+            QLog.l().logger().info("Вызов SPI расширения. Описание: :: Call the SPI extension. Description: " + event.getDescription());
             try {
                 event.change(this, state, newServiceId);
             } catch (Throwable tr) {
-                QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
+                QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: :: The SPI extension call failed. Description:" + tr);
             }
         }
     }

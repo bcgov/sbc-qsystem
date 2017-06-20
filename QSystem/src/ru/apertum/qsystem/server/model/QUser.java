@@ -81,6 +81,7 @@ public class QUser implements IidGetter, Serializable {
     }
     /**
      * признак удаления с проставленим даты
+     * Deletion flag with date stamping
      */
     @Column(name = "deleted")
     @Temporal(javax.persistence.TemporalType.DATE)
@@ -425,6 +426,10 @@ public class QUser implements IidGetter, Serializable {
      * Customer, который попал на обработку к этому юзеру. При вызове следующего, первый в очереди кастомер, выдерается из этой очереди совсем и попадает сюда.
      * Сдесь он живет и переживает все интерпритации, которые с ним делает юзер. При редиректе в другую очередь юзером, данный кастомер отправляется в другую
      * очередь, возможно, с другим приоритетом, а эта ссылка становится null.
+     * 
+     * Customer, who got to the treatment for this user. When the next one is called, the first one in the queue is selected from this queue at all and gets here.
+     * He lives here and experiences all the interpretations that the user makes with him. When you redirect to another queue by the user, the given custom is sent to another
+     * Queue, possibly with a different priority, and this reference becomes null.
      */
     private QCustomer customer = null;
 
@@ -432,27 +437,33 @@ public class QUser implements IidGetter, Serializable {
      * Назначить юзеру кастомера в работу. Типа текущий в работе. Если устанавливаем NULL, то это значить нужно замочить текущего, наверное закончили работать с
      * ним.
      *
+     * Assign the user to the workbench. Type current in operation. If we set NULL, then it means to dunk the current one, probably finished working with
+     * Him.
+     * 
      * @param customer кастомер, который идет в рвботу, типа текущий. Может быть NULL для уничтожения текущего.
      */
     public void setCustomer(QCustomer customer) {
-        // небыло и не ставим
+        // небыло и не ставим :: Nebylo(was not) and do not put
         if (customer == null && getCustomer() == null) {
             return;
         }
-        // был кастомер у юзера и убираем его
+        // был кастомер у юзера и убираем его :: Was a user from the user and remove it
         if (customer == null && getCustomer() != null) {
             // если убирается кастомер, то надо убрать признак юзера, который работает с кастомером
+            // if the customizer is removed, it is necessary to remove the sign of the user who works with the customizer
             finalizeCustomer();
             if (getCustomer().getUser() != null) {
                 getCustomer().setUser(null);
             }
             // раз юзера убрали, то и время начала работы этого юзера тож убирать
+            // Once the user was removed, then the start time of this user's identity also clean up
             if (getCustomer().getStartTime() != null) {
                 getCustomer().setStartTime(null);
             }
-            parallelCustomers.remove(getCustomer().getId()); // он же в толпе параллельных
+            parallelCustomers.remove(getCustomer().getId()); // он же в толпе параллельных :: He is in a crowd of parallel
         } else {
             // иначе кастомеру, определившимуся к юзеру, надо поставить признак работы с опред. юзером.
+            //Otherwise, a custom defined to the user, you must put the sign of work with opred. User.
             if (customer == null) {
                 throw new IllegalArgumentException("Customer is null! It is impossible!");
             }
@@ -470,6 +481,7 @@ public class QUser implements IidGetter, Serializable {
 
     /**
      * Это чтоб осталась инфа после завершения работ с кастомером. Нужно для нормативов и статистики сиюминутной
+     * This is to leave the infa after completing the work with the customizer. It is necessary for the standards and statistics of the momentary
      */
     public void finalizeCustomer() {
         shadow = new Shadow(customer);
@@ -478,6 +490,7 @@ public class QUser implements IidGetter, Serializable {
 
     /**
      * Это чтоб осталась инфа сразу после вызова кастомера. Нужно для нормативов и статистики сиюминутной
+     * This is to leave the infa immediately after the call of the custodian. It is necessary for the standards and statistics of the momentary
      *
      * @param cust
      */
@@ -491,6 +504,10 @@ public class QUser implements IidGetter, Serializable {
      * тут. Будет происходить переключение на текущего в работу. Браться он будет отсюда. Переключиться можно быдет либо отдельной командой, либо указав ID
      * кастомера для которого прислана команда на сервер. Вообще, это типа отложенных, но только не надо отдельно вызывать его, просто переключиться на него в
      * customer на прямую и выполнить команду. На кого конкретно переключить приедет либо как ID в команде, либо отдельной командой.
+     * There may be a parallel reception. We need to keep everyone who was called. The current tool in the work remains as it is in the customer, and the crowd of parallel is stored
+     * Here. There will be a switch to the current job. He will fight from here. You can switch either by a separate command or by specifying an ID
+     * A customizer for which a command is sent to the server. In general, this is a type of pending, but just do not separately call it, just switch to it in
+     * Customer on a straight line and execute the command. On whom to specifically switch will come either as an ID in a team or as a separate team.
      */
     private final LinkedHashMap<Long, QCustomer> parallelCustomers = new LinkedHashMap<>();
 
