@@ -404,6 +404,7 @@ public class QServer extends Thread {
 
     /**
      * Сохранение состояния пула услуг в xml-файл на диск
+     * Saving the status of the service pool to an xml file on disk
      */
     public synchronized static void savePool() {
         final long start = System.currentTimeMillis();

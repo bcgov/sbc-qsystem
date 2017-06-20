@@ -77,6 +77,7 @@ import ru.apertum.qsystem.server.QServer;
 import ru.apertum.qsystem.server.QSessions;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.Spring;
+import ru.apertum.qsystem.server.http.QWebSocketHandler;
 import ru.apertum.qsystem.server.model.QAdvanceCustomer;
 import ru.apertum.qsystem.server.model.QAuthorizationCustomer;
 import ru.apertum.qsystem.server.model.QPlanService;
@@ -124,7 +125,7 @@ public final class Executer {
             try {
                 tasks.put(task.getName(), task);
             } catch (Throwable tr) {
-                QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
+                QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: The SPI extension call failed. Description: " + tr);
             }
         }
     }
@@ -292,15 +293,15 @@ public final class Executer {
 
             // поддержка расширяемости плагинами
             for (final ISelectNextService event : ServiceLoader.load(ISelectNextService.class)) {
-                QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
+                QLog.l().logger().info("Вызов SPI расширения. Описание:  Call the SPI extension. Description:" + event.getDescription());
                 try {
                     serviceID = event.select(null, null, cmdParams.complexId).getId();
                 } catch (Throwable tr) {
-                    QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
+                    QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание:  The SPI extension call failed. Description:" + tr);
                 }
             }
 
-            // дефлотный выбор следующей услуги
+            // дефлотный выбор следующей услуги :: Deflative selection of the next service
             if (serviceID == null) {
                 for (LinkedList<LinkedList<Long>> ids : cmdParams.complexId) {
                     for (LinkedList<Long> id : ids) {
@@ -313,7 +314,7 @@ public final class Executer {
                     }
                 }
             } else {
-                // подотрем выбраную услугу
+                // подотрем выбраную услугу  :: We will select the chosen service
                 for (LinkedList<LinkedList<Long>> ids : cmdParams.complexId) {
                     for (LinkedList<Long> id : ids) {
                         if (serviceID.equals(id.getFirst())) {
@@ -331,7 +332,7 @@ public final class Executer {
                 }
             }
             if (serviceID == null) {
-                throw new ServerException("Ошибка поставить в очередь к многим услугам. Услуг не найдено.");
+                throw new ServerException("Ошибка поставить в очередь к многим услугам. Услуг не найдено. :: An error queued up for many services. No services found.");
             }
 
             // создаем кастомера вызвав задание по созданию кастомера
@@ -343,8 +344,83 @@ public final class Executer {
 
         }
     };
+    
     /**
      * Пригласить кастомера, первого в очереди.
+     * Invite the custom, the first in the queue.
+     */
+    final Task inviteSelectedCustomerTask = new Task(Uses.TASK_INVITE_SELECTED_CUSTOMER) {
+        
+        @Override
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer pickedCustomer) {
+            super.process(cmdParams, ipAdress, IP, pickedCustomer);
+            // вот он все это творит ::: Here he is doing it all
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+            //переключение на кастомера при параллельном приеме, должен приехать customerID
+            // switch to the custodian with parallel reception, must arrive customerID
+            if (cmdParams.customerId != null) {
+                final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
+                if (parallelCust == null) {
+                    QLog.l().logger().error("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
+                } else {
+                    user.setCustomer(parallelCust);
+                    QLog.l().logger().error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+                }
+            }
+            // вот над этим пациентом
+            final QCustomer customer = user.getCustomer();
+            
+            // статус
+            customer.setPostponedStatus(cmdParams.textData);
+            // на сколько отложили. 0 - бессрочно
+            customer.setPostponPeriod(cmdParams.postponedPeriod);
+            // если отложили бессрочно и поставили галку, то можно видеть только отложенному
+            customer.setIsMine(cmdParams.isMine != null && cmdParams.isMine ? cmdParams.userId : null);
+            // в этом случае завершаем с пациентом
+            //"все что хирург забыл в вас - в пул отложенных"
+            // но сначала обозначим результат работы юзера с кастомером, если такой результат найдется в списке результатов
+            customer.setFinishTime(new Date());
+            // кастомер переходит в состояние "Завершенности", но не "мертвости"
+            customer.setState(CustomerState.STATE_POSTPONED_REDIRECT);
+            
+            try {
+                for (QService service: QServiceTree.getInstance().getNodes()){
+                    for (QCustomer c : service.getClients()){
+                        if (c.getId() == customer.getId()){
+                            service.removeCustomer(c);
+                        }
+                    }
+                }
+                
+                //бобик сдох но медалька осталось, отправляем в пулл
+                // bobik died but the medal remains, send to the pool
+                user.setCustomer(null);
+                customer.setUser(null);
+                QPostponedList.getInstance().addElement(customer);
+                
+                // сохраняем состояния очередей.
+                QServer.savePool();
+                //разослать оповещение о том, что посетитель отложен
+                Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
+//                Uses.sendUDPBroadcast(Uses.TASK_RESTART, ServerProps.getInstance().getProps().getClientPort());
+                
+                //рассылаем широковещетельно по UDP на определенный порт. Должно высветитьсяна основном табло
+                // send out broadly by UDP to a specific port. Must be highlighted on the main board
+                
+                MainBoard.getInstance().killCustomer(user);
+                // MainBoard.getInstance().customerStandIn(customer);
+            } catch (Throwable t) {
+                QLog.l().logger().error("Загнулось под конец.", t);
+            }
+            return new JsonRPC20OK();
+        }
+    };
+
+    
+    
+    /**
+     * Пригласить кастомера, первого в очереди.
+     * Invite the custom, the first in the queue.
      */
     final Task inviteCustomerTask = new Task(Uses.TASK_INVITE_NEXT_CUSTOMER) {
 
@@ -403,20 +479,25 @@ public final class Executer {
             // Определить из какой очереди надо выбрать кастомера.
             // Пока без учета коэфициента.
             // Для этого смотрим первых кастомеров во всех очередях и ищем первого среди первых.
+            // Determine from which queue you need to select a customizer.
+            // So far without taking into account the coefficient.
+            // To do this, we look at the first custodians in all queues and look for the first among the first.
             final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
             final boolean isRecall = user.getCustomer() != null && (CustomerState.STATE_INVITED.equals(user.getCustomer().getState()) || CustomerState.STATE_INVITED_SECONDARY.equals(user.getCustomer().getState()));
 
             // есть ли у юзера вызванный кастомер? Тогда поторный вызов
+            // Does the user have a called customizer? Then the puerile challenge
             if (isRecall) {
                 user.getCustomer().upRecallCount(); // еще один повторный вызов
                 QLog.l().logger().debug("Повторный вызов " + user.getCustomer().getRecallCount() + " кастомера №" + user.getCustomer().getPrefix() + user.getCustomer().getNumber() + " пользователем " + cmdParams.userId);
 
                 if (ServerProps.getInstance().getProps().getLimitRecall() != 0 && user.getCustomer().getRecallCount() > ServerProps.getInstance().getProps().getLimitRecall()) {
                     QLog.l().logger().debug("Превышение повторных вызовов для кастомера №" + user.getCustomer().getPrefix() + user.getCustomer().getNumber() + " пользователем " + cmdParams.userId);
-                    //Удалим по неявки
+                    //Удалим по неявки :: Delete for no show
                     killCustomerTask.process(cmdParams, ipAdress, IP);
                 } else {
                     // кастомер переходит в состояние в котором был в такое и переходит.
+                    // The customizer goes into a state in which he was in this and goes.
                     user.getCustomer().setState(user.getCustomer().getState());
 
                     // просигналим звуком
@@ -519,7 +600,7 @@ public final class Executer {
             try {
                 // сохраняем состояния очередей.
                 QServer.savePool();
-                if (customer.getService().getEnable() == 1) { // услуга требует вызова
+                if (customer.getService().getEnable() == 1) { // услуга требует вызова :: The service requires a call
                     // звук
                     // Должно высветитьсяна основном табло
                     invite(user, true);
@@ -565,7 +646,6 @@ public final class Executer {
                 // выберем отложенного кастомера по ид
                 // select the deferred custodian by id
                 customer = QPostponedList.getInstance().getById(cmdParams.customerId);
-
                 if (customer == null) {
                     return new JsonRPC20Error(JsonRPC20Error.ErrorRPC.POSTPONED_NOT_FOUND, cmdParams.customerId);
                 } else {
@@ -630,7 +710,7 @@ public final class Executer {
         }
     };
     /**
-     * Получить перечень услуг
+     * Получить перечень услуг :: Get a list of services
      */
     final Task getServicesTask = new Task(Uses.TASK_GET_SERVICES) {
 
@@ -775,7 +855,7 @@ public final class Executer {
         }
     };
     /**
-     * Получить состояние сервера.
+     * Получить состояние сервера. :: Get server status
      */
     private final Task getServerState = new Task(Uses.TASK_SERVER_STATE) {
 
@@ -794,6 +874,7 @@ public final class Executer {
 
     /**
      * Получить описание состояния очередей для пользователя.
+     * Get a description of the status of the queues for the user.
      */
     final Task getSelfServicesTask = new Task(Uses.TASK_GET_SELF_SERVICES) {
 
@@ -803,6 +884,7 @@ public final class Executer {
         public RpcGetSelfSituation process(CmdParams cmdParams, String ipAdress, byte[] IP) {
             super.process(cmdParams, ipAdress, IP);
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+            //от юзера может приехать новое название его кабинета, ну пересел чувак.
             //от юзера может приехать новое название его кабинета, ну пересел чувак.
             if (cmdParams.textData != null && !cmdParams.textData.equals("")) {
                 user.setPoint(cmdParams.textData);
@@ -915,19 +997,22 @@ public final class Executer {
             super.process(cmdParams, ipAdress, IP);
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             //переключение на кастомера при параллельном приеме, должен приехать customerID
+            //Switching to a custodian in parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
                 final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
                 if (parallelCust == null) {
-                    QLog.l().logger().warn("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
+                    QLog.l().logger().error("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
                 } else {
                     user.setCustomer(parallelCust);
-                    QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+                    QLog.l().logger().error("Юзер :: User\"" + user + "\" переключился на кастомера :: Switched to a customizer \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
-            QLog.l().logger().warn("УДАЛЕНИЕ: Удалили по неявке кастомера " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data() + "\"");
-            QLog.l().logger().warn("REMOVING: Customer was removing because of absence " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " customer inputted \"" + user.getCustomer().getInput_data() + "\"");
+            QLog.l().logger().error("УДАЛЕНИЕ: Удалили по неявке кастомера " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data() + "\"");
+            QLog.l().logger().error("REMOVING: Customer was removing because of absence " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " customer inputted \"" + user.getCustomer().getInput_data() + "\"");
             // Если кастомер имел что-то введенное на пункте регистрации, то удалить всех таких кастомеров с такими введеными данными
             // и отправить его в бан, ибо нехрен набирать кучу талонов и просирать очереди.
+            // If the custodian had something entered at the registration point, then delete all such custodians with such entered data
+            // and send it to the ban, because Nehru dial a bunch of coupons and sift the queue.
             if (user.getCustomer().getInput_data() != null && !"".equals(user.getCustomer().getInput_data())) {
                 int cnt = 0;
                 for (QService service : QServiceTree.getInstance().getNodes()) {
@@ -943,7 +1028,7 @@ public final class Executer {
                 if (cnt != 0) {
                     RpcBanList.getInstance().addToBanList(user.getCustomer().getInput_data());
                 }
-                QLog.l().logger().debug("Вместе с кастомером " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data() + "\" удалили еще его " + cnt + " проявлений.");
+                QLog.l().logger().error("Вместе с кастомером " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data() + "\" удалили еще его " + cnt + " проявлений.");
             }
 
             // кастомер переходит в состояние "умерщвленности"
@@ -1656,7 +1741,7 @@ public final class Executer {
     };
 
     /**
-     * Записать кастомера предварительно в услугу.
+     * Записать кастомера предварительно в услугу. :: Record the customizer in advance to the service.
      */
     final Task standAdvanceInService = new Task(Uses.TASK_ADVANCE_STAND_IN) {
 
@@ -1717,6 +1802,7 @@ public final class Executer {
     };
     /**
      * Поставить кастомера в очередь предварительно записанного. Проверить бронь, поставить или отказать.
+     * Put the customizer in the pre-recorded queue. Check the reservation, place or refuse.
      */
     final Task standAdvanceCheckAndStand = new Task(Uses.TASK_ADVANCE_CHECK_AND_STAND) {
 
@@ -1773,32 +1859,37 @@ public final class Executer {
         }
     };
     /**
-     * Удалить предварительно записанного кастомера
+     * Удалить предварительно записанного кастомера :: Delete the pre-recorded customizer
      */
     final Task removeAdvanceCustomer = new Task(Uses.TASK_REMOVE_ADVANCE_CUSTOMER) {
 
         @Override
         public JsonRPC20OK process(CmdParams cmdParams, String ipAdress, byte[] IP) {
             super.process(cmdParams, ipAdress, IP);
-
+            QLog.l().logger().error("------------------");
             // Вытащим из базы предварительного кастомера
+            // Getting out of the base of the preliminary custodian
             final QAdvanceCustomer advCust = Spring.getInstance().getHt().get(QAdvanceCustomer.class, cmdParams.customerId);
+            
             if (advCust == null || advCust.getId() == null || advCust.getAdvanceTime() == null) {
-                QLog.l().logger().debug("не найден клиент по его ID=" + cmdParams.customerId);
-                // Шлем отказ
+                QLog.l().logger().error("NOT FOUND ------------------");
+                QLog.l().logger().error("не найден клиент по его ID= :: Did not find the client by its ID" + cmdParams.customerId);
+                // Шлем отказ :: Helmet failure
                 return new JsonRPC20OK(ADVANCED_NOT_FOUND);
             }
             //трем запись в таблице предварительных записей
+            // three records in the table of preliminary records
             Spring.getInstance().getTt().execute(new TransactionCallbackWithoutResult() {
 
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
                         Spring.getInstance().getHt().delete(advCust);
-                        QLog.l().logger().debug("Удалили предварителньную запись о кастомере.");
+                        QLog.l().logger().error("Удалили предварителньную запись о кастомере. :: We removed the pre-master record of the custodian.");
                     } catch (Exception ex) {
                         status.setRollbackOnly();
-                        throw new ServerException("Ошибка при удалении \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+                        QLog.l().logger().error("error while deleting");
+                        throw new ServerException("Ошибка при удалении :: Error while deleting \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
                     }
                 }
             });
@@ -1941,7 +2032,7 @@ public final class Executer {
         }
     };
     /**
-     * Проверить номер кастомера
+     * Проверить номер кастомера :: Check Castomer Number
      */
     final Task checkCustomerNumber = new Task(Uses.TASK_CHECK_CUSTOMER_NUMBER) {
 
@@ -2062,6 +2153,7 @@ public final class Executer {
     };
     /**
      * Запрос на изменение приоритетов оказываемых услуг от юзеров
+     * Request to change the priorities of services provided by users
      */
     final Task changeFlexPriority = new Task(Uses.TASK_CHANGE_FLEX_PRIORITY) {
 
@@ -2091,6 +2183,7 @@ public final class Executer {
     };
     /**
      * Поставить паузу у пользователя.
+     * Pause the user.
      */
     final Task setPause = new Task(Uses.TASK_SET_BUSSY) {
 
@@ -2115,6 +2208,7 @@ public final class Executer {
 
     /**
      * Проинитить параметры из ДБ в сервере
+     * Run parameters from DB in the server
      */
     final Task initProperties = new Task(Uses.TASK_INIT_PROPERTIES) {
 
@@ -2148,10 +2242,10 @@ public final class Executer {
 
 //****************************************************************************
 //********************* КОНЕЦ добавления в мап обработчиков заданий  *********
-//****************************************************************************
+//********************* END of adding task handlers to the Map       ***********
 //**********************************************************************************************
 //**********************************   ОБРАБОТКА ЗАДАНИЙ  **************************************
-//**********************************************************************************************
+//**********************************  TREATMENT OF JOBS   **************************************
     /**
      * Выполнение всех заданий, пришедших на обработку
      *

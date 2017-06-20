@@ -25,6 +25,7 @@ import ru.apertum.qsystem.server.Spring;
 
 /**
  * Список пользователей системы Класс, управляющий пользователями системы.
+ * List of System Users A class that manages the users of the system.
  *
  * @author Evgeniy Egorov
  */

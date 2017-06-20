@@ -291,6 +291,7 @@ public final class Uses {
     public static final String TASK_SAVE_PROPERTIES = "Сохранить все параметры в БД";
     public static final String TASK_INIT_PROPERTIES = "Создать все параметры в БД";
     public static final String TASK_SERVE_CUSTOMER = "serve_customer";
+    public static final String TASK_INVITE_SELECTED_CUSTOMER = "Invite selected customer";
     
     // Формат отчетов
     public static final String REPORT_FORMAT_HTML = "html";
@@ -724,7 +725,7 @@ public final class Uses {
     public static void setFullSize(Component component) {
         component.setBounds(0, 0, firstMonitor.getDefaultConfiguration().getBounds().width, firstMonitor.getDefaultConfiguration().getBounds().height);
     }
-
+    
     /**
      * mointors
      */

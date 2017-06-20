@@ -82,5 +82,10 @@ public enum CustomerState {
      * 11 с кастомером закончили работать и поместили в отложенные. домой не идет, сидит ждет покуда не вызовут.
      * 11 with the customizer finished working and placed in the deferred. Home does not go, sits waiting until they call.
      */
-    STATE_POSTPONED
+    STATE_POSTPONED,
+    
+    /**
+     * 12 This state is extension for the STATE_POSTPONED, In which we are making start time equal to stand time 
+     */
+    STATE_POSTPONED_REDIRECT
 }
