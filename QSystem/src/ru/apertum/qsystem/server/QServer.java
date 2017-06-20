@@ -85,7 +85,7 @@ public class QServer extends Thread {
             }
         }
 
-        System.out.println("Welcome to the QSystem server. Your MySQL mast be prepared.");
+        System.out.println("Welcome to the QSystem server. Your MySQL must be prepared.");
         FAbout.loadVersionSt();
 
         if (Locales.getInstance().isRuss) {
@@ -157,18 +157,19 @@ public class QServer extends Thread {
 
                 @Override
                 public void run() {
-                    // это обнуление
+                    // это обнуление :: This obnulenye
                     if (!QConfig.cfg().isRetain() && Uses.FORMAT_HH_MM.format(new Date(new Date().getTime() + 10 * 60 * 1000)).equals(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getStartTime()))) {
                         QLog.l().logger().info("Очистка всех услуг.");
                         // почистим все услуги от трупов кастомеров с прошлого дня
                         QServer.clearAllQueue();
                     }
 
-                    // это рассылка дневного отчета
+                    // это рассылка дневного отчета :: This is a daily report
                     if (("true".equalsIgnoreCase(Mailer.fetchConfig().getProperty("mailing")) || "1".equals(Mailer.fetchConfig().getProperty("mailing")))
                             && Uses.FORMAT_HH_MM.format(new Date(new Date().getTime() - 30 * 60 * 1000)).equals(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getFinishTime()))) {
                         QLog.l().logger().info("Рассылка дневного отчета.");
                         // почистим все услуги от трупов кастомеров с прошлого дня
+                        // Clean all services from the corpses of custodians from the last day
                         for (QUser user : QUserList.getInstance().getItems()) {
                             if (user.getReportAccess()) {
                                 final HashMap<String, String> p = new HashMap<>();
@@ -310,6 +311,7 @@ public class QServer extends Thread {
             QLog.l().logger().debug(" Start thread for receiving task. host=" + socket.getInetAddress().getHostAddress() + " ip=" + Arrays.toString(socket.getInetAddress().getAddress()));
 
             // из сокета клиента берём поток входящих данных
+            // From the client's socket we take the stream of incoming data
             InputStream is;
             try {
                 is = socket.getInputStream();
@@ -320,6 +322,7 @@ public class QServer extends Thread {
             final String data;
             try {
                 // подождать пока хоть что-то приползет из сети, но не более 10 сек.
+                // Wait until at least something crawls out of the network, but no more than 10 seconds.
                 int i = 0;
                 while (is.available() == 0 && i < 100) {
                     Thread.sleep(100);//бля
@@ -343,6 +346,7 @@ public class QServer extends Thread {
 
             /*
              Если по сетке поймали exit, то это значит что запустили останавливающий батник.
+            If you caught the exit on the grid, it means that you started the stop batch file.
              */
             if ("exit".equalsIgnoreCase(data)) {
                 globalExit = true;
@@ -355,6 +359,7 @@ public class QServer extends Thread {
             try {
                 rpc = gson.fromJson(data, JsonRPC20.class);
                 // полученное задание передаем в пул
+                // We send the received task to the pool
                 final Object result = Executer.getInstance().doTask(rpc, socket.getInetAddress().getHostAddress(), socket.getInetAddress().getAddress());
                 answer = gson.toJson(result);
             } catch (JsonSyntaxException ex) {
@@ -399,6 +404,7 @@ public class QServer extends Thread {
 
     /**
      * Сохранение состояния пула услуг в xml-файл на диск
+     * Saving the status of the service pool to an xml file on disk
      */
     public synchronized static void savePool() {
         final long start = System.currentTimeMillis();

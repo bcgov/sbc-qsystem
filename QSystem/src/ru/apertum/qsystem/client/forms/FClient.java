@@ -835,7 +835,7 @@ public final class FClient extends javax.swing.JFrame {
     public static final String KEYS_OFF = "00000000";
     public static final String KEYS_ALL = "11111111";
     public static final String KEYS_MAY_INVITE = "10000010";
-    public static final String KEYS_INVITED = "11100000";
+    public static final String KEYS_INVITED = "01100000";
     public static final String KEYS_STARTED = "00011101";
     private String keys_current = KEYS_OFF;
 
