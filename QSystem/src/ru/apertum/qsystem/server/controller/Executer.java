@@ -190,14 +190,17 @@ public final class Executer {
     }
     /**
      * Ключ блокировки для манипуляции с кстомерами
+     * Locking key for manipulating the clocks
      */
     public static final Lock CLIENT_TASK_LOCK = new ReentrantLock();
     /**
      * Ключ блокировки для манипуляции с отложенными. Когда по таймеру они выдергиваются. Не нужно чтоб перекосило вызовом от пользователя
+     * The lock key for manipulating pending. When the timer is pulled out. Do not need to be baffled by a call from the user
      */
     public static final Lock POSTPONED_TASK_LOCK = new ReentrantLock();
     /**
      * Ставим кастомера в очередь.
+     * We put the customizer in the queue.
      */
     final AddCustomerTask addCustomerTask = new AddCustomerTask(Uses.TASK_STAND_IN);
 
