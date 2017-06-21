@@ -746,6 +746,11 @@ public class Form {
                 return;
             }
 
+            if (!user.checkIfUserCanServe(pickedRedirectServ)){
+                Messagebox.show(user.getName() + " doesn't have rights to serve customers for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+
             final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
             final RpcStandInService res = this.addToQueue(params);
             customer = res.getResult();
@@ -760,7 +765,7 @@ public class Form {
 
         }
     }
-    
+        
     @Command
     @NotifyChange(value = {"postponList", "customer", "btnsDisabled"})
     public void closeRedirectDialog() {

@@ -2008,6 +2008,7 @@ public final class Executer {
     };
     /**
      * Изменение приоритета кастомеру
+     * Changing the priority of the customizer
      */
     final Task setCustomerPriority = new Task(Uses.TASK_SET_CUSTOMER_PRIORITY) {
 
