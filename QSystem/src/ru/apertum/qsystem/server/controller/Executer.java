@@ -191,14 +191,17 @@ public final class Executer {
     }
     /**
      * Ключ блокировки для манипуляции с кстомерами
+     * Locking key for manipulating the clocks
      */
     public static final Lock CLIENT_TASK_LOCK = new ReentrantLock();
     /**
      * Ключ блокировки для манипуляции с отложенными. Когда по таймеру они выдергиваются. Не нужно чтоб перекосило вызовом от пользователя
+     * The lock key for manipulating pending. When the timer is pulled out. Do not need to be baffled by a call from the user
      */
     public static final Lock POSTPONED_TASK_LOCK = new ReentrantLock();
     /**
      * Ставим кастомера в очередь.
+     * We put the customizer in the queue.
      */
     final AddCustomerTask addCustomerTask = new AddCustomerTask(Uses.TASK_STAND_IN);
 
@@ -400,15 +403,7 @@ public final class Executer {
                 
                 // сохраняем состояния очередей.
                 QServer.savePool();
-                //разослать оповещение о том, что посетитель отложен
-                Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
-//                Uses.sendUDPBroadcast(Uses.TASK_RESTART, ServerProps.getInstance().getProps().getClientPort());
                 
-                //рассылаем широковещетельно по UDP на определенный порт. Должно высветитьсяна основном табло
-                // send out broadly by UDP to a specific port. Must be highlighted on the main board
-                
-                MainBoard.getInstance().killCustomer(user);
-                // MainBoard.getInstance().customerStandIn(customer);
             } catch (Throwable t) {
                 QLog.l().logger().error("Загнулось под конец.", t);
             }
@@ -2013,6 +2008,7 @@ public final class Executer {
     };
     /**
      * Изменение приоритета кастомеру
+     * Changing the priority of the customizer
      */
     final Task setCustomerPriority = new Task(Uses.TASK_SET_CUSTOMER_PRIORITY) {
 

@@ -66,6 +66,10 @@ public class User {
         this.plan = plan;
     }
     
+    public boolean checkIfUserCanServe(QService service){    
+        return this.getPlan().stream().filter(planService -> planService.getService().getId().equals(service.getId())).findAny().isPresent();
+    }
+    
     public void setCustomerList(List<QPlanService> planServices) {
         while (!customerList.isEmpty()) {
             customerList.removeFirst();
