@@ -575,6 +575,10 @@ public final class Executer {
             customer.setUser(user);
             // ставим время вызова
             customer.setCallTime(new Date());
+            //set welcome_time
+            customer.setWelcomeTime(new Date());
+            //set invite_time
+            customer.setInviteTime(new Date());
             // кастомер переходит в состояние "приглашенности"
             customer.setState(customer.getState() == CustomerState.STATE_WAIT ? CustomerState.STATE_INVITED : CustomerState.STATE_INVITED_SECONDARY);
 
@@ -1193,6 +1197,7 @@ public final class Executer {
     };
     /**
      * Закончить работу с вызванноым кастомером.
+     * Finish the work with the called customizer.
      */
     final Task getFinishCustomerTask = new Task(Uses.TASK_FINISH_CUSTOMER) {
 

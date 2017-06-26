@@ -288,7 +288,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             }
         } catch (Exception ex) {
             Spring.getInstance().getTxManager().rollback(status);
-            throw new ServerException("Ошибка при сохранении \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+            throw new ServerException("Ошибка при сохранении :: Error while saving \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
         }
         Spring.getInstance().getTxManager().commit(status);
         QLog.l().logger().debug("Сохранили.");
@@ -438,6 +438,32 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setPrefix(String prefix) {
         this.prefix = prefix == null ? "" : prefix;
+    }
+    @Expose
+    @SerializedName("welcome_time")
+    private Date welcomeTime;
+
+    @Column(name = "welcome_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getWelcomeTime() {
+        return welcomeTime;
+    }
+
+    public void setWelcomeTime(Date date) {
+        this.welcomeTime = date;
+    }
+    @Expose
+    @SerializedName("invite_time")
+    private Date inviteTime;
+
+    @Column(name = "invite_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getInviteTime() {
+        return inviteTime;
+    }
+
+    public void setInviteTime(Date date) {
+        this.inviteTime = date;
     }
     @Expose
     @SerializedName("stand_time")
