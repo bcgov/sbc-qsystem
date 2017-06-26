@@ -306,8 +306,8 @@ CREATE  TABLE IF NOT EXISTS `clients` (
   `result_id` BIGINT NULL DEFAULT NULL COMMENT 'Если выбрали результат работы' ,
   `input_data` VARCHAR(150) NOT NULL DEFAULT '' COMMENT 'Введенные данные пользователем' ,
   `state_in` INT NOT NULL DEFAULT 0 COMMENT 'клиент перешел в это состояние.' ,
-  `welcome_time` datetime NOT NULL COMMENT 'timestamp as soon as client comes to CSR',
-  `invite_time` datetime NOT NULL COMMENT 'timestamp when CSR invites customers',
+  `welcome_time` DATETIME NOT NULL COMMENT 'timestamp as soon as client comes to CSR',
+  `invite_time` DATETIME NOT NULL COMMENT 'timestamp when CSR invites customers',
   PRIMARY KEY (`id`) ,
   CONSTRAINT `fk_сlients_service_id_services_id`
     FOREIGN KEY (`service_id` )
@@ -420,6 +420,8 @@ CREATE  TABLE IF NOT EXISTS `statistic` (
   `user_work_period` INT NOT NULL COMMENT 'Время работы пользователя с клиентом в минутах.' ,
   `client_wait_period` INT NOT NULL COMMENT 'Время ожидания в минутах. Определяется триггером.' ,
   `state_in` INT NOT NULL DEFAULT 0 COMMENT 'Клиент перешел в это состояние' ,
+  `client_welcome_time` DATETIME NOT NULL COMMENT 'timestamp as soon as client comes to CSR',
+  `client_invite_time` DATETIME NOT NULL COMMENT 'timestamp when CSR invites customers',
   PRIMARY KEY (`id`) ,
   CONSTRAINT `fk_work_user_id_users_id`
     FOREIGN KEY (`user_id` )
