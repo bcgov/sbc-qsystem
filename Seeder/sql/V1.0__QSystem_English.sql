@@ -306,6 +306,8 @@ CREATE  TABLE IF NOT EXISTS `clients` (
   `result_id` BIGINT NULL DEFAULT NULL COMMENT 'Если выбрали результат работы' ,
   `input_data` VARCHAR(150) NOT NULL DEFAULT '' COMMENT 'Введенные данные пользователем' ,
   `state_in` INT NOT NULL DEFAULT 0 COMMENT 'клиент перешел в это состояние.' ,
+  `welcome_time` datetime NOT NULL COMMENT 'timestamp as soon as client comes to CSR',
+  `invite_time` datetime NOT NULL COMMENT 'timestamp when CSR invites customers',
   PRIMARY KEY (`id`) ,
   CONSTRAINT `fk_сlients_service_id_services_id`
     FOREIGN KEY (`service_id` )
@@ -717,7 +719,7 @@ BEGIN
     SET @finish_start= TIMEDIFF(NEW.finish_time, NEW.start_time);
     SET @start_starnd = TIMEDIFF(NEW.start_time, NEW.stand_time);
     INSERT
-        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period) 
+        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time) 
     VALUES
         (NEW.state_in, NEW.result_id, NEW.user_id, NEW.id, NEW.service_id, NEW.start_time, NEW.finish_time, NEW.stand_time, 
         round(
@@ -728,7 +730,7 @@ BEGIN
                 (HOUR(@start_starnd) * 60 * 60 +
                 MINUTE(@start_starnd) * 60 +
                 SECOND(@start_starnd) + 59)/60)  
-        );
+        , NEW.welcome_time, New.invite_time);
 END;$$
 
 
@@ -744,7 +746,7 @@ BEGIN
     SET @finish_start= TIMEDIFF(NEW.finish_time, NEW.start_time);
     SET @start_starnd = TIMEDIFF(NEW.start_time, NEW.stand_time);
     INSERT
-        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period) 
+        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time) 
     VALUES
         (NEW.state_in, NEW.result_id, NEW.user_id, NEW.id, NEW.service_id, NEW.start_time, NEW.finish_time, NEW.stand_time, 
         round(
@@ -755,7 +757,7 @@ BEGIN
                 (HOUR(@start_starnd) * 60 * 60 +
                 MINUTE(@start_starnd) * 60 +
                 SECOND(@start_starnd) + 59)/60)  
-        );
+        , NEW.welcome_time, New.invite_time);
 END;$$
 
 

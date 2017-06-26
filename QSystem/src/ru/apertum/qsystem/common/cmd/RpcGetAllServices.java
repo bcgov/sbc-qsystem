@@ -81,6 +81,7 @@ public class RpcGetAllServices extends JsonRPC20 {
         private Date finishTime;
         /**
          * Свободное расположение кнопок на пункте регистрации
+         * Free location of buttons on the registration point
          */
         @Expose
         @SerializedName("btn_free_dsn")
