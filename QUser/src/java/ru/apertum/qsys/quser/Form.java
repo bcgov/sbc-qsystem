@@ -405,6 +405,7 @@ public class Form {
     
     @Command
     public void addClient(){
+        user.setCustomerWelcomeTime(new Date());
         servicesDialogWindow.setVisible(true);
         servicesDialogWindow.doModal();
     }
@@ -729,6 +730,7 @@ public class Form {
         params.priority = priority;
         params.isMine = isMine;
         params.comments = ((Textbox) servicesDialogWindow.getFellow("tb_addInQueue")).getText();
+        params.welcomeTime = user.getCustomerWelcomeTime();
         
         return params;
     }

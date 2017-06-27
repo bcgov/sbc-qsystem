@@ -1,5 +1,6 @@
 package ru.apertum.qsys.quser;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import org.zkoss.util.resource.Labels;
@@ -22,6 +23,7 @@ public class User {
     private QUser user;
     private List<QPlanService> plan = new LinkedList<>();
     private LinkedList<QCustomer> customerList = new LinkedList<>();
+    private Date customerWelcomeTime;
     
 
     public String getName() {
@@ -40,6 +42,14 @@ public class User {
                 return;
             }
         }
+    }
+    
+    public void setCustomerWelcomeTime(Date customerWelcomeTime) {
+        this.customerWelcomeTime = customerWelcomeTime;
+    } 
+    
+    public Date getCustomerWelcomeTime() {
+        return customerWelcomeTime;
     }
     
     public String getPassword() {
