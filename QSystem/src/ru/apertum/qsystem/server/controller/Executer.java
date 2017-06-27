@@ -225,6 +225,9 @@ public final class Executer {
                 // Create a new baked custome    
                 customer = new QCustomer(service.getNextNumber());
                 
+                //set csutomer welcome time
+                customer.setWelcomeTime(cmdParams.welcomeTime);
+                
                 // Определим кастомера в очередь
                 // Define the customizer in the queue
                 customer.setService(service);                
@@ -373,6 +376,9 @@ public final class Executer {
             // вот над этим пациентом
             final QCustomer customer = user.getCustomer();
             
+            //set invite_time
+            customer.setInviteTime(new Date());
+            
             // статус
             customer.setPostponedStatus(cmdParams.textData);
             // на сколько отложили. 0 - бессрочно
@@ -510,7 +516,7 @@ public final class Executer {
             CLIENT_TASK_LOCK.lock();
             try {
 
-                // Мерзость. вызов по номеру.
+                // Мерзость. вызов по номеру. :: It's an abomination. Call by number.
                 if (cmdParams.textData != null && !cmdParams.textData.isEmpty()) {
                     final String num = cmdParams.textData.replaceAll("[^\\p{L}+\\d]", "");
                     QLog.l().logger().debug("Warning! Corruption was detected! \"" + num + "\"");
@@ -575,13 +581,11 @@ public final class Executer {
             customer.setUser(user);
             // ставим время вызова
             customer.setCallTime(new Date());
-            //set welcome_time
-            customer.setWelcomeTime(new Date());
-            //set invite_time
-            customer.setInviteTime(new Date());
             // кастомер переходит в состояние "приглашенности"
             customer.setState(customer.getState() == CustomerState.STATE_WAIT ? CustomerState.STATE_INVITED : CustomerState.STATE_INVITED_SECONDARY);
-
+            // set Customer Invite Time
+            customer.setInviteTime(new Date());
+            
             // вот тут посмотрим, нужно ли вызывать кастомера по табло.
             // если его услуга без вызова(настраивается в параметрах услуги), то его не нужно звать,
             // а стазу начать что-то делать.
@@ -664,6 +668,9 @@ public final class Executer {
                 customer.setCallTime(new Date());
                 // ну и услугу определим если тот кто вызвал не работает с услугой, из которой отложили
                 // well, and define the service if the one who called does not work with the service, from which they postponed
+                //set invite_time
+                customer.setInviteTime(new Date());
+                
                 boolean f = true;
                 for (QPlanService pl : user.getPlanServices()) {
                     if (pl.getService().getId().equals(customer.getService().getId())) {

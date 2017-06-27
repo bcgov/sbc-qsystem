@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -94,6 +95,10 @@ public class CmdParams {
     @Expose
     @SerializedName("comments")
     public String comments;
+    @Expose
+    @SerializedName("welcome_time")
+    public Date welcomeTime;
+    
     /**
      * услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять списков. Первый это вольнопоследовательные услуги. Остальные
      * четыре это зависимопоследовательные услуги, т.е. пока один не закончится на другой не переходить. Что такое элемент списка. Это тоже список. Первый
@@ -156,6 +161,9 @@ public class CmdParams {
                         sb.append("&").append(field.getName()).append("=").append(field.get(this));
                         break;
                     case "long":
+                        sb.append("&").append(field.getName()).append("=").append(field.get(this));
+                        break;
+                    case "date":
                         sb.append("&").append(field.getName()).append("=").append(field.get(this));
                         break;
                     default:
