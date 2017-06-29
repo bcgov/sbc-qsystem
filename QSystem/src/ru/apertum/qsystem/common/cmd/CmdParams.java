@@ -97,7 +97,7 @@ public class CmdParams {
     public String comments;
     @Expose
     @SerializedName("welcome_time")
-    public Date welcomeTime;
+    public Date welcomeTime;    
     
     /**
      * услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять списков. Первый это вольнопоследовательные услуги. Остальные

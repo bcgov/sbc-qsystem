@@ -676,6 +676,10 @@ public class Form {
 
     @Wire("#incClientDashboard #incRedirectCustomerDialog #redirectDialog")
     Window redirectCustomerDialog;
+    
+    @Wire("#incClientDashboard #incChangeServiceDialog #changeServiceDialog")
+    Window changeServiceDialogWindow;
+    
 
     @Command
     public void closeAddNextServiceDialog(){
@@ -743,6 +747,12 @@ public class Form {
     
     @Command
     public void changeService(){
+        changeServiceDialogWindow.setVisible(true);
+        changeServiceDialogWindow.doModal();
+    }
+    
+    @Command
+    public void closeChangeServiceDialog(){
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
@@ -753,6 +763,17 @@ public class Form {
                 Messagebox.show(user.getName() + " doesn't have rights to serve customers for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
+            
+            
+            final CmdParams params = new CmdParams();
+            params.userId = user.getUser().getId();
+            params.serviceId = pickedRedirectServ.getId();
+            
+            Executer.getInstance().getTasks().get(Uses.TASK_CHANGE_SERVICE).process(params, "", new byte[4]);
+            
+            service_list.setModel(service_list.getModel());
+            changeServiceDialogWindow.setVisible(false);
+            BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
     

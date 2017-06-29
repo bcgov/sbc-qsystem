@@ -96,7 +96,9 @@
                         <menuitem label="${c:l('changing_ptiority')}" onClick="@command('clickListServices')" visible="@load(fmodel.login)"/>
                         -->
                     <menuitem label="${c:l('invite')}" onClick="@command('inviteCustomerNow')" visible="@load(fmodel.login)"/>
-                    <menuitem label="${c:l('changing_ptiority')}" onClick="@command('clickListServices')" visible="@load(fmodel.login)"/>
+                    <!--
+                    <menuitem label="${c:l('changing_ptiority')}" onClick="@command('clickListServices')" visible="@load(fmodel.login)"/>                     
+                    -->
                     </menupopup>
                     <timer id="timer_service_list" delay="700" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
                 </panelchildren>
@@ -112,5 +114,6 @@
     <include id="incChangePostponedStatusDialog" src="/include/dialog/changePostponedStatusDialog.zul"/>
     <include id="incServicesDialog" src="/include/dialog/servicesDialog.zul"/>
     <include id="incAddNextServiceDialog" src="/include/dialog/addNextServiceDialog.zul"/>
+    <include id="incChangeServiceDialog" src="/include/dialog/changeServiceDialog.zul"/>
 
 </zk>
