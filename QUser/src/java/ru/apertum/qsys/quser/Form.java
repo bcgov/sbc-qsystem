@@ -290,9 +290,10 @@ public class Form {
         btnsDisabled[5] = !(isLogin() && '1' == regim.charAt(5));
         btnsDisabled[6] = !(isLogin() && '1' == regim.charAt(6));
         btnsDisabled[7] = !(isLogin() && '1' == regim.charAt(7));
+        btnsDisabled[8] = !(isLogin() && '1' == regim.charAt(8));
     }
 
-    private boolean[] btnsDisabled = new boolean[]{true, true, true, true, true, true, true, true};
+    private boolean[] btnsDisabled = new boolean[]{true, true, true, true, true, true, true, true, true};
 
     public boolean[] getBtnsDisabled() {
         return btnsDisabled;
@@ -476,7 +477,7 @@ public class Form {
 //            changeServicePriorityDialog.doModal();
 //        }
     }
-    
+
     @Command
     public void inviteCustomerNow() {
         // 1. Postpone the customer 
@@ -675,6 +676,10 @@ public class Form {
 
     @Wire("#incClientDashboard #incRedirectCustomerDialog #redirectDialog")
     Window redirectCustomerDialog;
+    
+    @Wire("#incClientDashboard #incChangeServiceDialog #changeServiceDialog")
+    Window changeServiceDialogWindow;
+    
 
     @Command
     public void closeAddNextServiceDialog(){
@@ -739,6 +744,39 @@ public class Form {
             final RpcStandInService res = (RpcStandInService)Executer.getInstance().getTasks().get(Uses.TASK_STAND_IN).process(params, "", new byte[4]);
             return res;            
     }
+    
+    @Command
+    public void changeService(){
+        changeServiceDialogWindow.setVisible(true);
+        changeServiceDialogWindow.doModal();
+    }
+    
+    @Command
+    public void closeChangeServiceDialog(){
+        if (pickedRedirectServ != null) {
+            if (!pickedRedirectServ.isLeaf()) {
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+
+            if (!user.checkIfUserCanServe(pickedRedirectServ)){
+                Messagebox.show(user.getName() + " doesn't have rights to serve customers for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+            
+            
+            final CmdParams params = new CmdParams();
+            params.userId = user.getUser().getId();
+            params.serviceId = pickedRedirectServ.getId();
+            
+            Executer.getInstance().getTasks().get(Uses.TASK_CHANGE_SERVICE).process(params, "", new byte[4]);
+            
+            service_list.setModel(service_list.getModel());
+            changeServiceDialogWindow.setVisible(false);
+            BindUtils.postNotifyChange(null, null, Form.this, "*");
+        }
+    }
+    
 
     @Command
     public void closeAddAndServeDialog(){

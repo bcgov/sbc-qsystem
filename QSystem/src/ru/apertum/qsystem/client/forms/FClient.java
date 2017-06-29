@@ -832,11 +832,11 @@ public final class FClient extends javax.swing.JFrame {
     /**
      * Возможный состояния кнопок 1 - доступна кнопка, 0 - не доступна
      */
-    public static final String KEYS_OFF = "00000000";
-    public static final String KEYS_ALL = "11111111";
-    public static final String KEYS_MAY_INVITE = "10000010";
-    public static final String KEYS_INVITED = "01100000";
-    public static final String KEYS_STARTED = "00011101";
+    public static final String KEYS_OFF = "000000000";
+    public static final String KEYS_ALL = "111111111";
+    public static final String KEYS_MAY_INVITE = "100000100";
+    public static final String KEYS_INVITED = "011000000";
+    public static final String KEYS_STARTED = "000111011";
     private String keys_current = KEYS_OFF;
 
     public String getKeys_current() {

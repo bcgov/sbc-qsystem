@@ -921,9 +921,10 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
 
     /**
      * Удалить любого в очереди кастомера.
+     * Remove any in the queue of the customizer.
      *
-     * @param customer удаляемый кастомер
-     * @return может вернуть false при неудаче
+     * @param customer удаляемый кастомер :: Removable custodian
+     * @return может вернуть false при неудаче :: Can return false on failure
      */
     public boolean removeCustomer(QCustomer customer) {
         final Boolean res = getCustomers().remove(customer);

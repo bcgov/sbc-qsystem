@@ -285,7 +285,7 @@ public final class Executer {
         }
     };
     /**
-     * Ставим кастомера в очередь к нескольким услугам.
+     * Ставим кастомера в очередь к нескольким услугам. :: We put the customizer in the queue to several services.
      *
      * @return
      */
@@ -350,6 +350,54 @@ public final class Executer {
 
         }
     };
+    
+    /**
+     * Change Service of the Client
+     */
+    final Task changeService = new Task(Uses.TASK_CHANGE_SERVICE) {
+        
+        @Override
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP){
+            super.process(cmdParams, ipAdress, IP);
+            
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+            //переключение на кастомера при параллельном приеме, должен приехать customerID
+            // switch to the custodian with parallel reception, must arrive customerID
+            if (cmdParams.customerId != null) {
+                final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
+                if (parallelCust == null) {
+                    QLog.l().logger().warn("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
+                } else {
+                    user.setCustomer(parallelCust);
+                    QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+                }
+            }
+            final QCustomer customer = user.getCustomer();
+            // Переставка в другую очередь
+            // Название старой очереди
+            final QService oldService = customer.getService();
+            // вот она новая очередь.
+            final QService newServiceR = QServiceTree.getInstance().getById(cmdParams.serviceId);
+            final QService newService = newServiceR.getLink() != null ? newServiceR.getLink() : newServiceR;
+            
+             // теперь стоит к новой услуги.
+            customer.setService(newService);
+            
+            try {
+                // сохраняем состояния очередей.
+                QServer.savePool();
+//                Uses.sendUDPBroadcast(newService.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
+//                Uses.sendUDPBroadcast(oldService.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
+                //разослать оповещение о том, что посетитель откланен
+                //рассылаем широковещетельно по UDP на определенный порт. Должно подтереться на основном табло
+//                MainBoard.getInstance().killCustomer(user);
+            } catch (Exception ex) {
+                QLog.l().logger().error("Exception TASK_CHANGE_SERVICE"  +  ex.getLocalizedMessage());
+            }   
+            return new JsonRPC20OK();
+        }        
+    };
+     
     
     /**
      * Пригласить кастомера, первого в очереди.
@@ -1063,7 +1111,6 @@ public final class Executer {
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
             super.process(cmdParams, ipAdress, IP);
-            QLog.l().logger().debug("TASK_START_CUSTOMER -------------- 975");
 
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             // Время старта работы с юзера с кастомером.
@@ -1319,6 +1366,7 @@ public final class Executer {
     };
     /**
      * Переадресовать клиента к другой услуге.
+     * Forward the client to another service.
      */
     final Task redirectCustomerTask = new Task(Uses.TASK_REDIRECT_CUSTOMER) {
 
@@ -1327,6 +1375,7 @@ public final class Executer {
             super.process(cmdParams, ipAdress, IP);
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             //переключение на кастомера при параллельном приеме, должен приехать customerID
+            // switch to the custodian with parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
                 final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
                 if (parallelCust == null) {
@@ -1467,6 +1516,7 @@ public final class Executer {
     };
     /**
      * Изменить временную доступность услуги для оказания
+     * Change the temporary availability of the service to provide
      */
     final Task changeTempAvailableService = new Task(Uses.TASK_CHANGE_TEMP_AVAILABLE_SERVICE) {
 
@@ -1512,6 +1562,7 @@ public final class Executer {
     };
     /**
      * Получение таблици записанных ранее клиентов на день.
+     * Getting a table of previously recorded customers for the day.
      */
     final Task getGridOfDay = new Task(Uses.TASK_GET_GRID_OF_DAY) {
 
@@ -1625,6 +1676,7 @@ public final class Executer {
     };
     /**
      * Получение таблици записанных ранее клиентов на неделю.
+     * Getting a table of previously recorded customers for a week.
      */
     final Task getGridOfWeek = new Task(Uses.TASK_GET_GRID_OF_WEEK) {
 
@@ -2204,6 +2256,7 @@ public final class Executer {
     };
     /**
      * Получить параметры из ДБ из сервера
+     * Get parameters from the DB from the server
      */
     final Task getProperties = new Task(Uses.TASK_GET_PROPERTIES) {
 
