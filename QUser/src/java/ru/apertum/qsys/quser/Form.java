@@ -24,6 +24,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
+import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
@@ -369,13 +370,22 @@ public class Form {
     @Command
     @NotifyChange(value = {"btnsDisabled", "customer"})
     public void kill() {
-        QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
-        final CmdParams params = new CmdParams();
-        params.userId = user.getUser().getId();
-        Executer.getInstance().getTasks().get(Uses.TASK_KILL_NEXT_CUSTOMER).process(params, "", new byte[4]);
-        customer = null;
-        setKeyRegim(KEYS_MAY_INVITE);
-        service_list.setModel(service_list.getModel());
+        
+         Messagebox.show("Do you want to remove the client?", "Remove", new Messagebox.Button[]{
+            Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION, (Messagebox.ClickEvent t) -> {
+                QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
+                if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
+                    final CmdParams params = new CmdParams();
+                    
+                    params.userId = user.getUser().getId();
+                    Executer.getInstance().getTasks().get(Uses.TASK_KILL_NEXT_CUSTOMER).process(params, "", new byte[4]);
+                    customer = null;
+                    setKeyRegim(KEYS_MAY_INVITE);
+                    service_list.setModel(service_list.getModel());
+                    
+                    BindUtils.postNotifyChange(null, null, Form.this, "*");
+                }
+         });
     }
 
     @Command
