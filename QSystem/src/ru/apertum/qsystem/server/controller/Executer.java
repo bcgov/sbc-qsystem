@@ -297,7 +297,7 @@ public final class Executer {
 
             Long serviceID = null;
 
-            // поддержка расширяемости плагинами
+            // поддержка расширяемости плагинами :: Support extensibility plug-ins
             for (final ISelectNextService event : ServiceLoader.load(ISelectNextService.class)) {
                 QLog.l().logger().info("Вызов SPI расширения. Описание:  Call the SPI extension. Description:" + event.getDescription());
                 try {
@@ -343,6 +343,8 @@ public final class Executer {
 
             // создаем кастомера вызвав задание по созданию кастомера
             // загрузим задание
+            // create a customizer by calling the job to create a customizer
+            // load the job
             cmdParams.serviceId = serviceID;
             final RpcStandInService txtCustomer = addCustomerTask.process(cmdParams, ipAdress, IP);
             txtCustomer.getResult().setComplexId(cmdParams.complexId);
