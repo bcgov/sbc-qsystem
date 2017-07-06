@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
+    <style>
+        .login-text {
+            font-size : 16px; 
+            font-family: Helvetica;
+            color: white;
+        }
+        .login-button { 
+        font-size : 16px; 
+        font-family: Helvetica;
+        }
+        
+    </style>
     
-    <div style="position: absolute; right: 10px; top: 10px; margin:0px 0px 0px 0px;" visible="@load(!fmodel.login)" 
+    <div style="position: absolute; right: 10px; top: 20px; margin:0 auto;" visible="@load(!fmodel.login)" 
          form="@id('login_form') 
                            @load(fmodel.user) 
                            @save(fmodel.user, before='login') 
@@ -10,30 +22,32 @@
         
         <hbox>
             <vbox>
-                <label value="${c:l('user')}" width="150px" />
+                <label sclass="login-text" value="${c:l('user')}" width="150px" />
                 <combobox width="200px" tabindex="1" model="@load(fmodel.usersForLogin)" forward="onOK=btnSubmit.onClick" value="@bind(login_form.name)">
                     <comboitem label="@load(each)"/>
                 </combobox>
             </vbox>
             <vbox>
-                <label value="${c:l('password')}" width="150px" />
+                <label sclass="login-text" value="${c:l('password')}" width="150px" />
                 <textbox id="pwd" type="password" forward="onOK=btnSubmit.onClick" value="@bind(login_form.password)" width="200px" tabindex="2"/>
             </vbox>
         </hbox>
         <div style="margin:3px 0px 0px 0px;">
-            <button width="120px" id="btnSubmit" label="${c:l('enter')}" onClick="@command('login')"  tabindex="3"/>
-            <label class="error" value="@bind(login_msgs['name'])" />
+            <button sclass="login-button" width="120px" height="34px" id="btnSubmit" label="${c:l('enter')}" onClick="@command('login')"  tabindex="3"/>
+            <label style="color: white;" class="error" value="@bind(login_msgs['name'])" />
         </div>
     </div>
     
-    <div style="position: absolute; right: 10px; top: 10px; margin:0px 0px 0px 0px;" visible="@load(fmodel.login)">
+    <div style="position: absolute; right: 10px; top: 20px; margin:0px 0px 0px 0px;" visible="@load(fmodel.login)">
         <hbox>
             <div>
-                <label value="${c:l('user')}" style="margin:0px 7px 0px 0px;"/><label value="@load(fmodel.user.name)"/>
+                <label sclass="login-text" value="${c:l('user')}" style="margin:0px 7px 0px 0px;"/>
+                <label sclass="login-text" value="@load(fmodel.user.name)"/>
                 <separator  bar="true"/>
-                <label value="${c:l('office')}" style="margin:0px 7px 0px 0px;"/><label value="@load(fmodel.user.user.point)" />
+                <label sclass="login-text" value="${c:l('office')}" style="margin:0px 7px 0px 0px;"/>
+                <label sclass="login-text" value="@load(fmodel.user.user.point)" />
                 <separator  bar="true"/>
-                <button width="120px" label="${c:l('out')}" onClick="@command('logout')">
+                <button sclass="login-button" width="120px" height="34px" label="${c:l('out')}" onClick="@command('logout')">
                 </button>
             </div>
             <image id="" src="/resources/img/ok32_2.png"/>

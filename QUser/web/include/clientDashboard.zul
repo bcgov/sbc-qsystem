@@ -32,7 +32,7 @@
             </panel>
         </center>
                 
-                
+        <!--        
         <east size="550px" border="none" minsize="100"  hflex="max" splittable="true" >
             <panel title="${c:l('invited_client')}" border="normal" height="100%" vflex="max">
                 <panelchildren style="overflow: auto">
@@ -52,7 +52,7 @@
                 </panelchildren>
             </panel>	
         </east>
-        
+        -->
         
         <south hflex="min" splittable="true" minsize="150" maxsize="350" size="270px">
             <panel title="@load(fmodel.avaitColumn)" border="normal" height="100%">
