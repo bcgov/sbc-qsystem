@@ -539,16 +539,24 @@ public class Form {
     @Command
     @NotifyChange(value = {"postponList", "avaitColumn"})
     public void refreshListServices() {
-
+        QLog.l().logQUser().error("@*@*@*@*@*@*@*");
         if (isLogin()) {
             // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
             UsersInside.getInstance().getUsersInside().put(user.getName() + user.getPassword(), new Date().getTime());
             // тут поддержание сессии как залогинившегося юзера в СУО Here the maintenance of the session as a logged user in the MSA
             QSessions.getInstance().update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
 
+
             final StringBuilder st = new StringBuilder();
+            int number = user.getPlan().size();
+            QLog.l().logQUser().error("^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ LENGTH : : : " + number);
+
+            
             user.getPlan().forEach((QPlanService p) -> {
                 st.append(user.getLineSize(p.getService().getId()));
+                
+                QLog.l().logQUser().error("** ** ** ** ** ** ** ** ** ** ** ");
+                QLog.l().logQUser().error("** ** ** ** ** ** ** ** ** ** ** ");
                 
                 /*
                 QLog.l().logQUser().error("p.getId() ----  ----: " + p.getId());
@@ -559,6 +567,8 @@ public class Form {
             });
             
             if (!oldSt.equals(st.toString())) {
+                QLog.l().logQUser().error("T T T T T T T T T T");
+                QLog.l().logQUser().error("T T T T T T T T T T");
                 if ("".equals(oldSt.replaceAll("0+", "")) && customer == null) {
                     Clients.showNotification(l("do_invite"), Clients.NOTIFICATION_TYPE_WARNING, btn_invite, "start_center", 0, true);
                 }
@@ -566,7 +576,10 @@ public class Form {
                 user.setCustomerList(user.getPlan());                
                 service_list.setModel(service_list.getModel());
                 oldSt = st.toString();
-                BindUtils.postNotifyChange(null, null, Form.this, "*");                
+                 QLog.l().logQUser().error("$$  $$  $$  $$  $$  $$  $$  $$  $$  $$  $$");
+                 QLog.l().logQUser().error("$$  $$  $$  $$  $$  $$  $$  $$  $$  $$  $$");
+                BindUtils.postNotifyChange(null, null, Form.this, "*");  
+                
             }
         }
     }
