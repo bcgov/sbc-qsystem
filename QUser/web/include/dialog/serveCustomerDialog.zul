@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    <style>
+        .text-style{
+            font-size : 26px; 
+            font-family: Helvetica; 
+            color: White;
+        }
+        .button-with-image{
+            padding : 0px; 
+            border: none; 
+            background-color: transparent; 
+            outline: none;
+        }
+        .general-text{
+            font-size : 20px; 
+            font-family: Helvetica; 
+            color: Black;
+        }
+    </style>
+
+<window id="serveCustomerDialog" title="Serve Customer Screen" border="normal" width="920px" height="710px"
+    position="center,center" closable="true"
+    onClose="self.visible = false; event.stopPropagation();"
+    action="show: slideDown;hide: slideUp">
+    
+    <vlayout sclass="blue-background" height="200px">
+        
+        <hbox>
+            <vbox style="margin-left: 26px; margin-top: 34px;">
+                <label id="customer_number_label" value="Ticket #" sclass="text-style" style="font-weight: bold;"/>
+                <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="text-style" style="font-style: oblique; margin-left:54px;"/>
+            </vbox>
+        
+            <hbox style="margin-left: 18px; margin-top: 34px;">
+                
+                <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 30px; font-weight: bold;"/>
+
+                <textbox rows="5" cols="60" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  readonly="true">
+                </textbox>
+            </hbox> 
+        </hbox>
+            
+            
+        <hbox>
+            <button sclass="act-button" style="margin-left: 22px; margin-top: 22px;" label="${c:l('begin')}" disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('begin')" id="btn_start" height="38px" width="158px">
+            </button>
+
+            <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Citizen Left" disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')" id="btn_kill" height="38px" width="158px">
+            </button>            
+            <!--<checkbox style="margin-top: 18px;" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
+        </hbox>
+        
+        <!--<button id="closeServeCustomerDialogBtn" hflex="1" label="close" onClick="serveCustomerDialog.visible = false; event.stopPropagation();"/>-->
+    </vlayout>
+    
+    <vlayout height="260px" style="background-color:White">
+        
+        <grid style="margin-left:20px; margin-right:20px; margin-top:44px; margin-bottom:26px;">
+            <columns>
+                <column hflex="2" label="Category" align="center"/>
+                <column hflex="2" label="Service" align="center" />
+                <column hflex="2" label="Stand Time" align="center" />
+                <column hflex="1" label="Change Service" align="center" />
+            </columns>
+            <rows>
+                <row height="70px">
+                    <label sclass="general-text" value="Coming Soon" />
+                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" />
+                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
+                    <button sclass="button-with-image" image="/resources/img/change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
+                    </button>
+                </row>
+            </rows>
+        </grid>
+        
+        
+        <button sclass="act-button" style="display: block; margin: 0 auto;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
+        </button>
+
+        <!--
+        <div>
+            <hbox style="margin-left:20px; margin-top:40px;">
+                <label hflex="1" sclass="general-text" value="Go To:" />
+                <combobox hflex="2" width="150px" height="20px" sclass="general-text" id="taskComboBox" autodrop="true">
+                        <comboitem label="Previous Service 1" />
+                        <comboitem label="Previous Service 2" />
+                </combobox>
+                <label hflex="1" sclass="general-text" value="OR" />
+                
+            </hbox>
+        </div>
+        -->
+        
+    </vlayout>
+    
+    <vlayout sclass="blue-background" height="210px">   
+        
+        <hbox width="80%" style="margin-top: 50px; margin-left: 100px; margin-right: 60px; margin-bottom: 50px;">
+            <button  sclass="act-button" style="margin-left: 22px; margin-top: 22px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
+            </button>
+
+            <div width="60px" style="background-color:Yellow;">
+                </div>
+
+            <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Back to queue" disabled="@load(fmodel.btnsDisabled[4])" onClick="@command('redirect')" id="btn_redirect" height="38px" width="158px">
+            </button>
+
+            <div width="60px" style="background-color:Yellow;">
+                </div>
+
+            <vbox style="">
+                <button sclass="act-button" style="margin-right: 15px; margin-top: 22px; margin-bottom: 14px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
+                </button>
+
+                <checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
+            </vbox>
+        </hbox> 
+        
+    </vlayout>
+</window>
+</zk>
