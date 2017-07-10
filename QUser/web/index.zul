@@ -38,17 +38,21 @@
  
     <borderlayout  sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
         
-        <north size="202px" border="0" style="background-color: #003366;">
+        <north size="180px" border="0" style="background-color: #003366;">
             <vbox height="100%" pack="center">
                 <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px" style=" margin-top: 24px;"/>
-                    <button sclass="act-button" style="margin-left: 22px; margin-top: 18px; margin-bottom: 6px;" label="${c:l('invite_client')}" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="38px" width="158px">
-                    </button>   
-                    <button sclass="act-button" style="margin-left: 22px; margin-top: 0px;" label="${c:l('add_client')}" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
-                    </button>
+                    
                 <hlayout>
                     
                    
                 </hlayout>
+                <div>
+                    <button sclass="act-button" style="margin-left: 22px; margin-top: 18px;" label="${c:l('invite_client')}" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="38px" width="158px">
+                    </button>   
+                    <button sclass="act-button" style="margin-left: 15px; margin-top: 0px;" label="${c:l('add_client')}" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
+                    </button>
+                </div>
+                
                 <hbox width="100%" style="padding: 1px;" pack="center" align="center">
                     <!-- Это форма для логирования, форма для показа залогированного пользователя This is a form for logging, a form for displaying a logged user-->
                     <include src="/include/loginForm.zul"/>
