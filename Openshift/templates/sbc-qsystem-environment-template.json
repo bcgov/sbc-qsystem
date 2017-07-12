@@ -187,6 +187,12 @@
 								"port": 8080
 							  }
 							},
+				"volumeMounts": [
+					{
+						"name": "${QSYSTEM_SERVICE}-data",
+						"mountPath": "/opt/app-root/src/source/dist/temp"
+					}
+				],
                 "env": [
                   {
                     "name": "MYSQL_SERVICE",
