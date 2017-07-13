@@ -13,6 +13,23 @@
     "template": "sbc-qsystem-environment"
   },
   "objects": [
+  {
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${OFFICE_SERVICE}-data"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${OFFICE_VOLUME_CAPACITY}"
+          }
+        }
+      }
+    },
     {
       "kind": "Service",
       "apiVersion": "v1",
@@ -94,7 +111,15 @@
               "name": "${OFFICE_SERVICE}"
             }
           },
-          "spec": {		    
+          "spec": {
+            "volumes": [
+                {
+                    "name": "${OFFICE_SERVICE}-data",
+                    "persistentVolumeClaim": {
+                        "claimName": "${OFFICE_SERVICE}-data"
+                    }
+                }
+            ],
             "containers": [
               {
                 "name": "${OFFICE_SERVICE}",
@@ -118,6 +143,12 @@
 								"port": 8080
 							  }
 							},
+				"volumeMounts": [
+					{
+						"name": "${OFFICE_SERVICE}-data",
+						"mountPath": "/opt/app-root/src/source/dist/temp"
+					}
+				],
                 "env": [
                   {
                     "name": "MYSQL_SERVICE",
@@ -179,6 +210,13 @@
 	
   ],
   "parameters": [
+      {
+      "name": "OFFICE_VOLUME_CAPACITY",
+      "displayName": "QSystem Volume Capacity",
+      "description": "Volume space available for QSystem, e.g. 512Mi, 2Gi.",
+      "value": "100Mi",
+      "required": true
+    },
 	{
       "name": "OFFICE_SERVICE",
       "displayName": "Office Service Name",
