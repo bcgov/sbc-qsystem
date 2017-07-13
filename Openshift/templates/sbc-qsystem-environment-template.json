@@ -44,6 +44,23 @@
         }
       }
     },
+ {
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${QSYSTEM_SERVICE}-data"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${QSYSTEM_VOLUME_CAPACITY}"
+          }
+        }
+      }
+    },
     {
       "kind": "Service",
       "apiVersion": "v1",
@@ -138,7 +155,15 @@
               "name": "${QSYSTEM_SERVICE}"
             }
           },
-          "spec": {		    
+          "spec": {	
+            "volumes": [
+                {
+                    "name": "${QSYSTEM_SERVICE}-data",
+                    "persistentVolumeClaim": {
+                        "claimName": "${QSYSTEM_SERVICE}-data"
+                    }
+                }
+            ],
             "containers": [
               {
                 "name": "${QSYSTEM_SERVICE}",
@@ -162,6 +187,12 @@
 								"port": 8080
 							  }
 							},
+				"volumeMounts": [
+					{
+						"name": "${QSYSTEM_SERVICE}-data",
+						"mountPath": "/opt/app-root/src/source/dist/temp"
+					}
+				],
                 "env": [
                   {
                     "name": "MYSQL_SERVICE",
@@ -571,6 +602,13 @@
       "displayName": "Database Volume Capacity",
       "description": "Volume space available for database, e.g. 512Mi, 2Gi.",
       "value": "5Gi",
+      "required": true
+    },
+    {
+      "name": "QSYSTEM_VOLUME_CAPACITY",
+      "displayName": "QSystem Volume Capacity",
+      "description": "Volume space available for QSystem, e.g. 512Mi, 2Gi.",
+      "value": "100Mi",
       "required": true
     },
     {
