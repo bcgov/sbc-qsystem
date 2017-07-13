@@ -2,6 +2,14 @@
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
     
+    <style>
+        .tree-cell { 
+        font-size : 30px; 
+        font-family: Helvetica;
+        }
+        
+    </style>
+    
     <window id="servicesDialog" 
             title="${c:l('choosing_service_to_add')}" 
             border="normal"
@@ -14,7 +22,7 @@
             <vlayout>
                 <label value="${c:l('select_service')}" />
                 
-                <bandbox id="bd_redirect" readonly="false`" autodrop="true" hflex="true">  
+                <bandbox id="bd_redirect" readonly="false" autodrop="true" hflex="true">  
                     <bandpopup>
                         <groupbox id="TreeTest" >
                             <caption label="${c:l('services')}" />
@@ -28,7 +36,7 @@
                                 </treecols>
                                 <template name="model">
                                     <treeitem>
-                                        <treerow>
+                                        <treerow sclass="tree-cell">
                                             <treecell label="@load(each)"/>
                                         </treerow>
                                     </treeitem>

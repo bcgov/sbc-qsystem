@@ -348,6 +348,7 @@ public class Form {
     @Command
     @NotifyChange(value = {"btnsDisabled", "customer", "avaitColumn"})
     public void invite() {
+       
         QLog.l().logQUser().debug("Invite by " + user.getName());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
@@ -361,10 +362,19 @@ public class Form {
                         + " \"" + customer.getPostponedStatus() + "\".", l("inviting_postponed"), Messagebox.OK, Messagebox.INFORMATION);
             }
             setKeyRegim(KEYS_INVITED);
+            BindUtils.postNotifyChange(null, null, Form.this, "*");
+            this.addServeScreen();
         } else {
             Messagebox.show(l("no_clients"), l("inviting_next"), Messagebox.OK, Messagebox.INFORMATION);
         }
         service_list.setModel(service_list.getModel());
+        
+    }
+    
+    @Command
+    public void addServeScreen() {
+        serveCustomerDialogWindow.setVisible(true);
+        serveCustomerDialogWindow.doModal();
     }
 
     @Command
@@ -384,6 +394,8 @@ public class Form {
                     service_list.setModel(service_list.getModel());
                     
                     BindUtils.postNotifyChange(null, null, Form.this, "*");
+                    serveCustomerDialogWindow.setVisible(false);
+
                 }
          });
     }
@@ -412,6 +424,7 @@ public class Form {
         QLog.l().logQUser().debug("Redirect by " + user.getName() + " customer " + customer.getFullNumber());
         redirectCustomerDialog.setVisible(true);
         redirectCustomerDialog.doModal();
+        serveCustomerDialogWindow.setVisible(false);
     }
     
     @Command
@@ -443,6 +456,9 @@ public class Form {
         customer = null;
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
+        serveCustomerDialogWindow.setVisible(false);
+
     }
 
     //********************************************************************************************************************************************
@@ -513,6 +529,7 @@ public class Form {
 
         setKeyRegim(KEYS_INVITED);
         BindUtils.postNotifyChange(null, null, Form.this, "*");
+        this.addServeScreen();
     }
 
     public LinkedList<String> prior_St = new LinkedList(Uses.get_COEFF_WORD().values());
@@ -539,17 +556,18 @@ public class Form {
     @Command
     @NotifyChange(value = {"postponList", "avaitColumn"})
     public void refreshListServices() {
-
         if (isLogin()) {
             // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
             UsersInside.getInstance().getUsersInside().put(user.getName() + user.getPassword(), new Date().getTime());
             // тут поддержание сессии как залогинившегося юзера в СУО Here the maintenance of the session as a logged user in the MSA
             QSessions.getInstance().update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
 
+
             final StringBuilder st = new StringBuilder();
+            int number = user.getPlan().size();
+            
             user.getPlan().forEach((QPlanService p) -> {
                 st.append(user.getLineSize(p.getService().getId()));
-                
                 /*
                 QLog.l().logQUser().error("p.getId() ----  ----: " + p.getId());
                 QLog.l().logQUser().error("p.getAvg_wait() ----: " + p.getAvg_wait());
@@ -559,14 +577,16 @@ public class Form {
             });
             
             if (!oldSt.equals(st.toString())) {
+                /*
                 if ("".equals(oldSt.replaceAll("0+", "")) && customer == null) {
-                    Clients.showNotification(l("do_invite"), Clients.NOTIFICATION_TYPE_WARNING, btn_invite, "start_center", 0, true);
+                    Clients.showNotification(l("do_invite"), Clients.NOTIFICATION_TYPE_WARNING, btn_invite, "before_start", 0, true);
                 }
-                
+                */
                 user.setCustomerList(user.getPlan());                
                 service_list.setModel(service_list.getModel());
                 oldSt = st.toString();
-                BindUtils.postNotifyChange(null, null, Form.this, "*");                
+                BindUtils.postNotifyChange(null, null, Form.this, "*");  
+                
             }
         }
     }
@@ -580,6 +600,9 @@ public class Form {
     @Command
     public void closePostponeCustomerDialog() {
         postponeCustomerDialog.setVisible(false);
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
+        serveCustomerDialogWindow.setVisible(false);
+
     }
 
     @Command
@@ -595,6 +618,9 @@ public class Form {
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
         postponeCustomerDialog.setVisible(false);
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
+        servicesDialogWindow.setVisible(false);
+        
     }
 
     private final LinkedList<QCustomer> postponList = QPostponedList.getInstance().getPostponedCustomers();
@@ -690,6 +716,8 @@ public class Form {
     @Wire("#incClientDashboard #incChangeServiceDialog #changeServiceDialog")
     Window changeServiceDialogWindow;
     
+    @Wire("#incClientDashboard #incServeCustomerDialog #serveCustomerDialog")
+    Window serveCustomerDialogWindow;
 
     @Command
     public void closeAddNextServiceDialog(){
