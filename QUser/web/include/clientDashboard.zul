@@ -82,7 +82,7 @@
         <south hflex="min" splittable="true" minsize="150" maxsize="350" size="270px">
             <panel title="${c:l('postponed_clients')}" border="normal" height="100%">
                 <panelchildren>
-                    <listbox  id="postpone_list" model="@load(fmodel.postponList)" selectedItem="@bind(fmodel.pickedPostponed)" width="" height="" onSelect="" vflex="min">
+                    <listbox  id="postpone_list" model="@load(fmodel.postponList)" selectedItem="@bind(fmodel.pickedPostponed)" width="100%" height="100%" onSelect="" vflex="max">
                         <listhead>
 <!--                            <listheader label="${c:l('number')}" width="70px" sort="auto" align="center"/>
                             <listheader label="${c:l('period_min')}" width="100px" sort="auto" align="center"/>

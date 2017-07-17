@@ -344,6 +344,9 @@ public class Form {
 
     @Wire("#incClientDashboard #service_list")
     private Listbox service_list;
+    
+    @Wire("#incClientDashboard #postpone_list")
+    private Listbox postpone_list;
 
     @Command
     @NotifyChange(value = {"btnsDisabled", "customer", "avaitColumn"})
@@ -424,7 +427,7 @@ public class Form {
         QLog.l().logQUser().debug("Redirect by " + user.getName() + " customer " + customer.getFullNumber());
         redirectCustomerDialog.setVisible(true);
         redirectCustomerDialog.doModal();
-        serveCustomerDialogWindow.setVisible(false);
+        serveCustomerDialogWindow.setVisible(true);
     }
     
     @Command
@@ -616,10 +619,10 @@ public class Form {
         customer = null;
 
         setKeyRegim(KEYS_MAY_INVITE);
-        service_list.setModel(service_list.getModel());
+        postpone_list.setModel(postpone_list.getModel());
         postponeCustomerDialog.setVisible(false);
+        serveCustomerDialogWindow.setVisible(false);
         BindUtils.postNotifyChange(null, null, Form.this, "*");
-        servicesDialogWindow.setVisible(false);
         
     }
 
