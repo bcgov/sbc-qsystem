@@ -112,8 +112,8 @@
                     </listbox>
                     
                     <menupopup id="postponeListPopup">
-                        <menuitem label="${c:l('change_status')}" onClick="@command('clickListPostponedChangeStatus')" visible="@load(fmodel.login)"/>
-                        <menuseparator />
+<!--                        <menuitem label="${c:l('change_status')}" onClick="@command('clickListPostponedChangeStatus')" visible="@load(fmodel.login)"/>
+                        <menuseparator />-->
                         <menuitem label="${c:l('invite')}" onClick="@command('clickListPostponedInvite')" visible="@load(fmodel.login)"/>
                     </menupopup>
                 </panelchildren>
