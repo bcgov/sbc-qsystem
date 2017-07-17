@@ -694,7 +694,8 @@ public class Form {
                 BindUtils.postNotifyChange(null, null, Form.this, "postponList");
                 BindUtils.postNotifyChange(null, null, Form.this, "customer");
                 BindUtils.postNotifyChange(null, null, Form.this, "btnsDisabled");
-
+                
+                this.addServeScreen();
             }
         });
     }
