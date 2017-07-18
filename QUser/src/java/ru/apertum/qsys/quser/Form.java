@@ -696,6 +696,7 @@ public class Form {
                 BindUtils.postNotifyChange(null, null, Form.this, "btnsDisabled");
                 
                 this.addServeScreen();
+                this.begin();
             }
         });
     }
@@ -746,6 +747,7 @@ public class Form {
             addNextServiceDialog.setVisible(false);
             
             this.invite();
+            this.begin();
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
@@ -843,8 +845,9 @@ public class Form {
             servicesDialogWindow.setVisible(false);
             
             this.invite();
+            this.begin();
             BindUtils.postNotifyChange(null, null, Form.this, "*");
-
+            
         }
     }
         
