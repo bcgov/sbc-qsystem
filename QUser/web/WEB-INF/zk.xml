@@ -16,7 +16,7 @@ and open the template in the editor.
 		<ui-factory-class>org.zkoss.zk.ui.http.SerializableUiFactory</ui-factory-class>
 	</system-config>
 	<library-property>
-    		<name>org.zkoss.zkex.ui.comet.smartconnection.disabled</name>
-    		<value>true</value>
-	</library-property>
+    <name>org.zkoss.zkex.ui.comet.smartconnection.disabled</name>
+    <value>true</value>
+  </library-property>
 </zk>
