@@ -427,7 +427,6 @@ public class Form {
         QLog.l().logQUser().debug("Redirect by " + user.getName() + " customer " + customer.getFullNumber());
         redirectCustomerDialog.setVisible(true);
         redirectCustomerDialog.doModal();
-        serveCustomerDialogWindow.setVisible(true);
     }
     
     @Command
@@ -571,12 +570,6 @@ public class Form {
             
             user.getPlan().forEach((QPlanService p) -> {
                 st.append(user.getLineSize(p.getService().getId()));
-                /*
-                QLog.l().logQUser().error("p.getId() ----  ----: " + p.getId());
-                QLog.l().logQUser().error("p.getAvg_wait() ----: " + p.getAvg_wait());
-                QLog.l().logQUser().error("p.getAvg_work() ----: " + p.getAvg_work());
-                QLog.l().logQUser().error("p.getCoefficient() -: " + p.getCoefficient());
-                */
             });
             
             if (!oldSt.equals(st.toString())) {
@@ -696,6 +689,7 @@ public class Form {
                 BindUtils.postNotifyChange(null, null, Form.this, "btnsDisabled");
                 
                 this.addServeScreen();
+                this.begin();
             }
         });
     }
@@ -746,6 +740,7 @@ public class Form {
             addNextServiceDialog.setVisible(false);
             
             this.invite();
+            this.begin();
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
@@ -843,8 +838,9 @@ public class Form {
             servicesDialogWindow.setVisible(false);
             
             this.invite();
+            this.begin();
             BindUtils.postNotifyChange(null, null, Form.this, "*");
-
+            
         }
     }
         
@@ -870,6 +866,7 @@ public class Form {
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
             redirectCustomerDialog.setVisible(false);
+            serveCustomerDialogWindow.setVisible(false);
         }
     }
     QService pickedRedirectServ;
