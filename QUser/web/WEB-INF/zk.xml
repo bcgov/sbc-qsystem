@@ -8,10 +8,11 @@ and open the template in the editor.
 
 <zk>
     <session-config>
-        <session-timeout>60</session-timeout>
+        <session-timeout>1800</session-timeout>
         <timer-keep-alive>true</timer-keep-alive>
     </session-config>
 	<system-config>
+		<max-desktops-per-session>-1</max-desktops-per-session>
 		<ui-factory-class>org.zkoss.zk.ui.http.SerializableUiFactory</ui-factory-class>
 	</system-config>
 </zk>
