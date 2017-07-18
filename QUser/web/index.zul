@@ -35,7 +35,7 @@
         }
         
     </style>
-    <timer id="timer_ses" delay="0" repeats="true" running="true" onTimer=""/>     
+    <timer id="timer_ses" delay="50000" repeats="true" running="true" onTimer=""/>     
     <borderlayout  sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
         
         <north size="180px" border="0" sclass="blue-background">
