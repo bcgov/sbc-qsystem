@@ -51,9 +51,9 @@
 		<dependency>
 			<groupId>org.zkoss.zk</groupId>
 			<artifactId>zkex</artifactId>
-			<version>7.0.3</version>
+			<version>3.6.3</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/zkex.jar</systemPath>
+			<systemPath>${project.basedir}/lib/zkex-3.6.3.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>ru.apertum</groupId>
