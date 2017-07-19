@@ -19,8 +19,8 @@
         font-family: Helvetica;
         }
         .act-button:disabled { 
-        background: -webkit-linear-gradient(top, #FFFFFF 0%, #BBBBCC 100%); /* Chrome10+,Safari5.1+ */
-        background: linear-gradient(to bottom, #FFFFFF 0%, #BBBBCC 100%); /* W3C */
+        background: -webkit-linear-gradient(top, #FFFFFF 0%, #dddddd 100%); /* Chrome10+,Safari5.1+ */
+        background: linear-gradient(to bottom, #FFFFFF 0%, #dddddd 100%); /* W3C */
         }
         .act-button:hover {
         border-color: #FFFF00;
@@ -49,9 +49,9 @@
                 <div>
                     <button sclass="act-button" style="margin-left: 22px; margin-top: 18px;" label="${c:l('invite_client')}" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="38px" width="158px">
                     </button>   
-                    <button sclass="act-button" style="margin-left: 15px; margin-top: 0px;" label="${c:l('add_client')}" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
+                    <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="${c:l('add_client')}" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
                     </button>                    
-                    <button sclass="act-button" style="margin-left: 15px;" label="Serve Now" visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])" onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
+                    <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="Serve Now" visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])" onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
                     </button>
                 </div>
                 
