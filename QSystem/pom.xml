@@ -309,10 +309,17 @@
 			<version>9.0.4.v20130625</version>
 		</dependency>
 		<dependency>
+    			<groupId>javax.servlet</groupId>
+    			<artifactId>javax.servlet-api</artifactId>
+    			<version>4.0.0-b07</version>
+    			<scope>provided</scope>
+		</dependency>
+<!--		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.servlet</artifactId>
 			<version>3.2-b06</version>
 		</dependency>
+-->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
