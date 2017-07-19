@@ -52,15 +52,18 @@
 			<groupId>org.zkoss.zk</groupId>
 			<artifactId>zkex</artifactId>
 			<version>7.0.3</version>
-			<scope>system</scope>
+<!--			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/zkex.jar</systemPath>
+-->
 		</dependency>
 		<dependency>
 			<groupId>ru.apertum</groupId>
 			<artifactId>qsystem</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/../dist/QSystem.jar</systemPath>
+			<systemPath>${project.basedir}/dist/QSystem.jar</systemPath>
+<!--			<systemPath>${project.basedir}/../dist/QSystem.jar</systemPath>
+-->
 		</dependency>
 	</dependencies>
 
