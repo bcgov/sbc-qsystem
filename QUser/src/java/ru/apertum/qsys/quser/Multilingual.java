@@ -64,7 +64,7 @@ public class Multilingual {
     //*****************************************************
     //**** Multilingual
     //*****************************************************
-    public static final Lng ENG_LNG = new Lng("English", "en_GB");
+    public static final Lng ENG_LNG = new Lng("English", "en_CA");
     public static final ArrayList<Lng> LANGS = new ArrayList<>(Arrays.asList(new Lng("Русский", "ru_RU"), ENG_LNG, new Lng("Español", "es_ES"),
             new Lng("Deutsch", "de_DE"), new Lng("Português", "pt_PT"), new Lng("Français", "fr_FR"), new Lng("Italiano", "it_IT"), new Lng("čeština", "cs_CZ"),
             new Lng("Polski", "pl_PL"),

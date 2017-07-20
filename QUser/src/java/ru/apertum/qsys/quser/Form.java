@@ -117,6 +117,7 @@ public class Form {
     //*****************************************************
     //**** Multilingual
     //*****************************************************
+    /*
     public ArrayList<Lng> getLangs() {
         return Multilingual.LANGS;
     }
@@ -139,17 +140,11 @@ public class Form {
                     ? new Locale(lang.code.substring(0, 2), lang.code.substring(3)) : new Locale(lang.code);
             session.setAttribute(org.zkoss.web.Attributes.PREFERRED_LOCALE, prefer_locale);
             Executions.sendRedirect(null);
-            /*
-             try {
-             Clients.reloadMessages(prefer_locale);
-             } catch (IOException ex) {
-             System.err.println("Locales bad-bad! " + ex);
-             }
-             Locales.setThreadLocal(prefer_locale);
-             */
+            
         }
     }
-
+*/
+   
     //*****************************************************
     //**** Логин Login
     //*****************************************************
