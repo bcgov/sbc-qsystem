@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+    <style>        
+		/*hex codes for fontawesome icons taken from http://fortawesome.github.io/Font-Awesome/cheatsheet/ */
+		.z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-close:before {
+			content: "\f055"; font-size : 1.5em;
+		}
+		.z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-open:before {
+			content: "\f056"; font-size : 1.5em;
+		}
+    </style>
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
     
@@ -18,7 +27,7 @@
                     <bandpopup>
                         <groupbox id="TreeTest" >
                             <caption label="${c:l('services')}" />
-                            <tree id="tree_redirect_service_choose"  zclass="z-dottree" style="white-space:nowrap;"
+                            <tree id="tree_redirect_service_choose" style="white-space:nowrap;"
                                   vflex="true" width="490px"
                                   onSelect="bd_redirect.value=self.selectedItem.label; bd_redirect.close();"
                                   selectedItem="@bind(fmodel.pickedRedirectServ)"
@@ -28,7 +37,7 @@
                                 </treecols>
                                 <template name="model">
                                     <treeitem>
-                                        <treerow>
+                                        <treerow sclass="tree-cell">
                                             <treecell label="@load(each)"/>
                                         </treerow>
                                     </treeitem>
