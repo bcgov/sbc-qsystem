@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<zk xmlns="http://www.zkoss.org/2005/zul">
 
     <style>      
 		/*hex codes for fontawesome icons taken from http://fortawesome.github.io/Font-Awesome/cheatsheet/ */
@@ -9,9 +10,7 @@
 			content: "\f056"; font-size : 1.5em;
 		}
     </style>
-
-<zk xmlns="http://www.zkoss.org/2005/zul">
-    
+  
     <window id="changeServiceDialog" 
             title="${c:l('change_service')}" 
             border="normal"
