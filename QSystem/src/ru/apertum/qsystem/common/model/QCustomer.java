@@ -34,7 +34,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.ServiceLoader;
+import java.util.TimeZone;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -493,7 +495,13 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
     
     public String standTimeinHHMMSS(){
-        return Uses.FORMAT_HH_MM_SS.format(standTime);
+        
+        TimeZone currentTimeZone = Calendar.getInstance().getTimeZone();
+        
+        DateFormat zoneTimeFormat= Uses.FORMAT_HH_MM_SS;
+        zoneTimeFormat.setTimeZone(TimeZone.getTimeZone(currentTimeZone.getID()));
+        
+        return zoneTimeFormat.format(standTime);
     }
     
     private Date callTime;
