@@ -8,6 +8,13 @@
         font-family: Helvetica;
         }
         
+        .z-tree-open {
+        font-size: 2em;
+        }
+        .z-tree-close {
+        font-size: 2em;
+        }
+        
     </style>
     
     <window id="servicesDialog" 
