@@ -18,6 +18,15 @@
         font-size : 16px; 
         font-family: Helvetica;
         }
+        .act-button:focus { 
+        background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
+        background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
+        -webkit-border-radius: 0em;
+        -moz-border-radius: 0em;
+        border-radius: 0em;
+        font-size : 16px; 
+        font-family: Helvetica;
+        }
         .act-button:disabled { 
         background: -webkit-linear-gradient(top, #FFFFFF 0%, #dddddd 100%); /* Chrome10+,Safari5.1+ */
         background: linear-gradient(to bottom, #FFFFFF 0%, #dddddd 100%); /* W3C */
