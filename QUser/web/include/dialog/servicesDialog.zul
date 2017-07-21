@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<zk xmlns="http://www.zkoss.org/2005/zul">
-    
-    <style>
-                 
-		/*hex codes for fontawesome icons taken from http://fortawesome.github.io/Font-Awesome/cheatsheet/ */
-		.z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-close:before {
-			content: "\f055"; font-size : 1.5em;
-		}
-		.z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-open:before {
-			content: "\f056"; font-size : 1.5em;
-		}
-
-        
-    </style>
-    
+<zk xmlns="http://www.zkoss.org/2005/zul">    
     <window id="servicesDialog" 
             title="${c:l('choosing_service_to_add')}" 
             border="normal"

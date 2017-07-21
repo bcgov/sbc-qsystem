@@ -42,7 +42,13 @@
         font-size : 10px; 
         font-family: Helvetica;
         }
-        
+    
+        .z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-close:before {
+            font-size : 1.5em;
+	}
+        .z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-open:before {
+            font-size : 1.5em;
+        }
     </style>
     <timer id="timer_ses" delay="50000" repeats="true" running="true" onTimer=""/>     
     <borderlayout  sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
