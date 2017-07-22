@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+<meta charset="utf-8"/>
+<style type="text/css">
+    .left {
+	font: 30pt arial, sans-serif;
+        padding-left: 50px;
+        text-align: left;
+	float: left
+    }
+    .right {
+	font: 30pt arial, sans-serif;
+        padding-right: 50px;
+        text-align: right
+    }
+</style>
+<script type="text/javascript" src='date.format.js'></script>
+</head>
+<body>
+<div class="left" id="date">crap</div><div class="right" id="time">crap</div>
+<script type="text/javascript">
+<!--
+function keepOnTicking() {
+	document.getElementById("date").innerHTML = dateFormat("fullDate");
+	document.getElementById("time").innerHTML = dateFormat("mediumTime");
+	setInterval(keepOnTicking, 1000);
+}
+keepOnTicking();
+-->
+</script>
+</body>
+</html>
