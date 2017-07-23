@@ -102,8 +102,12 @@ public class PrintRecords {
     }    
     
     public PrintRecords() {
-        File f = new File("config/QSmartboardPlugin.properties");
-        if (f.exists()) {
+		String qsb = System.getenv ("QSB");
+		File f = new File("config/QSmartboardPlugin.properties");
+		if (qsb.equalsIgnoreCase("callbyticket")) {
+			f = new File("config/QSmartboardPlugin-original.properties");
+		};
+		if (f.exists()) {
             final FileInputStream inStream;
             try {
                 inStream = new FileInputStream(f);

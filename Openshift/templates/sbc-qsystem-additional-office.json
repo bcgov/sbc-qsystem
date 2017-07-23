@@ -198,7 +198,11 @@
 				  {
                     "name": "MYSQL_DATABASE",
                     "value": "${OFFICE_SERVICE}"
-                  }				  
+                  },
+				  {
+                    "name": "QSB",
+                    "value": "${QSB}"
+                  }			  
                 ]
                 
               }
@@ -221,6 +225,12 @@
       "name": "OFFICE_SERVICE",
       "displayName": "Office Service Name",
       "description": "** The name assigned to the Deployment and Database for the new office.  Must start with a letter and be a valid hostname, for example office-01",
+      "required": true
+    },
+	{
+      "name": "QSB",
+      "displayName": "Smartboard Layout",
+      "description": "** The smartboard layout is defaulted to Non-Reception or call by Name.  If you want to setup the layout for Call by Ticket, Enter: callbyticket",
       "required": true
     },
     {
