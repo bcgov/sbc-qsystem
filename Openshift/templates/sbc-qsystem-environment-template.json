@@ -242,7 +242,11 @@
 				  {
                     "name": "MYSQL_DATABASE",
                     "value": "${DATABASE_NAME}"
-                  }				  
+                  },
+				  {
+                    "name": "QSB",
+                    "value": "${QSB}"
+                  }					  
                 ]
                 
               }
@@ -544,6 +548,13 @@
       "description": "The name assigned to all of the QSystem objects defined in this template.",
       "required": true,
       "value": "qsystem"
+    },
+	{
+      "name": "QSB",
+      "displayName": "Smartboard Layout",
+      "description": "** The smartboard layout is defaulted to Non-Reception or call by Name.  If you want to setup the layout for Call by Ticket, Enter: callbyticket",
+	  "value": "nocallonsmartboard",
+      "required": true
     },
 	{
       "name": "NGINX_SERVICE_NAME",

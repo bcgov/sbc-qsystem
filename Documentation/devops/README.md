@@ -137,9 +137,9 @@ Removing an Office
 ------------------
 
 To remove an office, do the following:
-- Delete the Deployment for the office with `oc delete svc <office-name>
+- Delete the Deployment for the office with `oc delete dc <office-name>
 - Delete the Service for the office with `oc delete svc <office-name>
-- Delete the Service for the office
+- Delete the permanent storage for the office
 - `oc rsh <mysql_podname>` and then `mysql`
 - `drop database <office-name>`
 	
