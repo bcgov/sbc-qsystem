@@ -198,11 +198,7 @@
 				  {
                     "name": "MYSQL_DATABASE",
                     "value": "${OFFICE_SERVICE}"
-                  },
-				  {
-                    "name": "QSB",
-                    "value": "${QSB}"
-                  }								  
+                  }				  
                 ]
                 
               }
@@ -225,12 +221,6 @@
       "name": "OFFICE_SERVICE",
       "displayName": "Office Service Name",
       "description": "** The name assigned to the Deployment and Database for the new office.  Must start with a letter and be a valid hostname, for example office-01",
-      "required": true
-    },
-	{
-      "name": "QSB",
-      "displayName": "Smartboard Display Configuration",
-      "description": "** The type of Display.  Must be either qsbconfignew or qsbconfigorig",
       "required": true
     },
     {

@@ -484,12 +484,7 @@
 									<targetPath>${project.basedir}/../dist/www</targetPath>
 									<directory>${project.basedir}/www</directory>
 									<filtering>false</filtering>
-								</resource>  
-								<resource>
-									<targetPath>${project.basedir}/../dist/config</targetPath>
-									<directory>${project.basedir}/${env.QSB}</directory>
-									<filtering>false</filtering>
-								</resource>   								
+								</resource>  							
 							</resources> 						
 							<encoding>UTF-8</encoding>
 						</configuration>            
