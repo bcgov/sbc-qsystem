@@ -13,7 +13,7 @@ body { padding: 0 0; background-color: #F2F2F3;  }
 
 
 .headerDiv{
-    background:#3399FF;
+    background:#ffcc66;
 }
 
 .lineDivOdd{
@@ -21,7 +21,7 @@ body { padding: 0 0; background-color: #F2F2F3;  }
 }
 
 .lineDiv{
-    background:#E0EDF2;
+    background:#fffae6;
 }
 
 .headerLabel{
@@ -30,13 +30,13 @@ body { padding: 0 0; background-color: #F2F2F3;  }
 }
 
 .no_blink {
-    padding: 0px 0px 0px 0px; font-family: 'Arial'; font-size: 50pt;
+    padding: 0px 0px 0px 0px; font-family: 'Arial'; font-size: 30pt;
     color: blue;
 }
 
 
 .blink_me {
-    padding: 0px 0px 0px 0px; font-family: 'Arial'; font-size: 50pt;
+    padding: 0px 0px 0px 0px; font-family: 'Arial'; font-size: 30pt;
     color: red;
 
     -webkit-animation-name: blinker;

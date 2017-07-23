@@ -5,27 +5,22 @@
 <zk xmlns="http://www.zkoss.org/2005/zul" xmlns:w="http://www.zkoss.org/2005/zk/client">
     
     <borderlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('fmodel') @init('ru.apertum.qsystem.qboard.QBoard')">
-                
-        <north border="none" height="80px">
+        <north border="none" height="@load(fmodel.topSize)" visible="@load(fmodel.topVisible)">
             <iframe scrolling="false" id="1" src="@load(fmodel.topUrl)" width="100%" height="100%" />	
         </north>       
-        
-	<center border="1">
+		<center border="1">
             <iframe scrolling="false" id="2" src="@load(fmodel.leftUrl)" width="100%" height="100%" />
-        </center>
-        
-        <east border="2">
+		</center>
+		<east border="2">
             <div width="100%" height="100%" style="@load(fmodel.rightVisible)">
                 <timer id="timer_ses" delay="0" repeats="true" running="true" onTimer="@command('clickMe')"/>
-
                 <!--button label="add item" w:onClick="DHTMLSound();"/-->
-                <!--button label="Click me" onClick="@command('clickMe')"/-->
-                
-                <columnlayout width="100%" height="100%">
+                <!--button label="Click me" onClick="@command('clickMe')"/-->	
+                <columnlayout width="@load(fmodel.rightSize)" height="100%">
                     <columnchildren id="left" width="50%" height="100%" style="padding: 0px">
                         <div class="headerDiv" width="100%" height="16%">
                             <vbox  width="100%" height="100%" pack="center" align="center"> 
-                                <label class="headerLabel" value="@load(fmodel.columnFirst)"  /> 
+                                <label class="headerLabel" value="@load(fmodel.columnFirst)"/> 
                             </vbox>
                         </div>                
                     </columnchildren>
@@ -39,30 +34,29 @@
                     <columnchildren id="space" width="0%" height="100%" style="padding: 0px">
                         <div class="headerDiv" width="100%" height="16%">
                             <vbox  width="100%" height="100%" pack="center" align="center"> 
-                                <label class="headerLabel" value="space"  /> 
+                                <label class="headerLabel" value="space" /> 
                             </vbox>
                         </div>                
                     </columnchildren>
                 </columnlayout>
-                <include src="/resource/dummy.html" ></include>
+                <include src="/resource/dummy.html" />
             </div>		
-        </east>    
-  
-        <south border="1" height="@load(fmodel.southHeight)">      
+        </east>
+        <south border="0" height="@load(fmodel.bottomSize)" visible="@load(fmodel.bottomVisible)" >      
             <div width="100%" height="100%">
                   <columnlayout width="100%" height="100%">
-                     <columnchildren id="bottom_center1" width="100%" style="padding: 0px">
-                        <iframe scrolling="false" id="3" src="@load(fmodel.bottomUrl)" width="100%" height="30%" />
-                     </columnchildren> 
-                     <columnchildren id="bottom_center2" width="100%" style="@load(fmodel.customerDisplay)">
-                        <div width="100%">
-                            <hbox align="center" pack="center" hflex="1" vflex="1"> 
-                                <label style="font-size: 30pt;" value="Currently waiting:"  />
-                                <label style="font-size: 30pt;" value="@load(fmodel.customersCount)"  />
-                            </hbox>
-                            <timer id="timer_service_list" delay="1" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
-                        </div>
-                     </columnchildren> 
+                    <columnchildren id="bottom_center1" width="100%" style="@load(fmodel.customerDisplay)">
+					<div width="100%">
+                        <hbox align="center" pack="center" hflex="1" vflex="1"> 
+                            <label style="font-size: 2em;" value="Currently waiting:"  />
+                            <label style="font-size: 2em;" value="@load(fmodel.customersCount)"  />
+                        </hbox>
+					</div>
+                        <timer id="timer_service_list" delay="1" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
+                    </columnchildren> 
+					<columnchildren id="bottom_center2" width="100%">
+							<iframe scrolling="false" id="3" src="@load(fmodel.bottomUrl)" width="100%" />
+					</columnchildren> 
                 </columnlayout>                
             </div>		
         </south>       

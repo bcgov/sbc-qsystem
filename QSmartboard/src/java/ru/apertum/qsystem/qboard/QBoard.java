@@ -217,9 +217,9 @@ public class QBoard {
         return rt;
     }
     
-    public String getSouthHeight() {        
-        return "".equals(PrintRecords.getInstance().getRightSize().replaceAll("0|%|(px)", "") ) ? "200px" : "100px";
-    }   
+    public String getSouthHeight() { 
+		return checkPlugin() ? PrintRecords.getInstance().getBottomSize() : "0px";	
+	}   
 
     public String getRightUrl() {
         return checkPlugin() ? PrintRecords.getInstance().getRightUrl() : "";
