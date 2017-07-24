@@ -1424,9 +1424,11 @@ public final class Executer {
                 //это произойдет далее при вызове setCustomer(null).
                 // и добавить, если надо, пункт возврата.
                 // теперь пункт возврата
+                /*
                 if (cmdParams.requestBack) { // требует ли возврата в прежнюю очередь
                     customer.addServiceForBack(oldService);
                 }
+                */
             }
             // только что встал типо
             customer.setStandTime(new Date());
