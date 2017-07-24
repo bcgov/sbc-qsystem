@@ -499,7 +499,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         TimeZone currentTimeZone = Calendar.getInstance().getTimeZone();
         
         DateFormat zoneTimeFormat= Uses.FORMAT_HH_MM_SS;
-        zoneTimeFormat.setTimeZone(TimeZone.getTimeZone(currentTimeZone.getID()));
+//        zoneTimeFormat.setTimeZone(TimeZone.getTimeZone(currentTimeZone.getID()));
         
         return zoneTimeFormat.format(standTime);
     }
