@@ -51,8 +51,12 @@
         }
     </style>
     <timer id="timer_ses" delay="50000" repeats="true" running="true" onTimer=""/>     
-    <borderlayout  sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
-        
+    <borderlayout onClientInfo="onClientInfo(event)" sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
+        <zscript>
+     void onClientInfo(ClientInfoEvent event) {
+            Sessions.getCurrent().setAttribute("org.zkoss.web.preferred.timeZone", event.getTimeZone());
+     }
+    </zscript>
         <north size="180px" border="0" sclass="blue-background">
             <vbox height="100%" pack="center">
                 <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px" style=" margin-top: 24px;"/>
@@ -67,6 +71,8 @@
                     <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="${c:l('add_client')}" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
                     </button>                    
                     <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="Serve Now" visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])" onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
+                    </button>
+                    <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="TIME" id="btn_time_test" height="38px" width="158px" onClientInfo="onClientInfo(event)">                        
                     </button>
                 </div>
                 
