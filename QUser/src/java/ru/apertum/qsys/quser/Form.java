@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.TimeZone;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
@@ -165,6 +166,7 @@ public class Form {
     @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn"})
     public void login() {
         QLog.l().logQUser().debug("Login " + user.getName());
+        Uses.userTimeZone = (TimeZone)Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone");
 
         final Session sess = Sessions.getCurrent();
         sess.setAttribute("userForQUser", user);

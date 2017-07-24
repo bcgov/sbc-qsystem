@@ -495,11 +495,14 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
     
     public String standTimeinHHMMSS(){
-        
         TimeZone currentTimeZone = Calendar.getInstance().getTimeZone();
-        
         DateFormat zoneTimeFormat= Uses.FORMAT_HH_MM_SS;
-//        zoneTimeFormat.setTimeZone(TimeZone.getTimeZone(currentTimeZone.getID()));
+
+        if (Uses.userTimeZone == null){
+            zoneTimeFormat.setTimeZone(currentTimeZone);
+        }else{
+            zoneTimeFormat.setTimeZone(Uses.userTimeZone);
+        }
         
         return zoneTimeFormat.format(standTime);
     }
