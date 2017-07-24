@@ -436,6 +436,8 @@ public final class Uses {
      */
     public static final String HOW_DO_YOU_DO = "do you live?";
 
+    public static TimeZone userTimeZone;
+    
     /**
      * Рекурентный формирователь для public static ArrayList elements(Element root, String tagName).
      *
