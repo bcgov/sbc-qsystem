@@ -54,6 +54,7 @@
     <borderlayout onClientInfo="onClientInfo(event)" sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
         <zscript>
      void onClientInfo(ClientInfoEvent event) {
+            Messagebox.show(event.getTimeZone().toString());
             Sessions.getCurrent().setAttribute("org.zkoss.web.preferred.timeZone", event.getTimeZone());
      }
     </zscript>
