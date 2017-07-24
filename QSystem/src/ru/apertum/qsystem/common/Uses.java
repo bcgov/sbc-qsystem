@@ -377,7 +377,7 @@ public final class Uses {
     /**
      * Формат даты.
      */
-    public final static DateFormat FORMAT_HH_MM_SS = new SimpleDateFormat("HH:mm:ss");
+    public final static DateFormat FORMAT_HH_MM_SS = new SimpleDateFormat("hh:mm:ss aa");
     /**
      * Формат даты.
      */
