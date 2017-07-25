@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8"/>
 </head>
-<body>
+<body style="background-color: #E98300;">
 	<script type="text/javascript">
 		tday=new Array("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday");
 		tmonth=new Array("January","February","March","April","May","June","July","August","September","October","November","December");
@@ -24,8 +24,19 @@
 			setInterval(GetClock,1000);
 		}
 	</script>
-	<center>
-		<div id="clockbox" style="font-size: 2em;"></div>
-	</center>
+	
+	<style>
+	img {
+    float: left;
+    margin-right: 0px;
+}
+.clockbox {
+    overflow: hidden
+}
+</style>
+		<div id="clockbox" style="font-size: 2em;text-align:center;">
+		</div>
+
+
 </body>
 </html>
