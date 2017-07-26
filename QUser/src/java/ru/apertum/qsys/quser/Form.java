@@ -802,6 +802,7 @@ public class Form {
             final CmdParams params = new CmdParams();
             params.userId = user.getUser().getId();
             params.serviceId = pickedRedirectServ.getId();
+            params.comments = ((Textbox) changeServiceDialogWindow.getFellow("tb_ChangeService")).getText();
             
             Executer.getInstance().getTasks().get(Uses.TASK_CHANGE_SERVICE).process(params, "", new byte[4]);
             

@@ -38,7 +38,7 @@
         
                 <div style="margin:10px 10px 10px 10px;"></div>
                 <label value="${c:l('comments')}"/>
-                <textbox id="tb_addInQueue" rows="10" value="" hflex="1" tabindex="2" />
+                <textbox id="tb_ChangeService" rows="10" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
                 <div style="float:right; margin:10px 0px 0px 0px;">
                     <hbox>
                         <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')"/>
