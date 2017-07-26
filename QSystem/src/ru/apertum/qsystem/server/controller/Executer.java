@@ -1395,7 +1395,7 @@ public final class Executer {
             }
             final QCustomer customer = user.getCustomer();
             // комменты по редиректу
-            customer.setTempComments(cmdParams.textData);
+            customer.setTempComments(cmdParams.comments);
             
             // set added by which user
             customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
