@@ -25,6 +25,7 @@
                         <listhead>
                             <listheader label="Time" width="100px" align="center" sortAscending="${cTimeAsc}" sortDescending="${cTimeDsc}"/>
                             <listheader label="Ticket" width="100px" align="center" sortAscending="${cTicketAsc}" sortDescending="${cTicketDsc}"/>
+                            <listheader label="CSR User" width="100px" sort="auto" align="center"/>
                             <listheader label="Service" width="200px" align="center" sortAscending="${cServiceAsc}" sortDescending="${cServiceDsc}"/>
                             <!--<listheader label="Priority" width="100px" align="center" sortAscending="${cPriorityAsc}" sortDescending="${cPriorityDsc}"/>-->
                             <listheader label="State" width="120px" align="center" sortAscending="${cStateAsc}" sortDescending="${cStateDsc}"/>
@@ -34,6 +35,7 @@
                             <listitem context="servicesListPopup">
                                 <listcell label="@load(customerList.standTimeinHHMMSS())" />
                                 <listcell label="@load(customerList.getFullNumber())" />
+                                <listcell label="@load(customerList.getAddedBy())"/>
                                 <listcell label="@load(customerList.getService().getName())" />
                                 <!--<listcell label="@load(customerList.taskPriority())" />-->
                                 <listcell label="@load(customerList.currentStateIn())" />
@@ -90,6 +92,7 @@
                                 
                             <listheader label="Time" width="100px" sort="auto" align="center"/>
                             <listheader label="Ticket" width="100px" sort="auto" align="center"/>
+                            <listheader label="CSR User" width="100px" sort="auto" align="center"/>
                             <listheader label="Service" width="200px" sort="auto" align="center"/>
                             <listheader label="Reason" width="120px" sort="auto" align="center"/>
                             <listheader label="Comments" sort="auto"/>
@@ -103,6 +106,7 @@
 
                                 <listcell label="@load(pCust.standTimeinHHMMSS())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getFullNumber())" visible="@load(fmodel.login)"/>
+                                <listcell label="@load(pCust.getAddedBy())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getService().getName())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.postponedStatus)" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getTempComments())" visible="@load(fmodel.login)"/>

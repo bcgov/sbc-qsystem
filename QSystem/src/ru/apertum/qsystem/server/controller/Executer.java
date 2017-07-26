@@ -225,7 +225,7 @@ public final class Executer {
                 // Create a new baked custome    
                 customer = new QCustomer(service.getNextNumber());
                 
-                //set csutomer welcome time
+                //set customer welcome time
                 customer.setWelcomeTime(cmdParams.welcomeTime);
                 
                 // Определим кастомера в очередь
@@ -245,6 +245,9 @@ public final class Executer {
                 // Введенные кастомером данные
                 // The data entered by the customizer
                 customer.setTempComments(cmdParams.comments);
+                
+                //Add Added by user
+                customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
                 
                 //добавим нового пользователя
                 // add a new user
@@ -1202,6 +1205,8 @@ public final class Executer {
             }
             // вот над этим пациентом 
             final QCustomer customer = user.getCustomer();
+            //set User who postponed as added
+            customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
             // статус
             customer.setPostponedStatus(cmdParams.textData);
             // на сколько отложили. 0 - бессрочно
@@ -1390,6 +1395,10 @@ public final class Executer {
             final QCustomer customer = user.getCustomer();
             // комменты по редиректу
             customer.setTempComments(cmdParams.textData);
+            
+            // set added by which user
+            customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
+            
             // Переставка в другую очередь
             // Название старой очереди
             final QService oldService = customer.getService();
