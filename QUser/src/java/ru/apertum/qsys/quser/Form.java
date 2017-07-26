@@ -857,7 +857,7 @@ public class Form {
             params.serviceId = pickedRedirectServ.getId();
             //params.requestBack = ((Checkbox) redirectCustomerDialog.getFellow("cb_redirect")).isChecked();
             params.resultId = -1l;
-            params.textData = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
+            params.comments = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
             
             customer = null;            
