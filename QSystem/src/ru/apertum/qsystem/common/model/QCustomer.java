@@ -403,7 +403,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         }
     }
     /**
-     * Кто его обрабатывает. Нужно для статистики.
+     * Кто его обрабатывает. Нужно для статистики. :: Who processes it. It is necessary for statistics.
      */
     @Expose
     @SerializedName("from_user")
@@ -581,7 +581,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         return needBack;
     }
     /**
-     * Комментариии юзеров о кастомере при редиректе и отправки в отложенные
+     * Комментариии юзеров о кастомере при редиректе и отправки в отложенные :: Comments and users about the custodian when redirecting and sending to deferred
      */
     @Expose
     @SerializedName("temp_comments")
@@ -595,6 +595,23 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setTempComments(String tempComments) {
         this.tempComments = tempComments;
     }
+    
+    /**
+     * name of the user who added customer in the list
+     */
+    @Expose
+    @SerializedName("added_by")
+    private String addedBy="";
+    
+    @Transient
+    public String getAddedBy() {
+        return addedBy;
+    }
+    
+    public void setAddedBy(String addedBy) {
+        this.addedBy = addedBy;
+    }
+    
     /**
      *
      */
