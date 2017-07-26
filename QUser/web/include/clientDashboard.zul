@@ -25,7 +25,7 @@
                         <listhead>
                             <listheader label="Time" width="100px" align="center" sortAscending="${cTimeAsc}" sortDescending="${cTimeDsc}"/>
                             <listheader label="Ticket" width="100px" align="center" sortAscending="${cTicketAsc}" sortDescending="${cTicketDsc}"/>
-                            <listheader label="CSR User" width="100px" sort="auto" align="center"/>
+                            <listheader label="Served By" width="100px" sort="auto" align="center"/>
                             <listheader label="Service" width="200px" align="center" sortAscending="${cServiceAsc}" sortDescending="${cServiceDsc}"/>
                             <!--<listheader label="Priority" width="100px" align="center" sortAscending="${cPriorityAsc}" sortDescending="${cPriorityDsc}"/>-->
                             <listheader label="State" width="120px" align="center" sortAscending="${cStateAsc}" sortDescending="${cStateDsc}"/>
@@ -92,7 +92,7 @@
                                 
                             <listheader label="Time" width="100px" sort="auto" align="center"/>
                             <listheader label="Ticket" width="100px" sort="auto" align="center"/>
-                            <listheader label="CSR User" width="100px" sort="auto" align="center"/>
+                            <listheader label="Served By" width="100px" sort="auto" align="center"/>
                             <listheader label="Service" width="200px" sort="auto" align="center"/>
                             <listheader label="Reason" width="120px" sort="auto" align="center"/>
                             <listheader label="Comments" sort="auto"/>
