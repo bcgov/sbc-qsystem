@@ -387,6 +387,7 @@ public final class Executer {
             
              // теперь стоит к новой услуги.
             customer.setService(newService);
+            customer.setTempComments(cmdParams.comments);
             
             try {
                 // сохраняем состояния очередей.
