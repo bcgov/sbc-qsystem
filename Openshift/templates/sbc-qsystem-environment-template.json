@@ -44,11 +44,28 @@
         }
       }
     },
- {
+	{
       "kind": "PersistentVolumeClaim",
       "apiVersion": "v1",
       "metadata": {
         "name": "${QSYSTEM_SERVICE}-data"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${QSYSTEM_VOLUME_CAPACITY}"
+          }
+        }
+      }
+    },
+	{
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "cerberus-data"
       },
       "spec": {
         "accessModes": [
@@ -320,9 +337,17 @@
               "name": "${NGINX_SERVICE_NAME}"
             }
           },
-          "spec": {		    
+          "spec": {	
+            "volumes": [
+                {
+                    "name": "cerberus-data",
+                    "persistentVolumeClaim": {
+                        "claimName": "cerberus-data"
+                    }
+                }
+            ],		  
             "containers": [
-              {
+				{
                 "name": "${NGINX_SERVICE_NAME}",
                 "image": " ",
                 "ports": [
@@ -349,9 +374,15 @@
 							  "tcpSocket": {
 								"port": 8080
 							  }
-							}                
+							},
+				"volumeMounts": [
+					{
+						"name": "cerberus-data",
+						"mountPath": "/public/videos/"
+					}
+				]
                 
-              }
+				}
             ]
           }
         }

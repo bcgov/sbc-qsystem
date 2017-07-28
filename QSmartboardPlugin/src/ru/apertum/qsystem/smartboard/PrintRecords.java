@@ -107,6 +107,9 @@ public class PrintRecords {
 		if (qsb.equalsIgnoreCase("callbyticket")) {
 			f = new File("config/QSmartboardPlugin-original.properties");
 		};
+		if (qsb.equalsIgnoreCase("callbyname")) {
+			f = new File("config/QSmartboardPlugin-name.properties");
+		};		
 		if (f.exists()) {
             final FileInputStream inStream;
             try {
