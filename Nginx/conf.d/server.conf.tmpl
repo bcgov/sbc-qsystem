@@ -86,9 +86,9 @@ server {
         access_log off;
     }
 
+	
     # For Digital Signage Video
-    location /public {
-    	autoindex on;
-    	root  /public/videos;
+    location location ~ \.(mp3|mp4) {
+			root	/public/videos;
   } 
 }
