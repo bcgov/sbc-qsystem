@@ -104,7 +104,7 @@
             <div width="60px" style="background-color:Yellow;">
                 </div>
 
-            <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Back to queue" disabled="@load(fmodel.btnsDisabled[4])" onClick="@command('redirect')" id="btn_redirect" height="38px" width="158px">
+            <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Return to queue" disabled="@load(fmodel.btnsDisabled[4])" onClick="@command('redirect')" id="btn_redirect" height="38px" width="158px">
             </button>
 
             <div width="60px" style="background-color:Yellow;">
