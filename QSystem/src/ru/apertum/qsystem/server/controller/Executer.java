@@ -159,7 +159,6 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logger().debug("LINE: 160 Processing: \"" + name + "\"");
             QSessions.getInstance().update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
             this.cmdParams = cmdParams;
             return new JsonRPC20OK();
@@ -182,7 +181,6 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer customer) {
-            QLog.l().logger().debug("LINE: 184 Processing: \"" + name + "\"");
             QSessions.getInstance().update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
             this.cmdParams = cmdParams;
             this.customerCreated = customer;
@@ -584,6 +582,7 @@ public final class Executer {
                         return new RpcInviteCustomer(null);
                     } else {
                         // разберемся с услугами, вдруг вызвали из не своей услуги
+                        // We will understand with services, suddenly they called out from their services
                         boolean f = true;
                         for (QPlanService plan : user.getPlanServices()) {
                             if (plan.getService().getId().equals(customer.getService().getId())) {
