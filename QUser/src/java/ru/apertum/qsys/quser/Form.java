@@ -821,7 +821,7 @@ public class Form{
                 
             List<QService> ll = services
                 .stream()
-                .filter((QService service) -> service.getParentId()!=null && service.getName().toLowerCase().contains(filter.toLowerCase()) && !service.getParentId().equals(1L))
+                .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
                 .collect(Collectors.toList());
             
             listServices = ll;
