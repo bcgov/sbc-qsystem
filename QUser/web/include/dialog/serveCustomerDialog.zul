@@ -66,7 +66,7 @@
             </columns>
             <rows>
                 <row height="70px">
-                    <label sclass="general-text" value="Coming Soon" />
+                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getParent().getName()))" />
                     <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" />
                     <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
                     <button sclass="button-with-image" image="/resources/img/change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">

@@ -29,10 +29,12 @@
                 <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)" width="100%" height="250px">			
                         <listhead>
 				<listheader label="Service" align="left" />
+				<listheader label="Category" align="left" />
 			</listhead>
 			<template name="model" var="item">
 				<listitem>
 					<listcell label="@load(item.getName())" />
+					<listcell label="@load(item.getParent().getName())"/>
 				</listitem>
                                 
 			</template>
