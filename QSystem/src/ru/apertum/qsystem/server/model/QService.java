@@ -436,6 +436,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
 
     /**
      * текст для вывода на главное табло в шаблоны панели вызванного и третью колонку пользователя
+     * Text to display on the main display in the panel templates called and the third column of the user
      */
     @Column(name = "tablo_text")
     @Expose
@@ -444,7 +445,8 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
 
     /**
      * текст для вывода на главное табло в шаблоны панели вызванного и третью колонку пользователя
-     * @return строчеп из БД
+     * Text to display on the main display in the panel templates called and the third column of the user
+     * @return строчеп из БД :: String from DB
      */
     public String getTabloText() {
         return tabloText;
@@ -1178,9 +1180,10 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     }
     //*******************************************************************************************************************
     //*******************************************************************************************************************
-    //********************** Реализация методов узла в дереве *********************************************************** 
+    //********************** Реализация методов узла в дереве :: Implementing node methods in a tree************************* 
     /**
      * По сути группа объединения услуг или коернь всего дерева. То во что включена данныя услуга.
+     * In fact, a group of services or the core of the whole tree. What is included in this service.
      */
     @Transient
     private QService parentService;

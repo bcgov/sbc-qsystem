@@ -10,9 +10,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
@@ -22,21 +24,21 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.resource.Labels;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Button;
-import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
+import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
-import ru.apertum.qsys.quser.Multilingual.Lng;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
 import static ru.apertum.qsystem.client.forms.FClient.*;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QLog;
@@ -62,7 +64,7 @@ import ru.apertum.qsystem.server.model.results.QResultList;
  *
  * @author Evgeniy Egorov
  */
-public class Form {
+public class Form{
 
     public String l(String resName) {
         return Labels.getLabel(resName);
@@ -100,6 +102,9 @@ public class Form {
         }
     }
 
+    @Wire
+    private Textbox typeservices;
+    
     /**
      * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg")
      * This is necessary to do include in the view and then bind
@@ -113,6 +118,7 @@ public class Form {
         
         QLog.l().logQUser().debug("AFTER COMPOSE --- ---");
         Selectors.wireComponents(view, this, false);
+       
     }
 
     //*****************************************************
@@ -165,8 +171,9 @@ public class Form {
     @Command
     @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn"})
     public void login() {
-        QLog.l().logQUser().debug("Login " + user.getName());
+        
         Uses.userTimeZone = (TimeZone)Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone");
+        QLog.l().logQUser().debug("Login : " + user.getName());
 
         final Session sess = Sessions.getCurrent();
         sess.setAttribute("userForQUser", user);
@@ -292,24 +299,35 @@ public class Form {
     }
 
     private boolean[] btnsDisabled = new boolean[]{true, true, true, true, true, true, true, true, true};
-
+    
     public boolean[] getBtnsDisabled() {
         return btnsDisabled;
     }
-
+    
     public void setBtnsDisabled(boolean[] btnsDisabled) {
         this.btnsDisabled = btnsDisabled;
     }
+    
+    private boolean[] addWindowButtons = new boolean[]{true, false, false, false};
+    
+    public void setAddWindowButtons(boolean[] addWindowButtons) {
+        this.addWindowButtons = addWindowButtons;
+    }
+    
+    public boolean[] getAddWindowButtons() {
+        return addWindowButtons;
+    }
+    
     private QCustomer customer = null;
-
+    
     public QCustomer getCustomer() {
         return customer;
     }
-
+    
     public void setCustomer(QCustomer customer) {
         this.customer = customer;
     }
-
+    
     public String getPriorityCaption(int priority) {
         final String res;
         switch (priority) {
@@ -418,25 +436,39 @@ public class Form {
         postponeCustomerDialog.setVisible(true);
         postponeCustomerDialog.doModal();
     }
-
+    
     @Command
+    @NotifyChange(value = {"addWindowButtons"})
     public void redirect() {
         QLog.l().logQUser().debug("Redirect by " + user.getName() + " customer " + customer.getFullNumber());
-        redirectCustomerDialog.setVisible(true);
-        redirectCustomerDialog.doModal();
+        
+        addWindowButtons[0] = false;
+        addWindowButtons[1] = false;
+        addWindowButtons[2] = false;
+        addWindowButtons[3] = true;
+        
+        this.addTicketScreen();
     }
     
     @Command
+    @NotifyChange(value = {"addWindowButtons"})
     public void addClient(){
         user.setCustomerWelcomeTime(new Date());
-        servicesDialogWindow.setVisible(true);
-        servicesDialogWindow.doModal();
+        addWindowButtons[0] = true;
+        addWindowButtons[1] = false;
+        addWindowButtons[2] = false;
+        addWindowButtons[3] = false;
+        this.addTicketScreen();
     }
     
     @Command
+    @NotifyChange(value = {"addWindowButtons"})
     public void addNextService(){
-        addNextServiceDialog.setVisible(true);
-        addNextServiceDialog.doModal();    
+        addWindowButtons[0] = false;
+        addWindowButtons[1] = false;
+        addWindowButtons[2] = true;
+        addWindowButtons[3] = false;
+        this.addTicketScreen();
     }
 
     @Command
@@ -696,6 +728,7 @@ public class Form {
     private final TreeServices treeServs = new TreeServices();
 
     public TreeServices getTreeServs() {
+        
         return treeServs;
     }
     
@@ -714,6 +747,120 @@ public class Form {
     @Wire("#incClientDashboard #incServeCustomerDialog #serveCustomerDialog")
     Window serveCustomerDialogWindow;
 
+    @Wire("#incClientDashboard #incAddTicketDialog #addTicketDialog")
+    Window addTicketDailogWindow;
+    
+    private Combobox cboFmCompress;
+    
+    QService pickedMainService;
+
+    public QService getPickedMainService() {
+        return pickedMainService;
+    }
+
+    public void setPickedMainService(QService pickedMainService) {
+        this.pickedMainService = pickedMainService;
+    }
+    
+    @Command
+    public void closeAddTicketScreen() {
+        addTicketDailogWindow.setVisible(false);
+        addTicketDailogWindow.doModal();    
+    }
+
+    @Command
+    public void addTicketScreen() {
+        //Remove previous comments and categories searched
+        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
+        ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).setText("");
+        
+        addTicketDailogWindow.setVisible(true);
+        addTicketDailogWindow.doModal();
+        
+    }
+    
+    public void onSelect$cboFmCompress(Event event) {
+   	QLog.l().logQUser().debug("C: ----" + cboFmCompress.getSelectedItem().getValue().toString());
+   }
+    
+    @Listen("onChange = #categoriesCombobox")
+    public void changeCategories() {
+        String category = cboFmCompress.getValue();
+        QLog.l().logQUser().debug("C:" + category + " , " +pickedMainService.getName() +" , "+ pickedMainService.getId() + " , " + pickedMainService.getParentId());
+        
+
+//        if(((ListModelList<String>)countriesModel).contains(country)) {
+//            car.setCountry(country);
+//            showNotify("Changed to: " + country, countriesCombobox);
+//        } else {
+//            showNotify("Unknow country : " + country, countriesCombobox);
+//        }
+    }
+    
+    private String filter;
+    
+    public String getFilter() {
+        return filter;
+    }
+    
+    @NotifyChange
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
+    
+    @NotifyChange("listServices")
+    @Command
+    public void doSearch() {
+        QLog.l().logQUser().debug(" ^* ^* ^* ^* ^* ^* ^* ^* ^* ^*");
+        
+        listServices.clear();
+        if(filter == null || "".equals(filter)) {
+            listServices = getAllListServices();
+    	} else {
+            LinkedList<QService> services =  QServiceTree.getInstance().getNodes();
+                
+            List<QService> ll = services
+                .stream()
+                .filter((QService service) -> service.getParentId()!=null && service.getName().toLowerCase().contains(filter.toLowerCase()) && !service.getParentId().equals(1L))
+                .collect(Collectors.toList());
+            
+            listServices = ll;
+        }
+    }
+    
+    private List<QService> listServices;
+    
+    public List<QService> getListServices() {
+        
+        if(listServices == null) {
+            listServices = getAllListServices();
+	}
+	return listServices;
+    }
+    
+    public List<QService> getAllListServices() {
+        LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
+                
+            List<QService> requiredServices = allServices
+                .stream()
+                .filter((QService service) -> service.getParentId()!=null && !service.getParentId().equals(1L))
+                .collect(Collectors.toList());
+
+            return requiredServices;
+    }
+    
+    public List<QService> getCategories() {
+        LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
+        
+         List<QService> requiredServices = allServices
+                .stream()
+                .filter(service -> service.getParentId()!=null && service.getParentId().equals(1L))
+                .collect(Collectors.toList());
+
+         return requiredServices;
+    }
+    
+    
     @Command
     public void closeAddNextServiceDialog(){
         if (pickedRedirectServ != null) {
@@ -728,13 +875,13 @@ public class Form {
             params.serviceId = pickedRedirectServ.getId();
             params.requestBack = Boolean.FALSE;
             params.resultId = -1l;
-            params.comments = ((Textbox) addNextServiceDialog.getFellow("tb_addInQueue")).getText();
+            params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
             
             customer = null;            
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
-            addNextServiceDialog.setVisible(false);
+            addTicketDailogWindow.setVisible(false);
             
             this.invite();
             this.begin();
@@ -744,6 +891,7 @@ public class Form {
     
     @Command
     public void closeAddToQueueDialog(){
+
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
@@ -756,7 +904,7 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
-            servicesDialogWindow.setVisible(false);
+            addTicketDailogWindow.setVisible(false);
         }
     }
     
@@ -768,7 +916,8 @@ public class Form {
         params.resultId = -1l;
         params.priority = priority;
         params.isMine = isMine;
-        params.comments = ((Textbox) servicesDialogWindow.getFellow("tb_addInQueue")).getText();
+        params.comments = ((Textbox) addTicketDailogWindow.getFellow("typeservices")).getText();
+        QLog.l().logQUser().debug("WELCOME TIME : ----------" + user.getCustomerWelcomeTime().toString());
         params.welcomeTime = user.getCustomerWelcomeTime();
         
         return params;
@@ -780,9 +929,14 @@ public class Form {
     }
     
     @Command
+    @NotifyChange(value = {"addWindowButtons"})
     public void changeService(){
-        changeServiceDialogWindow.setVisible(true);
-        changeServiceDialogWindow.doModal();
+        addWindowButtons[0] = false;
+        addWindowButtons[1] = true;
+        addWindowButtons[2] = false;
+        addWindowButtons[3] = false;
+        
+        this.addTicketScreen();
     }
     
     @Command
@@ -802,12 +956,12 @@ public class Form {
             final CmdParams params = new CmdParams();
             params.userId = user.getUser().getId();
             params.serviceId = pickedRedirectServ.getId();
-            params.comments = ((Textbox) changeServiceDialogWindow.getFellow("tb_ChangeService")).getText();
+            params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
             
             Executer.getInstance().getTasks().get(Uses.TASK_CHANGE_SERVICE).process(params, "", new byte[4]);
             
             service_list.setModel(service_list.getModel());
-            changeServiceDialogWindow.setVisible(false);
+            addTicketDailogWindow.setVisible(false);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
@@ -833,7 +987,7 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
-            servicesDialogWindow.setVisible(false);
+            addTicketDailogWindow.setVisible(false);
             
             this.invite();
             this.begin();
@@ -857,24 +1011,29 @@ public class Form {
             params.serviceId = pickedRedirectServ.getId();
             //params.requestBack = ((Checkbox) redirectCustomerDialog.getFellow("cb_redirect")).isChecked();
             params.resultId = -1l;
-            params.comments = ((Textbox) redirectCustomerDialog.getFellow("tb_redirect")).getText();
+            params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
             
             customer = null;            
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
-            redirectCustomerDialog.setVisible(false);
+            addTicketDailogWindow.setVisible(false);
             serveCustomerDialogWindow.setVisible(false);
         }
     }
+    
     QService pickedRedirectServ;
 
     public QService getPickedRedirectServ() {
         return pickedRedirectServ;
     }
 
-    public void setPickedRedirectServ(QService pickedRedirectServ) {
+    public void setPickedRedirectServ(QService pickedRedirectServ) {        
+        String serviceName = pickedRedirectServ.getName();
+        
+        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText( serviceName );
         this.pickedRedirectServ = pickedRedirectServ;
     }
+    
 
 }

@@ -202,10 +202,13 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
 
     /**
      * Это подпорка, неожиданно возникла при реализации сортировки
+     * This is a backup, arose unexpectedly when sorting
      *
-     * @param parent парент для расставления последовательности у его дочерних
+     * @param parent парент для расставления последовательности у его дочерних :: Parent for sequencing of its children
      */
-    public void updateSeqSibling(QService parent) { // это подпорка, неожиданно возникла при реализации сортировки
+    public void updateSeqSibling(QService parent) { 
+        // это подпорка, неожиданно возникла при реализации сортировки
+        // This is a backup, arose unexpectedly when implementing a sort
         QService sib = (QService) ((QService) parent).getFirstChild();
         while (sib != null) {
             sib.setSeqId(parent.getIndex(sib));
@@ -215,6 +218,7 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
 
     public void save() {
         // Вложенные нужно убрать. т.к. они сотрутся по констрейнту
+        // Nested need to be removed. Since They will erode by the contraint
         final LinkedList<T> del = new LinkedList<>();
         deleted.stream().forEach((t) -> {
             boolean flag = false;

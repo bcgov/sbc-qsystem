@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+    
+    <window id="addTicketDialog" 
+            title=""
+            border="normal"
+            width="480px" 
+            position="center,center" closable="true"
+            onClose="self.visible = false; event.stopPropagation();"
+            action="show: slideDown;hide: slideUp">
+        <caption label="QSystem" image="/resources/img/logo32.png" />
+        <div style="margin:10px 10px 10px 10px;">
+            <vlayout>
+                <div style="margin:10px 10px 10px 10px;"></div>
+                <hbox>
+                    <vbox>
+                        <!--<label sclass="login-text" value="${c:l('password')}" width="150px" />-->
+                        <textbox id="typeservices" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" placeholder="Type Service here" width="230px" tabindex="2"/>
+                    </vbox>
+                    <vbox>
+                        <!--<label sclass="login-text" value="${c:l('user')}" width="150px" />-->
+                        <combobox id="cboFmCompress" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="1" model="@load(fmodel.categories)">
+                            <comboitem label="@load(each)"/>
+                        </combobox>
+                    </vbox>
+                </hbox>
+                <div style="margin:10px 10px 10px 10px;"></div>
+                <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)" width="100%" height="250px">			
+                        <listhead>
+				<listheader label="Service" align="left" />
+			</listhead>
+			<template name="model" var="item">
+				<listitem>
+					<listcell label="@load(item.getName())" />
+				</listitem>
+                                
+			</template>
+		</listbox>
+                
+                <div style="margin:5px 10px 10px 10px;"></div>
+                <label value="${c:l('comments')}"/>
+                <textbox id="ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+                
+                <div style="float:right; margin:10px 0px 0px 0px;">
+                    <hbox>
+                        <!--Add to Queue and serve-->
+                        <button id="addToQueueBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
+                        <button id="addAndServeBtn" hflex="min" width="100px" label="${c:l('add_and_serve')}" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
+                        
+                        <!--Change Service-->
+                        <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
+                        
+                        <!--Add Next Service-->
+                        <button id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
+
+                        <!--Redirect / Back to Queue-->                    
+                        <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeRedirectDialog')" visible="@load(fmodel.addWindowButtons[3])"/>
+
+                        <!--Cancel Button For all Windows-->
+                        <button id="closeAddTicketBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
+                    </hbox>
+                </div>
+                
+            </vlayout>
+            
+<!--             <vlayout>
+                <label value="${c:l('select_service')}" />
+                
+                <bandbox id="bd_redirect" readonly="true" autodrop="true" hflex="true">  
+                    <bandpopup>
+                        <groupbox id="TreeTest" >
+                            <caption label="${c:l('services')}" />
+                            <tree id="tree_redirect_service_choose"  style="white-space:nowrap;"
+                                  vflex="true" width="490px"
+                                  onSelect="bd_redirect.value=self.selectedItem.label; bd_redirect.close();"
+                                  selectedItem="@bind(fmodel.pickedRedirectServ)"
+                                  model="@load(fmodel.treeServs)">
+                                <treecols>
+                                    <treecol hflex="1" label="${c:l('tree_of_services')}" />
+                                </treecols>
+                                <template name="model">
+                                    <treeitem>
+                                        <treerow sclass="tree-cell">
+                                            <treecell label="@load(each)"/>
+                                        </treerow>
+                                    </treeitem>
+                                </template>
+                            </tree>
+                        </groupbox>
+                    </bandpopup>
+                </bandbox>
+        
+                <div style="margin:10px 10px 10px 10px;"></div>
+                <label value="${c:l('comments')}"/>
+                <textbox id="tb_redirect" rows="10" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+                
+                <div style="float:right; margin:10px 0px 0px 0px;">
+                    <hbox>
+                        <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeRedirectDialog')"/>
+                        <button id="closeRedirectBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="redirectDialog.visible = false; event.stopPropagation();"/>
+                    </hbox>
+                </div>
+            </vlayout>-->
+        </div>
+    </window>
+
+</zk>
