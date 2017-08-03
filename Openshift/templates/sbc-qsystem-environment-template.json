@@ -44,11 +44,28 @@
         }
       }
     },
- {
+	{
       "kind": "PersistentVolumeClaim",
       "apiVersion": "v1",
       "metadata": {
         "name": "${QSYSTEM_SERVICE}-data"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${QSYSTEM_VOLUME_CAPACITY}"
+          }
+        }
+      }
+    },
+	{
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "cerberus-data"
       },
       "spec": {
         "accessModes": [
@@ -242,7 +259,11 @@
 				  {
                     "name": "MYSQL_DATABASE",
                     "value": "${DATABASE_NAME}"
-                  }				  
+                  },
+				  {
+                    "name": "QSB",
+                    "value": "${QSB}"
+                  }					  
                 ]
                 
               }
@@ -316,9 +337,17 @@
               "name": "${NGINX_SERVICE_NAME}"
             }
           },
-          "spec": {		    
+          "spec": {	
+            "volumes": [
+                {
+                    "name": "cerberus-data",
+                    "persistentVolumeClaim": {
+                        "claimName": "cerberus-data"
+                    }
+                }
+            ],		  
             "containers": [
-              {
+				{
                 "name": "${NGINX_SERVICE_NAME}",
                 "image": " ",
                 "ports": [
@@ -345,9 +374,15 @@
 							  "tcpSocket": {
 								"port": 8080
 							  }
-							}                
+							},
+				"volumeMounts": [
+					{
+						"name": "cerberus-data",
+						"mountPath": "/public/videos/"
+					}
+				]
                 
-              }
+				}
             ]
           }
         }
@@ -544,6 +579,13 @@
       "description": "The name assigned to all of the QSystem objects defined in this template.",
       "required": true,
       "value": "qsystem"
+    },
+	{
+      "name": "QSB",
+      "displayName": "Smartboard Layout",
+      "description": "** The smartboard layout is defaulted to Non-Reception or call by Name.  If you want to setup the layout for Call by Ticket, Enter: callbyticket",
+	  "value": "nocallonsmartboard",
+      "required": true
     },
 	{
       "name": "NGINX_SERVICE_NAME",

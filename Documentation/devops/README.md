@@ -108,6 +108,11 @@ The environment variable is `SEARCH_DOMAIN`.  This should be set to the default 
 
 You should not need to set this value, as the environment template will configure it.
 
+Other Notes:
+
+1. If you modify the NGINX configuration, you will need to rebuild the image in the tools section.  Note that this will automatically update all pods in all enviornments.
+2. There is a persistent storage setup to add movies for the digital signage.
+
 Deploying to Additional Offices
 -------------------------------
 A key requirement when deploying to additional offices is that a database user with the ability to create databases must be present.  
@@ -121,6 +126,7 @@ It is recommended you add the office via the web user interface.  Use the follow
 	1. If no results are found, follow the instructions above in the Environment Template section to add the template.
 4. Carefully enter the required fields.
 	1. Office Service Name - very important, the service name for the new office.  Must be lowercase and in hostname format, for example office-10
+	2. Smartboard Layout - the smartboard layout is defaulted for Digital Signage only. If you want to setup the layout for Call by Ticket, enter: callbyticket.  If you want to setup the layout where you call by name and would like to only show the number of citizens waiting, enter: callbyname.
 	2. Image tag containing application images - change to the tag for the project you are working with.  For example, set to test if working on the test project. 
 	3. Application Image Name - image name to use the office - the default should work.
 	4. Namespace containing application images - the default should work.
@@ -137,9 +143,9 @@ Removing an Office
 ------------------
 
 To remove an office, do the following:
-- Delete the Deployment for the office with `oc delete svc <office-name>
+- Delete the Deployment for the office with `oc delete dc <office-name>
 - Delete the Service for the office with `oc delete svc <office-name>
-- Delete the Service for the office
+- Delete the permanent storage for the office
 - `oc rsh <mysql_podname>` and then `mysql`
 - `drop database <office-name>`
 	
