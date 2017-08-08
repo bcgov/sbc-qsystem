@@ -50,7 +50,6 @@
             font-size : 1.5em;
         }
     </style>
-    <timer id="timer_ses" delay="50000" repeats="true" running="true" onTimer=""/>     
     <borderlayout onClientInfo="onClientInfo(event)" sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
         <zscript>
             void onClientInfo(ClientInfoEvent event) {
@@ -70,8 +69,6 @@
                     </button>                    
                     <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="Serve Now" visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])" onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
                     </button>
-<!--                    <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="TICKET" onClick="@command('addTicketScreen')" id="btn_add_ticket" height="38px" width="158px">                        
-                    </button>-->
                 </div>
                 
                 <hbox width="100%" style="padding: 1px;" pack="center" align="center">

@@ -585,7 +585,7 @@ public class Form{
     }
 
     @Command
-    @NotifyChange(value = {"postponList", "avaitColumn"})
+//    @NotifyChange(value = {"postponList", "avaitColumn"})
     public void refreshListServices() {
         if (isLogin()) {
             // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
@@ -699,7 +699,7 @@ public class Form{
         if (user.getPlan().isEmpty()) {
             return;
         }
-        Messagebox.show(l("do_you_want_invite"), l("inviting_client"), new Messagebox.Button[]{
+        Messagebox.show("Do you want to invite customer " + pickedPostponed.getFullNumber() + " ?", l("inviting_client"), new Messagebox.Button[]{
             Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION, (Messagebox.ClickEvent t) -> {
             QLog.l().logQUser().debug("Invite postponed by " + user.getName() + " customer " + pickedPostponed.getFullNumber());
             if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
@@ -916,8 +916,7 @@ public class Form{
         params.resultId = -1l;
         params.priority = priority;
         params.isMine = isMine;
-        params.comments = ((Textbox) addTicketDailogWindow.getFellow("typeservices")).getText();
-        QLog.l().logQUser().debug("WELCOME TIME : ----------" + user.getCustomerWelcomeTime().toString());
+        params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
         params.welcomeTime = user.getCustomerWelcomeTime();
         
         return params;
