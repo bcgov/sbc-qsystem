@@ -771,12 +771,21 @@ public class Form{
     @Command
     public void addTicketScreen() {
         //Remove previous comments and categories searched
-        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
-        ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).setText("");
+        this.refreshAddWindow();
         
         addTicketDailogWindow.setVisible(true);
         addTicketDailogWindow.doModal();
         
+    }
+    
+    public void refreshAddWindow() {
+        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
+        ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).setText("");
+        ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("");
+        
+        listServices = getAllListServices();
+        pickedMainService=null;
+        BindUtils.postNotifyChange(null, null, Form.this, "listServices");
     }
     
     public void onSelect$cboFmCompress(Event event) {
@@ -797,7 +806,7 @@ public class Form{
 //        }
     }
     
-    private String filter;
+    private String filter="";
     
     public String getFilter() {
         return filter;
@@ -808,23 +817,48 @@ public class Form{
         this.filter = filter;
     }
     
+    @NotifyChange("filter")
+    @Command    
+    void changeCategory(){
+        String comboboxText = ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).getText();
+        if (comboboxText.equals("")){
+            pickedMainService = null;
+//            typeservices.value="";
+            ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
+            filter = "";
+        }
+        else if (pickedMainService != null){
+            ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText(pickedMainService.getName());
+//            typeservices.value=fmodel.pickedMainService.getName();
+            filter = pickedMainService.getName();
+        }
+    }
+    
     @NotifyChange("listServices")
     @Command
     public void doSearch() {
-        QLog.l().logQUser().debug(" ^* ^* ^* ^* ^* ^* ^* ^* ^* ^*");
-        
         listServices.clear();
         if(filter == null || "".equals(filter)) {
             listServices = getAllListServices();
     	} else {
-            LinkedList<QService> services =  QServiceTree.getInstance().getNodes();
-                
-            List<QService> ll = services
-                .stream()
-                .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
-                .collect(Collectors.toList());
+            LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
+            List<QService> requiredServices;
             
-            listServices = ll;
+            if (pickedMainService==null){
+                requiredServices = allServices
+                    .stream()
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
+                    .collect(Collectors.toList());
+
+            }else{
+                 requiredServices = allServices
+                    .stream()
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
+                    .collect(Collectors.toList());
+            }
+            
+            
+            listServices = requiredServices;
         }
     }
     
