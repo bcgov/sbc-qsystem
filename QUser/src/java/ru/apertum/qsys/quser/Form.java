@@ -540,7 +540,7 @@ public class Form{
         // 1. Postpone the customer 
         // 2. Pick the customer from Postponed list
         
-        if (keys_current == KEYS_INVITED || keys_current== KEYS_STARTED || keys_current == KEYS_OFF){
+        if (pickedCustomer==null || keys_current == KEYS_INVITED || keys_current== KEYS_STARTED || keys_current == KEYS_OFF){
             return;
         }
         
@@ -585,7 +585,7 @@ public class Form{
     }
 
     @Command
-//    @NotifyChange(value = {"postponList", "avaitColumn"})
+    @NotifyChange(value = {"postponList", "avaitColumn"})
     public void refreshListServices() {
         if (isLogin()) {
             // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
@@ -720,6 +720,9 @@ public class Form{
                 this.addServeScreen();
                 this.begin();
                 
+                pickedPostponed = null;
+            }
+            else{
                 pickedPostponed = null;
             }
         });

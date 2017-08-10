@@ -47,7 +47,7 @@
                     <hbox>
                         <!--Add to Queue and serve-->
                         <button id="addToQueueBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
-                        <button id="addAndServeBtn" hflex="min" width="100px" label="${c:l('add_and_serve')}" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
+                        <button id="addAndServeBtn" hflex="min" width="100px" label="Begin service" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
                         
                         <!--Change Service-->
                         <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
