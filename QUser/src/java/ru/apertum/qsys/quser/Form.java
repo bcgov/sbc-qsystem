@@ -696,7 +696,7 @@ public class Form{
 
     @Command
     public void clickListPostponedInvite() {
-        if (user.getPlan().isEmpty()) {
+        if (user.getPlan().isEmpty() || pickedPostponed==null) {
             return;
         }
         Messagebox.show("Do you want to invite customer " + pickedPostponed.getFullNumber() + " ?", l("inviting_client"), new Messagebox.Button[]{
@@ -719,6 +719,8 @@ public class Form{
                 
                 this.addServeScreen();
                 this.begin();
+                
+                pickedPostponed = null;
             }
         });
     }
