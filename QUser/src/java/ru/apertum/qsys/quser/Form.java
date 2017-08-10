@@ -757,9 +757,11 @@ public class Form{
     public QService getPickedMainService() {
         return pickedMainService;
     }
-
+    
+    // MW
     public void setPickedMainService(QService pickedMainService) {
         this.pickedMainService = pickedMainService;
+        QLog.l().logQUser().debug("Set Main Service: " + getPickedMainService());
     }
     
     @Command
@@ -817,21 +819,27 @@ public class Form{
         this.filter = filter;
     }
     
-    @NotifyChange("filter")
+    @NotifyChange("listServices")
     @Command    
-    void changeCategory(){
-        String comboboxText = ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).getText();
-        if (comboboxText.equals("")){
-            pickedMainService = null;
-//            typeservices.value="";
-            ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
-            filter = "";
+    public void changeCategory(){
+        LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
+        List<QService> requiredServices = null;
+        
+        QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+        
+        if (getPickedMainService() == null){
+            requiredServices = allServices;
+            QLog.l().logQUser().debug("null category was selected");
         }
-        else if (pickedMainService != null){
-            ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText(pickedMainService.getName());
-//            typeservices.value=fmodel.pickedMainService.getName();
-            filter = pickedMainService.getName();
+        else if (getPickedMainService() != null){
+            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            requiredServices = allServices
+                    .stream()
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && !service.getParentId().equals(1L))
+                    .collect(Collectors.toList());
         }
+        
+        listServices = requiredServices;
     }
     
     @NotifyChange("listServices")

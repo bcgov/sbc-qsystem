@@ -31,7 +31,8 @@ public class QSBoard extends AIndicatorBoard {
 
     @Override
     public Integer getLinesCount() {        
-        return PrintRecords.getInstance().getLinesCount();
+        return 0;
+        // return PrintRecords.getInstance().getLinesCount();
     }
 
     @Override
