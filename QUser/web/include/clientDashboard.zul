@@ -73,7 +73,7 @@
         </east>
         -->
         <south hflex="min" splittable="true" minsize="150" maxsize="350" size="270px">
-            <panel title="${c:l('postponed_clients')}" border="normal" height="100%">
+            <panel title="On hold clients" border="normal" height="100%">
                 <panelchildren>
                     <listbox  id="postpone_list" model="@load(fmodel.postponList)" selectedItem="@bind(fmodel.pickedPostponed)" width="100%" height="100%" onClick="@command('clickListPostponedInvite')" vflex="max">
                         <listhead>
