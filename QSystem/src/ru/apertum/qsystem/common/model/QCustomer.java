@@ -34,12 +34,16 @@ import java.util.Arrays;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.ServiceLoader;
 import java.util.TimeZone;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -96,6 +100,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
     /**
      * АТРИБУТЫ "ОЧЕРЕДНИКА" персональный номер, именно по нему система ведет учет и управление очередниками номер - целое число
+     * ATTRIBUTES "OBJECTOR" personal number, it is on it that the system records and controls queues number - an integer
      */
     @Expose
     @SerializedName("number")
@@ -301,7 +306,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         return state;
     }
     /**
-     * ПРИОРИТЕТ "ОЧЕРЕДНИКА"
+     * ПРИОРИТЕТ "ОЧЕРЕДНИКА" :: PRIORITY OF THE "OBJECTOR"
      */
     @Expose
     @SerializedName("priority")
@@ -358,6 +363,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
     /**
      * К какой услуге стоит. Нужно для статистики.
+     * What kind of service is worth. It is necessary for statistics.
      */
     @Expose
     @SerializedName("to_service")
@@ -373,7 +379,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
      * Кастомеру проставим атрибуты услуги включая имя, описание, префикс. Причем префикс ставится раз и навсегда. При добавлении кастомера в услугу
      * addCustomer() происходит тоже самое + выставляется префикс, если такой атрибут не добавлен в XML-узел кастомера
      *
-     * @param service не передавать тут NULL
+     * We will put down the service attributes including the name, description, prefix. And the prefix is ​​put once and for all. When adding a customizer to the service
+     * AddCustomer () the same thing happens + a prefix is ​​prefixed, if such an attribute is not added to the XML node of the customizer
+*    *
+     * @param service не передавать тут NULL :: Do not pass here NULL
      */
     public void setService(QService service) {
         this.service = service;
@@ -381,8 +390,27 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         if (getPrefix() == null) {
             setPrefix(service.getPrefix());
         }
+        this.setServicesList(service);
         QLog.l().logger().debug("Клиента \"" + getFullNumber() + "\" поставили к услуге \"" + service.getName() + "\"");
     }
+    
+    /**
+     * Store a list of service the CSR will perform.
+     */
+    @Expose
+    @SerializedName("servicesList")
+    private List<QService> servicesList = new ArrayList<>();
+
+    @Transient
+    public List<QService> getServicesList() {
+        return servicesList;
+    }
+    
+    public void setServicesList (QService service) {  
+        service.setJobStatus("TTT");
+        this.servicesList.add(service);
+    }
+    
     /**
      * Результат работы с пользователем
      */
@@ -550,13 +578,16 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     /**
      * Список услуг в которые необходимо вернуться после редиректа Новые услуги для возврата добвляются в начало списка. При возврате берем первую из списка и
      * удаляем ее.
+     * List of services to be returned after a redirect. New services for return are added to the top of the list. When returning we take the first of the list and
+     * Delete it.
      */
     private final LinkedList<QService> serviceBack = new LinkedList<>();
 
     /**
      * При редиректе если есть возврат. то добавим услугу для возврата
+     * With a redirect, if there is a return. Then add the service to return
      *
-     * @param service в эту услугу нужен возврат
+     * @param service в эту услугу нужен возврат :: This service needs a refund
      */
     public void addServiceForBack(QService service) {
         serviceBack.addFirst(service);

@@ -90,6 +90,23 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     private PriorityQueue<QCustomer> getCustomers() {
         return customers;
     }
+    
+    /**
+    * Stores the job status while serving multiple services
+    */
+    @Expose
+    @SerializedName("jobStatus")
+    private String jobStatus = "";
+
+    @Transient
+    public String getJobStatus() {
+        return jobStatus;
+    }
+    
+    public void setJobStatus (String jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+    
     @Transient
     //@Expose
     //@SerializedName("clients")
