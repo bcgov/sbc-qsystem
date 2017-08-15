@@ -540,7 +540,7 @@ public class Form{
         // 1. Postpone the customer 
         // 2. Pick the customer from Postponed list
         
-        if (keys_current == KEYS_INVITED || keys_current== KEYS_STARTED || keys_current == KEYS_OFF){
+        if (pickedCustomer==null || keys_current == KEYS_INVITED || keys_current== KEYS_STARTED || keys_current == KEYS_OFF){
             return;
         }
         
@@ -585,7 +585,7 @@ public class Form{
     }
 
     @Command
-//    @NotifyChange(value = {"postponList", "avaitColumn"})
+    @NotifyChange(value = {"postponList", "avaitColumn"})
     public void refreshListServices() {
         if (isLogin()) {
             // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
@@ -625,6 +625,7 @@ public class Form{
     @Command
     public void closePostponeCustomerDialog() {
         postponeCustomerDialog.setVisible(false);
+        ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).setText("");
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         serveCustomerDialogWindow.setVisible(false);
 
@@ -635,8 +636,10 @@ public class Form{
     public void OKPostponeCustomerDialog() {
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
-        params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
+        //params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
         params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
+        params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
+         
         Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON).process(params, "", new byte[4]);
         customer = null;
 
@@ -644,6 +647,7 @@ public class Form{
         postpone_list.setModel(postpone_list.getModel());
         postponeCustomerDialog.setVisible(false);
         serveCustomerDialogWindow.setVisible(false);
+        ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).setText("");
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         
     }
@@ -720,6 +724,9 @@ public class Form{
                 this.addServeScreen();
                 this.begin();
                 
+                pickedPostponed = null;
+            }
+            else{
                 pickedPostponed = null;
             }
         });

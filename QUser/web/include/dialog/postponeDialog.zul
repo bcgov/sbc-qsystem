@@ -3,7 +3,7 @@
 <zk xmlns="http://www.zkoss.org/2005/zul">
     
     <window id="postponeDialog" 
-            title="${c:l('client_to_postponed')}" 
+            title="Place on hold" 
             border="normal"
             width="440px" 
             onClose="self.visible = false; event.stopPropagation();"
@@ -13,16 +13,17 @@
         <caption label="QSystem" image="/resources/img/logo32.png" />
         <div style="margin:10px 10px 10px 10px;">
             <vlayout>
-                <label value="${c:l('select_result')}" />
-                <combobox id="resultBox" model="@load(fmodel.resultList)" autodrop="true" onAfterRender="self.setSelectedIndex(0)" readonly="true" hflex="1">
-                    
+                <label value="${c:l('comments')}" />
+                <textbox id="tb_onHold" rows="6" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+<!--                <label value="${c:l('select_result')}" />
+                <combobox id="resultBox" model="@load(fmodel.resultList)" autodrop="true" onAfterRender="self.setSelectedIndex(0)" readonly="true" hflex="1">    
                     <template name="model">
                         <comboitem label="@load(each)"/>
                     </template>
-                </combobox>
+                </combobox>-->
                 <div style="margin:10px 10px 10px 10px;"></div>
                 <hbox hflex="1">
-                    <label value="${c:l('perod_postponed')}"/>
+                    <label value="On hold time"/>
                     <combobox id="timeBox" readonly="true" autodrop="true" hflex="1">
                         <attribute name="onCreate">
                             self.setSelectedIndex(0);
