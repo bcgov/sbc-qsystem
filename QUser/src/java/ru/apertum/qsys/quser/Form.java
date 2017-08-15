@@ -831,16 +831,19 @@ public class Form{
     @NotifyChange("listServices")
     @Command    
     public void changeCategory(){
+        //if (getPickedMainService())
+        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText( "" );
+        
         LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
         List<QService> requiredServices = null;
-        
-        QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
-        
+
         if (getPickedMainService() == null){
-            requiredServices = allServices;
             QLog.l().logQUser().debug("null category was selected");
-        }
-        else if (getPickedMainService() != null){
+            requiredServices = allServices
+                    .stream()
+                    .filter((QService service) -> service.getParentId()!=null  && !service.getParentId().equals(1L))
+                    .collect(Collectors.toList());
+        } else {
             QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
             requiredServices = allServices
                     .stream()
@@ -855,9 +858,9 @@ public class Form{
     @Command
     public void doSearch() {
         listServices.clear();
-        if(filter == null || "".equals(filter)) {
-            listServices = getAllListServices();
-    	} else {
+//        if(filter == null || "".equals(filter)) {
+//            listServices = getAllListServices();
+//    	} else {
             LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
             List<QService> requiredServices;
             
@@ -870,13 +873,13 @@ public class Form{
             }else{
                  requiredServices = allServices
                     .stream()
-                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
             }
             
             
             listServices = requiredServices;
-        }
+//        }
     }
     
     private List<QService> listServices;
