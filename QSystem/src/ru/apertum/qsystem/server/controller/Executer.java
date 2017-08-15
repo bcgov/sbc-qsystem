@@ -1208,7 +1208,7 @@ public final class Executer {
             //set User who postponed as added
             customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
             // статус
-            customer.setPostponedStatus(cmdParams.textData);
+            // customer.setPostponedStatus(cmdParams.textData);
             // на сколько отложили. 0 - бессрочно
             customer.setPostponPeriod(cmdParams.postponedPeriod);
             // если отложили бессрочно и поставили галку, то можно видеть только отложенному
@@ -1219,6 +1219,8 @@ public final class Executer {
             customer.setFinishTime(new Date());
             // кастомер переходит в состояние "Завершенности", но не "мертвости"
             customer.setState(CustomerState.STATE_POSTPONED);
+            
+            customer.setTempComments(cmdParams.comments);
             try {
                 user.setCustomer(null);//бобик сдох но медалька осталось, отправляем в пулл
                 customer.setUser(null);
