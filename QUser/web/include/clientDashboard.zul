@@ -81,9 +81,7 @@
                             <listheader label="Ticket" width="100px" sort="auto" align="center"/>
                             <listheader label="Served By" width="100px" sort="auto" align="center"/>
                             <listheader label="Service" width="200px" sort="auto" align="center"/>
-                            <listheader label="Reason" width="120px" sort="auto" align="center"/>
                             <listheader label="Comments" sort="auto"/>
-
                         </listhead>
                         <template name="model" var="pCust">
                             <listitem  context="postponeListPopup">
@@ -91,9 +89,7 @@
                                 <listcell label="@load(pCust.getFullNumber())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getAddedBy())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getService().getName())" visible="@load(fmodel.login)"/>
-                                <listcell label="@load(pCust.postponedStatus)" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getTempComments())" visible="@load(fmodel.login)"/>
-
                             </listitem>
                         </template>
                     </listbox>
