@@ -20,7 +20,7 @@ node('maven') {
            echo "SONARQUBE_URL: ${SONARQUBE_URL}"
 
            dir('sonar-runner') {
-            sh "./gradlew sonarqube -Dsonar.host.url=\"${SONARQUBE_URL}\" -Dsonar.verbose=true --stacktrace -Dsonar.java.binaries=.. -Dsonar.sources=.. -Dsonar.exclusions=../QSkyApi/web/resources/img"
+            sh "./gradlew sonarqube -Dsonar.host.url=\"${SONARQUBE_URL}\" -Dsonar.verbose=true --stacktrace -Dsonar.java.binaries=.. -Dsonar.sources=.. -Dsonar.exclusions=../QSkyApi/web/resources/img/*"
            }
 
     }
