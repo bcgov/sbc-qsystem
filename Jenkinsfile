@@ -36,7 +36,7 @@ stage('build') {
 node('maven'){
    stage('validation') {
           dir('functional-tests'){
-                // sh './gradlew --debug --stacktrace phantomJsTest'
+                sh './gradlew --debug --stacktrace phantomJsTest'
       }
    }
 }
