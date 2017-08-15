@@ -831,7 +831,6 @@ public class Form{
     @NotifyChange("listServices")
     @Command    
     public void changeCategory(){
-        //if (getPickedMainService())
         ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText( "" );
         
         LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
@@ -858,9 +857,6 @@ public class Form{
     @Command
     public void doSearch() {
         listServices.clear();
-//        if(filter == null || "".equals(filter)) {
-//            listServices = getAllListServices();
-//    	} else {
             LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
             List<QService> requiredServices;
             
@@ -879,7 +875,6 @@ public class Form{
             
             
             listServices = requiredServices;
-//        }
     }
     
     private List<QService> listServices;
