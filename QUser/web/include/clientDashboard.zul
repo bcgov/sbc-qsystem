@@ -104,11 +104,13 @@
                     
         </south>
     </borderlayout>
-    <include id="incChangePriorityDialog" src="/include/dialog/changePriorityDialog.zul"/>
-    <include id="incPostponeCustomerDialog" src="/include/dialog/postponeDialog.zul"/>
-    <!--<include id="incRedirectCustomerDialog" src="/include/dialog/redirectDialog.zul"/>-->
-    <include id="incChangePostponedStatusDialog" src="/include/dialog/changePostponedStatusDialog.zul"/>
-    <include id="incServeCustomerDialog" src="/include/dialog/serveCustomerDialog.zul"/>
-    <include id="incAddTicketDialog" src="/include/dialog/addTicketDialog.zul"/>
+    <div style="display: none;">
+        <include id="incChangePriorityDialog" src="/include/dialog/changePriorityDialog.zul"/>
+        <include id="incPostponeCustomerDialog" src="/include/dialog/postponeDialog.zul"/>
+        <!--<include id="incRedirectCustomerDialog" src="/include/dialog/redirectDialog.zul"/>-->
+        <include id="incChangePostponedStatusDialog" src="/include/dialog/changePostponedStatusDialog.zul"/>
+        <include id="incServeCustomerDialog" src="/include/dialog/serveCustomerDialog.zul"/>
+        <include id="incAddTicketDialog" src="/include/dialog/addTicketDialog.zul"/>
+    </div>
 
 </zk>
