@@ -703,9 +703,9 @@ public class Form{
         if (user.getPlan().isEmpty() || pickedPostponed==null) {
             return;
         }
-        Messagebox.show("Do you want to invite customer " + pickedPostponed.getFullNumber() + " ?", l("inviting_client"), new Messagebox.Button[]{
+        Messagebox.show("Do you want to invite citizen " + pickedPostponed.getFullNumber() + " ?", l("inviting_client"), new Messagebox.Button[]{
             Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION, (Messagebox.ClickEvent t) -> {
-            QLog.l().logQUser().debug("Invite postponed by " + user.getName() + " customer " + pickedPostponed.getFullNumber());
+            QLog.l().logQUser().debug("Invite postponed by " + user.getName() + " citizen " + pickedPostponed.getFullNumber());
             if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
                 final CmdParams params = new CmdParams();
                 // @param userId id юзера который вызывает The user who causes
@@ -996,7 +996,7 @@ public class Form{
             }
 
             if (!user.checkIfUserCanServe(pickedRedirectServ)){
-                Messagebox.show(user.getName() + " doesn't have rights to serve customers for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
+                Messagebox.show(user.getName() + " doesn't have rights to serve citizens for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
             
@@ -1024,7 +1024,7 @@ public class Form{
             }
 
             if (!user.checkIfUserCanServe(pickedRedirectServ)){
-                Messagebox.show(user.getName() + " doesn't have rights to serve customers for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
+                Messagebox.show(user.getName() + " doesn't have rights to serve citizens for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
 
