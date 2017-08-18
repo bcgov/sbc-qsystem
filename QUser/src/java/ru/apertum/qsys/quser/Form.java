@@ -718,7 +718,7 @@ public class Form{
 
                 setKeyRegim(KEYS_INVITED);
                 BindUtils.postNotifyChange(null, null, Form.this, "postponList");
-                BindUtils.postNotifyChange(null, null, Form.this, "citizen");
+                BindUtils.postNotifyChange(null, null, Form.this, "customer");
                 BindUtils.postNotifyChange(null, null, Form.this, "btnsDisabled");
                 
                 this.addServeScreen();
