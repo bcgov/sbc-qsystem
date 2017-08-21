@@ -1,6 +1,0 @@
-node('maven') {
-stage ('Promote to Prod')
-{
-	openshiftTag(srcStream: 'qsystem', srcTag: 'latest', destStream: 'qsystem', destTag: 'prod')
-}
-}
