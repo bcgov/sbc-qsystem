@@ -385,6 +385,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
      * @param service не передавать тут NULL :: Do not pass here NULL
      */
     public void setService(QService service) {
+        service.setJobStatus("Primary");
         this.service = service;
         // Префикс для кастомера проставится при его создании, один раз и на всегда.
         if (getPrefix() == null) {
@@ -406,11 +407,37 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         return servicesList;
     }
     
-    public void setServicesList (QService service) {  
-        service.setJobStatus("TTT");
-        this.servicesList.add(service);
+    public void setServicesList (QService service) {
+        for(QService oldServices: this.servicesList){
+            oldServices.setJobStatus("Secondary");
+        }
+        service.setServiceIndex(this.maxServiceIndex() + 1);
+        this.servicesList.add(0, service);
     }
     
+    public void popFirstService(){
+        this.servicesList.remove(0);
+    }
+    
+    //maximum service index from list of services for customer
+    public int maxServiceIndex(){
+        int max = 1;
+        for (QService service : this.servicesList){
+            max = max<service.getServiceIndex()?service.getServiceIndex():max;
+        }
+        return max;
+    }
+
+    /**
+     * @param index Service's Index
+     * @return Service with index = index
+     */
+    public QService getServiceAtIndex(int index) {
+        return this.getServicesList().stream()
+				.filter(serviceWithIndex -> serviceWithIndex.getServiceIndex()==index)
+				.findFirst().get();
+    }
+        
     /**
      * Результат работы с пользователем
      */
