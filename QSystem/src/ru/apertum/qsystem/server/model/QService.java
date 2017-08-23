@@ -23,6 +23,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -90,6 +91,23 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     private PriorityQueue<QCustomer> getCustomers() {
         return customers;
     }
+    
+    /**
+    * Stores the job status while serving multiple services
+    */
+    @Expose
+    @SerializedName("jobStatus")
+    private String jobStatus = "";
+
+    @Transient
+    public String getJobStatus() {
+        return jobStatus;
+    }
+    
+    public void setJobStatus (String jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+    
     @Transient
     //@Expose
     //@SerializedName("clients")
@@ -956,8 +974,8 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         for (QCustomer customer : getCustomers()) {
             if (number.equalsIgnoreCase(customer.getPrefix() + customer.getNumber())) {
                 customer.setPriority(newPriority);
-                removeCustomer(customer); // убрать из очереди
-                addCustomer(customer);// перепоставили чтобы очередность переинлексиловалась
+                removeCustomer(customer); // убрать из очереди :: Remove from the queue
+                addCustomer(customer);// перепоставили чтобы очередность переинлексиловалась :: Re-set so that the order is re-enacted
                 return true;
             }
         }
@@ -1097,6 +1115,18 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public void setLangs(Set<QServiceLang> langs) {
         this.langs = langs;
     }
+    
+    @Transient
+    private int serviceIndex = 1;
+    
+    public int getServiceIndex() {
+        return serviceIndex;
+    }
+    
+    public void setServiceIndex (int serviceIndex) {
+        this.serviceIndex = serviceIndex;
+    }
+        
     @Transient
     private HashMap<String, QServiceLang> qslangs = null;
 

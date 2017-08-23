@@ -18,8 +18,12 @@
             font-family: Helvetica; 
             color: Black;
         }
+        .maxBodyHeight150{
+            max-height: 150px;
+            overflow: auto;
+            overflow-x: hidden;
+        }
     </style>
-
 <window id="serveCustomerDialog" title="Serve Customer Screen" border="normal" width="920px" height="710px"
     position="center,center" closable="true"
     onClose="self.visible = false; event.stopPropagation();"
@@ -56,25 +60,52 @@
     </vlayout>
     
     <vlayout height="260px" style="background-color:White">
+       
+<!--        <listbox id="service_list" hflex="min" sclass="maxBodyHeight150" model="@load(fmodel.customer.getServicesList())" style="margin-left:20px; margin-right:20px; margin-top:44px; margin-bottom:26px;">
+            <listhead>
+                <listheader hflex="2" label="Category" align="center"/>
+                <listheader hflex="2" label="Service" align="center" />
+                <listheader hflex="2" label="Stand Time" align="center" />
+                <listheader hflex="1" label="Change Service" align="center" />
+            </listhead>
+            <template name="model" var="services">
+                <listitem  context="listServicesPopup">
+                    <listcell label="@load( (fmodel.customer == null) ? '' : ('').concat(services.getParent().getName()))" visible="@load(fmodel.login)"/>
+                    <listcell label="@load( (fmodel.customer == null) ? '' : ('').concat(services.getName()))" visible="@load(fmodel.login)"/>
+                    <listcell label="@load( (fmodel.customer == null) ? '' : ('').concat(services.getName()))" visible="@load(fmodel.login)"/>
+                    <listcell label="@load( (fmodel.customer == null) ? '' : ('').concat(services.getName()))" visible="@load(fmodel.login)"/>
+                    <listcell label="@load( (fmodel.customer == null) ? '' : ('').concat(pCust.getServicesList().standTimeinHHMMSS()))" visible="@load(fmodel.login)"/>
+                    <listcell label="@load( (fmodel.customer == null) ? '' : ('').concat(pCust.getServicesList().standTimeinHHMMSS()))" visible="@load(fmodel.login)"/>
+                    <button sclass="button-with-image" image="/resources/img/change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
+                    </button>
+                </listitem>
+             </template>
+        </listbox>-->
         
-        <grid style="margin-left:20px; margin-right:20px; margin-top:44px; margin-bottom:26px;">
+        <grid id="service_list" sclass="maxBodyHeight150" model="@load(fmodel.customer.getServicesList())" emptyMessage="Nothing in Inbox." style="margin-left:20px; margin-right:20px; margin-top:44px; margin-bottom:26px;">
             <columns>
                 <column hflex="2" label="Category" align="center"/>
                 <column hflex="2" label="Service" align="center" />
                 <column hflex="2" label="Stand Time" align="center" />
-                <column hflex="1" label="Change Service" align="center" />
+                <column hflex="1" label="Activate" align="center" />
             </columns>
-            <rows>
-                <row height="70px">
-                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getParent().getName()))" />
-                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" />
-                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
-                    <button sclass="button-with-image" image="/resources/img/change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
-                    </button>
+            <template name="model" var="service">
+                <row>
+                    <label value="@load(service.getParent().getName())" visible="@load(fmodel.login)"/>
+                    <label value="@load(service.getName())" visible="@load(fmodel.login)"/>
+                    <label value="@load(service.getName())" visible="@load(fmodel.login)"/>
+                    <zk if="${service.getJobStatus()=='Secondary'}">
+                        <button sclass="button-with-image" image="/resources/img/switch_icon.png" onClick="@command('switchService', service=service)" height="44px" width="44px"></button>
+                    </zk>
+                    
+                    <zk if="${service.getJobStatus()=='Primary'}">
+                        <button sclass="button-with-image" image="/resources/img/change_icon.png" onClick="@command('changeService')" height="44px" width="44px"></button>
+                    </zk>
+                    
+                    
                 </row>
-            </rows>
+            </template>
         </grid>
-        
         
         <button sclass="act-button" style="display: block; margin: 0 auto;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
         </button>

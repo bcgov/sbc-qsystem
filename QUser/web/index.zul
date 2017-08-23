@@ -87,47 +87,6 @@
         <center border="none" hflex="true">
              <include id="incClientDashboard" src="/include/clientDashboard.zul"/>            
         </center>
-        <!--
-        <east title="${c:l('management')}" size="220px"  hflex="min">
-            <div align="center">
-                
-                <vlayout>
-                    <separator bar="false"/>
-                    <button sclass="act-button" image="/resources/img/next32.png" label="${c:l('invite_client')}" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="50px" width="210px">
-                    </button>
-                    
-                    
-                    <separator bar="false"/>
-                    <button sclass="act-button" label="${c:l('add_client')}" image="/resources/img/next32.png" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="50px" width="210px">
-                    </button>
-            
-                    <separator bar="false"/>
-                    <button sclass="act-button" label="${c:l('kill')}" image="/resources/img/stop32.png"  disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')" id="btn_kill" height="50px" width="210px">
-                    </button>
-                    
-                    <separator bar="false"/>
-                    <button sclass="act-button" class="act-button" label="${c:l('begin')}" image="/resources/img/start32.png" disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('begin')" id="btn_start" height="50px" width="210px">
-                    </button>
-                    <separator bar="false"/>
-                    <button sclass="act-button" label="${c:l('postpon')}" image="/resources/img/postpone32.png" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="50px" width="210px">
-                    </button>
-                    <separator bar="false"/>
-                    <button sclass="act-button" label="${c:l('redirect')}" image="/resources/img/redirect32.png" disabled="@load(fmodel.btnsDisabled[4])" onClick="@command('redirect')" id="btn_redirect" height="50px" width="210px">
-                    </button>
-                    <separator bar="false"/>
-                    <button sclass="act-button" label="${c:l('finish')}" image="/resources/img/ok32.png" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="70px" width="210px">
-                    </button>
-                    
-                    <separator bar="false"/>
-                    <button sclass="act-button" label="${c:l('add_next_service')}" image="/resources/img/next32.png" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="50px" width="210px">
-                    </button>
-                    <separator bar="false"/>
-                    <button sclass="act-button" label="${c:l('change_service')}" image="/resources/img/next32.png" disabled="@load(fmodel.btnsDisabled[8])" onClick="@command('changeService')" id="btn_change_service" height="50px" width="210px">
-                    </button>
-                </vlayout>  
-            </div>
-        </east>
-        -->
         
         <south   size="40px" style="background-color: #003366;" border="0">
             <toolbar mold="panel" align="center">
