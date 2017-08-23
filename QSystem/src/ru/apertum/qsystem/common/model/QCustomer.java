@@ -404,7 +404,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     @Transient
     public List<QService> getServicesList() {
-        return servicesList;
+        return this.servicesList;
     }
     
     public void setServicesList (QService service) {
@@ -415,8 +415,24 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         this.servicesList.add(0, service);
     }
     
+    /**
+     * Removes the first object/service from the serviceList
+     */
     public void popFirstService(){
         this.servicesList.remove(0);
+    }
+    
+    /**
+     * @param index Index of the service in serviceList to be removed 
+     */
+    public  void removeServiceWithIndex(int index){
+        this.getServicesList().stream()
+            .filter(serviceWithIndex -> serviceWithIndex.getServiceIndex()==index)
+            .findFirst()
+            .map(p -> {
+                    this.servicesList.remove(p);
+                    return p;
+            });
     }
     
     //maximum service index from list of services for customer

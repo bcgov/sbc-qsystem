@@ -403,29 +403,19 @@ public final class Executer {
             super.process(cmdParams, ipAdress, IP);
             
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
-             QLog.l().logQUser().debug("-------------------------------------------------------");
             final QCustomer customer = user.getCustomer();
-            // Переставка в другую очередь
-            // Название старой очереди
-            final QService oldService = customer.getService();
-            customer.popFirstService();
-            customer.getServicesList().add(oldService);
-            
-            // вот она новая очередь.
-            final QService newServiceR = customer.getServiceAtIndex(cmdParams.serviceIndex);
-            customer.setService(newServiceR);
 
-            QLog.l().logQUser().debug("Old Service Switched :" + oldService.getName());
-            QLog.l().logQUser().debug("New Service Switched :" + newServiceR.getName());
-                        
+            final QService oldService = customer.getService();
+            final QService newService = customer.getServiceAtIndex(cmdParams.serviceIndex);
+            
+            customer.popFirstService();
+            customer.removeServiceWithIndex(newService.getServiceIndex());
+            
+            customer.getServicesList().add(oldService);
+            customer.setService(newService);
+
             try {
-                // сохраняем состояния очередей.
                 QServer.savePool();
-//                Uses.sendUDPBroadcast(newService.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
-//                Uses.sendUDPBroadcast(oldService.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
-                //разослать оповещение о том, что посетитель откланен
-                //рассылаем широковещетельно по UDP на определенный порт. Должно подтереться на основном табло
-//                MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error("Exception TASK_CHANGE_SERVICE"  +  ex.getLocalizedMessage());
             }   
