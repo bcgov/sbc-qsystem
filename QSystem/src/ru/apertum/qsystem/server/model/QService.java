@@ -1117,6 +1117,28 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     }
     
     @Transient
+    private Date startServiceTime = new Date();
+
+    public Date getStartServiceTime() {
+        return this.startServiceTime;
+    }
+
+    public void setStartServiceTime(Date startServiceTime) {
+        this.startServiceTime = startServiceTime;
+    }
+    
+    @Transient
+    private Date endServiceTime = new Date();
+
+    public Date getEndServiceTime() {
+        return this.endServiceTime;
+    }
+
+    public void setEndServiceTime(Date endServiceTime) {
+        this.endServiceTime = endServiceTime;
+    }
+    
+    @Transient
     private int serviceIndex = 1;
     
     public int getServiceIndex() {
