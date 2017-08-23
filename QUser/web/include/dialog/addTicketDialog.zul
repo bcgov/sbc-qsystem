@@ -19,7 +19,7 @@
                         <textbox id="typeservices" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
                     </vbox>
                     <vbox>
-                        <combobox id="cboFmCompress" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="1" model="@load(fmodel.categories)">
+                        <combobox id="cboFmCompress" onChange="@command('changeCategory')" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
                             <comboitem label="@load(each)"/>
                         </combobox>
                     </vbox>

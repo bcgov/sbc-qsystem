@@ -24,7 +24,7 @@
             overflow-x: hidden;
         }
     </style>
-<window id="serveCustomerDialog" title="Serve Customer Screen" border="normal" width="920px" height="710px"
+<window id="serveCustomerDialog" title="Serve Citizen Screen" border="normal" width="920px" height="710px"
     position="center,center" closable="true"
     onClose="self.visible = false; event.stopPropagation();"
     action="show: slideDown;hide: slideUp">

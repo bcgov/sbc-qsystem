@@ -706,9 +706,9 @@ public class Form{
         if (user.getPlan().isEmpty() || pickedPostponed==null) {
             return;
         }
-        Messagebox.show("Do you want to invite customer " + pickedPostponed.getFullNumber() + " ?", l("inviting_client"), new Messagebox.Button[]{
+        Messagebox.show("Do you want to invite citizen " + pickedPostponed.getFullNumber() + " ?", l("inviting_client"), new Messagebox.Button[]{
             Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION, (Messagebox.ClickEvent t) -> {
-            QLog.l().logQUser().debug("Invite postponed by " + user.getName() + " customer " + pickedPostponed.getFullNumber());
+            QLog.l().logQUser().debug("Invite postponed by " + user.getName() + " citizen " + pickedPostponed.getFullNumber());
             if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
                 final CmdParams params = new CmdParams();
                 // @param userId id юзера который вызывает The user who causes
@@ -769,9 +769,11 @@ public class Form{
     public QService getPickedMainService() {
         return pickedMainService;
     }
-
+    
+    // MW
     public void setPickedMainService(QService pickedMainService) {
         this.pickedMainService = pickedMainService;
+        QLog.l().logQUser().debug("Set Main Service: " + getPickedMainService());
     }
     
     @Command
@@ -829,30 +831,35 @@ public class Form{
         this.filter = filter;
     }
     
-    @NotifyChange("filter")
+    @NotifyChange("listServices")
     @Command    
-    void changeCategory(){
-        String comboboxText = ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).getText();
-        if (comboboxText.equals("")){
-            pickedMainService = null;
-//            typeservices.value="";
-            ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
-            filter = "";
+    public void changeCategory(){
+        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText( "" );
+        
+        LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
+        List<QService> requiredServices = null;
+
+        if (getPickedMainService() == null){
+            QLog.l().logQUser().debug("null category was selected");
+            requiredServices = allServices
+                    .stream()
+                    .filter((QService service) -> service.getParentId()!=null  && !service.getParentId().equals(1L))
+                    .collect(Collectors.toList());
+        } else {
+            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            requiredServices = allServices
+                    .stream()
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && !service.getParentId().equals(1L))
+                    .collect(Collectors.toList());
         }
-        else if (pickedMainService != null){
-            ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText(pickedMainService.getName());
-//            typeservices.value=fmodel.pickedMainService.getName();
-            filter = pickedMainService.getName();
-        }
+        
+        listServices = requiredServices;
     }
     
     @NotifyChange("listServices")
     @Command
     public void doSearch() {
         listServices.clear();
-        if(filter == null || "".equals(filter)) {
-            listServices = getAllListServices();
-    	} else {
             LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
             List<QService> requiredServices;
             
@@ -865,13 +872,12 @@ public class Form{
             }else{
                  requiredServices = allServices
                     .stream()
-                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
             }
             
             
             listServices = requiredServices;
-        }
     }
     
     private List<QService> listServices;
@@ -1025,7 +1031,7 @@ public class Form{
             }
 
             if (!user.checkIfUserCanServe(pickedRedirectServ)){
-                Messagebox.show(user.getName() + " doesn't have rights to serve customers for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
+                Messagebox.show(user.getName() + " doesn't have rights to serve citizens for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
                         
@@ -1066,7 +1072,7 @@ public class Form{
             }
 
             if (!user.checkIfUserCanServe(pickedRedirectServ)){
-                Messagebox.show(user.getName() + " doesn't have rights to serve customers for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
+                Messagebox.show(user.getName() + " doesn't have rights to serve citizens for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
 
