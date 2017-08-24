@@ -17,6 +17,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
+import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
@@ -468,7 +469,9 @@ public class Form{
         addWindowButtons[1] = false;
         addWindowButtons[2] = true;
         addWindowButtons[3] = false;
+        
         this.addTicketScreen();
+        ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).setText(customer.getTempComments());
     }
 
     @Command
@@ -909,8 +912,37 @@ public class Form{
          return requiredServices;
     }
     
-    
     @Command
+    public void closeAddNextServiceDialog(){
+        if (pickedRedirectServ != null) {
+            if (!pickedRedirectServ.isLeaf()) {
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+
+            final CmdParams params = new CmdParams();
+
+            params.userId = user.getUser().getId();
+            params.serviceId = pickedRedirectServ.getId();
+            params.requestBack = Boolean.FALSE;
+            params.isMine = Boolean.TRUE;
+            params.resultId = -1l;
+            params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
+            Executer.getInstance().getTasks().get(Uses.TASK_ADD_NEXT_SERVICE).process(params, "", new byte[4]);
+            //Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
+            
+//            customer = null;
+            
+            //setKeyRegim(KEYS_MAY_INVITE);
+            service_list.setModel(service_list.getModel());
+            addTicketDailogWindow.setVisible(false);
+            
+//            this.invite();
+//            this.begin();
+            BindUtils.postNotifyChange(null, null, Form.this, "*");
+        }
+    }
+    /*
     public void closeAddNextServiceDialog(){
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
@@ -927,7 +959,8 @@ public class Form{
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
             
-            customer = null;            
+            customer = null;
+            
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
             addTicketDailogWindow.setVisible(false);
@@ -937,6 +970,7 @@ public class Form{
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
+    */
     
     @Command
     public void closeAddToQueueDialog(){
@@ -985,6 +1019,7 @@ public class Form{
         addWindowButtons[3] = false;
         
         this.addTicketScreen();
+        ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).setText(customer.getTempComments());
     }
     
     @Command
@@ -999,8 +1034,7 @@ public class Form{
                 Messagebox.show(user.getName() + " doesn't have rights to serve citizens for this service. Try Add to Queue." , "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
-            
-            
+                        
             final CmdParams params = new CmdParams();
             params.userId = user.getUser().getId();
             params.serviceId = pickedRedirectServ.getId();
@@ -1014,6 +1048,20 @@ public class Form{
         }
     }
     
+    @Command
+    public void switchService(@BindingParam("service") QService service) {
+//        QLog.l().logQUser().debug("Service ----------------- :" + service.getServiceIndex()); 
+        
+        final CmdParams params = new CmdParams();
+        params.userId = user.getUser().getId();
+        params.serviceIndex = service.getServiceIndex();
+            
+        Executer.getInstance().getTasks().get(Uses.TASK_SWITCH_SERVICE).process(params, "", new byte[4]);
+        
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
+    }
+    
+            
 
     @Command
     public void closeAddAndServeDialog(){

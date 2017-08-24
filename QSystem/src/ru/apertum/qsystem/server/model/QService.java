@@ -23,6 +23,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -47,6 +48,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
@@ -90,6 +92,23 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     private PriorityQueue<QCustomer> getCustomers() {
         return customers;
     }
+    
+    /**
+    * Stores the job status while serving multiple services
+    */
+    @Expose
+    @SerializedName("jobStatus")
+    private String jobStatus = "";
+
+    @Transient
+    public String getJobStatus() {
+        return jobStatus;
+    }
+    
+    public void setJobStatus (String jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+    
     @Transient
     //@Expose
     //@SerializedName("clients")
@@ -956,8 +975,8 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         for (QCustomer customer : getCustomers()) {
             if (number.equalsIgnoreCase(customer.getPrefix() + customer.getNumber())) {
                 customer.setPriority(newPriority);
-                removeCustomer(customer); // убрать из очереди
-                addCustomer(customer);// перепоставили чтобы очередность переинлексиловалась
+                removeCustomer(customer); // убрать из очереди :: Remove from the queue
+                addCustomer(customer);// перепоставили чтобы очередность переинлексиловалась :: Re-set so that the order is re-enacted
                 return true;
             }
         }
@@ -1097,6 +1116,71 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public void setLangs(Set<QServiceLang> langs) {
         this.langs = langs;
     }
+    
+    @Transient
+    private Date startServiceTime = new Date();
+
+    public Date getStartServiceTime() {
+        return this.startServiceTime;
+    }
+        
+    public void setStartServiceTime(Date startServiceTime) {
+        this.startServiceTime = startServiceTime;
+    }
+    
+    /**
+     * 
+     * @return Formated Start time of Service
+     */
+    public String getStartTimeFormated(){
+        return Uses.standTimeinHHMMSS(this.startServiceTime);
+    }
+    
+    @Transient
+    private Date startServiceTime2 = new Date();
+
+    public Date getStartServiceTime2() {
+        return this.startServiceTime2;
+    }
+
+    public void setStartServiceTime2(Date startServiceTime2) {
+        this.startServiceTime2 = startServiceTime2;
+    } 
+    
+    @Transient
+    private Date endServiceTime = new Date();
+
+    public Date getEndServiceTime() {
+        return this.endServiceTime;
+    }
+
+    public void setEndServiceTime(Date endServiceTime) {
+        this.endServiceTime = endServiceTime;
+    }
+    
+    //time taken by CSR to serve the ticket
+    @Transient
+    private int timeTaken = 0; 
+
+    public int getTimeTaken() {
+        return this.timeTaken;
+    }
+
+    public void setTimeTaken() {    
+        this.timeTaken += (this.getEndServiceTime().getTime() - this.getStartServiceTime2().getTime()) / 1000;
+    }
+    
+    @Transient
+    private int serviceIndex = 1;
+    
+    public int getServiceIndex() {
+        return serviceIndex;
+    }
+    
+    public void setServiceIndex (int serviceIndex) {
+        this.serviceIndex = serviceIndex;
+    }
+        
     @Transient
     private HashMap<String, QServiceLang> qslangs = null;
 

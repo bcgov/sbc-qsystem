@@ -51,6 +51,7 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -282,6 +283,7 @@ public final class Uses {
     public static final String REPORT_CURRENT_SERVICES = "current_services";
     public static final String TASK_GET_CLIENT_AUTHORIZATION = "Идентифицировать клиента";
     public static final String TASK_SET_CUSTOMER_PRIORITY = "Изменить приоритет";
+    public static final String TASK_SET_JOB_STATUS = "Change job status";
     public static final String TASK_CHECK_CUSTOMER_NUMBER = "Проверить номер";
     public static final String TASK_CHANGE_FLEX_PRIORITY = "Изменить гибкий приоритет";
     public static final String TASK_CHANGE_RUNNING_TEXT_ON_BOARD = "Изменить бегущий текст на табло";
@@ -294,6 +296,8 @@ public final class Uses {
     public static final String TASK_SERVE_CUSTOMER = "serve_customer";
     public static final String TASK_INVITE_SELECTED_CUSTOMER = "Invite selected customer";
     public static final String TASK_CHANGE_SERVICE = "Change the service of the customer";
+    public static final String TASK_ADD_NEXT_SERVICE = "Add next service for the customer";
+    public static final String TASK_SWITCH_SERVICE = "Switch to different service in the list";
     
     // Формат отчетов
     public static final String REPORT_FORMAT_HTML = "html";
@@ -362,6 +366,20 @@ public final class Uses {
     public static String getUkrDate(Date date, String format) {
         return new SimpleDateFormat(format, Locales.getInstance().getUkrSymbolDateFormat()).format(date);
     }
+    
+    public static String standTimeinHHMMSS(Date date){
+        TimeZone currentTimeZone = Calendar.getInstance().getTimeZone();
+        DateFormat zoneTimeFormat= Uses.FORMAT_HH_MM_SS;
+
+        if (Uses.userTimeZone == null){
+            zoneTimeFormat.setTimeZone(currentTimeZone);
+        }else{
+            zoneTimeFormat.setTimeZone(Uses.userTimeZone);
+        }
+        
+        return zoneTimeFormat.format(date);
+    }
+    
     /**
      * Формат даты
      */
