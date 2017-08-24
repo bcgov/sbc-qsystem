@@ -286,7 +286,44 @@
     "status": {
         "lastVersion": 0
     }
-}],
+},
+{
+    "kind": "BuildConfig",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "qsystem-pipeline",
+        "creationTimestamp": null,
+        "labels": {
+            "app": "qsystem-pipeline",
+            "name": "qsystem-pipeline",
+            "template": "java"
+        }
+    },
+    "spec": {
+        "runPolicy": "Parallel",
+        "source": {
+            "type": "Git",
+            "git": {
+                "uri": "https://github.com/bcgov/sbc-qsystem.git",
+                "ref": "master"
+            }
+        },
+        "strategy": {
+            "type": "JenkinsPipeline",
+            "jenkinsPipelineStrategy": {
+                "jenkinsfilePath": "Jenkinsfile"
+            }
+        },
+        "output": {},
+        "resources": {},
+        "postCommit": {},
+        "nodeSelector": null
+    },
+    "status": {
+        "lastVersion": 0
+    }
+}
+],
   "parameters": [
 	{
       "name": "QSYSTEM_SERVICE_NAME",
