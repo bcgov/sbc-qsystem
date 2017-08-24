@@ -1144,6 +1144,8 @@ public final class Executer {
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             // Время старта работы с юзера с кастомером.
             user.getCustomer().setStartTime(new Date());
+            user.getCustomer().getService().setStartServiceTime(new Date());
+            
             user.getCustomer().setPostponPeriod(0);
             // кастомер переходит в состояние "Начала обработки" или "Продолжение работы"
             user.getCustomer().setState(user.getCustomer().getState() == CustomerState.STATE_INVITED ? CustomerState.STATE_WORK : CustomerState.STATE_WORK_SECONDARY);

@@ -205,7 +205,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 // только финиш_тайм надо проставить, хер сним, и старт_тайм тоже, ядренбатон
                 setStartTime(new Date());
                 setFinishTime(new Date());
-                saveToSelfDB();
+//                saveToSelfDB();
                 break;
             case STATE_WAIT:
                 QLog.l().logger().debug("Статус: Кастомер пришел и ждет с номером \"" + getPrefix() + getNumber() + "\"");
@@ -226,7 +226,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 QLog.l().logger().debug("Статус: Кастомера редиректили с номером \"" + getPrefix() + getNumber() + "\"");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе
-                saveToSelfDB();
+//                saveToSelfDB();
                 break;
             case STATE_WORK:
                 QLog.l().logger().debug("Начали работать с кастомером с номером \"" + getPrefix() + getNumber() + "\"");
@@ -242,39 +242,20 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 
-                this.getService().setEndServiceTime(new Date());
-                this.getService().setTimeTaken();
-                
-                // сохраним кастомера в базе :: Keep the customizer in the database
-                if(this.getServicesList().size()==1){
-                    QService s = this.getService();
-                    this.serviceStartTime = s.getStartServiceTime();
-                    this.serviceEndTime = s.getEndServiceTime();                    
-                    this.serviceTimeTaken = s.getTimeTaken();
-                    saveToSelfDB();
-                }else{
-                List<QService> listOfServices = new ArrayList<>(this.getServicesList());
-                for(QService s: listOfServices){
-                    this.serviceStartTime = s.getStartServiceTime();
-                    this.serviceEndTime = s.getEndServiceTime();                    
-                    this.serviceTimeTaken = s.getTimeTaken();
-                    this.setService(s);
-                saveToSelfDBMultipleServices(this);
-            }
-                }       
+                saveAllServiceOnDB();
                 break;
             case STATE_POSTPONED:
                 QLog.l().logger().debug("Кастомер с номером \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
-                saveToSelfDB();
+//                saveToSelfDB();
                 break;
             case STATE_POSTPONED_REDIRECT:
                 QLog.l().logger().debug("Customer to postpone prefix \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
                 startTime = standTime;
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
-                saveToSelfDB();
+//                saveToSelfDB();
                 break;
         }
 
@@ -287,6 +268,30 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: :: The SPI extension call failed. Description:" + tr);
             }
         }
+    }
+    
+    public void saveAllServiceOnDB(){
+        this.getService().setEndServiceTime(new Date());
+        this.getService().setTimeTaken();
+                
+        // сохраним кастомера в базе :: Keep the customizer in the database
+        if(this.getServicesList().size()==1){
+            this.updateEndTime(this.getService());
+            saveToSelfDB();
+        }else{
+            List<QService> listOfServices = new ArrayList<>(this.getServicesList());
+            for(QService service: listOfServices){
+                this.updateEndTime(service);
+                this.setService(service);
+            saveToSelfDBMultipleServices(this);
+            }
+        }
+    }
+    
+    public void updateEndTime(QService updateService){
+        this.serviceStartTime = updateService.getStartServiceTime();
+        this.serviceEndTime = updateService.getEndServiceTime();
+        this.serviceTimeTaken = updateService.getTimeTaken();
     }
 
     @Transient
