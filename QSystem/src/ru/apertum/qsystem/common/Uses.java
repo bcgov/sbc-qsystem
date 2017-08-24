@@ -51,6 +51,7 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -243,65 +244,66 @@ public final class Uses {
     public static final int BOARD_TYPE_STR = 3;
     public static final int BOARD_TYPE_BOOL = 4;
     // Наименования заданий
-    // Names of tasks
-    public static final String TASK_FOR_ALL_SITE = "For all domain sites";//"Для всех сайтов домена";
-    public static final String TASK_STAND_IN = "Queue";//"Поставить в очередь";
-    public static final String TASK_STAND_COMPLEX = "Put in multiple queues";//"Поставить в несколько очередей";
-    public static final String TASK_ADVANCE_STAND_IN = "To queue in advance";//"Поставить в очередь предварительно";
-    public static final String TASK_ADVANCE_CHECK_AND_STAND = "Pre-recorded";//"Поставить предварительно записанного";
-    public static final String TASK_REMOVE_ADVANCE_CUSTOMER = "Delete the previously recorded";//"Удалить предварительно записанного";
-    public static final String TASK_REDIRECT_CUSTOMER = "Redirect a customer to another service";//"Переадресовать клиента к другой услуге";
-    public static final String TASK_GET_SERVICES = "Get a list of services";//"Получить перечень услуг";
-    public static final String TASK_ABOUT_SERVICE = "Get a description of the service";//"Получить описание услуги";
-    public static final String TASK_GET_SERVICE_CONSISANCY = "Get the service queue";//"Получить очередь услуги";
-    public static final String TASK_ABOUT_SERVICE_PERSON_LIMIT = "Get the opportunity to get up with this data";//"Получить возможность встать с этими данными";
-    public static final String TASK_GET_SERVICE_PREINFO = "Get information on the service";//"Получить информацию по услуге";
-    public static final String TASK_GET_INFO_PRINT = "Get information for printing";//"Получить информацию для печати";
-    public static final String TASK_GET_USERS = "Get a list of users";//"Получить перечень пользователей";
-    public static final String TASK_GET_SELF = "Get user description";//"Получить описание пользователя";
-    public static final String TASK_GET_SELF_SERVICES = "Get the state of the queues";//"Получить состояние очередей";
-    public static final String TASK_GET_POSTPONED_POOL = "Get the state of the pending pool";//"Получить состояние пула отложенных";
-    public static final String TASK_GET_BAN_LIST = "Get banned list";//"Получить список забаненых";
-    public static final String TASK_INVITE_POSTPONED = "Call the deferred from the pool";//"Вызвать отложенного из пула отложенных";
-    public static final String TASK_GET_SELF_SERVICES_CHECK = "Get the state of the queues with a check";//"Получить состояние очередей с проверкой";
-    public static final String TASK_INVITE_NEXT_CUSTOMER = "Get the next customer";//"Получить следующего клиента";
-    public static final String TASK_KILL_NEXT_CUSTOMER = "Delete the next client";//"Удалить следующего клиента";
-    public static final String TASK_CUSTOMER_TO_POSTPON = "Customer in the pool of pending";//"Клиента в пул отложенных";
-    public static final String TASK_POSTPON_CHANGE_STATUS = "Change the status of the deferred";//"Сменить статус отложенному";
-    public static final String TASK_START_CUSTOMER = "Start working with the client";//"Начать работу с клиентом";
-    public static final String TASK_FINISH_CUSTOMER = "Finish work with the client";//"Закончить работу с клиентом";
-    public static final String TASK_I_AM_LIVE = "I'm a mountaineer!";//"Я горец!";
-    public static final String TASK_RESTART = "RESTART";//"RESTART";
-    public static final String TASK_RESTART_MAIN_TABLO = "Restart main tvoblo";//"Рестарт главного твбло";
-    public static final String TASK_REFRESH_POSTPONED_POOL = "NEW_POSTPONED_NOW";//"NEW_POSTPONED_NOW";
-    public static final String TASK_SERVER_STATE = "Get server status";//"Получить состояние сервера";
-    public static final String TASK_SET_SERVICE_FIRE = "Add service to hot";//"Добавить услугу на горячую";
-    public static final String TASK_DELETE_SERVICE_FIRE = "Remove service to hot";//"Удалить услугу на горячую"; // The names of reports, here write exclusively in small Latin letters without spaces // Наименования отчетов, сдесь писать исключительно маленькими латинскими буквами без пробелов
-    public static final String TASK_GET_BOARD_CONFIG = "Get the configuration of the scoreboard";//"Получить конфигурацию табло";
-    public static final String TASK_SAVE_BOARD_CONFIG = "Save the configuration of the scoreboard";//"Сохранить конфигурацию табло";
-    public static final String TASK_GET_GRID_OF_WEEK = "Get a weekly preliminary table";//"Получить недельную предварительную таблицу";
-    public static final String TASK_GET_GRID_OF_DAY = "Get a daily preview table";//"Получить дневную предварительную таблицу";
-    public static final String TASK_GET_INFO_TREE = "Get the Information Tree";//"Получить информационное дерево";
-    public static final String TASK_GET_RESULTS_LIST = "Get a list of possible results";//"Получить получение списка возможных результатов";
-    public static final String TASK_GET_RESPONSE_LIST = "Get a list of reviews";//"Получить список отзывов";
-    public static final String TASK_SET_RESPONSE_ANSWER = "Give feedback";//"Оставить отзыв";
-    public static final String REPORT_CURRENT_USERS = "Current_users";//"current_users";
-    public static final String REPORT_CURRENT_SERVICES = "Current_services";//"current_services";
-    public static final String TASK_GET_CLIENT_AUTHORIZATION = "Identify customer";//"Идентифицировать клиента";
-    public static final String TASK_SET_CUSTOMER_PRIORITY = "Change priority";//"Изменить приоритет";
-    public static final String TASK_CHECK_CUSTOMER_NUMBER = "Check number";//"Проверить номер";
-    public static final String TASK_CHANGE_FLEX_PRIORITY = "Change Flexible Priority";//"Изменить гибкий приоритет";
-    public static final String TASK_CHANGE_RUNNING_TEXT_ON_BOARD = "Change the running text on the scoreboard";//"Изменить бегущий текст на табло";
-    public static final String TASK_CHANGE_TEMP_AVAILABLE_SERVICE = "Change temporary availability";//"Изменить временную доступность";
-    public static final String TASK_GET_STANDARDS = "Get standards";//"Получить нормативы";
-    public static final String TASK_SET_BUSSY = "Interruption of the operator";//"Перерыв оператора";
-    public static final String TASK_GET_PROPERTIES = "All parameters from the database";//"Все параметры из БД";
-    public static final String TASK_SAVE_PROPERTIES = "Save all parameters to the database";//"Сохранить все параметры в БД";
-    public static final String TASK_INIT_PROPERTIES = "Create all parameters in the database";//"Создать все параметры в БД";
-    public static final String TASK_SERVE_CUSTOMER = "Serve_customer";//"serve_customer";
-    public static final String TASK_INVITE_SELECTED_CUSTOMER = "Invite selected customer";//"Invite selected customer";
-    public static final String TASK_CHANGE_SERVICE = "Change the service of the customer";//"Change the service of the customer";
-    
+    public static final String TASK_FOR_ALL_SITE = "Для всех сайтов домена";
+    public static final String TASK_STAND_IN = "Поставить в очередь";
+    public static final String TASK_STAND_COMPLEX = "Поставить в несколько очередей";
+    public static final String TASK_ADVANCE_STAND_IN = "Поставить в очередь предварительно";
+    public static final String TASK_ADVANCE_CHECK_AND_STAND = "Поставить предварительно записанного";
+    public static final String TASK_REMOVE_ADVANCE_CUSTOMER = "Удалить предварительно записанного";
+    public static final String TASK_REDIRECT_CUSTOMER = "Переадресовать клиента к другой услуге";
+    public static final String TASK_GET_SERVICES = "Получить перечень услуг";
+    public static final String TASK_ABOUT_SERVICE = "Получить описание услуги";
+    public static final String TASK_GET_SERVICE_CONSISANCY = "Получить очередь услуги";
+    public static final String TASK_ABOUT_SERVICE_PERSON_LIMIT = "Получить возможность встать с этими данными";
+    public static final String TASK_GET_SERVICE_PREINFO = "Получить информацию по услуге";
+    public static final String TASK_GET_INFO_PRINT = "Получить информацию для печати";
+    public static final String TASK_GET_USERS = "Получить перечень пользователей";
+    public static final String TASK_GET_SELF = "Получить описание пользователя";
+    public static final String TASK_GET_SELF_SERVICES = "Получить состояние очередей";
+    public static final String TASK_GET_POSTPONED_POOL = "Получить состояние пула отложенных";
+    public static final String TASK_GET_BAN_LIST = "Получить список забаненых";
+    public static final String TASK_INVITE_POSTPONED = "Вызвать отложенного из пула отложенных";
+    public static final String TASK_GET_SELF_SERVICES_CHECK = "Получить состояние очередей с проверкой";
+    public static final String TASK_INVITE_NEXT_CUSTOMER = "Получить следующего клиента";
+    public static final String TASK_KILL_NEXT_CUSTOMER = "Удалить следующего клиента";
+    public static final String TASK_CUSTOMER_TO_POSTPON = "Клиента в пул отложенных";
+    public static final String TASK_POSTPON_CHANGE_STATUS = "Сменить статус отложенному";
+    public static final String TASK_START_CUSTOMER = "Начать работу с клиентом";
+    public static final String TASK_FINISH_CUSTOMER = "Закончить работу с клиентом";
+    public static final String TASK_I_AM_LIVE = "Я горец!";
+    public static final String TASK_RESTART = "RESTART";
+    public static final String TASK_RESTART_MAIN_TABLO = "Рестарт главного твбло";
+    public static final String TASK_REFRESH_POSTPONED_POOL = "NEW_POSTPONED_NOW";
+    public static final String TASK_SERVER_STATE = "Получить состояние сервера";
+    public static final String TASK_SET_SERVICE_FIRE = "Добавить услугу на горячую";
+    public static final String TASK_DELETE_SERVICE_FIRE = "Удалить услугу на горячую";    // Наименования отчетов, сдесь писать исключительно маленькими латинскими буквами без пробелов
+    public static final String TASK_GET_BOARD_CONFIG = "Получить конфигурацию табло";
+    public static final String TASK_SAVE_BOARD_CONFIG = "Сохранить конфигурацию табло";
+    public static final String TASK_GET_GRID_OF_WEEK = "Получить недельную предварительную таблицу";
+    public static final String TASK_GET_GRID_OF_DAY = "Получить дневную предварительную таблицу";
+    public static final String TASK_GET_INFO_TREE = "Получить информационное дерево";
+    public static final String TASK_GET_RESULTS_LIST = "Получить получение списка возможных результатов";
+    public static final String TASK_GET_RESPONSE_LIST = "Получить список отзывов";
+    public static final String TASK_SET_RESPONSE_ANSWER = "Оставить отзыв";
+    public static final String REPORT_CURRENT_USERS = "current_users";
+    public static final String REPORT_CURRENT_SERVICES = "current_services";
+    public static final String TASK_GET_CLIENT_AUTHORIZATION = "Идентифицировать клиента";
+    public static final String TASK_SET_CUSTOMER_PRIORITY = "Изменить приоритет";
+    public static final String TASK_SET_JOB_STATUS = "Change job status";
+    public static final String TASK_CHECK_CUSTOMER_NUMBER = "Проверить номер";
+    public static final String TASK_CHANGE_FLEX_PRIORITY = "Изменить гибкий приоритет";
+    public static final String TASK_CHANGE_RUNNING_TEXT_ON_BOARD = "Изменить бегущий текст на табло";
+    public static final String TASK_CHANGE_TEMP_AVAILABLE_SERVICE = "Изменить временную доступность";
+    public static final String TASK_GET_STANDARDS = "Получить нормативы";
+    public static final String TASK_SET_BUSSY = "Перерыв оператора";
+    public static final String TASK_GET_PROPERTIES = "Все параметры из БД";
+    public static final String TASK_SAVE_PROPERTIES = "Сохранить все параметры в БД";
+    public static final String TASK_INIT_PROPERTIES = "Создать все параметры в БД";
+    public static final String TASK_SERVE_CUSTOMER = "serve_customer";
+    public static final String TASK_INVITE_SELECTED_CUSTOMER = "Invite selected customer";
+    public static final String TASK_CHANGE_SERVICE = "Change the service of the customer";
+    public static final String TASK_ADD_NEXT_SERVICE = "Add next service for the customer";
+    public static final String TASK_SWITCH_SERVICE = "Switch to different service in the list";
     // Формат отчетов
     public static final String REPORT_FORMAT_HTML = "html";
     public static final String REPORT_FORMAT_RTF = "rtf";
@@ -369,6 +371,20 @@ public final class Uses {
     public static String getUkrDate(Date date, String format) {
         return new SimpleDateFormat(format, Locales.getInstance().getUkrSymbolDateFormat()).format(date);
     }
+    
+    public static String standTimeinHHMMSS(Date date){
+        TimeZone currentTimeZone = Calendar.getInstance().getTimeZone();
+        DateFormat zoneTimeFormat= Uses.FORMAT_HH_MM_SS;
+
+        if (Uses.userTimeZone == null){
+            zoneTimeFormat.setTimeZone(currentTimeZone);
+        }else{
+            zoneTimeFormat.setTimeZone(Uses.userTimeZone);
+        }
+        
+        return zoneTimeFormat.format(date);
+    }
+    
     /**
      * Формат даты
      */

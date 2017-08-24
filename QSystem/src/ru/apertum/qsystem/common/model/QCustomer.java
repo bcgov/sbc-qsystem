@@ -30,16 +30,22 @@ import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.results.QResult;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.ServiceLoader;
 import java.util.TimeZone;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -96,6 +102,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
     /**
      * АТРИБУТЫ "ОЧЕРЕДНИКА" персональный номер, именно по нему система ведет учет и управление очередниками номер - целое число
+     * ATTRIBUTES "OBJECTOR" personal number, it is on it that the system records and controls queues number - an integer
      */
     @Expose
     @SerializedName("number")
@@ -198,7 +205,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 // только финиш_тайм надо проставить, хер сним, и старт_тайм тоже, ядренбатон
                 setStartTime(new Date());
                 setFinishTime(new Date());
-                saveToSelfDB();
+//                saveToSelfDB();
                 break;
             case STATE_WAIT:
                 QLog.l().logger().debug("Статус: Кастомер пришел и ждет с номером \"" + getPrefix() + getNumber() + "\"");
@@ -219,7 +226,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 QLog.l().logger().debug("Статус: Кастомера редиректили с номером \"" + getPrefix() + getNumber() + "\"");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе
-                saveToSelfDB();
+//                saveToSelfDB();
                 break;
             case STATE_WORK:
                 QLog.l().logger().debug("Начали работать с кастомером с номером \"" + getPrefix() + getNumber() + "\"");
@@ -234,21 +241,21 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             case STATE_FINISH:
                 QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
-                // сохраним кастомера в базе :: Keep the customizer in the database
-                saveToSelfDB();
+                
+                saveAllServiceOnDB();
                 break;
             case STATE_POSTPONED:
                 QLog.l().logger().debug("Кастомер с номером \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
-                saveToSelfDB();
+//                saveToSelfDB();
                 break;
             case STATE_POSTPONED_REDIRECT:
                 QLog.l().logger().debug("Customer to postpone prefix \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
                 startTime = standTime;
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
-                saveToSelfDB();
+//                saveToSelfDB();
                 break;
         }
 
@@ -262,6 +269,30 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             }
         }
     }
+    
+    public void saveAllServiceOnDB(){
+        this.getService().setEndServiceTime(new Date());
+        this.getService().setTimeTaken();
+                
+        // сохраним кастомера в базе :: Keep the customizer in the database
+        if(this.getServicesList().size()==1){
+            this.updateEndTime(this.getService());
+            saveToSelfDB();
+        }else{
+            List<QService> listOfServices = new ArrayList<>(this.getServicesList());
+            for(QService service: listOfServices){
+                this.updateEndTime(service);
+                this.setService(service);
+            saveToSelfDBMultipleServices(this);
+            }
+        }
+    }
+    
+    public void updateEndTime(QService updateService){
+        this.serviceStartTime = updateService.getStartServiceTime();
+        this.serviceEndTime = updateService.getEndServiceTime();
+        this.serviceTimeTaken = updateService.getTimeTaken();
+    }
 
     @Transient
     private final LinkedList<QRespEvent> resps = new LinkedList<>();
@@ -269,7 +300,35 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void addNewRespEvent(QRespEvent event) {
         resps.add(event);
     }
+    
+    private void saveToSelfDBMultipleServices(QCustomer c) {
+        // сохраним кастомера в базе
+        final DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("SomeTxName");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = Spring.getInstance().getTxManager().getTransaction(def);
+        try {
+            if (input_data == null) { // вот жеж черд дернул выставить констрейнт на то что введенные данные не нул, а они этот ввод редко нужкн
+//                /Here is the same zhed by the pull of the pull to set the contention that the entered data is not zero, and they rarely need this input
+                input_data = "";
+            }
 
+            Spring.getInstance().getHt().saveOrUpdate(c);
+
+            // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
+            // Crutch. If the customizer left a comment before getting into the database, ie. While working with him.
+            if (resps.size() > 0) {
+                Spring.getInstance().getHt().saveAll(resps);
+                resps.clear();
+            }
+        } catch (Exception ex) {
+            Spring.getInstance().getTxManager().rollback(status);
+            throw new ServerException("Ошибка при сохранении :: Error while saving \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+        }
+        Spring.getInstance().getTxManager().commit(status);
+        QLog.l().logger().debug("Сохранили.");
+    }
+    
     private void saveToSelfDB() {
         // сохраним кастомера в базе
         final DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -281,6 +340,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 //                /Here is the same zhed by the pull of the pull to set the contention that the entered data is not zero, and they rarely need this input
                 input_data = "";
             }
+            
             Spring.getInstance().getHt().saveOrUpdate(this);
             // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
             // Crutch. If the customizer left a comment before getting into the database, ie. While working with him.
@@ -301,7 +361,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         return state;
     }
     /**
-     * ПРИОРИТЕТ "ОЧЕРЕДНИКА"
+     * ПРИОРИТЕТ "ОЧЕРЕДНИКА" :: PRIORITY OF THE "OBJECTOR"
      */
     @Expose
     @SerializedName("priority")
@@ -358,6 +418,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
     /**
      * К какой услуге стоит. Нужно для статистики.
+     * What kind of service is worth. It is necessary for statistics.
      */
     @Expose
     @SerializedName("to_service")
@@ -373,16 +434,81 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
      * Кастомеру проставим атрибуты услуги включая имя, описание, префикс. Причем префикс ставится раз и навсегда. При добавлении кастомера в услугу
      * addCustomer() происходит тоже самое + выставляется префикс, если такой атрибут не добавлен в XML-узел кастомера
      *
-     * @param service не передавать тут NULL
+     * We will put down the service attributes including the name, description, prefix. And the prefix is ​​put once and for all. When adding a customizer to the service
+     * AddCustomer () the same thing happens + a prefix is ​​prefixed, if such an attribute is not added to the XML node of the customizer
+*    *
+     * @param service не передавать тут NULL :: Do not pass here NULL
      */
     public void setService(QService service) {
+        service.setJobStatus("Primary");
         this.service = service;
         // Префикс для кастомера проставится при его создании, один раз и на всегда.
         if (getPrefix() == null) {
             setPrefix(service.getPrefix());
         }
+        this.setServicesList(service);
         QLog.l().logger().debug("Клиента \"" + getFullNumber() + "\" поставили к услуге \"" + service.getName() + "\"");
     }
+    
+    /**
+     * Store a list of service the CSR will perform.
+     */
+    @Expose
+    @SerializedName("servicesList")
+    private List<QService> servicesList = new ArrayList<>();
+
+    @Transient
+    public List<QService> getServicesList() {
+        return this.servicesList;
+    }
+    
+    public void setServicesList (QService service) {
+        for(QService oldServices: this.servicesList){
+            oldServices.setJobStatus("Secondary");
+        }
+        service.setServiceIndex(this.maxServiceIndex() + 1);
+        this.servicesList.add(0, service);
+    }
+    
+    /**
+     * Removes the first object/service from the serviceList
+     */
+    public void popFirstService(){
+        this.servicesList.remove(0);
+    }
+    
+    /**
+     * @param index Index of the service in serviceList to be removed 
+     */
+    public  void removeServiceWithIndex(int index){
+        this.getServicesList().stream()
+            .filter(serviceWithIndex -> serviceWithIndex.getServiceIndex()==index)
+            .findFirst()
+            .map(p -> {
+                    this.servicesList.remove(p);
+                    return p;
+            });
+    }
+    
+    //maximum service index from list of services for customer
+    public int maxServiceIndex(){
+        int max = 1;
+        for (QService service : this.servicesList){
+            max = max<service.getServiceIndex()?service.getServiceIndex():max;
+        }
+        return max;
+    }
+
+    /**
+     * @param index Service's Index
+     * @return Service with index = index
+     */
+    public QService getServiceAtIndex(int index) {
+        return this.getServicesList().stream()
+				.filter(serviceWithIndex -> serviceWithIndex.getServiceIndex()==index)
+				.findFirst().get();
+    }
+        
     /**
      * Результат работы с пользователем
      */
@@ -454,6 +580,48 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setWelcomeTime(Date date) {
         this.welcomeTime = date;
     }
+    
+    @Expose
+    @SerializedName("service_start_time")
+    private Date serviceStartTime;
+
+    @Column(name = "service_start_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getServiceStartTime() {
+        return serviceStartTime;
+    }
+
+    public void setServiceStartTime(Date date) {
+        this.serviceStartTime = date;
+    }
+    
+    @Expose
+    @SerializedName("service_end_time")
+    private Date serviceEndTime;
+
+    @Column(name = "service_end_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getServiceEndTime() {
+        return serviceEndTime;
+    }
+
+    public void setServiceEndTime(Date date) {
+        this.serviceEndTime = date;
+    }
+    
+    @Expose
+    @SerializedName("service_time_taken")
+    private int serviceTimeTaken;
+
+    @Column(name = "service_time_taken")
+    public int getServiceTimeTaken() {
+        return serviceTimeTaken;
+    }
+
+    public void setServiceTimeTaken(int serviceTimeTaken) {
+        this.serviceTimeTaken = serviceTimeTaken;
+    }
+    
     @Expose
     @SerializedName("invite_time")
     private Date inviteTime;
@@ -550,13 +718,16 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     /**
      * Список услуг в которые необходимо вернуться после редиректа Новые услуги для возврата добвляются в начало списка. При возврате берем первую из списка и
      * удаляем ее.
+     * List of services to be returned after a redirect. New services for return are added to the top of the list. When returning we take the first of the list and
+     * Delete it.
      */
     private final LinkedList<QService> serviceBack = new LinkedList<>();
 
     /**
      * При редиректе если есть возврат. то добавим услугу для возврата
+     * With a redirect, if there is a return. Then add the service to return
      *
-     * @param service в эту услугу нужен возврат
+     * @param service в эту услугу нужен возврат :: This service needs a refund
      */
     public void addServiceForBack(QService service) {
         serviceBack.addFirst(service);
