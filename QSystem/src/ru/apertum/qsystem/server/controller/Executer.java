@@ -411,6 +411,10 @@ public final class Executer {
             customer.popFirstService();
             customer.removeServiceWithIndex(newService.getServiceIndex());
             
+            oldService.setEndServiceTime(new Date());
+            oldService.setTimeTaken();
+            newService.setStartServiceTime2(new Date());
+            
             customer.getServicesList().add(oldService);
             customer.setService(newService);
 
@@ -1290,6 +1294,7 @@ public final class Executer {
             // вот он все это творит
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             //переключение на кастомера при параллельном приеме, должен приехать customerID
+            //Switching to a custodian in parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
                 final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
                 if (parallelCust == null) {
@@ -1340,6 +1345,7 @@ public final class Executer {
                 }
                 ((QCustomer) customer).setResult(result);
                 customer.setFinishTime(new Date());
+                
                 // кастомер переходит в состояние "Завершенности", но не "мертвости"
                 customer.setState(CustomerState.STATE_FINISH);
                 // дело такое, кастомер может идти по списку услуг, т.е. есть набор услуг, юзер завершает работу, а система его ведет по списку услуг
@@ -1507,10 +1513,16 @@ public final class Executer {
                     QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
+            
             final QCustomer customer = user.getCustomer();
             customer.setTempComments(cmdParams.comments);
             // set added by which user
             customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
+            
+            //get old service and set time taken
+            final QService oldService = customer.getService();
+            oldService.setEndServiceTime(new Date());
+            oldService.setTimeTaken();
             
             // вот она новая очередь.
             final QService newServiceR = QServiceTree.getInstance().getById(cmdParams.serviceId);
@@ -1523,6 +1535,8 @@ public final class Executer {
                 result = null;
             }
             customer.setResult(result);
+            newService.setStartServiceTime(new Date());
+            newService.setStartServiceTime2(new Date());
             customer.setService(newService);
             
             // только что встал типо

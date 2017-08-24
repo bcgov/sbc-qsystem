@@ -93,7 +93,7 @@
                 <row>
                     <label value="@load(service.getParent().getName())" visible="@load(fmodel.login)"/>
                     <label value="@load(service.getName())" visible="@load(fmodel.login)"/>
-                    <label value="@load(service.getName())" visible="@load(fmodel.login)"/>
+                    <label value="@load(service.getStartTimeFormated())" visible="@load(fmodel.login)"/>
                     <zk if="${service.getJobStatus()=='Secondary'}">
                         <button sclass="button-with-image" image="/resources/img/switch_icon.png" onClick="@command('switchService', service=service)" height="44px" width="44px"></button>
                     </zk>

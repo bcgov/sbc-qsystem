@@ -30,12 +30,14 @@ import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.results.QResult;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.TimeZone;
@@ -239,8 +241,27 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             case STATE_FINISH:
                 QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
+                
+                this.getService().setEndServiceTime(new Date());
+                this.getService().setTimeTaken();
+                
                 // сохраним кастомера в базе :: Keep the customizer in the database
-                saveToSelfDB();
+                if(this.getServicesList().size()==1){
+                    QService s = this.getService();
+                    this.serviceStartTime = s.getStartServiceTime();
+                    this.serviceEndTime = s.getEndServiceTime();                    
+                    this.serviceTimeTaken = s.getTimeTaken();
+                    saveToSelfDB();
+                }else{
+                List<QService> listOfServices = new ArrayList<>(this.getServicesList());
+                for(QService s: listOfServices){
+                    this.serviceStartTime = s.getStartServiceTime();
+                    this.serviceEndTime = s.getEndServiceTime();                    
+                    this.serviceTimeTaken = s.getTimeTaken();
+                    this.setService(s);
+                saveToSelfDBMultipleServices(this);
+            }
+                }       
                 break;
             case STATE_POSTPONED:
                 QLog.l().logger().debug("Кастомер с номером \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
@@ -274,7 +295,35 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void addNewRespEvent(QRespEvent event) {
         resps.add(event);
     }
+    
+    private void saveToSelfDBMultipleServices(QCustomer c) {
+        // сохраним кастомера в базе
+        final DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("SomeTxName");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = Spring.getInstance().getTxManager().getTransaction(def);
+        try {
+            if (input_data == null) { // вот жеж черд дернул выставить констрейнт на то что введенные данные не нул, а они этот ввод редко нужкн
+//                /Here is the same zhed by the pull of the pull to set the contention that the entered data is not zero, and they rarely need this input
+                input_data = "";
+            }
 
+            Spring.getInstance().getHt().saveOrUpdate(c);
+
+            // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
+            // Crutch. If the customizer left a comment before getting into the database, ie. While working with him.
+            if (resps.size() > 0) {
+                Spring.getInstance().getHt().saveAll(resps);
+                resps.clear();
+            }
+        } catch (Exception ex) {
+            Spring.getInstance().getTxManager().rollback(status);
+            throw new ServerException("Ошибка при сохранении :: Error while saving \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+        }
+        Spring.getInstance().getTxManager().commit(status);
+        QLog.l().logger().debug("Сохранили.");
+    }
+    
     private void saveToSelfDB() {
         // сохраним кастомера в базе
         final DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -286,6 +335,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 //                /Here is the same zhed by the pull of the pull to set the contention that the entered data is not zero, and they rarely need this input
                 input_data = "";
             }
+            
             Spring.getInstance().getHt().saveOrUpdate(this);
             // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
             // Crutch. If the customizer left a comment before getting into the database, ie. While working with him.
@@ -525,6 +575,48 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setWelcomeTime(Date date) {
         this.welcomeTime = date;
     }
+    
+    @Expose
+    @SerializedName("service_start_time")
+    private Date serviceStartTime;
+
+    @Column(name = "service_start_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getServiceStartTime() {
+        return serviceStartTime;
+    }
+
+    public void setServiceStartTime(Date date) {
+        this.serviceStartTime = date;
+    }
+    
+    @Expose
+    @SerializedName("service_end_time")
+    private Date serviceEndTime;
+
+    @Column(name = "service_end_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getServiceEndTime() {
+        return serviceEndTime;
+    }
+
+    public void setServiceEndTime(Date date) {
+        this.serviceEndTime = date;
+    }
+    
+    @Expose
+    @SerializedName("service_time_taken")
+    private int serviceTimeTaken;
+
+    @Column(name = "service_time_taken")
+    public int getServiceTimeTaken() {
+        return serviceTimeTaken;
+    }
+
+    public void setServiceTimeTaken(int serviceTimeTaken) {
+        this.serviceTimeTaken = serviceTimeTaken;
+    }
+    
     @Expose
     @SerializedName("invite_time")
     private Date inviteTime;

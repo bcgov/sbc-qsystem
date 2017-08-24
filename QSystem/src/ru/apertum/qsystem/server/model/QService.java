@@ -48,6 +48,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
@@ -1122,10 +1123,29 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public Date getStartServiceTime() {
         return this.startServiceTime;
     }
-
+        
     public void setStartServiceTime(Date startServiceTime) {
         this.startServiceTime = startServiceTime;
     }
+    
+    /**
+     * 
+     * @return Formated Start time of Service
+     */
+    public String getStartTimeFormated(){
+        return Uses.standTimeinHHMMSS(this.startServiceTime);
+    }
+    
+    @Transient
+    private Date startServiceTime2 = new Date();
+
+    public Date getStartServiceTime2() {
+        return this.startServiceTime2;
+    }
+
+    public void setStartServiceTime2(Date startServiceTime2) {
+        this.startServiceTime2 = startServiceTime2;
+    } 
     
     @Transient
     private Date endServiceTime = new Date();
@@ -1136,6 +1156,18 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
 
     public void setEndServiceTime(Date endServiceTime) {
         this.endServiceTime = endServiceTime;
+    }
+    
+    //time taken by CSR to serve the ticket
+    @Transient
+    private int timeTaken = 0; 
+
+    public int getTimeTaken() {
+        return this.timeTaken;
+    }
+
+    public void setTimeTaken() {    
+        this.timeTaken += (this.getEndServiceTime().getTime() - this.getStartServiceTime2().getTime()) / 1000;
     }
     
     @Transient

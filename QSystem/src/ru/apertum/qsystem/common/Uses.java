@@ -51,6 +51,7 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -365,6 +366,20 @@ public final class Uses {
     public static String getUkrDate(Date date, String format) {
         return new SimpleDateFormat(format, Locales.getInstance().getUkrSymbolDateFormat()).format(date);
     }
+    
+    public static String standTimeinHHMMSS(Date date){
+        TimeZone currentTimeZone = Calendar.getInstance().getTimeZone();
+        DateFormat zoneTimeFormat= Uses.FORMAT_HH_MM_SS;
+
+        if (Uses.userTimeZone == null){
+            zoneTimeFormat.setTimeZone(currentTimeZone);
+        }else{
+            zoneTimeFormat.setTimeZone(Uses.userTimeZone);
+        }
+        
+        return zoneTimeFormat.format(date);
+    }
+    
     /**
      * Формат даты
      */
