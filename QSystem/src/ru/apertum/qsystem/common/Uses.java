@@ -125,103 +125,108 @@ public final class Uses {
         return COEFF_WORD;
     }
     // Наименования тегов и атрибутов в протоколах XML по статистике
-    public static final String TAG_REP_STATISTIC = "Статистика";
-    public static final String TAG_REP_PARAM_COUNT = "Знаменатель";
-    public static final String TAG_REP_PARAM_AVG = "Среднее";
-    public static final String TAG_REP_RECORD = "Запись";
-    public static final String TAG_REP_SERVICE_WORKED = "ОбслуженоПоУслуге";
-    public static final String TAG_REP_SERVICE_WAIT = "ОжидаютПоУслуге";
-    public static final String TAG_REP_SERVICE_AVG_WORK = "СрВрОбслуживанияПоУслуге";
-    public static final String TAG_REP_SERVICE_AVG_WAIT = "СрВрОжиданияПоУслуге";
-    public static final String TAG_REP_SERVICE_KILLED = "ОтклоненныхПоУслуге";
-    public static final String TAG_REP_USER_WORKED = "ОбслуженоПользователем";
-    public static final String TAG_REP_USER_AVG_WORK = "СрВрОбслуживанияПользователем";
-    public static final String TAG_REP_USER_KILLED = "ОтклоненныхПользователем";
-    public static final String TAG_REP_WORKED = "Обслуженных";
-    public static final String TAG_REP_AVG_TIME_WORK = "СрВрОбслуживания";
-    public static final String TAG_REP_KILLED = "Отклоненных";
+    // Naming tags and attributes in XML statistics protocols
+    public static final String TAG_REP_STATISTIC = "Statistics";//"Статистика";
+    public static final String TAG_REP_PARAM_COUNT = "Denominator";//"Знаменатель";
+    public static final String TAG_REP_PARAM_AVG = "Average";//"Среднее";
+    public static final String TAG_REP_RECORD = "Recording";//"Запись";
+    public static final String TAG_REP_SERVICE_WORKED = "Serviced on a Service";//"ОбслуженоПоУслуге";
+    public static final String TAG_REP_SERVICE_WAIT = "Waiting for Service";//"ОжидаютПоУслуге";
+    public static final String TAG_REP_SERVICE_AVG_WORK = "Servicing Services";//"СрВрОбслуживанияПоУслуге";
+    public static final String TAG_REP_SERVICE_AVG_WAIT = "WAITING FOR SERVICE";//"СрВрОжиданияПоУслуге";
+    public static final String TAG_REP_SERVICE_KILLED = "Declined on the Service";//"ОтклоненныхПоУслуге";
+    public static final String TAG_REP_USER_WORKED = "Served by User";//"ОбслуженоПользователем";
+    public static final String TAG_REP_USER_AVG_WORK = "User Service";//"СрВрОбслуживанияПользователем";
+    public static final String TAG_REP_USER_KILLED = "Declined by User";//"ОтклоненныхПользователем";
+    public static final String TAG_REP_WORKED = "Served";//"Обслуженных";
+    public static final String TAG_REP_AVG_TIME_WORK = "Maintenance";//"СрВрОбслуживания";
+    public static final String TAG_REP_KILLED = "Disapproved";//"Отклоненных";
     // теги и имена атрибутов настроечного файла
-    public static final String TAG_PROP_SERVICES = "Услуги";
-    public static final String TAG_PROP_SERVICE = "Услуга";
-    public static final String TAG_PROP_NAME = "Наименование";
-    public static final String TAG_PROP_DESCRIPTION = "Описание";
-    public static final String TAG_PROP_PREFIX = "Префикс";
-    public static final String TAG_PROP_ADVANCE_LIMIT = "Лимит";
-    public static final String TAG_PROP_ADVANCE_PERIOD_LIMIT = "ЛимитПредвЗаписиВДнях";
-    public static final String TAG_PROP_USERS = "Пользователи";
-    public static final String TAG_PROP_USER = "Пользователь";
-    public static final String TAG_PROP_PASSWORD = "Пароль";
-    public static final String TAG_PROP_OWN_SERVS = "ОказываемыеУслуги";
-    public static final String TAG_PROP_OWN_SRV = "ОказываемаяУслуга";
-    public static final String TAG_PROP_KOEF = "КоэффициентУчастия";
-    public static final String TAG_PROP_CONNECTION = "Сеть";
-    public static final String TAG_PROP_SERV_PORT = "ПортСервера";
-    public static final String TAG_PROP_WEB_SERV_PORT = "ПортВебСервера";
-    public static final String TAG_PROP_CLIENT_PORT = "ПортКлиента";
-    public static final String TAG_PROP_SERV_ADDRESS = "АдресСервера";
-    public static final String TAG_PROP_CLIENT_ADDRESS = "АдресКлиента";
-    public static final String TAG_PROP_STATUS = "Статус";
-    public static final String TAG_PROP_START_TIME = "ВремяНачалаРаботы";
-    public static final String TAG_PROP_FINISH_TIME = "ВремяЗавершенияРаботы";
-    public static final String TAG_PROP_VERSION = "ВерсияХранилищаКонфигурации";
-    public static final String TAG_PROP_INPUT_REQUIRED = "ТребованиеКлиентскихДанных";
-    public static final String TAG_PROP_INPUT_CAPTION = "ЗаголовокФормыВводаКлДанных";
-    public static final String TAG_PROP_RESULT_REQUIRED = "ТребованиеРезультатаРаботы";
+    // Tags and attribute names of the setup file
+    public static final String TAG_PROP_SERVICES = "The services";//"Услуги";
+    public static final String TAG_PROP_SERVICE = "Service";//"Услуга";
+    public static final String TAG_PROP_NAME = "Name";//"Наименование";
+    public static final String TAG_PROP_DESCRIPTION = "Description";//"Описание";
+    public static final String TAG_PROP_PREFIX = "Prefix";//"Префикс";
+    public static final String TAG_PROP_ADVANCE_LIMIT = "Limit";//"Лимит";
+    public static final String TAG_PROP_ADVANCE_PERIOD_LIMIT = "Limit Prior Records In Days";//"ЛимитПредвЗаписиВДнях";
+    public static final String TAG_PROP_USERS = "Members List";//"Пользователи";
+    public static final String TAG_PROP_USER = "User";//"Пользователь";
+    public static final String TAG_PROP_PASSWORD = "Password";//"Пароль";
+    public static final String TAG_PROP_OWN_SERVS = "Services Provided";//"ОказываемыеУслуги";
+    public static final String TAG_PROP_OWN_SRV = "The Service";//"ОказываемаяУслуга";
+    public static final String TAG_PROP_KOEF = "Coefficient of Participation";//"КоэффициентУчастия";
+    public static final String TAG_PROP_CONNECTION = "Net";//"Сеть";
+    public static final String TAG_PROP_SERV_PORT = "Port Server";//"ПортСервера";
+    public static final String TAG_PROP_WEB_SERV_PORT = "Port Web Server";//"ПортВебСервера";
+    public static final String TAG_PROP_CLIENT_PORT = "Port Customer";//"ПортКлиента";
+    public static final String TAG_PROP_SERV_ADDRESS = "Server Address";//"АдресСервера";
+    public static final String TAG_PROP_CLIENT_ADDRESS = "Customer Address";//"АдресКлиента";
+    public static final String TAG_PROP_STATUS = "Status";//"Статус";
+    public static final String TAG_PROP_START_TIME = "Start Time";//"ВремяНачалаРаботы";
+    public static final String TAG_PROP_FINISH_TIME = "Completion Time";//"ВремяЗавершенияРаботы";
+    public static final String TAG_PROP_VERSION = "Configuration Warehouse Version";//"ВерсияХранилищаКонфигурации";
+    public static final String TAG_PROP_INPUT_REQUIRED = "Requirement for Client Data";//"ТребованиеКлиентскихДанных";
+    public static final String TAG_PROP_INPUT_CAPTION = "Data Entry Form Header";//"ЗаголовокФормыВводаКлДанных";
+    public static final String TAG_PROP_RESULT_REQUIRED = "Requirement of Work Results";//"ТребованиеРезультатаРаботы";
     // теги и имена атрибутов конфигурационных файлов главных табло
-    public static final String TAG_BOARD_PROPS = "Параметры";
-    public static final String TAG_BOARD_PROP = "Параметер";
-    public static final String TAG_BOARD_NAME = "Наименование";
-    public static final String TAG_BOARD_VALUE = "Значение";
-    public static final String TAG_BOARD_TYPE = "Тип";
+    // Tags and attribute names of the configuration files of the main scoreboard
+    public static final String TAG_BOARD_PROPS = "Options"; //"Параметры";
+    public static final String TAG_BOARD_PROP = "Parameter"; //"Параметер";
+    public static final String TAG_BOARD_NAME = "Name"; //"Наименование";
+    public static final String TAG_BOARD_VALUE = "Value"; //"Значение";
+    public static final String TAG_BOARD_TYPE = "Type"; //"Тип";
     public static final String TAG_BOARD_READ_ONLY = "ReadOnly";
-    // имена параметров для табло 
-    public static final String TAG_BOARD_FRACTAL = "Fractal";
-    public static final String TAG_BOARD_MONITOR = "Номер дополнительного монитора для табло";
-    public static final String TAG_BOARD_LINES_COUNT = "Количество строк на табло";
-    public static final String TAG_BOARD_COLS_COUNT = "Количество столбцов на табло";
-    public static final String TAG_BOARD_DELAY_VISIBLE = "Минимальное время индикации на табло";
-    public static final String TAG_BOARD_FON_IMG = "Фоновое изображение";
-    public static final String TAG_BOARD_FONT_SIZE = "Размер шрифта";
-    public static final String TAG_BOARD_FONT_COLOR = "Цвет шрифта";
-    public static final String TAG_BOARD_PANEL_SIZE = "Размер";
-    public static final String TAG_BOARD_RUNNING_TEXT = "Бегущий текст";
-    public static final String TAG_BOARD_VIDEO_FILE = "Видеофайл";
-    public static final String TAG_BOARD_VISIBLE_PANEL = "visible";
-    public static final String TAG_BOARD_SPEED_TEXT = "Скорость бегущего текста";
-    public static final String TAG_BOARD_GRID_NEXT_COLS = "Колонки табл след";
-    public static final String TAG_BOARD_GRID_NEXT_ROWS = "Строки табл след";
-    public static final String TAG_BOARD_SIMPLE_DATE = "Простая дата";
-    public static final String TAG_BOARD_GRID_NEXT = "Таблица следующих";
-    public static final String TAG_BOARD_FON_COLOR = "Цвет фона";
-    public static final String TAG_BOARD_FONT_SIZE_CAPTION = "Размер шрифта заголовка";
-    public static final String TAG_BOARD_FONT_NAME = "Font name";
-    public static final String TAG_BOARD_FONT_SIZE_LINE = "Размер шрифта строк";
-    public static final String TAG_BOARD_FONT_COLOR_CAPTION = "Цвет шрифта заголовка";
-    public static final String TAG_BOARD_FONT_COLOR_LEFT = "Цвет шрифта левого столбца";
-    public static final String TAG_BOARD_FONT_COLOR_RIGHT = "Цвет шрифта правого столбца";
-    public static final String TAG_BOARD_FONT_COLOR_LINE = "Цвет надписи строки табло";
-    public static final String TAG_BOARD_LINE_BORDER = "Окантовка строк";
-    public static final String TAG_BOARD_LINE_DELIMITER = "Разделитель столбцов";
-    public static final String TAG_BOARD_LEFT_PIC = "Left column pic";
-    public static final String TAG_BOARD_RIGHT_PIC = "Right column pic";
-    public static final String TAG_BOARD_EXT_PIC = "Ext column pic";
-    public static final String TAG_BOARD_LEFT_CAPTION = "Заголовок левого столбца";
-    public static final String TAG_BOARD_RIGHT_CAPTION = "Заголовок правого столбца";
-    public static final String TAG_BOARD_EXT_CAPTION = "Заголовок дополнительного столбца";
-    public static final String TAG_BOARD_EXT_POSITION = "Порядок дополнительного столбца";
-    public static final String TAG_BOARD_GRID_NEXT_CAPTION = "Заголовок таблицы следующих";
-    public static final String TAG_BOARD_GRID_NEXT_FRAME_BORDER = "Рамка таблицы следующих";
-    public static final String TAG_BOARD_LINE_COLOR = "Цвет рамки строки табло";
-    public static final String TAG_BOARD_LINE_CAPTION = "Надпись строки табло";
-    public static final String TAG_BOARD_CALL_PANEL = "Панель вызванного";
-    public static final String TAG_BOARD_CALL_PANEL_BACKGROUND = "Картинка панели вызванного";
-    public static final String TAG_BOARD_CALL_PANEL_X = "Панель вызванного-X";
-    public static final String TAG_BOARD_CALL_PANEL_Y = "Панель вызванного-Y";
-    public static final String TAG_BOARD_CALL_PANEL_WIDTH = "Панель вызванного-ширина";
-    public static final String TAG_BOARD_CALL_PANEL_HEIGHT = "Панель вызванного-высота";
-    public static final String TAG_BOARD_CALL_PANEL_DELAY = "Панель вызванного-время показа сек";
-    public static final String TAG_BOARD_CALL_PANEL_TEMPLATE = "Панель вызванного-текст html+###";
-    //имена тегов-разделов для табло
+    // имена параметров для табло
+    // Parameter names for the scoreboard
+    public static final String TAG_BOARD_FRACTAL = "Fractal";//"Fractal";
+    public static final String TAG_BOARD_MONITOR = "Additional monitor number for the scoreboard";//"Номер дополнительного монитора для табло";
+    public static final String TAG_BOARD_LINES_COUNT = "Number of lines on the scoreboard";//"Количество строк на табло";
+    public static final String TAG_BOARD_COLS_COUNT = "Number of columns on the scoreboard";//"Количество столбцов на табло";
+    public static final String TAG_BOARD_DELAY_VISIBLE = "Minimum display time on the scoreboard";//"Минимальное время индикации на табло";
+    public static final String TAG_BOARD_FON_IMG = "Background image";//"Фоновое изображение";
+    public static final String TAG_BOARD_FONT_SIZE = "Font size";//"Размер шрифта";
+    public static final String TAG_BOARD_FONT_COLOR = "Font Color";//"Цвет шрифта";
+    public static final String TAG_BOARD_PANEL_SIZE = "The size";//"Размер";
+    public static final String TAG_BOARD_RUNNING_TEXT = "Running text";//"Бегущий текст";
+    public static final String TAG_BOARD_VIDEO_FILE = "Video file";//"Видеофайл";
+    public static final String TAG_BOARD_VISIBLE_PANEL = "Visible";//"visible";
+    public static final String TAG_BOARD_SPEED_TEXT = "Speed ​​of the running text";//"Скорость бегущего текста";
+    public static final String TAG_BOARD_GRID_NEXT_COLS = "Columns table footprint";//"Колонки табл след";
+    public static final String TAG_BOARD_GRID_NEXT_ROWS = "Rows of footprints";//"Строки табл след";
+    public static final String TAG_BOARD_SIMPLE_DATE = "Simple date";//"Простая дата";
+    public static final String TAG_BOARD_GRID_NEXT = "The following table";//"Таблица следующих";
+    public static final String TAG_BOARD_FON_COLOR = "Background color";//"Цвет фона";
+    public static final String TAG_BOARD_FONT_SIZE_CAPTION = "Header font size";//"Размер шрифта заголовка";
+    public static final String TAG_BOARD_FONT_NAME = "Font name";//"Font name";
+    public static final String TAG_BOARD_FONT_SIZE_LINE = "The font size of the lines";//"Размер шрифта строк";
+    public static final String TAG_BOARD_FONT_COLOR_CAPTION = "Header font color";//"Цвет шрифта заголовка";
+    public static final String TAG_BOARD_FONT_COLOR_LEFT = "The font color of the left column";//"Цвет шрифта левого столбца";
+    public static final String TAG_BOARD_FONT_COLOR_RIGHT = "The font color of the right column";//"Цвет шрифта правого столбца";
+    public static final String TAG_BOARD_FONT_COLOR_LINE = "Color of the line of the score line";//"Цвет надписи строки табло";
+    public static final String TAG_BOARD_LINE_BORDER = "Rim Edging";//"Окантовка строк";
+    public static final String TAG_BOARD_LINE_DELIMITER = "Column separator";//"Разделитель столбцов";
+    public static final String TAG_BOARD_LEFT_PIC = "Left column pic";//"Left column pic";
+    public static final String TAG_BOARD_RIGHT_PIC = "Right column pic";//"Right column pic";
+    public static final String TAG_BOARD_EXT_PIC = "Ext column pic";//"Ext column pic";
+    public static final String TAG_BOARD_LEFT_CAPTION = "Header of the left column";//"Заголовок левого столбца";
+    public static final String TAG_BOARD_RIGHT_CAPTION = "Title of the right column";//"Заголовок правого столбца";
+    public static final String TAG_BOARD_EXT_CAPTION = "Additional column header";//"Заголовок дополнительного столбца";
+    public static final String TAG_BOARD_EXT_POSITION = "The order of the additional column";//"Порядок дополнительного столбца";
+    public static final String TAG_BOARD_GRID_NEXT_CAPTION = "The title of the following table";//"Заголовок таблицы следующих";
+    public static final String TAG_BOARD_GRID_NEXT_FRAME_BORDER = "The table of the following";//"Рамка таблицы следующих";
+    public static final String TAG_BOARD_LINE_COLOR = "Border color of the score line";//"Цвет рамки строки табло";
+    public static final String TAG_BOARD_LINE_CAPTION = "The inscription of the score line";//"Надпись строки табло";
+    public static final String TAG_BOARD_CALL_PANEL = "The panel called";//"Панель вызванного";
+    public static final String TAG_BOARD_CALL_PANEL_BACKGROUND = "Picture of the panel called";//"Картинка панели вызванного";
+    public static final String TAG_BOARD_CALL_PANEL_X = "Panel called-X";//"Панель вызванного-X";
+    public static final String TAG_BOARD_CALL_PANEL_Y = "Panel called-Y";//"Панель вызванного-Y";
+    public static final String TAG_BOARD_CALL_PANEL_WIDTH = "Panel called-width";//"Панель вызванного-ширина";
+    public static final String TAG_BOARD_CALL_PANEL_HEIGHT = "Panel called-height";//"Панель вызванного-высота";
+    public static final String TAG_BOARD_CALL_PANEL_DELAY = "Call panel-show time";//"Панель вызванного-время показа сек";
+    public static final String TAG_BOARD_CALL_PANEL_TEMPLATE = "The panel of the called-text html + ###";//"Панель вызванного-текст html+###";
+    // имена тегов-разделов для табло
+    // Names of tag-sections for the scoreboard
     public static final String TAG_BOARD = "Board";
     public static final String TAG_BOARD_MAIN = "Main";
     public static final String TAG_BOARD_TOP = "Top";
@@ -230,70 +235,72 @@ public final class Uses {
     public static final String TAG_BOARD_LEFT = "Left";
     public static final String TAG_BOARD_RIGHT = "Right";
     // Наименования параметров конфигурационных файлов главных табло
-    public static final String BOARD_VALUE_PAUSE = "Время присутствия записи на табло";
-    public static final String BOARD_ADRESS_MAIN_BOARD = "Адрес главного табло системы";
+    // Names of parameters of configuration files of the main scoreboard
+    public static final String BOARD_VALUE_PAUSE = "The time of the presence of a record on the scoreboard";//"Время присутствия записи на табло";
+    public static final String BOARD_ADRESS_MAIN_BOARD = "Address of the main board of the system";// "Адрес главного табло системы";
     public static final int BOARD_TYPE_INT = 1;
     public static final int BOARD_TYPE_DOUBLE = 2;
     public static final int BOARD_TYPE_STR = 3;
     public static final int BOARD_TYPE_BOOL = 4;
     // Наименования заданий
-    public static final String TASK_FOR_ALL_SITE = "Для всех сайтов домена";
-    public static final String TASK_STAND_IN = "Поставить в очередь";
-    public static final String TASK_STAND_COMPLEX = "Поставить в несколько очередей";
-    public static final String TASK_ADVANCE_STAND_IN = "Поставить в очередь предварительно";
-    public static final String TASK_ADVANCE_CHECK_AND_STAND = "Поставить предварительно записанного";
-    public static final String TASK_REMOVE_ADVANCE_CUSTOMER = "Удалить предварительно записанного";
-    public static final String TASK_REDIRECT_CUSTOMER = "Переадресовать клиента к другой услуге";
-    public static final String TASK_GET_SERVICES = "Получить перечень услуг";
-    public static final String TASK_ABOUT_SERVICE = "Получить описание услуги";
-    public static final String TASK_GET_SERVICE_CONSISANCY = "Получить очередь услуги";
-    public static final String TASK_ABOUT_SERVICE_PERSON_LIMIT = "Получить возможность встать с этими данными";
-    public static final String TASK_GET_SERVICE_PREINFO = "Получить информацию по услуге";
-    public static final String TASK_GET_INFO_PRINT = "Получить информацию для печати";
-    public static final String TASK_GET_USERS = "Получить перечень пользователей";
-    public static final String TASK_GET_SELF = "Получить описание пользователя";
-    public static final String TASK_GET_SELF_SERVICES = "Получить состояние очередей";
-    public static final String TASK_GET_POSTPONED_POOL = "Получить состояние пула отложенных";
-    public static final String TASK_GET_BAN_LIST = "Получить список забаненых";
-    public static final String TASK_INVITE_POSTPONED = "Вызвать отложенного из пула отложенных";
-    public static final String TASK_GET_SELF_SERVICES_CHECK = "Получить состояние очередей с проверкой";
-    public static final String TASK_INVITE_NEXT_CUSTOMER = "Получить следующего клиента";
-    public static final String TASK_KILL_NEXT_CUSTOMER = "Удалить следующего клиента";
-    public static final String TASK_CUSTOMER_TO_POSTPON = "Клиента в пул отложенных";
-    public static final String TASK_POSTPON_CHANGE_STATUS = "Сменить статус отложенному";
-    public static final String TASK_START_CUSTOMER = "Начать работу с клиентом";
-    public static final String TASK_FINISH_CUSTOMER = "Закончить работу с клиентом";
-    public static final String TASK_I_AM_LIVE = "Я горец!";
-    public static final String TASK_RESTART = "RESTART";
-    public static final String TASK_RESTART_MAIN_TABLO = "Рестарт главного твбло";
-    public static final String TASK_REFRESH_POSTPONED_POOL = "NEW_POSTPONED_NOW";
-    public static final String TASK_SERVER_STATE = "Получить состояние сервера";
-    public static final String TASK_SET_SERVICE_FIRE = "Добавить услугу на горячую";
-    public static final String TASK_DELETE_SERVICE_FIRE = "Удалить услугу на горячую";    // Наименования отчетов, сдесь писать исключительно маленькими латинскими буквами без пробелов
-    public static final String TASK_GET_BOARD_CONFIG = "Получить конфигурацию табло";
-    public static final String TASK_SAVE_BOARD_CONFIG = "Сохранить конфигурацию табло";
-    public static final String TASK_GET_GRID_OF_WEEK = "Получить недельную предварительную таблицу";
-    public static final String TASK_GET_GRID_OF_DAY = "Получить дневную предварительную таблицу";
-    public static final String TASK_GET_INFO_TREE = "Получить информационное дерево";
-    public static final String TASK_GET_RESULTS_LIST = "Получить получение списка возможных результатов";
-    public static final String TASK_GET_RESPONSE_LIST = "Получить список отзывов";
-    public static final String TASK_SET_RESPONSE_ANSWER = "Оставить отзыв";
-    public static final String REPORT_CURRENT_USERS = "current_users";
-    public static final String REPORT_CURRENT_SERVICES = "current_services";
-    public static final String TASK_GET_CLIENT_AUTHORIZATION = "Идентифицировать клиента";
-    public static final String TASK_SET_CUSTOMER_PRIORITY = "Изменить приоритет";
-    public static final String TASK_CHECK_CUSTOMER_NUMBER = "Проверить номер";
-    public static final String TASK_CHANGE_FLEX_PRIORITY = "Изменить гибкий приоритет";
-    public static final String TASK_CHANGE_RUNNING_TEXT_ON_BOARD = "Изменить бегущий текст на табло";
-    public static final String TASK_CHANGE_TEMP_AVAILABLE_SERVICE = "Изменить временную доступность";
-    public static final String TASK_GET_STANDARDS = "Получить нормативы";
-    public static final String TASK_SET_BUSSY = "Перерыв оператора";
-    public static final String TASK_GET_PROPERTIES = "Все параметры из БД";
-    public static final String TASK_SAVE_PROPERTIES = "Сохранить все параметры в БД";
-    public static final String TASK_INIT_PROPERTIES = "Создать все параметры в БД";
-    public static final String TASK_SERVE_CUSTOMER = "serve_customer";
-    public static final String TASK_INVITE_SELECTED_CUSTOMER = "Invite selected customer";
-    public static final String TASK_CHANGE_SERVICE = "Change the service of the customer";
+    // Names of tasks
+    public static final String TASK_FOR_ALL_SITE = "For all domain sites";//"Для всех сайтов домена";
+    public static final String TASK_STAND_IN = "Queue";//"Поставить в очередь";
+    public static final String TASK_STAND_COMPLEX = "Put in multiple queues";//"Поставить в несколько очередей";
+    public static final String TASK_ADVANCE_STAND_IN = "To queue in advance";//"Поставить в очередь предварительно";
+    public static final String TASK_ADVANCE_CHECK_AND_STAND = "Pre-recorded";//"Поставить предварительно записанного";
+    public static final String TASK_REMOVE_ADVANCE_CUSTOMER = "Delete the previously recorded";//"Удалить предварительно записанного";
+    public static final String TASK_REDIRECT_CUSTOMER = "Redirect a customer to another service";//"Переадресовать клиента к другой услуге";
+    public static final String TASK_GET_SERVICES = "Get a list of services";//"Получить перечень услуг";
+    public static final String TASK_ABOUT_SERVICE = "Get a description of the service";//"Получить описание услуги";
+    public static final String TASK_GET_SERVICE_CONSISANCY = "Get the service queue";//"Получить очередь услуги";
+    public static final String TASK_ABOUT_SERVICE_PERSON_LIMIT = "Get the opportunity to get up with this data";//"Получить возможность встать с этими данными";
+    public static final String TASK_GET_SERVICE_PREINFO = "Get information on the service";//"Получить информацию по услуге";
+    public static final String TASK_GET_INFO_PRINT = "Get information for printing";//"Получить информацию для печати";
+    public static final String TASK_GET_USERS = "Get a list of users";//"Получить перечень пользователей";
+    public static final String TASK_GET_SELF = "Get user description";//"Получить описание пользователя";
+    public static final String TASK_GET_SELF_SERVICES = "Get the state of the queues";//"Получить состояние очередей";
+    public static final String TASK_GET_POSTPONED_POOL = "Get the state of the pending pool";//"Получить состояние пула отложенных";
+    public static final String TASK_GET_BAN_LIST = "Get banned list";//"Получить список забаненых";
+    public static final String TASK_INVITE_POSTPONED = "Call the deferred from the pool";//"Вызвать отложенного из пула отложенных";
+    public static final String TASK_GET_SELF_SERVICES_CHECK = "Get the state of the queues with a check";//"Получить состояние очередей с проверкой";
+    public static final String TASK_INVITE_NEXT_CUSTOMER = "Get the next customer";//"Получить следующего клиента";
+    public static final String TASK_KILL_NEXT_CUSTOMER = "Delete the next client";//"Удалить следующего клиента";
+    public static final String TASK_CUSTOMER_TO_POSTPON = "Customer in the pool of pending";//"Клиента в пул отложенных";
+    public static final String TASK_POSTPON_CHANGE_STATUS = "Change the status of the deferred";//"Сменить статус отложенному";
+    public static final String TASK_START_CUSTOMER = "Start working with the client";//"Начать работу с клиентом";
+    public static final String TASK_FINISH_CUSTOMER = "Finish work with the client";//"Закончить работу с клиентом";
+    public static final String TASK_I_AM_LIVE = "I'm a mountaineer!";//"Я горец!";
+    public static final String TASK_RESTART = "RESTART";//"RESTART";
+    public static final String TASK_RESTART_MAIN_TABLO = "Restart main tvoblo";//"Рестарт главного твбло";
+    public static final String TASK_REFRESH_POSTPONED_POOL = "NEW_POSTPONED_NOW";//"NEW_POSTPONED_NOW";
+    public static final String TASK_SERVER_STATE = "Get server status";//"Получить состояние сервера";
+    public static final String TASK_SET_SERVICE_FIRE = "Add service to hot";//"Добавить услугу на горячую";
+    public static final String TASK_DELETE_SERVICE_FIRE = "Remove service to hot";//"Удалить услугу на горячую"; // The names of reports, here write exclusively in small Latin letters without spaces // Наименования отчетов, сдесь писать исключительно маленькими латинскими буквами без пробелов
+    public static final String TASK_GET_BOARD_CONFIG = "Get the configuration of the scoreboard";//"Получить конфигурацию табло";
+    public static final String TASK_SAVE_BOARD_CONFIG = "Save the configuration of the scoreboard";//"Сохранить конфигурацию табло";
+    public static final String TASK_GET_GRID_OF_WEEK = "Get a weekly preliminary table";//"Получить недельную предварительную таблицу";
+    public static final String TASK_GET_GRID_OF_DAY = "Get a daily preview table";//"Получить дневную предварительную таблицу";
+    public static final String TASK_GET_INFO_TREE = "Get the Information Tree";//"Получить информационное дерево";
+    public static final String TASK_GET_RESULTS_LIST = "Get a list of possible results";//"Получить получение списка возможных результатов";
+    public static final String TASK_GET_RESPONSE_LIST = "Get a list of reviews";//"Получить список отзывов";
+    public static final String TASK_SET_RESPONSE_ANSWER = "Give feedback";//"Оставить отзыв";
+    public static final String REPORT_CURRENT_USERS = "Current_users";//"current_users";
+    public static final String REPORT_CURRENT_SERVICES = "Current_services";//"current_services";
+    public static final String TASK_GET_CLIENT_AUTHORIZATION = "Identify customer";//"Идентифицировать клиента";
+    public static final String TASK_SET_CUSTOMER_PRIORITY = "Change priority";//"Изменить приоритет";
+    public static final String TASK_CHECK_CUSTOMER_NUMBER = "Check number";//"Проверить номер";
+    public static final String TASK_CHANGE_FLEX_PRIORITY = "Change Flexible Priority";//"Изменить гибкий приоритет";
+    public static final String TASK_CHANGE_RUNNING_TEXT_ON_BOARD = "Change the running text on the scoreboard";//"Изменить бегущий текст на табло";
+    public static final String TASK_CHANGE_TEMP_AVAILABLE_SERVICE = "Change temporary availability";//"Изменить временную доступность";
+    public static final String TASK_GET_STANDARDS = "Get standards";//"Получить нормативы";
+    public static final String TASK_SET_BUSSY = "Interruption of the operator";//"Перерыв оператора";
+    public static final String TASK_GET_PROPERTIES = "All parameters from the database";//"Все параметры из БД";
+    public static final String TASK_SAVE_PROPERTIES = "Save all parameters to the database";//"Сохранить все параметры в БД";
+    public static final String TASK_INIT_PROPERTIES = "Create all parameters in the database";//"Создать все параметры в БД";
+    public static final String TASK_SERVE_CUSTOMER = "Serve_customer";//"serve_customer";
+    public static final String TASK_INVITE_SELECTED_CUSTOMER = "Invite selected customer";//"Invite selected customer";
+    public static final String TASK_CHANGE_SERVICE = "Change the service of the customer";//"Change the service of the customer";
     
     // Формат отчетов
     public static final String REPORT_FORMAT_HTML = "html";
@@ -539,7 +546,7 @@ public final class Uses {
         try {
             adr = InetAddress.getByName(adress);
         } catch (UnknownHostException ex) {
-            throw new ServerException("Ошибка получения адреса по строке \'" + adress + "\". " + ex);
+            throw new ServerException("Error getting address on line \'" + adress + "\". " + ex); //Ошибка получения адреса по строке
         }
         return adr;
     }
@@ -552,19 +559,19 @@ public final class Uses {
      * @param port порт получателя
      */
     public static void sendUDPMessage(String message, InetAddress address, int port) {
-        QLog.l().logger().trace("Отправка UDP сообшение \"" + message + "\" по адресу \"" + address.getHostAddress() + "\" на порт \"" + port + "\"");
+        QLog.l().logger().trace("Sending UDP message \"" + message + "\" by the address \"" + address.getHostAddress() + "\" to the port \"" + port + "\""); // Отправка UDP сообшение "" по адресу "" на порт
         final DatagramSocket socket;
         final byte mess_b[] = message.getBytes();
         final DatagramPacket packet = new DatagramPacket(mess_b, mess_b.length, address, port);
         try {
             socket = new DatagramSocket();
         } catch (SocketException ex) {
-            throw new ServerException("Проблемы с сокетом UDP." + ex.getMessage());
+            throw new ServerException("Problems with the UDP socket." + ex.getMessage()); //Проблемы с сокетом UDP.
         }
         try {
             socket.send(packet);
         } catch (IOException io) {
-            throw new ServerException("Ошибка отправки сообщения по UDP. " + io.getMessage());
+            throw new ServerException("Error sending message via UDP." + io.getMessage()); //Ошибка отправки сообщения по UDP. 
         } finally {
             socket.close();
         }
@@ -580,7 +587,7 @@ public final class Uses {
         try {
             sendUDPMessage(message, InetAddress.getByName("255.255.255.255"), port);
         } catch (UnknownHostException ex) {
-            throw new ServerException("Проблемы с адресом " + ex.getMessage());
+            throw new ServerException("Address issues " + ex.getMessage()); //Проблемы с адресом
         }
     }
 
@@ -774,21 +781,20 @@ public final class Uses {
      * @param folder из этой папки закрузим.
      */
     public static void loadPlugins(String folder) {
-        // Загрузка плагинов из папки plugins
-        QLog.l().logger().info("Загрузка плагинов из папки plugins.");
+        QLog.l().logger().info("Loading plugins from the plugins folder."); //Загрузка плагинов из папки plugins
         final File[] list = new File(folder).listFiles((File dir, String name) -> name.toLowerCase().endsWith(".jar"));
         if (list != null && list.length != 0) {
             final URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
             final Class sysclass = URLClassLoader.class;
             final Class[] parameters = new Class[]{URL.class};
             for (File file : list) {
-                QLog.l().logger().debug("Плагин " + file.getName());
+                QLog.l().logger().debug("Plugin " + file.getName()); //Плагин
                 try {
                     final Method method = sysclass.getDeclaredMethod("addURL", parameters);
                     method.setAccessible(true);
                     method.invoke(sysloader, new Object[]{file.toURI().toURL()});
                 } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | MalformedURLException ex) {
-                    QLog.l().logger().error("Плагин " + file.getName() + " НЕ загружен. " + ex);
+                    QLog.l().logger().error("Plugin " + file.getName() + " NOT loaded. " + ex); // Плагин " + file.getName() + " НЕ загружен. " + ex
                 }
             }
         }
