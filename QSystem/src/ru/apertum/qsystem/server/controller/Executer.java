@@ -1541,9 +1541,6 @@ public final class Executer {
             newService.setStartServiceTime2(new Date());
             customer.setService(newService);
             
-            // только что встал типо
-            customer.setStandTime(new Date());
-
             try {
                 QServer.savePool();
             } catch (Exception ex) {
