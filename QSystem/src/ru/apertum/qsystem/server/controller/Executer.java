@@ -1145,6 +1145,7 @@ public final class Executer {
             // Время старта работы с юзера с кастомером.
             user.getCustomer().setStartTime(new Date());
             user.getCustomer().getService().setStartServiceTime(new Date());
+            user.getCustomer().getService().setStartServiceTime2(new Date());
             
             user.getCustomer().setPostponPeriod(0);
             // кастомер переходит в состояние "Начала обработки" или "Продолжение работы"
