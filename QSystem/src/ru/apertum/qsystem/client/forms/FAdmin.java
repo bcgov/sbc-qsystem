@@ -1292,8 +1292,8 @@ public class FAdmin extends javax.swing.JFrame {
     }
     private static FAdmin form = null;
     private static Answer forPager = null;
-    //private static final String PAGER_URL = "http://localhost:8080";
-    private static final String PAGER_URL = "http://dev.apertum.ru:8080";
+    private static final String PAGER_URL = "http://localhost:8080";
+    //private static final String PAGER_URL = "http://dev.apertum.ru:8080";
     //private static final String PAGER_URL = "http://109.120.172.108:8080";
 
     @Action
