@@ -1,4 +1,4 @@
-﻿SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
 
@@ -307,10 +307,7 @@ CREATE  TABLE IF NOT EXISTS `clients` (
   `input_data` VARCHAR(150) NOT NULL DEFAULT '' COMMENT 'Введенные данные пользователем' ,
   `state_in` INT NOT NULL DEFAULT 0 COMMENT 'клиент перешел в это состояние.' ,
   `welcome_time` DATETIME NOT NULL COMMENT 'timestamp as soon as client comes to CSR',
-  `client_invite_time` DATETIME NOT NULL COMMENT 'timestamp when CSR invites customers',
-  `service_start_time` DATETIME NOT NULL COMMENT 'timestamp when CSR starts service',
-  `service_end_time` DATETIME NOT NULL COMMENT 'timestamp when CSR finishes service',
-  `service_time_taken` int(11) NOT NULL COMMENT 'calculation for total service time',
+  `invite_time` DATETIME NOT NULL COMMENT 'timestamp when CSR invites customers',
   PRIMARY KEY (`id`) ,
   CONSTRAINT `fk_сlients_service_id_services_id`
     FOREIGN KEY (`service_id` )
@@ -425,9 +422,6 @@ CREATE  TABLE IF NOT EXISTS `statistic` (
   `state_in` INT NOT NULL DEFAULT 0 COMMENT 'Клиент перешел в это состояние' ,
   `client_welcome_time` DATETIME NOT NULL COMMENT 'timestamp as soon as client comes to CSR',
   `client_invite_time` DATETIME NOT NULL COMMENT 'timestamp when CSR invites customers',
-  `service_start_time` DATETIME NOT NULL COMMENT 'timestamp when CSR starts service',
-  `service_end_time` DATETIME NOT NULL COMMENT 'timestamp when CSR finishes service',
-  `service_time_taken` int(11) NOT NULL COMMENT 'calculation for total service time',
   PRIMARY KEY (`id`) ,
   CONSTRAINT `fk_work_user_id_users_id`
     FOREIGN KEY (`user_id` )
@@ -727,7 +721,7 @@ BEGIN
     SET @finish_start= TIMEDIFF(NEW.finish_time, NEW.start_time);
     SET @start_starnd = TIMEDIFF(NEW.start_time, NEW.stand_time);
     INSERT
-        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time, service_start_time, service_end_time, service_time_taken) 
+        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time) 
     VALUES
         (NEW.state_in, NEW.result_id, NEW.user_id, NEW.id, NEW.service_id, NEW.start_time, NEW.finish_time, NEW.stand_time, 
         round(
@@ -738,7 +732,7 @@ BEGIN
                 (HOUR(@start_starnd) * 60 * 60 +
                 MINUTE(@start_starnd) * 60 +
                 SECOND(@start_starnd) + 59)/60)  
-        , NEW.welcome_time, New.invite_time, New.service_start_time, New.service_end_time, New.service_time_taken);
+        , NEW.welcome_time, New.invite_time);
 END;$$
 
 
@@ -754,7 +748,7 @@ BEGIN
     SET @finish_start= TIMEDIFF(NEW.finish_time, NEW.start_time);
     SET @start_starnd = TIMEDIFF(NEW.start_time, NEW.stand_time);
     INSERT
-        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time, service_start_time, service_end_time, service_time_taken) 
+        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time) 
     VALUES
         (NEW.state_in, NEW.result_id, NEW.user_id, NEW.id, NEW.service_id, NEW.start_time, NEW.finish_time, NEW.stand_time, 
         round(
@@ -765,7 +759,7 @@ BEGIN
                 (HOUR(@start_starnd) * 60 * 60 +
                 MINUTE(@start_starnd) * 60 +
                 SECOND(@start_starnd) + 59)/60)  
-        , NEW.welcome_time, New.invite_time, New.service_start_time, New.service_end_time, New.service_time_taken);
+        , NEW.welcome_time, New.invite_time);
 END;$$
 
 
