@@ -746,7 +746,7 @@ public final class Executer {
                 // ну и услугу определим если тот кто вызвал не работает с услугой, из которой отложили
                 // well, and define the service if the one who called does not work with the service, from which they postponed
                 //set invite_time
-                customer.setInviteTime(new Date());
+                //customer.setInviteTime(new Date());
                 
                 boolean f = true;
                 for (QPlanService pl : user.getPlanServices()) {
@@ -1142,11 +1142,17 @@ public final class Executer {
             super.process(cmdParams, ipAdress, IP);
 
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
-            // Время старта работы с юзера с кастомером.
-            user.getCustomer().setStartTime(new Date());
-            user.getCustomer().getService().setStartServiceTime(new Date());
-            user.getCustomer().getService().setStartServiceTime2(new Date());
+            final QCustomer customer = user.getCustomer();
+
+            if (!customer.getCameFromHold()){
+                customer.setStartTime(new Date());
+                customer.getService().setStartServiceTime(new Date());
+            }else{
+                customer.setCameFromHold(false);
+            }
             
+            user.getCustomer().getService().setStartServiceTime2(new Date());
+                       
             user.getCustomer().setPostponPeriod(0);
             // кастомер переходит в состояние "Начала обработки" или "Продолжение работы"
             user.getCustomer().setState(user.getCustomer().getState() == CustomerState.STATE_INVITED ? CustomerState.STATE_WORK : CustomerState.STATE_WORK_SECONDARY);
@@ -1248,6 +1254,13 @@ public final class Executer {
             customer.setState(CustomerState.STATE_POSTPONED);
             
             customer.setTempComments(cmdParams.comments);
+            
+            customer.getService().setTimeTaken();
+                
+            // Update current service date time
+            QService currentService =  customer.getServicesList().get(0);
+            currentService.setTimeTaken();
+            
             try {
                 user.setCustomer(null);//бобик сдох но медалька осталось, отправляем в пулл
                 customer.setUser(null);
@@ -1311,6 +1324,9 @@ public final class Executer {
             final QCustomer customer = user.getCustomer();
             // комменты
             customer.setTempComments(cmdParams.textData);
+//            customer.getService().setEndServiceTime(new Date());
+//            customer.getService().setTimeTaken();
+            
             // надо посмотреть не требует ли этот кастомер возврата в какую либо очередь.
             final QService backSrv = user.getCustomer().getServiceForBack();
             if (backSrv != null) {

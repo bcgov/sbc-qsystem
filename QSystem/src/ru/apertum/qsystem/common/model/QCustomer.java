@@ -130,6 +130,17 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         this.stateIn = stateIn;
     }
     
+    private boolean cameFromHold = false;
+
+    @Transient    
+    public boolean getCameFromHold() {
+        return this.cameFromHold;
+    }
+    
+    public void setCameFromHold (boolean cameFromHold) {
+        this.cameFromHold = cameFromHold;
+    }
+    
     public String currentStateIn(){
         switch (state){
             case STATE_DEAD:
