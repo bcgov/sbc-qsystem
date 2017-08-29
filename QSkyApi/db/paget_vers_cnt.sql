@@ -1,1 +1,0 @@
-SELECT qsys_version v, count(ip) FROM `qsky`.`pager_results` group by v order by v desc;
