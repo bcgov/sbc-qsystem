@@ -14,8 +14,10 @@
         <module>QUser</module>
 		<module>QSmartboardPlugin</module>
 		<module>QSmartboard</module>
-		<module>QSkyPlugin</module>  
+<!--  Remove QSKy Modules
+  		<module>QSkyPlugin</module>  
 		<module>QSkyApi</module>  
+-->
         <module>Seeder</module>        
     </modules>
 </project>
