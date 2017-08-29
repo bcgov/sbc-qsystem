@@ -96,11 +96,9 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     /**
     * Stores the job status while serving multiple services
     */
-    @Expose
-    @SerializedName("jobStatus")
+    @Transient
     private String jobStatus = "";
 
-    @Transient
     public String getJobStatus() {
         return jobStatus;
     }

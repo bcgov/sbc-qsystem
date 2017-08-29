@@ -718,6 +718,7 @@ public class Form{
                 params.userId = user.getUser().getId();
                 Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
                 customer = user.getUser().getCustomer();
+                customer.setCameFromHold(true);
 
                 setKeyRegim(KEYS_INVITED);
                 BindUtils.postNotifyChange(null, null, Form.this, "postponList");
