@@ -51,7 +51,7 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
             }
         }
         bildTree(getRoot(), nodes);
-        QLog.l().logger().info("Создали дерево.");
+        QLog.l().logger().info("Created a tree.");
     }
 
     private void bildTree(T root, LinkedList<T> nodes) {
@@ -75,10 +75,10 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
     }
 
     /**
-     * Получить услугу по ID
+     * Get service by ID
      *
      * @param id
-     * @return если не найдено то вернет null.
+     * @return if not found that will return null.
      */
     public T getById(long id) {
         for (T node : getNodes()) {
@@ -86,24 +86,24 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
                 return node;
             }
         }
-        throw new ServerException("Не найдена услуга по ID \"" + id + "\"");
+        throw new ServerException("No service found by ID \"" + id + "\"");
     }
 
     /**
-     * Проверка наличия услуги по id
+     * Checking for the availability of the service by id
      *
-     * @param id имя проверяемой услуги
-     * @return есть или нет
+     * @param id Name of the service being tested
+     * @return Is there or not
      */
     public boolean hasById(long id) {
         return getNodes().stream().anyMatch((node) -> (id == node.getId()));
     }
 
     /**
-     * Проверка наличия услуги по id
+     * Checking for the availability of the service by id
      *
-     * @param name имя проверяемой услуги
-     * @return есть или нет
+     * @param name Name of the service being tested
+     * @return Is there or not
      */
     public boolean hasByName(String name) {
         return getNodes().stream().anyMatch((node) -> (name.equals(node.getName())));
@@ -114,7 +114,7 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
     }
 
     /**
-     * Перебор всех услуг до одной включая корень и узлы
+     * Enumeration of all services to one including root and nodes
      *
      * @param root
      * @param listener
@@ -170,17 +170,17 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
     @Override
     public void insertNodeInto(MutableTreeNode newChild, MutableTreeNode parent, int index) {
         super.insertNodeInto(newChild, parent, index);
-        if (parent instanceof QService) { // это подпорка, неожиданно возникла при реализации сортировки
+        if (parent instanceof QService) { // This is a backup, arose unexpectedly when implementing a sort
             updateSeqSibling((QService) parent);
         }
     }
 
     /**
-     * Это подпорка, неожиданно возникла при реализации сортировки
+     * This is a backup, arose unexpectedly when sorting
      *
-     * @param moveChild что двигаем
-     * @param parent куда двигаем
-     * @param index каким дочерним вставляем
+     * @param moveChild What are we moving
+     * @param parent Where are we moving
+     * @param index How to insert the child
      */
     public void moveNode(MutableTreeNode moveChild, MutableTreeNode parent, int index) {
         if (((QService) moveChild.getParent()).getId().equals(((QService) parent).getId())) {
@@ -201,13 +201,11 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
     }
 
     /**
-     * Это подпорка, неожиданно возникла при реализации сортировки
      * This is a backup, arose unexpectedly when sorting
      *
-     * @param parent парент для расставления последовательности у его дочерних :: Parent for sequencing of its children
+     * @param parent Parent for sequencing of its children
      */
-    public void updateSeqSibling(QService parent) { 
-        // это подпорка, неожиданно возникла при реализации сортировки
+    public void updateSeqSibling(QService parent) {
         // This is a backup, arose unexpectedly when implementing a sort
         QService sib = (QService) ((QService) parent).getFirstChild();
         while (sib != null) {
@@ -217,7 +215,6 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
     }
 
     public void save() {
-        // Вложенные нужно убрать. т.к. они сотрутся по констрейнту
         // Nested need to be removed. Since They will erode by the contraint
         final LinkedList<T> del = new LinkedList<>();
         deleted.stream().forEach((t) -> {
