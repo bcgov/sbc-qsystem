@@ -738,7 +738,7 @@ public final class Executer {
                 customer.setUser(user);
                 // только что встал типо. Поросто время нахождения в отложенных не считаетка как ожидание очереди. Инвче в statistic ожидание огромное
                 // just got up Tipo. It's not like waiting for a queue. Invnt in the statistic expectation of a huge
-                customer.setStandTime(new Date());
+
                 // ставим время вызова
                 // put the call time
                 customer.setCallTime(new Date());
@@ -1486,7 +1486,7 @@ public final class Executer {
                 */
             }
             // только что встал типо
-            customer.setStandTime(new Date());
+            //customer.setStandTime(new Date());
             //С НАЧАЛА ПОДОТРЕМ ПОТОМ ПЕРЕСТАВИМ!!!
             //с новым приоритетом ставим в новую очередь, приоритет должет
             //позволить вызваться ему сразу за обрабатываемыми кастомерами
