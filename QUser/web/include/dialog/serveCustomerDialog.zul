@@ -124,7 +124,7 @@
                 <button sclass="act-button" style="margin-right: 15px; margin-top: 22px; margin-bottom: 14px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
                 </button>
 
-                <!--<checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
+                <checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
             </vbox>
         </hbox> 
         
