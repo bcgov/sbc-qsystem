@@ -639,7 +639,6 @@ public class Form{
     public void OKPostponeCustomerDialog() {
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
-        //params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
         params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
         params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
          
