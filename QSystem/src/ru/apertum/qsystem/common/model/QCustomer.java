@@ -282,8 +282,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
     
     public void saveAllServiceOnDB(){
-        this.getService().setEndServiceTime(new Date());
-        this.getService().setTimeTaken();
                 
         // сохраним кастомера в базе :: Keep the customizer in the database
         if(this.getServicesList().size()==1){

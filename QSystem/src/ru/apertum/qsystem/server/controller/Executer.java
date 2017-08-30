@@ -411,7 +411,6 @@ public final class Executer {
             customer.popFirstService();
             customer.removeServiceWithIndex(newService.getServiceIndex());
             
-            oldService.setEndServiceTime(new Date());
             oldService.setTimeTaken();
             newService.setStartServiceTime2(new Date());
             
@@ -1143,14 +1142,15 @@ public final class Executer {
 
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             final QCustomer customer = user.getCustomer();
-
+            
             if (!customer.getCameFromHold()){
-                customer.setStartTime(new Date());
                 customer.getService().setStartServiceTime(new Date());
             }else{
                 customer.setCameFromHold(false);
             }
             
+            
+            customer.setStartTime(new Date());
             user.getCustomer().getService().setStartServiceTime2(new Date());
                        
             user.getCustomer().setPostponPeriod(0);
@@ -1254,13 +1254,8 @@ public final class Executer {
             customer.setState(CustomerState.STATE_POSTPONED);
             
             customer.setTempComments(cmdParams.comments);
-            
             customer.getService().setTimeTaken();
-                
-            // Update current service date time
-            QService currentService =  customer.getServicesList().get(0);
-            currentService.setTimeTaken();
-            
+                            
             try {
                 user.setCustomer(null);//бобик сдох но медалька осталось, отправляем в пулл
                 customer.setUser(null);
@@ -1324,8 +1319,7 @@ public final class Executer {
             final QCustomer customer = user.getCustomer();
             // комменты
             customer.setTempComments(cmdParams.textData);
-//            customer.getService().setEndServiceTime(new Date());
-//            customer.getService().setTimeTaken();
+            customer.getService().setTimeTaken();
             
             // надо посмотреть не требует ли этот кастомер возврата в какую либо очередь.
             final QService backSrv = user.getCustomer().getServiceForBack();
@@ -1540,7 +1534,6 @@ public final class Executer {
             
             //get old service and set time taken
             final QService oldService = customer.getService();
-            oldService.setEndServiceTime(new Date());
             oldService.setTimeTaken();
             
             // вот она новая очередь.

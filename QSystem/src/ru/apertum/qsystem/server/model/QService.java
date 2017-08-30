@@ -1164,7 +1164,8 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         return this.timeTaken;
     }
 
-    public void setTimeTaken() {    
+    public void setTimeTaken() { 
+        this.setEndServiceTime(new Date());
         this.timeTaken += (this.getEndServiceTime().getTime() - this.getStartServiceTime2().getTime()) / 1000;
     }
     
