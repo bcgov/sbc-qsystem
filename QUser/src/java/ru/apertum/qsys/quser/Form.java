@@ -429,6 +429,7 @@ public class Form{
 
         setKeyRegim(KEYS_STARTED);
         service_list.setModel(service_list.getModel());
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
     }
 
     @Command
