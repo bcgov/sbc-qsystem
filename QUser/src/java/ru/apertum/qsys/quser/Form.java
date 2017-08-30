@@ -40,6 +40,7 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zul.Checkbox;
 import static ru.apertum.qsystem.client.forms.FClient.*;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QLog;
@@ -392,6 +393,7 @@ public class Form{
     
     @Command
     public void addServeScreen() {
+        ((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox")).setChecked(false);
         serveCustomerDialogWindow.setVisible(true);
         serveCustomerDialogWindow.doModal();
     }
@@ -483,6 +485,8 @@ public class Form{
         params.userId = user.getUser().getId();
         params.resultId = -1L;
         params.textData = "";
+        params.inAccurateFinish = ((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox")).isChecked();
+        
         final RpcStandInService res = (RpcStandInService) Executer.getInstance().getTasks().get(Uses.TASK_FINISH_CUSTOMER).process(params, "", new byte[4]);
         // вернется кастомер и возможно он еще не домой а по списку услуг. Список определяется при старте кастомера в обработку специяльным юзером в регистратуре
         if (res.getResult() != null && res.getResult().getService() != null && res.getResult().getState() == CustomerState.STATE_WAIT_COMPLEX_SERVICE) {

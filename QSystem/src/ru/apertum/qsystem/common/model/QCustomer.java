@@ -268,6 +268,12 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 // сохраним кастомера в базе :: Keep the customizer in the database
 //                saveToSelfDB();
                 break;
+            case STATE_INACCURATE_TIME:
+                QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
+                getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
+                
+                saveAllServiceOnDB();
+                break;
         }
 
         // поддержка расширяемости плагинами :: Support extensibility plug-ins

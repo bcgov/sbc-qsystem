@@ -100,6 +100,7 @@ public class CmdParams {
     public Date welcomeTime;    
     
     public int serviceIndex;
+    public boolean inAccurateFinish;
     
     /**
      * услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять списков. Первый это вольнопоследовательные услуги. Остальные
