@@ -1359,8 +1359,13 @@ public final class Executer {
                 ((QCustomer) customer).setResult(result);
                 customer.setFinishTime(new Date());
                 
-                // кастомер переходит в состояние "Завершенности", но не "мертвости"
-                customer.setState(CustomerState.STATE_FINISH);
+                if (cmdParams.inAccurateFinish){
+                    customer.setState(CustomerState.STATE_INACCURATE_TIME);
+                }else{
+                    // кастомер переходит в состояние "Завершенности", но не "мертвости"
+                    customer.setState(CustomerState.STATE_FINISH);
+                }
+                  
                 // дело такое, кастомер может идти по списку услуг, т.е. есть набор услуг, юзер завершает работу, а система его ведет по списку услуг
                 // тут посмотрим может его уже провели по списку комплексных услуг, если у него вообще они были
                 // если провели то у него статус другой STATE_WAIT_COMPLEX_SERVICE
