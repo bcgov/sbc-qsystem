@@ -27,14 +27,18 @@ hs_err_pid*
 /QSystem/target
 !/QSystem/logs
 /dist
+QSystem/nbproject/private/
 !/QSystem/nbproject/
 /QUser/build/
 /QUser/target/
+QUser/nbproject/private/
 /QSmartboardPlugin/build/
 /QSmartboardPlugin/dist/
 /QSmartboardPlugin/nbproject/private/
 /QSmartboard/build/
 /QSmartboard/dist/
+
+
 
 /dist/*.jar
 /dist/*.war
