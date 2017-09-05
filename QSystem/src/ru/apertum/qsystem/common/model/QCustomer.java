@@ -638,6 +638,19 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
     
     @Expose
+    @SerializedName("hold_time")
+    private int holdTime = 0;
+
+    @Column(name = "hold_time")
+    public int getHoldTime() {
+        return holdTime;
+    }
+
+    public void setHoldTime(int holdTime) {
+        this.holdTime += holdTime;
+    }
+    
+    @Expose
     @SerializedName("invite_time")
     private Date inviteTime;
 
