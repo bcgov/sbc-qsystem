@@ -1142,16 +1142,21 @@ public final class Executer {
 
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             final QCustomer customer = user.getCustomer();
+            int holdTime = 0;
+            Date currentDateTime = new Date();
             
             if (!customer.getCameFromHold()){
                 customer.getService().setStartServiceTime(new Date());
+                holdTime = (int) ((customer.getInviteTime().getTime() - customer.getStandTime().getTime()) / 1000);
+
             }else{
+                holdTime = (int) ((currentDateTime.getTime() - customer.getService().getEndServiceTime().getTime()) / 1000);
                 customer.setCameFromHold(false);
             }
             
-            
+            customer.setHoldTime(holdTime);
             customer.setStartTime(new Date());
-            user.getCustomer().getService().setStartServiceTime2(new Date());
+            user.getCustomer().getService().setStartServiceTime2(currentDateTime);
                        
             user.getCustomer().setPostponPeriod(0);
             // кастомер переходит в состояние "Начала обработки" или "Продолжение работы"
