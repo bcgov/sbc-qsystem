@@ -738,7 +738,7 @@ public final class Executer {
                 customer.setUser(user);
                 // только что встал типо. Поросто время нахождения в отложенных не считаетка как ожидание очереди. Инвче в statistic ожидание огромное
                 // just got up Tipo. It's not like waiting for a queue. Invnt in the statistic expectation of a huge
-                customer.setStandTime(new Date());
+
                 // ставим время вызова
                 // put the call time
                 customer.setCallTime(new Date());
@@ -1142,16 +1142,21 @@ public final class Executer {
 
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             final QCustomer customer = user.getCustomer();
+            int holdTime = 0;
+            Date currentDateTime = new Date();
             
             if (!customer.getCameFromHold()){
                 customer.getService().setStartServiceTime(new Date());
+                holdTime = (int) ((customer.getInviteTime().getTime() - customer.getStandTime().getTime()) / 1000);
+
             }else{
+                holdTime = (int) ((currentDateTime.getTime() - customer.getService().getEndServiceTime().getTime()) / 1000);
                 customer.setCameFromHold(false);
             }
             
-            
+            customer.setHoldTime(holdTime);
             customer.setStartTime(new Date());
-            user.getCustomer().getService().setStartServiceTime2(new Date());
+            user.getCustomer().getService().setStartServiceTime2(currentDateTime);
                        
             user.getCustomer().setPostponPeriod(0);
             // кастомер переходит в состояние "Начала обработки" или "Продолжение работы"
@@ -1359,8 +1364,13 @@ public final class Executer {
                 ((QCustomer) customer).setResult(result);
                 customer.setFinishTime(new Date());
                 
-                // кастомер переходит в состояние "Завершенности", но не "мертвости"
-                customer.setState(CustomerState.STATE_FINISH);
+                if (cmdParams.inAccurateFinish){
+                    customer.setState(CustomerState.STATE_INACCURATE_TIME);
+                }else{
+                    // кастомер переходит в состояние "Завершенности", но не "мертвости"
+                    customer.setState(CustomerState.STATE_FINISH);
+                }
+                  
                 // дело такое, кастомер может идти по списку услуг, т.е. есть набор услуг, юзер завершает работу, а система его ведет по списку услуг
                 // тут посмотрим может его уже провели по списку комплексных услуг, если у него вообще они были
                 // если провели то у него статус другой STATE_WAIT_COMPLEX_SERVICE
@@ -1481,7 +1491,7 @@ public final class Executer {
                 */
             }
             // только что встал типо
-            customer.setStandTime(new Date());
+            //customer.setStandTime(new Date());
             //С НАЧАЛА ПОДОТРЕМ ПОТОМ ПЕРЕСТАВИМ!!!
             //с новым приоритетом ставим в новую очередь, приоритет должет
             //позволить вызваться ему сразу за обрабатываемыми кастомерами

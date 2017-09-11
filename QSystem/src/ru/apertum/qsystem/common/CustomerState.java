@@ -87,5 +87,10 @@ public enum CustomerState {
     /**
      * 12 This state is extension for the STATE_POSTPONED, In which we are making start time equal to stand time 
      */
-    STATE_POSTPONED_REDIRECT
+    STATE_POSTPONED_REDIRECT,
+    
+    /**
+     * 13 Inaccurate time. In case CSRs forgets to hit finish immediately after they finishes the job.
+     */
+    STATE_INACCURATE_TIME
 }

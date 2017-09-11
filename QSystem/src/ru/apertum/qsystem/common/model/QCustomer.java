@@ -268,6 +268,12 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 // сохраним кастомера в базе :: Keep the customizer in the database
 //                saveToSelfDB();
                 break;
+            case STATE_INACCURATE_TIME:
+                QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
+                getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
+                
+                saveAllServiceOnDB();
+                break;
         }
 
         // поддержка расширяемости плагинами :: Support extensibility plug-ins
@@ -629,6 +635,19 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setServiceTimeTaken(int serviceTimeTaken) {
         this.serviceTimeTaken = serviceTimeTaken;
+    }
+    
+    @Expose
+    @SerializedName("hold_time")
+    private int holdTime = 0;
+
+    @Column(name = "hold_time")
+    public int getHoldTime() {
+        return holdTime;
+    }
+
+    public void setHoldTime(int holdTime) {
+        this.holdTime += holdTime;
     }
     
     @Expose
