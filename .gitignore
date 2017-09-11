@@ -36,6 +36,9 @@ hs_err_pid*
 /QSmartboard/build/
 /QSmartboard/dist/
 
+/QSystem/nbproject/private/
+/QUser/nbproject/private/
+
 /dist/*.jar
 /dist/*.war
 /dist/www
