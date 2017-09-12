@@ -18,8 +18,8 @@
             font-family: Helvetica; 
             color: Black;
         }
-        .maxBodyHeight150{
-            max-height: 150px;
+        .maxBodyHeight250{
+            max-height: 250px;
             overflow: auto;
             overflow-x: hidden;
         }
@@ -29,15 +29,16 @@
     onClose="self.visible = false; event.stopPropagation();"
     action="show: slideDown;hide: slideUp">
     
-    <vlayout sclass="blue-background" height="200px">
+    <vlayout sclass="blue-background" height="155px">
+
         
         <hbox>
-            <vbox style="margin-left: 26px; margin-top: 34px;">
+            <vbox style="margin-left: 26px; margin-top: 10px;">
                 <label id="customer_number_label" value="Ticket #" sclass="text-style" style="font-weight: bold;"/>
                 <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="text-style" style="font-style: oblique; margin-left:54px;"/>
             </vbox>
         
-            <hbox style="margin-left: 18px; margin-top: 34px;">
+            <hbox style="margin-left: 18px; margin-top: 10px;">
                 
                 <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 30px; font-weight: bold;"/>
 
@@ -48,10 +49,10 @@
             
             
         <hbox>
-            <button sclass="act-button" style="margin-left: 22px; margin-top: 22px;" label="${c:l('begin')}" disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('begin')" id="btn_start" height="38px" width="158px">
+            <button sclass="act-button" style="margin-left: 22px; margin-top: 10px;" label="${c:l('begin')}" disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('begin')" id="btn_start" height="28px" width="158px">
             </button>
 
-            <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Citizen Left" disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')" id="btn_kill" height="38px" width="158px">
+            <button sclass="act-button" style="margin-left: 15px; margin-top: 10px;" label="Citizen Left" disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')" id="btn_kill" height="28px" width="158px">
             </button>            
             <!--<checkbox style="margin-top: 18px;" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
         </hbox>
@@ -59,9 +60,9 @@
         <!--<button id="closeServeCustomerDialogBtn" hflex="1" label="close" onClick="serveCustomerDialog.visible = false; event.stopPropagation();"/>-->
     </vlayout>
     
-    <vlayout height="260px" style="background-color:White">
+    <vlayout height="390px" style="background-color:White">
        
-        <grid id="service_list" sclass="maxBodyHeight150" model="@load(fmodel.customer.getServicesList())" emptyMessage="Nothing in Inbox." style="margin-left:20px; margin-right:20px; margin-top:44px; margin-bottom:26px;">
+        <grid id="service_list" sclass="maxBodyHeight250" model="@load(fmodel.customer.getServicesList())" emptyMessage="Nothing in Inbox." style="margin-left:20px; margin-right:20px; margin-top:35px; margin-bottom:26px;">
             <columns>
                 <column hflex="2" label="Category" align="center"/>
                 <column hflex="2" label="Service" align="center" />
@@ -105,23 +106,23 @@
         
     </vlayout>
     
-    <vlayout sclass="blue-background" height="210px">   
+    <vlayout sclass="blue-background" height="140px">   
         
-        <hbox width="80%" style="margin-top: 50px; margin-left: 100px; margin-right: 60px; margin-bottom: 50px;">
-            <button  sclass="act-button" style="margin-left: 22px; margin-top: 22px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
+        <hbox width="80%" style="margin-top: 20px; margin-left: 30px; margin-right: 60px; margin-bottom: 10px;">
+            <button  sclass="act-button" style="margin-left: 25px; margin-top: 10px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
             </button>
 
             <div width="60px" style="background-color:Yellow;">
                 </div>
 
-            <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Return to queue" disabled="@load(fmodel.btnsDisabled[4])" onClick="@command('redirect')" id="btn_redirect" height="38px" width="158px">
+            <button sclass="act-button" style="margin-left: 15px; margin-top: 10px;" label="Return to queue" disabled="@load(fmodel.btnsDisabled[4])" onClick="@command('redirect')" id="btn_redirect" height="38px" width="158px">
             </button>
 
             <div width="60px" style="background-color:Yellow;">
                 </div>
 
             <vbox style="">
-                <button sclass="act-button" style="margin-right: 15px; margin-top: 22px; margin-bottom: 14px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
+                <button sclass="act-button" style="margin-left: 15px; margin-top: 10px; margin-bottom: 14px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
                 </button>
 
                 <checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
