@@ -4,30 +4,30 @@
 <zk xmlns="http://www.zkoss.org/2005/zul" >
     <?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
 <style>
-        .act-button:active { 
+        .act-button:active {
         background: -webkit-linear-gradient(top, #FFFFFF 0%, #FFDDDD 100%); /* Chrome10+,Safari5.1+ */
         background: linear-gradient(to bottom, #FFFFFF 0%, #FFDDDD 100%); /* W3C */
         ;
         }
-        .act-button { 
+        .act-button {
         background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
         background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
         -webkit-border-radius: 0em;
         -moz-border-radius: 0em;
         border-radius: 0em;
-        font-size : 16px; 
+        font-size : 16px;
         font-family: Helvetica;
         }
-        .act-button:focus { 
+        .act-button:focus {
         background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
         background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
         -webkit-border-radius: 0em;
         -moz-border-radius: 0em;
         border-radius: 0em;
-        font-size : 16px; 
+        font-size : 16px;
         font-family: Helvetica;
         }
-        .act-button:disabled { 
+        .act-button:disabled {
         background: -webkit-linear-gradient(top, #FFFFFF 0%, #dddddd 100%); /* Chrome10+,Safari5.1+ */
         background: linear-gradient(to bottom, #FFFFFF 0%, #dddddd 100%); /* W3C */
         }
@@ -39,10 +39,10 @@
         }
         .toolbar-items {
         color:white;
-        font-size : 10px; 
+        font-size : 10px;
         font-family: Helvetica;
         }
-    
+
         .z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-close:before {
             font-size : 1.5em;
 	}
@@ -59,35 +59,34 @@
         <north size="180px" border="0" sclass="blue-background">
             <vbox height="100%" pack="center">
                 <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px" style=" margin-top: 24px;"/>
-                    
                 <hlayout>
                 </hlayout>
                 <div>
-                    <button sclass="act-button" style="margin-left: 22px; margin-top: 18px;" label="${c:l('invite_client')}" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="38px" width="158px">
-                    </button>   
+                    <button sclass="act-button" style="margin-left: 22px; margin-top: 18px;" label="${c:l('invite_client')}" visible="@load(fmodel.getCFMSType())" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="38px" width="158px">
+                    </button>
                     <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="${c:l('add_client')}" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
-                    </button>                    
-                    <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="Serve Now" visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])" onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
+                    </button>
+                    <button sclass="act-button" style="margin-left: 15px; margin-top: 18px;" label="Serve Now" visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])" onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">
                     </button>
                 </div>
-                
+
                 <hbox width="100%" style="padding: 1px;" pack="center" align="center">
                     <!-- Это форма для логирования, форма для показа залогированного пользователя This is a form for logging, a form for displaying a logged user-->
                     <include src="/include/loginForm.zul"/>
                 </hbox>
             </vbox>
-                    
+
 
         </north>
-        
+
         <west visible="false" title="Полезные материалы" size="25%" hflex="min" maxsize="250" splittable="true" collapsible="true">
             <include src="/include/westUsefullStuff.zul"/>
         </west>
-        
+
         <center border="none" hflex="true">
-             <include id="incClientDashboard" src="/include/clientDashboard.zul"/>            
+             <include id="incClientDashboard" src="/include/clientDashboard.zul"/>
         </center>
-        
+
         <south   size="40px" style="background-color: #003366;" border="0">
             <toolbar mold="panel" align="center">
                 <toolbarbutton sclass="toolbar-items" label="License" href="https://github.com/bcgov/sbc-qsystem/blob/master/LICENSE" target="_blank" />
@@ -97,8 +96,8 @@
                 <toolbarbutton sclass="toolbar-items" label="Powered by Government of British Columbia" href="gww.gov.bc.ca" target="_blank" />
             </toolbar>
         </south>
-        
-        
+
+
     </borderlayout>
 
 </zk>

@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
-    
+
     <borderlayout>
-               
-        <center border="none" hflex="true">
-                        <panel title="@load(fmodel.avaitColumn)" border="normal" height="100%">
+        <north border="none" hflex="true" splittable="true" height="@load(fmodel.getCFMSHeight())" style="@load(fmodel.getCFMSHidden())" autoscroll="true">
+                        <panel title="@load(fmodel.avaitColumn)" border="normal">
                 <panelchildren>
-                    <zscript><![CDATA[
-                        import java.util.Comparator;
-                        import ru.apertum.qsys.quser.WaitingPanelComparator;
-                        Comparator cTimeAsc = new WaitingPanelComparator(true, 1);
-                        Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
-                        Comparator cTicketAsc = new WaitingPanelComparator(true, 2);
-                        Comparator cTicketDsc = new WaitingPanelComparator(false, 2);
-                        Comparator cServiceAsc = new WaitingPanelComparator(true, 3);
-                        Comparator cServiceDsc = new WaitingPanelComparator(false, 3);
-                        //Comparator cPriorityAsc = new WaitingPanelComparator(true, 4);
-                        //Comparator cPriorityDsc = new WaitingPanelComparator(false, 4);
-                        Comparator cStateAsc = new WaitingPanelComparator(true, 4);
-                        Comparator cStateDsc = new WaitingPanelComparator(false, 4);
-                    ]]></zscript>
-                    <listbox id="service_list" model="@load(fmodel.user.customerList)" selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max" >
+                  <zscript>
+                        <![CDATA[
+                          import java.util.Comparator;
+                          import ru.apertum.qsys.quser.WaitingPanelComparator;
+                          Comparator cTimeAsc = new WaitingPanelComparator(true, 1);
+                          Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
+                          Comparator cTicketAsc = new WaitingPanelComparator(true, 2);
+                          Comparator cTicketDsc = new WaitingPanelComparator(false, 2);
+                          Comparator cServiceAsc = new WaitingPanelComparator(true, 3);
+                          Comparator cServiceDsc = new WaitingPanelComparator(false, 3);
+                          //Comparator cPriorityAsc = new WaitingPanelComparator(true, 4);
+                          //Comparator cPriorityDsc = new WaitingPanelComparator(false, 4);
+                          Comparator cStateAsc = new WaitingPanelComparator(true, 4);
+                          Comparator cStateDsc = new WaitingPanelComparator(false, 4);
+                        ]]>
+                  </zscript>
+                     <listbox id="service_list" model="@load(fmodel.user.customerList)" selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max">
                         <listhead>
                             <listheader label="Time" width="100px" align="center" sortAscending="${cTimeAsc}" sortDescending="${cTimeDsc}"/>
                             <listheader label="Ticket" width="100px" align="center" sortAscending="${cTicketAsc}" sortDescending="${cTicketDsc}"/>
@@ -46,12 +47,12 @@
                     <timer id="timer_service_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
                 </panelchildren>
                 <!-- Это окно для выора приоритета -->
-                
+
             </panel>
 
-        </center>
-        
-        <south hflex="min" splittable="true" minsize="150" maxsize="350" size="270px">
+        </north>
+
+        <center border="none" hflex="true" autoscroll="true">
             <panel title="Citizens on hold" border="normal" height="100%">
                 <panelchildren>
                     <listbox  id="postpone_list" model="@load(fmodel.postponList)" selectedItem="@bind(fmodel.pickedPostponed)" width="100%" height="100%" onClick="@command('clickListPostponedInvite')" vflex="max">
@@ -72,7 +73,7 @@
                             </listitem>
                         </template>
                     </listbox>
-                    
+
 <!--                    <menupopup id="postponeListPopup">
                         <menuitem label="${c:l('change_status')}" onClick="@command('clickListPostponedChangeStatus')" visible="@load(fmodel.login)"/>
                         <menuseparator />
@@ -80,8 +81,7 @@
                     </menupopup>-->
                 </panelchildren>
             </panel>
-                    
-        </south>
+        </center>
     </borderlayout>
     <div style="display: none;">
         <include id="incChangePriorityDialog" src="/include/dialog/changePriorityDialog.zul"/>
