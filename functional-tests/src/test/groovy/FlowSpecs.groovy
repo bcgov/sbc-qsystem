@@ -7,11 +7,11 @@ class FlowSpecs extends GebReportingSpec {
 
     def "Info"(){
 		given: "At Info Page"
-		to QSystemInfoPage
+		to QUserPage
 		
 		when: "Do nothing"
 		
 		then: "Still at Info Page"
-		at QSystemInfoPage
+		at QUserPage
 	}
 }
