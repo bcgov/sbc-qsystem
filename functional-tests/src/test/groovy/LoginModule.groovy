@@ -27,7 +27,7 @@ class LoginModule extends Module {
             at QUserPage
             waitFor { $("span", "class":"login-text z-label")[2].text() != "" } 
          
-        expect: "I am logged in" 
+        expect: "I am logged in"
             assert { $("span", "class":"login-text z-label")[2].text() == "mwalle" } 
     } 
 }

@@ -6,15 +6,15 @@ import spock.lang.Unroll
 class FlowSpecs extends GebReportingSpec {
 
     @Unroll
-    def "Landing"(){
-        given: "At QUserPage"
-        to QUserPage
+    // def "Landing"(){
+    //     given: "At QUserPage"
+    //     to QUserPage
 
-        when: "Do nothing"
+    //     when: "Do nothing"
 
-        then: "Still at QUserPage"
-        at QUserPage
-    }
+    //     then: "Still at QUserPage"
+    //     at QUserPage
+    // }
 
     def "Signing in with a valid account"(){
 
@@ -32,9 +32,9 @@ class FlowSpecs extends GebReportingSpec {
          
         then: "The home page refreshes" 
             at QUserPage
-            waitFor { $("span", class:"login-text z-label")[0].text() != "" }
+            waitFor { $("span", class:"login-text z-label")[3].text() != "" }
          
         expect: "I am logged in" 
-            assert { $("span", class:"login-text z-label")[3].text() == "mwalle" }
+            assert { $("span", "class":"login-text z-label")[3].text() == "mwalle" }
     }
 }
