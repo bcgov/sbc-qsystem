@@ -25,17 +25,30 @@ node('maven') {
 
     }
 	stage('build') {
-	 echo "Building..."
-	 openshiftBuild bldCfg: 'qsystem', showBuildLogs: 'true'
-	 openshiftTag destStream: 'qsystem', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'qsystem', srcTag: 'latest'
-	 openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'dev', srcStream: 'qsystem', srcTag: 'latest'
-   }
-   
-   stage('validation') {
-          dir('functional-tests'){
-                sh './gradlew --debug --stacktrace phantomJsTest'
-      }
-   }
+   echo "Building..."
+   openshiftBuild bldCfg: 'qsystem', showBuildLogs: 'true'
+   openshiftTag destStream: 'qsystem', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'qsystem', srcTag: 'latest'
+   openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'dev', srcStream: 'qsystem', srcTag: 'latest'
+  }
+
+  stage('validation') {
+      dir('functional-tests'){
+        TEST_USERNAME = sh (
+               script: 'oc env bc/qservice --list | awk  -F  "=" \'/TEST_USERNAME/{print $2}\'',
+               returnStdout: true
+                ).trim()
+          
+        TEST_PASSWORD = sh (
+               script: 'oc env bc/qservice --list | awk  -F  "=" \'/TEST_PASSWORD/{print $2}\'',
+               returnStdout: true
+                ).trim()
+          
+        echo "TEST_USERNAME: ${TEST_USERNAME}"
+        echo "TEST_PASSWORD: ${TEST_PASSWORD}"
+
+      sh "TEST_USERNAME=${TEST_USERNAME}\nTEST_PASSWORD=${TEST_PASSWORD}\n./gradlew --debug --stacktrace phantomJsTest"
+    }
+  }
 
 }
 
