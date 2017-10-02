@@ -5,7 +5,7 @@ import AuthModule
 
 class QUserPage extends Page {
 
-    static url = "/qsystem/quser"
+    static url = "/qsystem/quser/"
     static at = { title == "QSystem" }
 
     static content = {
