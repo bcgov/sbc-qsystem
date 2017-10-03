@@ -44,8 +44,8 @@ environments {
 //
 // phantomJs --> “./gradlew phantomJsTest”   (headless)
 // chrome    --> "./gradlew chromeTest"
-baseUrl = "http://sbc-qsystem.pathfinder.bcgov/qsystem/"
 
+baseUrl = "https://sbc-qsystem-dev.pathfinder.gov.bc.ca"
 
 println """
             .  .       .
