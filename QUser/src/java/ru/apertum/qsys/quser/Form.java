@@ -440,14 +440,31 @@ public class Form{
     @Command
     @NotifyChange(value = {"addWindowButtons"})
     public void redirect() {
-        QLog.l().logQUser().debug("Redirect by " + user.getName() + " customer " + customer.getFullNumber());
-        
-        addWindowButtons[0] = false;
-        addWindowButtons[1] = false;
-        addWindowButtons[2] = false;
-        addWindowButtons[3] = true;
-        
-        this.addTicketScreen();
+//        QLog.l().logQUser().debug("Redirect by " + user.getName() + " customer " + customer.getFullNumber());
+//        
+//        addWindowButtons[0] = false;
+//        addWindowButtons[1] = false;
+//        addWindowButtons[2] = false;
+//        addWindowButtons[3] = true;
+//        
+////        BindUtils.postNotifyChange(null, null, Form.this, "*");
+////        serveCustomerDialogWindow.setVisible(false);
+//        this.addTicketScreen();
+
+        if (pickedRedirectServ != null) {
+            if (!pickedRedirectServ.isLeaf()) {
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+            
+            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+            this.addToQueue(params);
+            
+            customer = null;
+            setKeyRegim(KEYS_MAY_INVITE);
+            service_list.setModel(service_list.getModel());
+            serveCustomerDialogWindow.setVisible(false);
+        }
     }
     
     @Command

@@ -9,13 +9,25 @@
     <packaging>pom</packaging>
     <version>1.0</version>
     <name>QSystem Parent Project</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <debug>false</debug>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <modules>
         <module>QSystem</module>
         <module>QUser</module>
 		<module>QSmartboardPlugin</module>
-		<module>QSmartboard</module>
+<!-- 		<module>QSmartboard</module>
 		<module>QSkyPlugin</module>  
-		<module>QSkyApi</module>  
+		<module>QSkyApi</module>   -->
         <module>Seeder</module>        
     </modules>
 </project>

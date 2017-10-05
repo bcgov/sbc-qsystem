@@ -48,7 +48,13 @@
             </button>
 
             <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Citizen Left" disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')" id="btn_kill" height="38px" width="158px">
-            </button>            
+            </button>     
+            
+            <div width="320px" style="background-color:White;">
+            </div>     
+            
+            <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Return to queue" disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('redirect')" id="btn_redirect" height="38px" width="158px">
+            </button>  
             <!--<checkbox style="margin-top: 18px;" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
         </hbox>
         
@@ -76,8 +82,23 @@
         </grid>
         
         
-        <button sclass="act-button" style="display: block; margin: 0 auto;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
-        </button>
+        <div>
+            <hbox width="80%" style="margin-top: 10px; margin-left: 160px; margin-right: 60px; margin-bottom: 50px;">
+
+
+                <button sclass="act-button" style="margin-left: 80px; margin-top: 10px;" label="${c:l('previous_services')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" height="38px" width="158px">
+                </button>
+
+                        <div width="80px" style="background-color:White;">
+                </div>
+
+                <button sclass="act-button" style="margin-left: 45px; margin-top: 10px;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
+                </button>
+
+
+            </hbox> 
+        </div>
+
 
         <!--
         <div>
@@ -97,21 +118,15 @@
     
     <vlayout sclass="blue-background" height="210px">   
         
-        <hbox width="80%" style="margin-top: 50px; margin-left: 100px; margin-right: 60px; margin-bottom: 50px;">
-            <button  sclass="act-button" style="margin-left: 22px; margin-top: 22px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
+        <hbox width="80%" style="margin-top: 50px; margin-left: 160px; margin-right: 60px; margin-bottom: 50px;">
+            <button  sclass="act-button" style="margin-left: 80px; margin-top: 22px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
             </button>
 
-            <div width="60px" style="background-color:Yellow;">
-                </div>
-
-            <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Return to queue" disabled="@load(fmodel.btnsDisabled[4])" onClick="@command('redirect')" id="btn_redirect" height="38px" width="158px">
-            </button>
-
-            <div width="60px" style="background-color:Yellow;">
+            <div width="80px" style="background-color:Yellow;">
                 </div>
 
             <vbox style="">
-                <button sclass="act-button" style="margin-right: 15px; margin-top: 22px; margin-bottom: 14px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
+                <button sclass="act-button" style="margin-left: 45px; margin-top: 22px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
                 </button>
 
                 <!--<checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->

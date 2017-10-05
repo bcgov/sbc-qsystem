@@ -1,1 +1,0 @@
-SELECT ip,  count(ip) as cnt FROM `qsky`.`pager_results` group by ip order by cnt desc;
