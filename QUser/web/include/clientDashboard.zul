@@ -4,7 +4,7 @@
 
     <borderlayout>
         <north border="none" hflex="true" splittable="true" height="@load(fmodel.getCFMSHeight())" style="@load(fmodel.getCFMSHidden())" autoscroll="true">
-                        <panel title="@load(fmodel.avaitColumn)" border="normal">
+                        <panel title="@load(fmodel.avaitColumn)" border="normal" height="100%">
                 <panelchildren>
                   <zscript>
                         <![CDATA[
