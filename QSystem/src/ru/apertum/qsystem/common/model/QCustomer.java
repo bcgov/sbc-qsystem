@@ -220,6 +220,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе
                 saveToSelfDB();
+                this.refreshQuantity();
                 break;
             case STATE_WORK:
                 QLog.l().logger().debug("Начали работать с кастомером с номером \"" + getPrefix() + getNumber() + "\"");
@@ -248,6 +249,12 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 startTime = standTime;
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
+//                saveToSelfDB();
+                break;
+            case STATE_INACCURATE_TIME:
+                QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
+                getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
+                
                 saveToSelfDB();
                 break;
         }
@@ -721,6 +728,30 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @Transient
     public Integer getWaitingMinutes() {
         return new Long((System.currentTimeMillis() - getStandTime().getTime()) / 1000 / 60 + 1).intValue();
+    }
+    
+    //    ANDREW added quantity for insert into DB
+    @Expose
+    @SerializedName("Service_quantity")
+    private String quantity = "1";
+
+    @Column(name = "Service_quantity")
+    public String getQuantity() {
+        QLog.l().logger().trace("/n/nNAME\n:  " + this.getService().getName() + " \n\n\n ");
+        QLog.l().logger().trace("/n/nTTEST from Customer:  " + quantity + " \n\n ");
+//        return this.getService().getQuantity();
+        return this.quantity;
+    }
+    
+    public void setQuantity(String quantity){
+//        QLog.l().logger().trace("/n/nTTTTTTTEST666:  " + quantity + " \n\n ");
+//        this.getService().setQuantity(quantity);
+        this.quantity = quantity;
+    }
+    
+    public void refreshQuantity(){      
+//        customer = user.getUser().getCustomer();
+        this.setQuantity("1");
     }
 
 }
