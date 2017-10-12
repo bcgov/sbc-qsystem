@@ -189,7 +189,7 @@ public class FAdmin extends javax.swing.JFrame {
         return localeMap.getString(key);
     }
     /**
-     * Константы хранения параметров в файле.
+     * Constants for storing parameters in a file.
      */
     private static final String SERVER_ADRESS = "server_adress";
     private static final String SERVER_PORT = "server_port";
@@ -200,10 +200,10 @@ public class FAdmin extends javax.swing.JFrame {
     private final QTray tray;
     //******************************************************************************************************************
     //******************************************************************************************************************
-    //***************************************** таймер автоматического запроса******************************************
+    //***************************************** Automatic request timer ************************************************
     private static final int DELAY_BLINK = 30000;
     /**
-     * Таймер опроса компонент системы.
+     * Polling timer for system components.
      */
     private final StartTimer timer = new StartTimer(DELAY_BLINK, new TimerPrinter());
 
@@ -225,12 +225,12 @@ public class FAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Собыите автосканирования сервера и пункта регистрации на таймер.
+     * The autoscan event of the server and the registration point for the timer.
      */
     private class TimerPrinter implements ActionListener {
 
         /**
-         * Обеспечение автоматизации запроса.
+         * By this method, we run an automatic polling timer
          *
          * @param e
          */
@@ -257,7 +257,7 @@ public class FAdmin extends javax.swing.JFrame {
             timer.stop();
         }
     }
-    //***************************************** таймер автоматического запроса  *************************************************
+    //***************************************** Automatic request timer  ***********************************************
 
     private void init() {
         addWindowListener(new WindowListener() {
@@ -974,7 +974,7 @@ public class FAdmin extends javax.swing.JFrame {
     }
 
     protected boolean checkServer() {
-        QLog.l().logger().info("Запрос о состоянии на сервер.");
+        QLog.l().logger().info("Status request to the server.");
         //элемент ответа.
         final LinkedList<ServiceInfo> srvs;
         try {
@@ -984,7 +984,7 @@ public class FAdmin extends javax.swing.JFrame {
         } catch (Exception ex) {
             listPostponed.setModel(QPostponedList.getInstance().loadPostponedList(new LinkedList<>()));
             labelServerState.setText("<HTML><b><span style='font-size:20.0pt;color:red;'>" + getLocaleMessage("admin.message.server_not_start") + "</span></b>");
-            QLog.l().logger().error("Сервер ответил на запрос о состоянии: \"" + ex + "\"");
+            QLog.l().logger().error("The server responded to the status request: \"" + ex + "\"");
             tray.showMessageTray(getLocaleMessage("tray.server"), getLocaleMessage("tray.message.stop_server"), QTray.MessageType.WARNING);
             return false;
         }
@@ -1022,14 +1022,14 @@ public class FAdmin extends javax.swing.JFrame {
     }
 
     protected boolean checkWelcome(String command) {
-        QLog.l().logger().info("Запрос о состоянии на пункт регистрации.");
+        QLog.l().logger().info("A request for a status at the registration point.");
         command = command == null ? "Empty" : command;
         final String result;
         try {
             result = NetCommander.getWelcomeState(netPropWelcome(), command, cbDropTicketsCnt.isSelected());
         } catch (Exception ex) {
             labelWelcomeState.setText("<HTML><b><span style='font-size:20.0pt;color:red;'>" + getLocaleMessage("admin.message.welcome_not_start") + "</span></b>");
-            QLog.l().logger().error("Пункт регистрации не ответил на запрос о состоянии или поризошла ошибка. \"" + ex + "\"");
+            QLog.l().logger().error("The registration point did not respond to the status request or an error occurred. \"" + ex + "\"");
             tray.showMessageTray(getLocaleMessage("tray.message_stop_server.title"), getLocaleMessage("tray.message_stop_server.caption"), QTray.MessageType.WARNING);
             return false;
         }
@@ -1110,7 +1110,7 @@ public class FAdmin extends javax.swing.JFrame {
             ServerProps.getInstance().getProps().setStartTime(Uses.FORMAT_HH_MM.parse(textFieldStartTime.getText()));
             ServerProps.getInstance().getProps().setFinishTime(Uses.FORMAT_HH_MM.parse(textFieldFinishTime.getText()));
         } catch (ParseException ex) {
-            QLog.l().logger().error("Проблемы с сохранение сетевых настроек. ", ex);
+            QLog.l().logger().error("Problems with saving network settings. ", ex);
         }
     }
 
@@ -1203,7 +1203,7 @@ public class FAdmin extends javax.swing.JFrame {
         final String cdb2 = new BCodec().encode(URLEncoder.encode(checkdb2, "utf8"));
         QLog.l().logger().info("DB is OK.");
 
-        //запустим поток обновления пейджера, пусть поработает
+        // Run the pager update thread, let it work
         final Thread tPager = new Thread(() -> {
             FAbout.loadVersionSt();
             String result = "";
@@ -1284,7 +1284,7 @@ public class FAdmin extends javax.swing.JFrame {
                 }
                 form.setVisible(true);
             } catch (Exception ex) {
-                QLog.l().logger().error("Проблемы с ссозданием формы админки. ", ex);
+                QLog.l().logger().error("Problems with creating a form of admin. ", ex);
             } finally {
                 Uses.closeSplash();
             }
@@ -1292,8 +1292,8 @@ public class FAdmin extends javax.swing.JFrame {
     }
     private static FAdmin form = null;
     private static Answer forPager = null;
-    //private static final String PAGER_URL = "http://localhost:8080";
-    private static final String PAGER_URL = "http://dev.apertum.ru:8080";
+    private static final String PAGER_URL = "http://localhost:8080";
+    //private static final String PAGER_URL = "http://dev.apertum.ru:8080";
     //private static final String PAGER_URL = "http://109.120.172.108:8080";
 
     @Action
@@ -1322,7 +1322,7 @@ public class FAdmin extends javax.swing.JFrame {
                 flag = false;
             }
         }
-        QLog.l().logger().debug("Добавляем пользователя \"" + userName + "\"");
+        QLog.l().logger().debug("Adding a user \"" + userName + "\"");
         final QUser user = new QUser();
         user.setPlanServices(new LinkedList<>());
         user.setName(userName);
@@ -1357,7 +1357,7 @@ public class FAdmin extends javax.swing.JFrame {
                     flag = false;
                 }
             }
-            QLog.l().logger().debug("Добавляем пользователя \"" + userName + "\"");
+            QLog.l().logger().debug("Adding a user \"" + userName + "\"");
             final QUser newUser = new QUser();
             LinkedList<QPlanService> plan = new LinkedList<>();
             user.getPlanServices().stream().forEach((pl) -> {
@@ -1415,7 +1415,7 @@ public class FAdmin extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION) == 1) {
                 return;
             }
-            QLog.l().logger().debug("Удаляем пользователя \"" + ((QUser) listUsers.getSelectedValue()).getName() + "\"");
+            QLog.l().logger().debug("Delete user \"" + ((QUser) listUsers.getSelectedValue()).getName() + "\"");
 
             final int del = listUsers.getSelectedIndex();
             final QUserList m = (QUserList) listUsers.getModel();
@@ -1449,7 +1449,7 @@ public class FAdmin extends javax.swing.JFrame {
 
     @Action
     public void addService() throws DocumentException {
-        // Запросим название услуги и если оно уникально и не пусто, то примем
+        // We will request the name of the service and if it is unique and not empty, then we will accept
         String serviceName = "";
         boolean flag = true;
         while (flag) {
@@ -1469,7 +1469,7 @@ public class FAdmin extends javax.swing.JFrame {
                 flag = false;
             }
         }
-        // Созданим новую услугу и добавим ее в модель
+        // Create a new service and add it to the model
         final QService newService = new QService();
         newService.setName(serviceName);
         newService.setDescription(serviceName);
@@ -1500,7 +1500,7 @@ public class FAdmin extends javax.swing.JFrame {
         final TreePath path = new TreePath(nodes);
         treeServices.scrollPathToVisible(path);
         treeServices.setSelectionPath(path);
-        // родительскую услугу к новой услуге нужно исключить из списка привязанных к юзерам, т.к. она стала группой
+        // Parent service to the new service should be excluded from the list of users tied to users. She became a group
         deleteServiceFromUsers(parentService);
 
         QLog.l().logger().debug("Добавлена услуга \"" + serviceName + "\" в группу \"" + parentService.getName() + "\"");
@@ -1534,9 +1534,9 @@ public class FAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Из привязок к услугам всех юзеров убрать привязку к данной услуге и всех ее вложенных.
+     * From the bindings to the services of all users remove the binding to this service and all its nested.
      *
-     * @param service удаляемая услуга
+     * @param service Deletion service
      */
     private void deleteServicesFromUsers(QService service) {
 
@@ -1546,7 +1546,7 @@ public class FAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Из привязок к услугам всех юзеров убрать привязку к данной услуге.
+     * From the bindings to the services of all users remove the binding to this service.
      *
      * @param service удаляемая услуга
      */
@@ -1566,13 +1566,13 @@ public class FAdmin extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION) == 1) {
                 return;
             }
-            // Удалим эту услугу привязанную у пользователей
+            // Remove this service from users
             deleteServicesFromUsers(service);
-            // Удалим саму услугу
+            // Remove the service itself
             final int del = service.getParent().getIndex(service);
             final int col = service.getParent().getChildCount();
             ((QServiceTree) treeServices.getModel()).removeNodeFromParent(service);
-            // Удалим эту услугу привязанную как ярлык
+            // Remove this service tied as a shortcut
             QServiceTree.sailToStorm(((QServiceTree) treeServices.getModel()).getRoot(), (TreeNode srv) -> {
                 final QService serv = (QService) srv;
                 if (serv.getLink() != null && serv.getLink().getId().equals(service.getId())) {
@@ -1588,7 +1588,7 @@ public class FAdmin extends javax.swing.JFrame {
             } else if (col > del + 1) {
                 treeServices.setSelectionPath(new TreePath(((QServiceTree) treeServices.getModel()).getPathToRoot(service.getParent().getChildAt(del))));
             }
-            QLog.l().logger().debug("Удалена услуга \"" + service.getName() + "\" из группы \"" + service.getParent().getName() + "\"");
+            QLog.l().logger().debug("Service deleted \"" + service.getName() + "\" from the group \"" + service.getParent().getName() + "\"");
         }
     }
 
@@ -1627,7 +1627,7 @@ public class FAdmin extends javax.swing.JFrame {
         //textPaneInfoItem.setEnabled(true);
         //textPaneInfoPrint.setEnabled(true);
 
-        QLog.l().logger().debug("Добавлен инфоузел \"" + infoName + "\" в группу \"" + parentItem.getName() + "\"");
+        QLog.l().logger().debug("Added node \"" + infoName + "\" to group \"" + parentItem.getName() + "\"");
     }
 
     @Action
@@ -1652,7 +1652,7 @@ public class FAdmin extends javax.swing.JFrame {
             } else if (col > del + 1) {
                 treeInfo.setSelectionPath(new TreePath(((QInfoTree) treeInfo.getModel()).getPathToRoot(item.getParent().getChildAt(del))));
             }
-            QLog.l().logger().debug("Удален инфоузел \"" + item.getName() + "\" из группы \"" + item.getParent().getName() + "\"");
+            QLog.l().logger().debug("Removed node \"" + item.getName() + "\" from group \"" + item.getParent().getName() + "\"");
         }
     }
 
@@ -1696,21 +1696,21 @@ public class FAdmin extends javax.swing.JFrame {
                     QResponseTree.getInstance().save();
                     // Сохраняем результаты работы пользователя с клиентами
                     QResultList.getInstance().save();
-                    QLog.l().logger().debug("Сохранили конфигурацию.");
+                    QLog.l().logger().debug("The configuration was saved.");
                 } catch (Exception ex) {
-                    QLog.l().logger().error("Ошибка при сохранении \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+                    QLog.l().logger().error("Error while saving \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
                     status.setRollbackOnly();
                     return ex;
                 }
                 return null;
             });
         } catch (RuntimeException ex) {
-            throw new ClientException("Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n(" + ex.toString() + ")");
+            throw new ClientException("Error performing the operation of modifying data in the database (JDBC). Perhaps the parameters you entered can not be saved.\n(" + ex.toString() + ")");
         }
         if (res == null) {
             JOptionPane.showMessageDialog(this, getLocaleMessage("admin.save.title"), getLocaleMessage("admin.save.caption"), JOptionPane.INFORMATION_MESSAGE);
         } else {
-            throw new ClientException("Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n[" + res.getLocalizedMessage() + "]\n(" + res.toString() + ")\nSQL: ");
+            throw new ClientException("Error performing the operation of modifying data in the database (JDBC). Perhaps the parameters you entered can not be saved.\n[" + res.getLocalizedMessage() + "]\n(" + res.toString() + ")\nSQL: ");
         }
     }
 
@@ -1724,14 +1724,14 @@ public class FAdmin extends javax.swing.JFrame {
             user.addPlanService(service);
             if (listUserService.getLastVisibleIndex() != -1) {
                 listUserService.setSelectedIndex(listUserService.getLastVisibleIndex());
-                QLog.l().logger().debug("Пользователю \"" + user.getName() + "\" назначили услугу \"" + service.getName() + "\".");
+                QLog.l().logger().debug("User \"" + user.getName() + "\" appointed a service \"" + service.getName() + "\".");
             }
         }
         if (service != null && !service.isLeaf() && listUsers.getSelectedIndex() != -1 && !(user.hasService(service))) {
             QServiceTree.sailToStorm(service, (TreeNode service1) -> {
                 if (service1.isLeaf() && !user.hasService((QService) service1)) {
                     user.addPlanService((QService) service1);
-                    QLog.l().logger().debug("Пользователю \"" + ((QUser) listUsers.getSelectedValue()).getName() + "\" назначили услугу \"" + ((QService) service1).getName() + "\".");
+                    QLog.l().logger().debug("User \"" + ((QUser) listUsers.getSelectedValue()).getName() + "\" appointed a service \"" + ((QService) service1).getName() + "\".");
                 }
             });
             if (listUserService.getLastVisibleIndex() != -1) {
@@ -5329,7 +5329,7 @@ private void buttonCloudTestActionPerformed(java.awt.event.ActionEvent evt) {//G
     try {
         for (final IPing event : ServiceLoader.load(IPing.class)) {
             if (event.getUID() == 01L) {
-                QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
+                QLog.l().logger().info("Call the SPI extension. Description: " + event.getDescription());
                 sb.append(event.getDescription()).append(" ").append(getLocaleMessage("admin.cloud_test_dialog.result")).append(": ").append(event.ping()).append("\n");
             }
         }
@@ -5351,7 +5351,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
         int tmp = 0;
         try {
             for (final IDataExchange event : ServiceLoader.load(IDataExchange.class)) {
-                QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
+                QLog.l().logger().info("Call the SPI extension. Description: " + event.getDescription());
                 for (QService service : QServiceTree.getInstance().getNodes()) {
                     if (service.isLeaf()) {
                         event.sendServiceName(ServerProps.getInstance().getProps().getBranchOfficeId(), service.getId(), service.getName());
@@ -5372,7 +5372,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                 }
             }
         } catch (Throwable ex) {
-            QLog.l().logger().error("Не отослали названия в облако.", ex);
+            QLog.l().logger().error("They did not send the names to the cloud.", ex);
             JOptionPane.showConfirmDialog(null, getLocaleMessage("admin.cloud_senddata_dialog.message_err") + "\n" + ex.getMessage(), getLocaleMessage("admin.cloud_senddata_dialog.title"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
         }
         JOptionPane.showConfirmDialog(null, getLocaleMessage("admin.cloud_senddata_dialog.message") + " " + tmp + "/" + all, getLocaleMessage("admin.cloud_senddata_dialog.title"), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
@@ -5389,12 +5389,12 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
         final StringBuilder sb = new StringBuilder(getLocaleMessage("admin.zoneboard_test_dialog.results") + ":\n");
         try {
             for (final IPing event : ServiceLoader.load(IPing.class)) {
-                QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
+                QLog.l().logger().info("Call the SPI extension. Description: " + event.getDescription());
                 System.out.println(">>SPI: " + event.getDescription());
                 sb.append(event.getDescription()).append(" ").append(getLocaleMessage("admin.zoneboard_test_dialog.result")).append(": ").append(event.ping()).append("\n");
             }
         } catch (Throwable ex) {
-            QLog.l().logger().error("Ошибка при пинговании зонального сервера. ", ex);
+            QLog.l().logger().error("An error occurred while pinging the zone server. ", ex);
             sb.append(getLocaleMessage("admin.zoneboard_test_dialog.error"));
         }
         final String res = sb.toString();
@@ -5851,7 +5851,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
             treeServices.setSelectionPath(path);
             // родительскую услугу к новой услуге нужно исключить из списка привязанных к юзерам, т.к. она стала группой
             deleteServiceFromUsers(service);
-            QLog.l().logger().debug("Перенесена услуга \"" + serviceForCut.getName() + "\" в группу \"" + service.getName() + "\"");
+            QLog.l().logger().debug("Moved service \"" + serviceForCut.getName() + "\" in group \"" + service.getName() + "\"");
             serviceForCut = null;
         }
 
@@ -5930,7 +5930,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
             // родительскую услугу к новой услуге нужно исключить из списка привязанных к юзерам, т.к. она стала группой
             deleteServiceFromUsers(service);
             serviceForCopy = null;
-            QLog.l().logger().debug("Скопирована услуга \"" + newService + "\" в группу \"" + service.getName() + "\"");
+            QLog.l().logger().debug("Copied service \"" + newService + "\" in group \"" + service.getName() + "\"");
         }
     }//GEN-LAST:event_miPasteServiceActionPerformed
 
@@ -6089,7 +6089,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
 
     @Action
     public void editMainBoard() throws IOException {
-        QLog.l().logger().info("Открыть редактор главного табло.");
+        QLog.l().logger().info("Open the editor of the main scoreboard.");
         final ServerNetProperty servProp = new ServerNetProperty();
         try {
             if (board == null) {
@@ -6202,7 +6202,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                 flag = false;
             }
         }
-        QLog.l().logger().debug("Добавляем отзыв \"" + scheduleName + "\"");
+        QLog.l().logger().debug("Adding a schedule \"" + scheduleName + "\"");
         final QSchedule item = new QSchedule();
         item.setName(scheduleName);
         item.setType(0);
@@ -6219,7 +6219,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                     JOptionPane.YES_NO_OPTION) == 1) {
                 return;
             }
-            QLog.l().logger().debug("Удаляем план \"" + ((QSchedule) listSchedule.getSelectedValue()).getName() + "\"");
+            QLog.l().logger().debug("Delete the schedule \"" + ((QSchedule) listSchedule.getSelectedValue()).getName() + "\"");
 
             final int del = listSchedule.getSelectedIndex();
             final QScheduleList m = (QScheduleList) listSchedule.getModel();
@@ -6283,7 +6283,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                 flag = false;
             }
         }
-        QLog.l().logger().debug("Добавляем результат \"" + resultText + "\"");
+        QLog.l().logger().debug("Adding the result \"" + resultText + "\"");
         final QResult item = new QResult();
         item.setName(resultText);
         QResultList.getInstance().addElement(item);
@@ -6299,7 +6299,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                     JOptionPane.YES_NO_OPTION) == 1) {
                 return;
             }
-            QLog.l().logger().debug("Удаляем результат \"" + ((QResult) listResults.getSelectedValue()).getName() + "\"");
+            QLog.l().logger().debug("Delete the result \"" + ((QResult) listResults.getSelectedValue()).getName() + "\"");
 
             final int del = listResults.getSelectedIndex();
             final QResultList m = (QResultList) listResults.getModel();
@@ -6338,7 +6338,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                 flag = false;
             }
         }
-        QLog.l().logger().debug("Добавляем календарь \"" + calendarName + "\"");
+        QLog.l().logger().debug("Adding a calendar \"" + calendarName + "\"");
         final QCalendar item = new QCalendar();
         item.setName(calendarName);
         QCalendarList.getInstance().addElement(item);
@@ -6355,7 +6355,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                     JOptionPane.YES_NO_OPTION) == 1) {
                 return;
             }
-            QLog.l().logger().debug("Удаляем календарь \"" + ((QCalendar) listCalendar.getSelectedValue()).getName() + "\"");
+            QLog.l().logger().debug("Delete the calendar \"" + ((QCalendar) listCalendar.getSelectedValue()).getName() + "\"");
 
             final int del = listCalendar.getSelectedIndex();
             final QCalendarList m = (QCalendarList) listCalendar.getModel();
@@ -6446,7 +6446,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
 
     @Action
     public void addBreakToList() {
-        // Запросим название плана и если оно уникально, то примем
+        // We will request the name of the plan and if it is unique, we will take
         String breaksName = getLocaleMessage("admin.add_breaks_dialog.info");
         boolean flag = true;
         while (flag) {
@@ -6494,7 +6494,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
 
             final QBreaks item = (QBreaks) listBreaks.getSelectedValue();
 
-            // Уберем удаленные перерывы у расписаний
+            // Remove remote breaks from schedules
             boolean f = false;
             for (QSchedule schedule : QScheduleList.getInstance().getItems()) {
                 if (item.equals(schedule.getBreaks_1())) {
@@ -6531,8 +6531,8 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                 scheduleListChange();
             }
 
-            // Подотрать все прикрепленые интервалы не нужно. Они должны сами подтереться по констрейнту.
-            // подотрем сам список
+            // It is not necessary to cover all attached intervals. They must rub themselves on the contrain themselves.
+            // We will erase the list itself
             QBreaksList.getInstance().removeElement(item);
 
             if (col != 1) {
@@ -6576,7 +6576,7 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                     null,
                     new String[]{getLocaleMessage("admin.service_ability.yes"), getLocaleMessage("admin.service_ability.no")},
                     null);
-            //Если не выбрали, то выходим
+            // If you did not select, then we exit
             if (name != null) {
                 if (name.equalsIgnoreCase(getLocaleMessage("admin.service_ability.yes"))) {
                     NetCommander.changeTempAvailableService(new ServerNetProperty(), service.getId(), "");

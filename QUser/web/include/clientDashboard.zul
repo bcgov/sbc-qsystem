@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
-    
+
     <borderlayout>
-               
-        <center border="none" hflex="true">
+        <north border="none" hflex="true" splittable="true" height="@load(fmodel.getCFMSHeight())" style="@load(fmodel.getCFMSHidden())" autoscroll="true">
                         <panel title="@load(fmodel.avaitColumn)" border="normal" height="100%">
                 <panelchildren>
-                    <zscript><![CDATA[
-                        import java.util.Comparator;
-                        import ru.apertum.qsys.quser.WaitingPanelComparator;
-                        Comparator cTimeAsc = new WaitingPanelComparator(true, 1);
-                        Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
-                        Comparator cTicketAsc = new WaitingPanelComparator(true, 2);
-                        Comparator cTicketDsc = new WaitingPanelComparator(false, 2);
-                        Comparator cServiceAsc = new WaitingPanelComparator(true, 3);
-                        Comparator cServiceDsc = new WaitingPanelComparator(false, 3);
-                        //Comparator cPriorityAsc = new WaitingPanelComparator(true, 4);
-                        //Comparator cPriorityDsc = new WaitingPanelComparator(false, 4);
-                        Comparator cStateAsc = new WaitingPanelComparator(true, 4);
-                        Comparator cStateDsc = new WaitingPanelComparator(false, 4);
-                    ]]></zscript>
-                    <listbox id="service_list" model="@load(fmodel.user.customerList)" selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max" >
+                  <zscript>
+                        <![CDATA[
+                          import java.util.Comparator;
+                          import ru.apertum.qsys.quser.WaitingPanelComparator;
+                          Comparator cTimeAsc = new WaitingPanelComparator(true, 1);
+                          Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
+                          Comparator cTicketAsc = new WaitingPanelComparator(true, 2);
+                          Comparator cTicketDsc = new WaitingPanelComparator(false, 2);
+                          Comparator cServiceAsc = new WaitingPanelComparator(true, 3);
+                          Comparator cServiceDsc = new WaitingPanelComparator(false, 3);
+                          //Comparator cPriorityAsc = new WaitingPanelComparator(true, 4);
+                          //Comparator cPriorityDsc = new WaitingPanelComparator(false, 4);
+                          Comparator cStateAsc = new WaitingPanelComparator(true, 4);
+                          Comparator cStateDsc = new WaitingPanelComparator(false, 4);
+                        ]]>
+                  </zscript>
+                     <listbox id="service_list" model="@load(fmodel.user.customerList)" selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max">
                         <listhead>
                             <listheader label="Time" width="100px" align="center" sortAscending="${cTimeAsc}" sortDescending="${cTimeDsc}"/>
                             <listheader label="Ticket" width="100px" align="center" sortAscending="${cTicketAsc}" sortDescending="${cTicketDsc}"/>
@@ -46,33 +47,12 @@
                     <timer id="timer_service_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
                 </panelchildren>
                 <!-- Это окно для выора приоритета -->
-                
+
             </panel>
 
-        </center>
-        
-        <!--
-        <east size="550px" border="none" minsize="100"  hflex="max" splittable="true" >
-            <panel title="${c:l('invited_client')}" border="normal" height="100%" vflex="max">
-                <panelchildren style="overflow: auto">
-                    <vbox style="padding: 10px 10px;">
-                        <label id="nom_cap" value="${c:l('invited_num')}" style="text-decoration:underline;"/>
-                        <label id="cust_nom" visible="@load(!fmodel.btnsDisabled[0])" value="@load( (fmodel.customer == null) ? '' : (fmodel.customer.prefix).concat(fmodel.customer.number) )" style="padding: 0px 50px 50px 100px; font-size: 46px; color: Red; font-style: oblique;"/>
-                        <label id="cust_nomG" visible="@load(fmodel.btnsDisabled[0])" value="@load( (fmodel.customer == null) ? '' : (fmodel.customer.prefix).concat(fmodel.customer.number) )" style="padding: 0px 50px 50px 100px; font-size: 46px; color: Green; font-style: oblique;"/>
-                        <label id="cust_prior" visible="@load(!fmodel.btnsDisabled[0])" value="@load( (fmodel.customer == null) ? '' : fmodel.l('priority').concat(' ').concat(fmodel.getPriorityCaption( fmodel.customer.getPriority().get() ) ))" style="padding: 50px 0px 0px 100px; font-size: 24px; color: red; font-style: normal;"/>
-                        <label id="cust_priorG" visible="@load(fmodel.btnsDisabled[0])" value="@load( (fmodel.customer == null) ? '' : fmodel.l('priority').concat(' ').concat(fmodel.getPriorityCaption( fmodel.customer.getPriority().get() ) ))" style="padding: 50px 0px 0px 100px; font-size: 24px; color: green; font-style: normal;"/>
-                        <label id="serv_cap" value="${c:l('service_s')}" style="text-decoration:underline;"/>
-                        <label id="cust_serv_name" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" style="padding: 50px 0px 0px 40px; font-size: 24px; color: Black; font-style: normal;"/>
-                        <label id="inp_cap" value="@load(fmodel.customer.getService().getInput_caption())" style="text-decoration:underline;"/>
-                        <label id="cust_input_data" value="@load( (fmodel.customer == null) ? '' : fmodel.customer.getInput_data())" style="padding: 50px 0px 0px 40px; font-size: 24px; color: Blue; font-style: normal;"/>
-                        <label id="comments_cap" value="${c:l('comments_2')}" style="text-decoration:underline;"/>
-                        <label id="cust_comments" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))" style="font-size: 14px; color: Black; font-style: normal;"/>
-                    </vbox>
-                </panelchildren>
-            </panel>	
-        </east>
-        -->
-        <south hflex="min" splittable="true" minsize="150" maxsize="350" size="270px">
+        </north>
+
+        <center border="none" hflex="true" autoscroll="true">
             <panel title="Citizens on hold" border="normal" height="100%">
                 <panelchildren>
                     <listbox  id="postpone_list" model="@load(fmodel.postponList)" selectedItem="@bind(fmodel.pickedPostponed)" width="100%" height="100%" onClick="@command('clickListPostponedInvite')" vflex="max">
@@ -93,7 +73,7 @@
                             </listitem>
                         </template>
                     </listbox>
-                    
+
 <!--                    <menupopup id="postponeListPopup">
                         <menuitem label="${c:l('change_status')}" onClick="@command('clickListPostponedChangeStatus')" visible="@load(fmodel.login)"/>
                         <menuseparator />
@@ -101,8 +81,7 @@
                     </menupopup>-->
                 </panelchildren>
             </panel>
-                    
-        </south>
+        </center>
     </borderlayout>
     <div style="display: none;">
         <include id="incChangePriorityDialog" src="/include/dialog/changePriorityDialog.zul"/>

@@ -23,7 +23,7 @@
         <hbox>
             <vbox>
                 <label sclass="login-text" value="${c:l('user')}" width="150px" />
-                <combobox width="200px" tabindex="1" model="@load(fmodel.usersForLogin)" forward="onOK=btnSubmit.onClick" value="@bind(login_form.name)">
+                <combobox id="usr" width="200px" tabindex="1" model="@load(fmodel.usersForLogin)" forward="onOK=btnSubmit.onClick" value="@bind(login_form.name)">
                     <comboitem label="@load(each)"/>
                 </combobox>
             </vbox>

@@ -364,17 +364,7 @@ public final class Executer {
             super.process(cmdParams, ipAdress, IP);
             
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
-            //переключение на кастомера при параллельном приеме, должен приехать customerID
-            // switch to the custodian with parallel reception, must arrive customerID
-            if (cmdParams.customerId != null) {
-                final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
-                if (parallelCust == null) {
-                    QLog.l().logger().warn("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
-                } else {
-                    user.setCustomer(parallelCust);
-                    QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
-                }
-            }
+            
             final QCustomer customer = user.getCustomer();
             // Переставка в другую очередь
             // Название старой очереди
@@ -383,6 +373,7 @@ public final class Executer {
             final QService newServiceR = QServiceTree.getInstance().getById(cmdParams.serviceId);
             final QService newService = newServiceR.getLink() != null ? newServiceR.getLink() : newServiceR;
             
+            customer.popFirstService();
              // теперь стоит к новой услуги.
             customer.setService(newService);
             customer.setTempComments(cmdParams.comments);
@@ -402,6 +393,38 @@ public final class Executer {
         }        
     };
      
+    /**
+    * Switch to different service in the list
+    */
+    final Task swicthService = new Task(Uses.TASK_SWITCH_SERVICE) {
+        
+        @Override
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP){
+            super.process(cmdParams, ipAdress, IP);
+            
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+            final QCustomer customer = user.getCustomer();
+
+            final QService oldService = customer.getService();
+            final QService newService = customer.getServiceAtIndex(cmdParams.serviceIndex);
+            
+            customer.popFirstService();
+            customer.removeServiceWithIndex(newService.getServiceIndex());
+            
+            oldService.setTimeTaken();
+            newService.setStartServiceTime2(new Date());
+            
+            customer.getServicesList().add(oldService);
+            customer.setService(newService);
+
+            try {
+                QServer.savePool();
+            } catch (Exception ex) {
+                QLog.l().logger().error("Exception TASK_CHANGE_SERVICE"  +  ex.getLocalizedMessage());
+            }   
+            return new JsonRPC20OK();
+        }        
+    };
     
     /**
      * Пригласить кастомера, первого в очереди.
@@ -715,14 +738,14 @@ public final class Executer {
                 customer.setUser(user);
                 // только что встал типо. Поросто время нахождения в отложенных не считаетка как ожидание очереди. Инвче в statistic ожидание огромное
                 // just got up Tipo. It's not like waiting for a queue. Invnt in the statistic expectation of a huge
-                customer.setStandTime(new Date());
+
                 // ставим время вызова
                 // put the call time
                 customer.setCallTime(new Date());
                 // ну и услугу определим если тот кто вызвал не работает с услугой, из которой отложили
                 // well, and define the service if the one who called does not work with the service, from which they postponed
                 //set invite_time
-                customer.setInviteTime(new Date());
+                //customer.setInviteTime(new Date());
                 
                 boolean f = true;
                 for (QPlanService pl : user.getPlanServices()) {
@@ -1118,8 +1141,23 @@ public final class Executer {
             super.process(cmdParams, ipAdress, IP);
 
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
-            // Время старта работы с юзера с кастомером.
-            user.getCustomer().setStartTime(new Date());
+            final QCustomer customer = user.getCustomer();
+            int holdTime = 0;
+            Date currentDateTime = new Date();
+            
+            if (!customer.getCameFromHold()){
+                customer.getService().setStartServiceTime(new Date());
+                holdTime = (int) ((customer.getInviteTime().getTime() - customer.getStandTime().getTime()) / 1000);
+
+            }else{
+                holdTime = (int) ((currentDateTime.getTime() - customer.getService().getEndServiceTime().getTime()) / 1000);
+                customer.setCameFromHold(false);
+            }
+            
+            customer.setHoldTime(holdTime);
+            customer.setStartTime(new Date());
+            user.getCustomer().getService().setStartServiceTime2(currentDateTime);
+                       
             user.getCustomer().setPostponPeriod(0);
             // кастомер переходит в состояние "Начала обработки" или "Продолжение работы"
             user.getCustomer().setState(user.getCustomer().getState() == CustomerState.STATE_INVITED ? CustomerState.STATE_WORK : CustomerState.STATE_WORK_SECONDARY);
@@ -1221,6 +1259,8 @@ public final class Executer {
             customer.setState(CustomerState.STATE_POSTPONED);
             
             customer.setTempComments(cmdParams.comments);
+            customer.getService().setTimeTaken();
+                            
             try {
                 user.setCustomer(null);//бобик сдох но медалька осталось, отправляем в пулл
                 customer.setUser(null);
@@ -1270,6 +1310,7 @@ public final class Executer {
             // вот он все это творит
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             //переключение на кастомера при параллельном приеме, должен приехать customerID
+            //Switching to a custodian in parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
                 final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
                 if (parallelCust == null) {
@@ -1283,6 +1324,8 @@ public final class Executer {
             final QCustomer customer = user.getCustomer();
             // комменты
             customer.setTempComments(cmdParams.textData);
+            customer.getService().setTimeTaken();
+            
             // надо посмотреть не требует ли этот кастомер возврата в какую либо очередь.
             final QService backSrv = user.getCustomer().getServiceForBack();
             if (backSrv != null) {
@@ -1320,8 +1363,14 @@ public final class Executer {
                 }
                 ((QCustomer) customer).setResult(result);
                 customer.setFinishTime(new Date());
-                // кастомер переходит в состояние "Завершенности", но не "мертвости"
-                customer.setState(CustomerState.STATE_FINISH);
+                
+                if (cmdParams.inAccurateFinish){
+                    customer.setState(CustomerState.STATE_INACCURATE_TIME);
+                }else{
+                    // кастомер переходит в состояние "Завершенности", но не "мертвости"
+                    customer.setState(CustomerState.STATE_FINISH);
+                }
+                  
                 // дело такое, кастомер может идти по списку услуг, т.е. есть набор услуг, юзер завершает работу, а система его ведет по списку услуг
                 // тут посмотрим может его уже провели по списку комплексных услуг, если у него вообще они были
                 // если провели то у него статус другой STATE_WAIT_COMPLEX_SERVICE
@@ -1442,7 +1491,7 @@ public final class Executer {
                 */
             }
             // только что встал типо
-            customer.setStandTime(new Date());
+            //customer.setStandTime(new Date());
             //С НАЧАЛА ПОДОТРЕМ ПОТОМ ПЕРЕСТАВИМ!!!
             //с новым приоритетом ставим в новую очередь, приоритет должет
             //позволить вызваться ему сразу за обрабатываемыми кастомерами
@@ -1461,14 +1510,66 @@ public final class Executer {
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
-            }
-            
-            QLog.l().logQUser().debug("::::::  ::::::  ::::::  ::::::");
-            QLog.l().logQUser().debug("::::::  ::::::  ::::::  ::::::");
-            QLog.l().logQUser().debug("pRIORITY ::::::" + cmdParams.priority);
+            }            
             return new JsonRPC20OK();
         }
     };
+    
+        /**
+     * Переадресовать клиента к другой услуге.
+     * Forward the client to another service.
+     */
+    final Task addNextService = new Task(Uses.TASK_ADD_NEXT_SERVICE) {
+
+        @Override
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
+            super.process(cmdParams, ipAdress, IP);
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+            //переключение на кастомера при параллельном приеме, должен приехать customerID
+            // switch to the custodian with parallel reception, must arrive customerID
+            if (cmdParams.customerId != null) {
+                final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
+                if (parallelCust == null) {
+                    QLog.l().logger().warn("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
+                } else {
+                    user.setCustomer(parallelCust);
+                    QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+                }
+            }
+            
+            final QCustomer customer = user.getCustomer();
+            customer.setTempComments(cmdParams.comments);
+            // set added by which user
+            customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
+            
+            //get old service and set time taken
+            final QService oldService = customer.getService();
+            oldService.setTimeTaken();
+            
+            // вот она новая очередь.
+            final QService newServiceR = QServiceTree.getInstance().getById(cmdParams.serviceId);
+            final QService newService = newServiceR.getLink() != null ? newServiceR.getLink() : newServiceR;
+ 
+            final QResult result;
+            if (cmdParams.resultId != -1) {
+                result = QResultList.getInstance().getById(cmdParams.resultId);
+            } else {
+                result = null;
+            }
+            customer.setResult(result);
+            newService.setStartServiceTime(new Date());
+            newService.setStartServiceTime2(new Date());
+            customer.setService(newService);
+            
+            try {
+                QServer.savePool();
+            } catch (Exception ex) {
+                QLog.l().logger().error(ex);
+            }            
+            return new JsonRPC20OK();
+        }
+    };
+    
     /**
      * Привязка услуги пользователю на горячую по команде. Это обработчик этой команды.
      * Binding the service to the user on a hot on command. This is the handler for this command.
@@ -2106,8 +2207,35 @@ public final class Executer {
             return new RpcGetSrt("".equals(s) ? String.format(Locales.locMes("client_not_found_by_num"), num) : s);
         }
     };
+    
     /**
-     * Проверить номер кастомера :: Check Castomer Number
+     * Changing the Job status
+     */
+    final Task changeJobStatus = new Task(Uses.TASK_SET_JOB_STATUS) {
+
+        @Override
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP){
+            super.process(cmdParams, ipAdress, IP);
+            
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+            final QCustomer customer = user.getCustomer();
+            
+            QService updateService = customer.getService();
+            updateService.setJobStatus("Primary");
+            customer.setService(updateService);
+            
+            try {
+                QServer.savePool();
+//                MainBoard.getInstance().killCustomer(user);
+            } catch (Exception ex) {
+                QLog.l().logger().error("Exception TASK_SET_JOB_STATUS"  +  ex.getLocalizedMessage());
+            }   
+            return new JsonRPC20OK();
+        }       
+    };
+    
+    /**
+     * Проверить номер кастомера :: Check Customer Number
      */
     final Task checkCustomerNumber = new Task(Uses.TASK_CHECK_CUSTOMER_NUMBER) {
 

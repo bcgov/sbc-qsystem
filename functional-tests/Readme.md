@@ -85,3 +85,8 @@ Additional detail on a test may be obtained by reviewing the reports generated b
 - `functional-tests/build/reports/<name of driver>Test/tests/index.html`
 
 Where `<name of driver>` is either chrome or phantomJs.
+
+----
+## local configuration
+
+the `baseUrl` variable in `/functional-tests/src/test/resources` must use the pathfinder project host (e.g. `sbc-qsystem.pathfinder.bcgov`) for pipeline validation. In order to test locally, modify the system's `hosts` file to include the mapping `127.0.0.1 sbc-qsystem.pathfinder.bcgov`. QSystem must be run on port 80 for this to work.

@@ -87,7 +87,7 @@ import ru.apertum.qsystem.server.model.response.QRespItem;
 import ru.apertum.qsystem.server.model.results.QResult;
 
 /**
- * Содержит статические методы отправки и получения заданий на сервер. любой метод возвращает XML-узел ответа сервера.
+ * Contains static methods for sending and receiving jobs to the server. Any method returns an XML server response node.
  *
  * @author Evgeniy Egorov
  */
@@ -96,9 +96,9 @@ public class NetCommander {
     private static final JsonRPC20 JSON_RPC = new JsonRPC20();
 
     /**
-     * основная работа по отсылки и получению результата.
+     * The main work is to send and receive the result.
      *
-     * @param netProperty параметры соединения с сервером
+     * @param netProperty Server connection settings
      * @param commandName
      * @param params
      * @return XML-ответ
@@ -254,12 +254,12 @@ public class NetCommander {
      * @return XML-ответ
      */
     public static RpcGetAllServices.ServicesForWelcome getServices(INetProperty netProperty) {
-        QLog.l().logger().info("Получение возможных услуг.");
-        // загрузим ответ
+        QLog.l().logger().info("Obtaining possible services.");
+        // Load answer
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_GET_SERVICES, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         if (res == null) {
@@ -278,18 +278,18 @@ public class NetCommander {
     }
 
     /**
-     * Постановка в очередь.
+     * Queuing.
      *
-     * @param netProperty netProperty параметры соединения с сервером.
-     * @param serviceId услуга, в которую пытаемся встать.
-     * @param password пароль того кто пытается выполнить задание.
-     * @param priority приоритет.
+     * @param netProperty netProperty Parameters of connection with the server.
+     * @param serviceId Service in which we try to stand up.
+     * @param password Password of the one who is trying to complete the task.
+     * @param priority a priority.
      * @param inputData
-     * @return Созданный кастомер.
+     * @return Created a customizer.
      */
     public static QCustomer standInService(INetProperty netProperty, long serviceId, String password, int priority, String inputData) {
-        QLog.l().logger().info("Встать в очередь.");
-        // загрузим ответ
+        QLog.l().logger().info("To get in line.");
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         params.password = password;
@@ -298,7 +298,7 @@ public class NetCommander {
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_STAND_IN, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -314,21 +314,21 @@ public class NetCommander {
     }
 
     /**
-     * Постановка в очередь.
+     * Queuing.
      *
-     * @param netProperty netProperty параметры соединения с сервером.
-     * @param servicesId услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять списков. Первый это вольнопоследовательные
-     * услуги. Остальные четыре это зависимопоследовательные услуги, т.е. пока один не закончится на другой не переходить. Что такое элемент списка. Это тоже
-     * список. Первый элемент это та самая комплексная услуга(ID). А остальные это зависимости, т.е. если есть еще не оказанные услуги но назначенные, которые в
-     * зависимостях, то их надо оказать.
-     * @param password пароль того кто пытается выполнить задание.
-     * @param priority приоритет.
+     * @param netProperty netProperty parameters for connecting to the server.
+     * @param servicesId services we are trying to get into. It requires clarification what kind of 3D array it is. These are five lists. The first is freely sequential
+     * Services. The other four are sequentially dependent services, i.e. While one does not end on the other does not go over. What is a list item. It is too
+     * list. The first element is the same complex service (ID). And the rest are dependencies, i.e. If there are services not yet provided but designated, which in
+     * Dependencies, then they must be provided.
+     * @param password is the password of the one who is trying to complete the task.
+     * @param priority is the priority.
      * @param inputData
-     * @return Созданный кастомер.
+     * @return Created the customizer.
      */
     public static QCustomer standInSetOfServices(INetProperty netProperty, LinkedList<LinkedList<LinkedList<Long>>> servicesId, String password, int priority, String inputData) {
-        QLog.l().logger().info("Встать в очередь комплексно.");
-        // загрузим ответ
+        QLog.l().logger().info("To get in line in a complex.");
+        // Load answer
         final CmdParams params = new CmdParams();
         params.complexId = servicesId;
         params.password = password;
@@ -337,7 +337,7 @@ public class NetCommander {
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_STAND_COMPLEX, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -353,42 +353,42 @@ public class NetCommander {
     }
 
     /**
-     * Сделать услугу временно неактивной или разблокировать временную неактивность
+     * Make the service temporarily inactive or unlock temporary inactivity
      *
-     * @param netProperty netProperty параметры соединения с сервером.
-     * @param serviceId услуга, которую пытаемся править
+     * @param netProperty netProperty Parameters of connection with the server.
+     * @param serviceId Service we are trying to manage
      * @param reason
      */
     public static void changeTempAvailableService(INetProperty netProperty, long serviceId, String reason) {
-        QLog.l().logger().info("Сделать услугу временно неактивной/активной.");
-        // загрузим ответ
+        QLog.l().logger().info("Make the service temporarily inactive / active.");
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         params.textData = reason;
         try {
             send(netProperty, Uses.TASK_CHANGE_TEMP_AVAILABLE_SERVICE, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
 
     /**
-     * Узнать сколько народу стоит к услуге и т.д.
+     * Find out how many people are worth to the service, etc.
      *
-     * @param netProperty параметры соединения с сервером.
-     * @param serviceId id услуги о которой получаем информацию
-     * @return количество предшествующих.
+     * @param netProperty Parameters of connection with the server.
+     * @param serviceId id Services about which we receive information
+     * @return Number of precedents.
      * @throws QException
      */
     public static ServiceState aboutService(INetProperty netProperty, long serviceId) throws QException {
-        QLog.l().logger().info("Встать в очередь.");
-        // загрузим ответ
+        QLog.l().logger().info("To get in line.");
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_ABOUT_SERVICE, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new QException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -412,14 +412,14 @@ public class NetCommander {
      * @throws QException
      */
     public static ServiceState getServiceConsistency(INetProperty netProperty, long serviceId) throws QException {
-        QLog.l().logger().info("Встать в очередь.");
-        // загрузим ответ
+        QLog.l().logger().info("To get in line.");
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_GET_SERVICE_CONSISANCY, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new QException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -444,15 +444,15 @@ public class NetCommander {
      * @throws QException
      */
     public static int aboutServicePersonLimitOver(INetProperty netProperty, long serviceId, String inputData) throws QException {
-        QLog.l().logger().info("Узнать можно ли вставать в услугу с такими введенными данными.");
-        // загрузим ответ
+        QLog.l().logger().info("To find out whether it is possible to enter the service with such entered data.");
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         params.textData = inputData;
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_ABOUT_SERVICE_PERSON_LIMIT, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new QException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -475,11 +475,11 @@ public class NetCommander {
      */
     public static LinkedList<QUser> getUsers(INetProperty netProperty) {
         QLog.l().logger().info("Получение описания всех юзеров для выбора себя.");
-        // загрузим ответ
+        // Load answer
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_GET_USERS, null);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             Uses.closeSplash();
             throw new ClientException(Locales.locMes("command_error2"), e);
         } finally {
@@ -522,7 +522,7 @@ public class NetCommander {
      */
     public static RpcGetSelfSituation.SelfSituation getSelfServices(INetProperty netProperty, long userId, Boolean forced) throws QException {
         QLog.l().logger().info("Получение описания очередей для юзера.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.textData = QConfig.cfg().getPointN();
@@ -530,7 +530,7 @@ public class NetCommander {
         String res;
         try {
             res = send(netProperty, Uses.TASK_GET_SELF_SERVICES, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             Uses.closeSplash();
             throw new QException(Locales.locMes("command_error2"), e);
         }
@@ -560,14 +560,14 @@ public class NetCommander {
      */
     public static boolean getSelfServicesCheck(INetProperty netProperty, long userId) {
         QLog.l().logger().info("Получение описания очередей для юзера.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.textData = QConfig.cfg().getPointN();
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_SELF_SERVICES_CHECK, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             Uses.closeSplash();
             throw new ServerException(Locales.locMes("command_error2"), e);
         }
@@ -592,13 +592,13 @@ public class NetCommander {
      */
     public static QCustomer inviteNextCustomer(INetProperty netProperty, long userId) {
         QLog.l().logger().info("Получение следующего юзера из очередей, обрабатываемых юзером.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         final String res;
         try {
             res = send(netProperty, Uses.TASK_INVITE_NEXT_CUSTOMER, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -622,13 +622,13 @@ public class NetCommander {
      */
     public static void killNextCustomer(INetProperty netProperty, long userId, Long customerId) {
         QLog.l().logger().info("Удаление вызванного юзером кастомера.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.customerId = customerId;
         try {
             send(netProperty, Uses.TASK_KILL_NEXT_CUSTOMER, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -645,7 +645,7 @@ public class NetCommander {
      */
     public static void customerToPostpone(INetProperty netProperty, long userId, Long customerId, String status, int postponedPeriod, boolean isMine) {
         QLog.l().logger().info("Перемещение вызванного юзером кастомера в пул отложенных.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.customerId = customerId;
@@ -654,7 +654,7 @@ public class NetCommander {
         params.isMine = isMine;
         try {
             send(netProperty, Uses.TASK_CUSTOMER_TO_POSTPON, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -668,13 +668,13 @@ public class NetCommander {
      */
     public static void postponeCustomerChangeStatus(INetProperty netProperty, long postponCustomerId, String status) {
         QLog.l().logger().info("Перемещение вызванного юзером кастомера в пул отложенных.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.customerId = postponCustomerId;
         params.textData = status;
         try {
             send(netProperty, Uses.TASK_POSTPON_CHANGE_STATUS, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -687,12 +687,12 @@ public class NetCommander {
      */
     public static void getStartCustomer(INetProperty netProperty, long userId) {
         QLog.l().logger().info("Начать работу с вызванным кастомером.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         try {
             send(netProperty, Uses.TASK_START_CUSTOMER, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -709,7 +709,7 @@ public class NetCommander {
      */
     public static QCustomer getFinishCustomer(INetProperty netProperty, long userId, Long customerId, Long resultId, String comments) {
         QLog.l().logger().info("Закончить работу с вызванным кастомером.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.customerId = customerId;
@@ -718,7 +718,7 @@ public class NetCommander {
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_FINISH_CUSTOMER, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -746,7 +746,7 @@ public class NetCommander {
      */
     public static void redirectCustomer(INetProperty netProperty, long userId, Long customerId, long serviceId, boolean requestBack, String comments, Long resultId) {
         QLog.l().logger().info("Переадресовать клиента в другую очередь.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.customerId = customerId;
@@ -756,7 +756,7 @@ public class NetCommander {
         params.textData = comments;
         try {
             send(netProperty, Uses.TASK_REDIRECT_CUSTOMER, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -775,9 +775,9 @@ public class NetCommander {
         params.userId = userId;
         /*
          try {
-         // загрузим ответ
+         // Load answer
          return send(netProperty, Uses.TASK_I_AM_LIVE, params);
-         } catch (IOException e) {// вывод исключений
+         } catch (IOException e) {// Output of exceptions
          throw new ClientException(Locales.locMes("command_error2"), e);
          } catch (DocumentException e) {
          throw new ClientException(Locales.locMes("bad_response") + "\n" + e.toString());
@@ -796,11 +796,11 @@ public class NetCommander {
      */
     public static LinkedList<ServiceInfo> getServerState(INetProperty netProperty) {
         QLog.l().logger().info("Получение описания состояния сервера.");
-        // загрузим ответ
+        // Load answer
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_SERVER_STATE, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -825,7 +825,7 @@ public class NetCommander {
      */
     public static String getWelcomeState(INetProperty netProperty, String message, boolean dropTicketsCounter) {
         QLog.l().logger().info("Получение описания состояния пункта регистрации.");
-        // загрузим ответ
+        // Load answer
         String res = null;
         final CmdParams params = new CmdParams();
         params.dropTicketsCounter = dropTicketsCounter;
@@ -857,7 +857,7 @@ public class NetCommander {
      */
     public static String setServiseFire(INetProperty netProperty, long serviceId, long userId, int coeff) {
         QLog.l().logger().info("Привязка услуги пользователю на горячую.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.serviceId = serviceId;
@@ -890,7 +890,7 @@ public class NetCommander {
      */
     public static String deleteServiseFire(INetProperty netProperty, long serviceId, long userId) {
         QLog.l().logger().info("Удаление услуги пользователю на горячую.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.serviceId = serviceId;
@@ -921,7 +921,7 @@ public class NetCommander {
      */
     public static Element getBoardConfig(INetProperty netProperty) throws DocumentException {
         QLog.l().logger().info("Получение конфигурации главного табло - ЖК или плазмы.");
-        // загрузим ответ
+        // Load answer
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_BOARD_CONFIG, null);
@@ -948,7 +948,7 @@ public class NetCommander {
      */
     public static void saveBoardConfig(INetProperty netProperty, Element boardConfig) {
         QLog.l().logger().info("Сохранение конфигурации главного табло - ЖК или плазмы.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.textData = boardConfig.asXML();
         try {
@@ -969,7 +969,7 @@ public class NetCommander {
      */
     public static RpcGetGridOfDay.GridDayAndParams getPreGridOfDay(INetProperty netProperty, long serviceId, Date date, long advancedCustomer) {
         QLog.l().logger().info("Получить таблицу дня");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         params.date = date.getTime();
@@ -977,7 +977,7 @@ public class NetCommander {
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_GRID_OF_DAY, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1003,7 +1003,7 @@ public class NetCommander {
      */
     public static RpcGetGridOfWeek.GridAndParams getGridOfWeek(INetProperty netProperty, long serviceId, Date date, long advancedCustomer) {
         QLog.l().logger().info("Получить таблицу");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         params.date = date.getTime();
@@ -1011,7 +1011,7 @@ public class NetCommander {
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_GRID_OF_WEEK, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1039,7 +1039,7 @@ public class NetCommander {
      */
     public static QAdvanceCustomer standInServiceAdvance(INetProperty netProperty, long serviceId, Date date, long advancedCustomer, String inputData, String comments) {
         QLog.l().logger().info("Записать предварительно в очередь.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         params.date = date.getTime();
@@ -1049,7 +1049,7 @@ public class NetCommander {
         final String res;
         try {
             res = send(netProperty, Uses.TASK_ADVANCE_STAND_IN, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1073,13 +1073,13 @@ public class NetCommander {
      */
     public static RpcStandInService standAndCheckAdvance(INetProperty netProperty, Long advanceID) {
         QLog.l().logger().info("Постановка предварительно записанных в очередь.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.customerId = advanceID;
         final String res;
         try {
             res = send(netProperty, Uses.TASK_ADVANCE_CHECK_AND_STAND, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1103,13 +1103,13 @@ public class NetCommander {
      */
     public static JsonRPC20OK removeAdvancedCustomer(INetProperty netProperty, Long advanceID) {
         QLog.l().logger().info("Удаление предварительно записанных в очередь.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.customerId = advanceID;
         final String res;
         try {
             res = send(netProperty, Uses.TASK_REMOVE_ADVANCE_CUSTOMER, params);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1133,7 +1133,7 @@ public class NetCommander {
         QLog.l().logger().info("Команда на рестарт сервера.");
         try {
             send(netProperty, Uses.TASK_RESTART, null);
-        } catch (QException e) {// вывод исключений
+        } catch (QException e) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -1148,9 +1148,9 @@ public class NetCommander {
         QLog.l().logger().info("Команда на получение дерева отзывов.");
         String res = null;
         try {
-            // загрузим ответ
+            // Load answer
             res = send(netProperty, Uses.TASK_GET_RESPONSE_LIST, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         if (res == null) {
@@ -1180,7 +1180,7 @@ public class NetCommander {
      */
     public static void setResponseAnswer(INetProperty netProperty, QRespItem resp, Long userID, Long serviceID, Long customerID, String clientData) {
         QLog.l().logger().info("Отправка выбранного отзыва.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.responseId = resp.getId();
         params.serviceId = serviceID;
@@ -1190,7 +1190,7 @@ public class NetCommander {
         params.comments = resp.data;
         try {
             send(netProperty, Uses.TASK_SET_RESPONSE_ANSWER, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ServerException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1205,9 +1205,9 @@ public class NetCommander {
         QLog.l().logger().info("Команда на получение информационного дерева.");
         String res = null;
         try {
-            // загрузим ответ
+            // Load answer
             res = send(netProperty, Uses.TASK_GET_INFO_TREE, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         if (res == null) {
@@ -1234,13 +1234,13 @@ public class NetCommander {
      */
     public static QAuthorizationCustomer getClientAuthorization(INetProperty netProperty, String id) {
         QLog.l().logger().info("Получение описания авторизованного пользователя.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.clientAuthId = id;
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_CLIENT_AUTHORIZATION, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1265,9 +1265,9 @@ public class NetCommander {
         QLog.l().logger().info("Команда на получение списка возможных результатов работы с клиентом.");
         final String res;
         try {
-            // загрузим ответ RpcGetResultsList
+            // Load answer RpcGetResultsList
             res = send(netProperty, Uses.TASK_GET_RESULTS_LIST, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1292,14 +1292,14 @@ public class NetCommander {
      */
     public static String setCustomerPriority(INetProperty netProperty, int prioritet, String customer) {
         QLog.l().logger().info("Команда на повышение приоритета кастомеру.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.priority = prioritet;
         params.clientAuthId = customer;
         final String res;
         try {
             res = send(netProperty, Uses.TASK_SET_CUSTOMER_PRIORITY, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1323,13 +1323,13 @@ public class NetCommander {
      */
     public static TicketHistory checkCustomerNumber(INetProperty netProperty, String customerNumber) {
         QLog.l().logger().info("Команда проверки номера кастомера.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.clientAuthId = customerNumber;
         final String res;
         try {
             res = send(netProperty, Uses.TASK_CHECK_CUSTOMER_NUMBER, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1345,18 +1345,18 @@ public class NetCommander {
     }
 
     /**
-     * Получить список отложенных кастомеров
+     * Get a list of deferred customers
      *
      * @param netProperty
-     * @return список отложенных кастомеров
+     * @return List of deferred customers
      */
     public static LinkedList<QCustomer> getPostponedPoolInfo(INetProperty netProperty) {
-        QLog.l().logger().info("Команда на обновление пула отложенных.");
-        // загрузим ответ
+        QLog.l().logger().info("Team to update the pool of pending.");
+        // Load answer
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_POSTPONED_POOL, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1379,11 +1379,11 @@ public class NetCommander {
      */
     public static LinkedList<String> getBanedList(INetProperty netProperty) {
         QLog.l().logger().info("Команда получение списка забаненных.");
-        // загрузим ответ
+        // Load answer
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_BAN_LIST, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1410,10 +1410,10 @@ public class NetCommander {
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.customerId = id;
-        // загрузим ответ
+        // Load answer
         try {
             send(netProperty, Uses.TASK_INVITE_POSTPONED, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1425,10 +1425,10 @@ public class NetCommander {
      */
     public static void restartMainTablo(INetProperty serverNetProperty) {
         QLog.l().logger().info("Команда на рестарт главного табло.");
-        // загрузим ответ
+        // Load answer
         try {
             send(serverNetProperty, Uses.TASK_RESTART_MAIN_TABLO, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1445,10 +1445,10 @@ public class NetCommander {
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.textData = smartData;
-        // загрузим ответ
+        // Load answer
         try {
             send(netProperty, Uses.TASK_CHANGE_FLEX_PRIORITY, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1462,13 +1462,13 @@ public class NetCommander {
      */
     public static void setRunningText(INetProperty netProperty, String text, String nameSection) {
         QLog.l().logger().info("Получение описания авторизованного пользователя.");
-        // загрузим ответ
+        // Load answer
         final CmdParams params = new CmdParams();
         params.textData = text;
         params.infoItemName = nameSection;
         try {
             send(netProperty, Uses.TASK_CHANGE_RUNNING_TEXT_ON_BOARD, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1481,11 +1481,11 @@ public class NetCommander {
      */
     public static QStandards getStandards(INetProperty netProperty) {
         QLog.l().logger().info("Команда получение нормативов.");
-        // загрузим ответ
+        // Load answer
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_STANDARDS, null);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1513,11 +1513,11 @@ public class NetCommander {
         final CmdParams params = new CmdParams();
         params.userId = userId;
         params.requestBack = lock;
-        // загрузим ответ
+        // Load answer
         final String res;
         try {
             res = send(netProperty, Uses.TASK_SET_BUSSY, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1541,11 +1541,11 @@ public class NetCommander {
     public static LinkedHashMap<String, ServerProps.Section> getProperties(INetProperty netProperty) {
         QLog.l().logger().info("Получить параметры.");
         final CmdParams params = new CmdParams();
-        // загрузим ответ
+        // Load answer
         final String res;
         try {
             res = send(netProperty, Uses.TASK_GET_PROPERTIES, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1571,11 +1571,11 @@ public class NetCommander {
         QLog.l().logger().info("Изменить и сохранить параметеры в ДБ на сервере.");
         final CmdParams params = new CmdParams();
         params.properties = properties;
-        // загрузим ответ
+        // Load answer
         final String res;
         try {
             res = send(netProperty, Uses.TASK_INIT_PROPERTIES, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -1601,11 +1601,11 @@ public class NetCommander {
         QLog.l().logger().info("Если таких параметров нет, то создать их в ДБ на сервере.");
         final CmdParams params = new CmdParams();
         params.properties = properties;
-        // загрузим ответ
+        // Load answer
         final String res;
         try {
             res = send(netProperty, Uses.TASK_SAVE_PROPERTIES, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exceptions
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
