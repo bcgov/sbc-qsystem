@@ -411,6 +411,7 @@ public final class Executer {
         
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer pickedCustomer) {
+            QLog.l().logger().debug("\n\n\n I get HERE!!!! \n\n\n");
             super.process(cmdParams, ipAdress, IP, pickedCustomer);
             // вот он все это творит ::: Here he is doing it all
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -434,7 +435,8 @@ public final class Executer {
             // статус
             customer.setPostponedStatus(cmdParams.textData);
             // на сколько отложили. 0 - бессрочно
-            customer.setPostponPeriod(cmdParams.postponedPeriod);
+//            customer.setPostponPeriod(cmdParams.postponedPeriod);
+            customer.setPostponPeriod(0);
             // если отложили бессрочно и поставили галку, то можно видеть только отложенному
             customer.setIsMine(cmdParams.isMine != null && cmdParams.isMine ? cmdParams.userId : null);
             // в этом случае завершаем с пациентом
@@ -480,12 +482,13 @@ public final class Executer {
         private final HashSet<QUser> usrs = new HashSet<>();
 
         class MyRun implements Runnable {
-
+            
             private QUser user;
             private boolean isFrst;
-
+            
             @Override
             public void run() {
+                QLog.l().logger().debug("\n\n\n\nCUSTOMER HEREERERERE!!!!!!!!!!!!!!!!!!!!\n\n" + user.getCustomer() + "\n\n\n");
                 final long delta = System.currentTimeMillis() - user.getCustomer().getStandTime().getTime();
                 //System.out.println("################## " + QLog.l().getPauseFirst());
                 if (delta < QConfig.cfg().getDelayFirstInvite() * 1000) {
@@ -504,7 +507,11 @@ public final class Executer {
                     SoundPlayer.inviteClient(user.getCustomer().getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), isFrst);
                     // Должно высветитьсяна основном табло :: Must be highlighted on the main board
                     MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
+                    
+                    QLog.l().logger().debug("CUSTOMER HEREERERERE  _inside loop\n\n" + user.getCustomer() + "\n\n\n");
                 }
+                QLog.l().logger().debug("CUSTOMER HEREERERERE\n\n" + user.getCustomer() + "\n\n\n");
+                QLog.l().logger().debug("CUSTOMER HEREERERERE\n\n" + user + "\n\n\n");
                 usrs.remove(user);
             }
         }
@@ -685,6 +692,7 @@ public final class Executer {
          */
         @Override
         synchronized public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
+            QLog.l().logger().debug("\n\n\n PPPPPPOSTPONMENENENEN!!!! \n\n\n");
             super.process(cmdParams, ipAdress, IP);
             // синхронизация работы с клиентом
             // Synchronization of work with the client
@@ -715,7 +723,7 @@ public final class Executer {
                 customer.setUser(user);
                 // только что встал типо. Поросто время нахождения в отложенных не считаетка как ожидание очереди. Инвче в statistic ожидание огромное
                 // just got up Tipo. It's not like waiting for a queue. Invnt in the statistic expectation of a huge
-                customer.setStandTime(new Date());
+//                customer.setStandTime(new Date());
                 // ставим время вызова
                 // put the call time
                 customer.setCallTime(new Date());
@@ -1148,7 +1156,7 @@ public final class Executer {
             
             // только что встал типо. Поросто время нахождения в отложенных не считаетка как ожидание очереди. Инвче в statistic ожидание огромное
             // just got up Tipo. It's not like waiting for a queue. Invnt in the statistic expectation of a huge
-            customer.setStandTime(new Date());
+//            customer.setStandTime(new Date());
      
             // ставим время вызова
             // put the call time
@@ -1290,7 +1298,7 @@ public final class Executer {
                 // действия по завершению работы юзера над кастомером
                 customer.setFinishTime(new Date());
                 // кастомер переходит в состояние "возврата", тут еще и в базу скинется, если надо.
-                customer.setState(CustomerState.STATE_BACK, backSrv.getId());
+//                customer.setState(CustomerState.STATE_BACK, backSrv.getId());
                 // переставить кастомера в очередь к пункту возврата
                 backSrv.addCustomer(customer);
                 // надо кастомера инициализить др. услугой
@@ -1321,7 +1329,14 @@ public final class Executer {
                 ((QCustomer) customer).setResult(result);
                 customer.setFinishTime(new Date());
                 // кастомер переходит в состояние "Завершенности", но не "мертвости"
-                customer.setState(CustomerState.STATE_FINISH);
+//                customer.setState(CustomerState.STATE_FINISH);
+                
+                if (cmdParams.inAccurateFinish){
+                customer.setState(CustomerState.STATE_INACCURATE_TIME);
+                }else{
+                    // кастомер переходит в состояние "Завершенности", но не "мертвости"
+                    customer.setState(CustomerState.STATE_FINISH);
+                }
                 // дело такое, кастомер может идти по списку услуг, т.е. есть набор услуг, юзер завершает работу, а система его ведет по списку услуг
                 // тут посмотрим может его уже провели по списку комплексных услуг, если у него вообще они были
                 // если провели то у него статус другой STATE_WAIT_COMPLEX_SERVICE

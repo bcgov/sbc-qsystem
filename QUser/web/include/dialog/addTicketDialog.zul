@@ -59,7 +59,8 @@
                         <!--Add Next Service-->
                         <button id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
 
-                        <!--Redirect / Back to Queue-->                    
+                        <!--Redirect / Back to Queue-->
+                        <!--No longer exist-->                     
                         <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeRedirectDialog')" visible="@load(fmodel.addWindowButtons[3])"/>
 
                         <!--Cancel Button For all Windows-->
