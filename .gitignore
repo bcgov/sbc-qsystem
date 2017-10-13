@@ -18,6 +18,9 @@
 *.tar.gz
 *.rar
 
+# Maven builds
+/*/target
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /QSystem/build
@@ -32,6 +35,9 @@ hs_err_pid*
 /QSmartboardPlugin/nbproject/private/
 /QSmartboard/build/
 /QSmartboard/dist/
+
+/QSystem/nbproject/private/
+/QUser/nbproject/private/
 
 /dist/*.jar
 /dist/*.war
