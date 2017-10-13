@@ -1190,6 +1190,76 @@ public final class Executer {
             return new JsonRPC20OK();
         }
     };
+    
+    final Task customerReturnQueueTask = new Task(Uses.TASK_CUSTOMER_RETURN_QUEUE) {
+        @Override
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
+            super.process(cmdParams, ipAdress, IP);
+            // вот он все это творит ::: Here he is doing it all
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+                        // switch to the custodian with parallel reception, must arrive customerID
+            if (cmdParams.customerId != null) {
+                final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
+                if (parallelCust == null) {
+                    QLog.l().logger().warn("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
+                } else {
+                    user.setCustomer(parallelCust);
+                    QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+                }
+            }
+            
+            final QCustomer customer = user.getCustomer();
+            
+            customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
+            
+            final QService service = QServiceTree.getInstance().getById(cmdParams.serviceId);
+            
+            customer.setWelcomeTime(cmdParams.welcomeTime);
+
+            // Define the customizer in the queue
+            customer.setService(service);                
+
+            if (service.getLink() != null) {
+                customer.setService(service.getLink());
+            }
+
+            // the setting time is automatically inserted when creating a customizer.
+            // Priority "like everyone else"
+            customer.setPriority(cmdParams.priority);
+
+            // The data entered by the customizer
+            customer.setTempComments(cmdParams.comments);
+            
+            // add the customer to the list
+            (service.getLink() != null ? service.getLink() : service).addCustomer(customer);
+            
+            customer.setState(CustomerState.STATE_WAIT);
+            
+            
+            
+            try {
+//                user.setCustomer(null);//бобик сдох но медалька осталось, отправляем в пулл
+//                customer.setUser(null);
+//                QPostponedList.getInstance().addElement(customer);
+                // сохраняем состояния очередей.
+                QServer.savePool();
+                //разослать оповещение о том, что посетитель отложен
+//                Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
+                //рассылаем широковещетельно по UDP на определенный порт. Должно высветитьсяна основном табло
+//                MainBoard.getInstance().killCustomer(user);
+                
+                Uses.sendUDPBroadcast(service.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
+
+                // Должно высветитьсяна основном табло в таблице ближайших
+                // Must be highlighted on the main scoreboard in the nearest table
+                MainBoard.getInstance().customerStandIn(customer);
+            } catch (Throwable t) {
+                QLog.l().logger().error("return to queue error", t);
+            }
+            return new JsonRPC20OK();               
+        }
+    };
+    
     /**
      * Перемещение вызванного юзером кастомера в пул отложенных.
      */
