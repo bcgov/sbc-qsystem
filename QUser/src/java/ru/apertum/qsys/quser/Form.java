@@ -445,44 +445,81 @@ public class Form{
     @Command
     public void ReturnedRedirect(){
         
-        final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
-        //params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
-        params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
-        customer.setTempComments(params.comments);
-        
-        
-        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON).process(params, "", new byte[4]);
-        customer = null;
 
-        setKeyRegim(KEYS_MAY_INVITE);
-        postpone_list.setModel(postpone_list.getModel());
-        postponeCustomerDialog.setVisible(false);
-        serveCustomerDialogWindow.setVisible(false);
-        ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).setText("");
-        BindUtils.postNotifyChange(null, null, Form.this, "*");
-        
-        final QUser user = QUserList.getInstance().getById(params.userId);
-        //переключение на кастомера при параллельном приеме, должен приехать customerID
-        // switch to the custodian with parallel reception, must arrive customerID
-        if (params.customerId != null) {
-            final QCustomer parallelCust = user.getParallelCustomers().get(params.customerId);
-            if (parallelCust == null) {
-                QLog.l().logger().warn("PARALLEL: User have no Customer for switching by customer ID=\"" + params.customerId + "\"");
-            } else {
-                user.setCustomer(parallelCust);
-                QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
-            }
-        }
-        
-        
-        
+//        final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+//        //params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
+//        params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
+//        customer.setTempComments(params.comments);
+//        
+//        
+//        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON).process(params, "", new byte[4]);
+//        customer = null;
+//
+//        setKeyRegim(KEYS_MAY_INVITE);
+//        postpone_list.setModel(postpone_list.getModel());
+//        postponeCustomerDialog.setVisible(false);
+//        serveCustomerDialogWindow.setVisible(false);
+//        ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).setText("");
+//        BindUtils.postNotifyChange(null, null, Form.this, "*");
+//        
+//        final QUser user = QUserList.getInstance().getById(params.userId);
+//        //переключение на кастомера при параллельном приеме, должен приехать customerID
+//        // switch to the custodian with parallel reception, must arrive customerID
+//        if (params.customerId != null) {
+//            final QCustomer parallelCust = user.getParallelCustomers().get(params.customerId);
+//            if (parallelCust == null) {
+//                QLog.l().logger().warn("PARALLEL: User have no Customer for switching by customer ID=\"" + params.customerId + "\"");
+//            } else {
+//                user.setCustomer(parallelCust);
+//                QLog.l().logger().debug("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+//            }
+//        }
+//
+////            Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER).process(params, "", new byte[4]);
+//        
+//        this.addToQueue(params);
+//        setKeyRegim(KEYS_MAY_INVITE);
+//        service_list.setModel(service_list.getModel());
+//        serveCustomerDialogWindow.setVisible(false);
+
+//        if (pickedRedirectServ != null) {
+//            if (!pickedRedirectServ.isLeaf()) {
+//                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+//                return;
+//            }
+//            customer = user.getUser().getCustomer();
+            final CmdParams params = new CmdParams();
+            params.userId = user.getUser().getId();
+            params.resultId = -1l;
+            params.priority = Uses.PRIORITY_NORMAL;
+            params.isMine = Boolean.FALSE;          
+            params.welcomeTime = user.getCustomerWelcomeTime();
+//            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+            params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
 
 //            Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER).process(params, "", new byte[4]);
-        
-        this.addToQueue(params);
-        setKeyRegim(KEYS_MAY_INVITE);
-        service_list.setModel(service_list.getModel());
-        serveCustomerDialogWindow.setVisible(false);
+            
+            QLog.l().logQUser().debug("\n\n\n CHECK SERVICE NAME" + user.getUser().getCustomer().getService().getName() + "\nCHECK SERVICEID: " + params.serviceId + "\n\n");
+         
+            customer = user.getUser().getCustomer();
+            params.serviceId = user.getUser().getCustomer().getService().getId();
+            customer.setTempComments(params.comments);      
+            
+            Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE).process(params, "", new byte[4]);
+//            Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER).process(params, "", new byte[4]);
+            
+//            this.addToQueue(params);
+            
+            customer = null;
+            setKeyRegim(KEYS_MAY_INVITE);
+            service_list.setModel(service_list.getModel());
+//            QLog.l().logQUser().debug("\n\nTEST LIST: " + service_list.getModel() + "\n\n");
+            serveCustomerDialogWindow.setVisible(false);
+//        }
+
+
+
+
     }
     
     @Command
@@ -495,7 +532,17 @@ public class Form{
                 return;
             }
             
-            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+
+            final CmdParams params = new CmdParams();
+            params.userId = user.getUser().getId();
+            params.serviceId = pickedRedirectServ.getId();
+            params.resultId = -1l;
+            params.priority = Uses.PRIORITY_NORMAL;
+            params.isMine = Boolean.FALSE;
+           
+            params.welcomeTime = user.getCustomerWelcomeTime();
+//            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+
             params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
 
 //            Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER).process(params, "", new byte[4]);
