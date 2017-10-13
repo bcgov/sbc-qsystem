@@ -376,12 +376,12 @@ public class Form{
         final RpcInviteCustomer result = (RpcInviteCustomer) Executer.getInstance().getTasks().get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
         if (result.getResult() != null) {
             customer = result.getResult();
-            if (customer != null && customer.getPostponPeriod() > 0) {
-                Messagebox.show(l("client_was_postponed_on")
-                        + " " + customer.getPostponPeriod() + " "
-                        + l("min_invited_status")
-                        + " \"" + customer.getPostponedStatus() + "\".", l("inviting_postponed"), Messagebox.OK, Messagebox.INFORMATION);
-            }
+//            if (customer != null && customer.getPostponPeriod() > 0) {
+//                Messagebox.show(l("client_was_postponed_on")
+//                        + " " + customer.getPostponPeriod() + " "
+//                        + l("min_invited_status")
+//                        + " \"" + customer.getPostponedStatus() + "\".", l("inviting_postponed"), Messagebox.OK, Messagebox.INFORMATION);
+//            }
             setKeyRegim(KEYS_INVITED);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
             this.addServeScreen();
@@ -445,6 +445,7 @@ public class Form{
     @Command
     public void ReturnedRedirect(){
         
+
 //        final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
 //        //params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
 //        params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
@@ -518,6 +519,7 @@ public class Form{
 
 
 
+
     }
     
     @Command
@@ -530,6 +532,7 @@ public class Form{
                 return;
             }
             
+
             final CmdParams params = new CmdParams();
             params.userId = user.getUser().getId();
             params.serviceId = pickedRedirectServ.getId();
@@ -539,6 +542,7 @@ public class Form{
            
             params.welcomeTime = user.getCustomerWelcomeTime();
 //            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+
             params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
 
 //            Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER).process(params, "", new byte[4]);
