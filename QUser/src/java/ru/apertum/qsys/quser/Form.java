@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
@@ -60,6 +61,7 @@ import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.server.model.postponed.QPostponedList;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
+import ru.apertum.qsys.quser.WaitingPanelComparator;
 
 /**
  *
@@ -318,6 +320,45 @@ public class Form{
     public boolean[] getAddWindowButtons() {
         return addWindowButtons;
     }
+    
+    /* Add Hide Button if Not Receptionist Model */
+
+       private boolean checkCFMSType = false;
+       private String checkCFMSHidden = "display: none;";
+       private String checkCFMSHeight = "0%";
+
+       public boolean getCFMSType() {
+               String qsb = System.getenv ("QSB");
+               if (qsb.equalsIgnoreCase("callbyticket")) {
+                       checkCFMSType = true;
+               };
+               if (qsb.equalsIgnoreCase("callbyname")) {
+                       checkCFMSType = true;
+               };
+               return checkCFMSType;
+       }
+
+       public String getCFMSHidden() {
+               String qsb = System.getenv ("QSB");
+               if (qsb.equalsIgnoreCase("callbyticket")) {
+                       checkCFMSHidden = "display: inline;";
+               };
+               if (qsb.equalsIgnoreCase("callbyname")) {
+                       checkCFMSHidden = "display: inline;";
+               };
+               return checkCFMSHidden;
+       }
+
+       public String getCFMSHeight() {
+               String qsb = System.getenv ("QSB");
+               if (qsb.equalsIgnoreCase("callbyticket")) {
+                       checkCFMSHeight = "70%";
+               };
+               if (qsb.equalsIgnoreCase("callbyname")) {
+                       checkCFMSHeight = "70%";
+               };
+               return checkCFMSHeight;
+       }
     
     private QCustomer customer = null;
     
@@ -1090,13 +1131,27 @@ public class Form{
             
             final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
             this.addToQueue(params);
-            
+//            onSort();
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
             addTicketDailogWindow.setVisible(false);
         }
     }
+    
+    public void onSort() {
+        Comparator cTimeAsc;
+        cTimeAsc = new WaitingPanelComparator(true, 1);
+        Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
+//        final listheader lh = (listheader)service_list.getListhead().getChildren();
+//        new ("New Stuff").setParent(service_list);
+//        if (!"natural".cTimeAsc.getSortDirection())
+//        service_list.getListhead().getChildren().sort(cTimeAsc, true);
+//        service_list.getListhead().getChildren().sort(cTimeAsc,true);
+//        final Listheader lh = 
+//        SortTime.sort(cTimeAsc,true);
+    };
+    
     
     public CmdParams paramsForAddingInQueue(Integer priority, Boolean isMine) {
         final CmdParams params = new CmdParams();
