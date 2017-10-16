@@ -732,10 +732,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     
     //    ANDREW added quantity for insert into DB
     @Expose
-    @SerializedName("Service_quantity")
+    @SerializedName("service_quantity")
     private String quantity = "1";
 
-    @Column(name = "Service_quantity")
+    @Column(name = "service_quantity")
     public String getQuantity() {
         QLog.l().logger().trace("/n/nNAME\n:  " + this.getService().getName() + " \n\n\n ");
         QLog.l().logger().trace("/n/nTTEST from Customer:  " + quantity + " \n\n ");
