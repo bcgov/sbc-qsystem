@@ -16,6 +16,7 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.Comparator;
+import java.util.Collections;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
@@ -25,6 +26,13 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.resource.Labels;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.util.Composer;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listcell;
+import org.zkoss.zul.Listheader;
+import org.zkoss.zul.Listhead;
+import org.zkoss.zul.Listitem;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
@@ -787,6 +795,7 @@ public class Form{
                 user.setCustomerList(user.getPlan());                
                 service_list.setModel(service_list.getModel());
                 oldSt = st.toString();
+                Sort();
                 BindUtils.postNotifyChange(null, null, Form.this, "*");  
                 
             }
@@ -1132,24 +1141,65 @@ public class Form{
             final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
             this.addToQueue(params);
 //            onSort();
+//            private Listheader SortTime;
+//            Listheader listHeader1 = new Listheader();
+//            listHeader1.setLabel("ABC");
+//            Listheader hd = (Listheader)component.getFellow("SortTime");
+//            .setSortDirection("ascending");
+//            Comparator cTimeAsc;
+//            cTimeAsc = new WaitingPanelComparator(true, 1);
+//            Object child = service_list.getListhead().getChildren();
+//            ListModelList model = (ListModelList) service_list;
+//            final Listheader hd = (Listheader)SortTime;
+//            if ("natural".equals(hd.getSortDirection())) {
+//		hd.sort(true);
+//                final Listheader hd = user.getCustomerList();
+//            }
+
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            
+
+            ListModelList model = (ListModelList) service_list.getModel();
+//            ListModelList model = (ListModelList) user.getCustomerList();
+//            for (Object child : service_list.getListhead().getChildren()) {
+//                    final Listheader hd = (Listheader)child;
+//                    QLog.l().logger().debug("\n\n\n\nSORT!!!!!!!" + child + "\n\n\n\n\n");
+//                    if ("natural".equals(hd.getSortDirection())) {
+//                            model.sort(hd.getSortAscending(), true);
+//                    } else if ("ascending".equals(hd.getSortDirection())) {
+//                            model.sort(hd.getSortAscending(), true);
+//                    } else if ("descending".equals(hd.getSortDirection())) {
+//                            model.sort(hd.getSortAscending(), true);
+//                    }
+//            }
+//            final Listheader hd = (Listheader)service_list.getListhead().getChildren();
+
             addTicketDailogWindow.setVisible(false);
         }
     }
     
-    public void onSort() {
-        Comparator cTimeAsc;
-        cTimeAsc = new WaitingPanelComparator(true, 1);
+    public void Sort() {
+        Comparator cTimeAsc = new WaitingPanelComparator(true, 1);
         Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
+        user.getCustomerList().sort(cTimeAsc);
 //        final listheader lh = (listheader)service_list.getListhead().getChildren();
 //        new ("New Stuff").setParent(service_list);
 //        if (!"natural".cTimeAsc.getSortDirection())
 //        service_list.getListhead().getChildren().sort(cTimeAsc, true);
-//        service_list.getListhead().getChildren().sort(cTimeAsc,true);
+//        service_list.getListbox().sort(service_list,cTimeAsc);
+//        service_list.getModel().sort();
+//        service_list.setSortDirection(cTimeAsc);
+//        service_list.sort(true);
+//service_list.sort(cTimeAsc, true);
 //        final Listheader lh = 
 //        SortTime.sort(cTimeAsc,true);
+//        if (!"natural".cTimeAsc.getSortDirection())
+//            column.sort("ascending".equals(column.getSortDirection()));
+//          sort(service_list, true);
+//        new Listem("New Stuff").setParent(listbox);
+//        Listheader.sort(true);
     };
     
     

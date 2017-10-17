@@ -42,6 +42,11 @@
         font-size : 10px; 
         font-family: Helvetica;
         }
+        .version-number {
+        color:white;
+        font-size : 10px; 
+        font-family: Helvetica;
+        }
     
         .z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-close:before {
             font-size : 1.5em;
@@ -146,6 +151,9 @@
                 <toolbarbutton sclass="toolbar-items" label="${c:l('support')}"  href="mailto:xyz@gov.bc.ca" target="_blank" />
                 <separator orient="vertical" bar="true" />
                 <toolbarbutton sclass="toolbar-items" label="Powered by Government of British Columbia" href="gww.gov.bc.ca" target="_blank" />
+<!--                 <div width="720px" style="background-color:#003366;">
+                </div> -->
+                <label sclass="toolbar-items" value="version 0.2"/>
             </toolbar>
         </south>
         

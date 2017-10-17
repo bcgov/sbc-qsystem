@@ -87,7 +87,7 @@ import ru.apertum.qsystem.server.model.response.QRespItem;
 import ru.apertum.qsystem.server.model.results.QResult;
 
 /**
- * Содержит статические методы отправки и получения заданий на сервер. любой метод возвращает XML-узел ответа сервера.
+ * Contains static methods for sending and receiving jobs to the server. Any method returns an XML server response node.
  *
  * @author Evgeniy Egorov
  */
@@ -96,9 +96,9 @@ public class NetCommander {
     private static final JsonRPC20 JSON_RPC = new JsonRPC20();
 
     /**
-     * основная работа по отсылки и получению результата.
+     *  The main work is to send and receive the result.
      *
-     * @param netProperty параметры соединения с сервером
+     * @param netProperty Server connection settings
      * @param commandName
      * @param params
      * @return XML-ответ
@@ -254,8 +254,8 @@ public class NetCommander {
      * @return XML-ответ
      */
     public static RpcGetAllServices.ServicesForWelcome getServices(INetProperty netProperty) {
-        QLog.l().logger().info("Получение возможных услуг.");
-        // загрузим ответ
+        QLog.l().logger().info("Obtaining possible services");
+        // Load answer
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_GET_SERVICES, null);
@@ -280,16 +280,16 @@ public class NetCommander {
     /**
      * Постановка в очередь.
      *
-     * @param netProperty netProperty параметры соединения с сервером.
-     * @param serviceId услуга, в которую пытаемся встать.
-     * @param password пароль того кто пытается выполнить задание.
-     * @param priority приоритет.
+     * @param netProperty netProperty Parameters of connection with the server.
+     * @param serviceId Service in which we try to stand up.
+     * @param password Password of the one who is trying to complete the task.
+     * @param priority a priority.
      * @param inputData
-     * @return Созданный кастомер.
+     * @return Created a customizer.
      */
     public static QCustomer standInService(INetProperty netProperty, long serviceId, String password, int priority, String inputData) {
-        QLog.l().logger().info("Встать в очередь.");
-        // загрузим ответ
+        QLog.l().logger().info("To get in line.");
+        // Load answer
         final CmdParams params = new CmdParams();
         params.serviceId = serviceId;
         params.password = password;
@@ -298,7 +298,7 @@ public class NetCommander {
         String res = null;
         try {
             res = send(netProperty, Uses.TASK_STAND_IN, params);
-        } catch (QException ex) {// вывод исключений
+        } catch (QException ex) {// Output of exception
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
         final Gson gson = GsonPool.getInstance().borrowGson();
@@ -314,17 +314,17 @@ public class NetCommander {
     }
 
     /**
-     * Постановка в очередь.
+     * Queuing
      *
-     * @param netProperty netProperty параметры соединения с сервером.
-     * @param servicesId услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять списков. Первый это вольнопоследовательные
-     * услуги. Остальные четыре это зависимопоследовательные услуги, т.е. пока один не закончится на другой не переходить. Что такое элемент списка. Это тоже
-     * список. Первый элемент это та самая комплексная услуга(ID). А остальные это зависимости, т.е. если есть еще не оказанные услуги но назначенные, которые в
-     * зависимостях, то их надо оказать.
-     * @param password пароль того кто пытается выполнить задание.
-     * @param priority приоритет.
+     * @param netProperty netProperty parameters for connecting to the server.
+      * @param servicesId services we are trying to get into. It requires clarification what kind of 3D array it is. These are five lists. The first is freely sequential
+      * Services. The other four are sequentially dependent services, i.e. While one does not end on the other does not go over. What is a list item. It is too
+      * list. The first element is the same complex service (ID). And the rest are dependencies, i.e. If there are services not yet provided but designated, which in
+      * Dependencies, then they must be provided.
+      * @param password is the password of the one who is trying to complete the task.
+      * @param priority is the priority.
      * @param inputData
-     * @return Созданный кастомер.
+     * @return Created the customizer.
      */
     public static QCustomer standInSetOfServices(INetProperty netProperty, LinkedList<LinkedList<LinkedList<Long>>> servicesId, String password, int priority, String inputData) {
         QLog.l().logger().info("Встать в очередь комплексно.");
@@ -375,9 +375,9 @@ public class NetCommander {
     /**
      * Узнать сколько народу стоит к услуге и т.д.
      *
-     * @param netProperty параметры соединения с сервером.
-     * @param serviceId id услуги о которой получаем информацию
-     * @return количество предшествующих.
+    * @param netProperty Parameters of connection with the server.
+      * @param serviceId id Services about which we receive information
+      * @return Number of precedents.
      * @throws QException
      */
     public static ServiceState aboutService(INetProperty netProperty, long serviceId) throws QException {

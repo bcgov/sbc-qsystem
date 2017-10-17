@@ -51,7 +51,7 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
             }
         }
         bildTree(getRoot(), nodes);
-        QLog.l().logger().info("Создали дерево.");
+        QLog.l().logger().info("Created a tree.");
     }
 
     private void bildTree(T root, LinkedList<T> nodes) {
@@ -176,11 +176,11 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
     }
 
     /**
-     * Это подпорка, неожиданно возникла при реализации сортировки
+     * This is a backup, arose unexpectedly when sorting
      *
-     * @param moveChild что двигаем
-     * @param parent куда двигаем
-     * @param index каким дочерним вставляем
+     * @param moveChild What are we moving
+      * @param parent Where are we moving
+      * @param index How to insert the child
      */
     public void moveNode(MutableTreeNode moveChild, MutableTreeNode parent, int index) {
         if (((QService) moveChild.getParent()).getId().equals(((QService) parent).getId())) {

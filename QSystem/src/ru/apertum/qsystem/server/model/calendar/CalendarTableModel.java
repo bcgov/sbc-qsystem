@@ -41,7 +41,7 @@ public class CalendarTableModel extends AbstractTableModel {
     private List<FreeDay> days_del;
 
     public CalendarTableModel(long calcId) {
-        QLog.l().logger().debug("Создаем модель для календаря");
+        QLog.l().logger().debug("Create a model for the calendar");
         this.calcId = calcId;
         days = getFreeDays(calcId);
         days_del = new ArrayList<>(days);
@@ -127,7 +127,7 @@ public class CalendarTableModel extends AbstractTableModel {
      * @param year
      */
     public void dropCalendar(int year) {
-        QLog.l().logger().debug("Сбросим календарь");
+        QLog.l().logger().debug("Reset the calendar");
         final ArrayList<FreeDay> del = new ArrayList<>();
         final GregorianCalendar gc = new GregorianCalendar();
         for (FreeDay freeDay : days) {
@@ -145,7 +145,7 @@ public class CalendarTableModel extends AbstractTableModel {
      * @param year
      */
     public void checkSaturday(int year) {
-        QLog.l().logger().debug("Пометив все субботы");
+        QLog.l().logger().debug("Mark all Saturdays");
         final GregorianCalendar gc = new GregorianCalendar();
         gc.set(GregorianCalendar.YEAR, year);
         final int ye = year % 4 == 0 ? 366 : 365;
@@ -163,7 +163,7 @@ public class CalendarTableModel extends AbstractTableModel {
      * @param year
      */
     public void checkSunday(int year) {
-        QLog.l().logger().debug("Пометим все воскресенья");
+        QLog.l().logger().debug("Mark all Sundays");
         final GregorianCalendar gc = new GregorianCalendar();
         gc.set(GregorianCalendar.YEAR, year);
         final int ye = year % 4 == 0 ? 366 : 365;
@@ -180,7 +180,7 @@ public class CalendarTableModel extends AbstractTableModel {
      * Сохранить календарь.
      */
     public void save() {
-        QLog.l().logger().info("Сохраняем календарь ID = " + calcId);
+        QLog.l().logger().info("Save the calendar ID = " + calcId);
 
         final DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setName("SomeTxName");
@@ -203,16 +203,16 @@ public class CalendarTableModel extends AbstractTableModel {
             Spring.getInstance().getHt().saveOrUpdateAll(days);
         } catch (Exception ex) {
             Spring.getInstance().getTxManager().rollback(status);
-            throw new ClientException("Ошибка выполнения операции изменения данных в БД(JDBC).\nВозможно Вы добавили новый календарь, изменили его, пытаетесь сохранить содержимое календаря, но общую конфигурацию не сохранили.\nСохраните всю конфигурацию(Ctrl + S) и еще раз попытайтесь сохранить содержимое календаря.\n\n[" + ex.getLocalizedMessage() + "]\n(" + ex.toString() + ")");
+            throw new ClientException("Error performing the operation of modifying data in the database (JDBC).\nPerhaps you added a new calendar, changed it, tried to save the contents of the calendar, but did not save the overall configuration.\nSave the entire configuration (Ctrl + S) and try again to save the contents of the calendar.\n\n[" + ex.getLocalizedMessage() + "]\n(" + ex.toString() + ")");
         }
         Spring.getInstance().getTxManager().commit(status);
-        QLog.l().logger().debug("Сохранили новый календарь");
-        //типо чтоб были актуальные внутренние данные
+        QLog.l().logger().debug("Saved a new calendar");
+        //Type so that there are actual internal data
         days_del = new ArrayList<>(days);
     }
 
     /**
-     * Проверка на сохраненность календаря
+     * Checking for the preservation of the calendar
      * @return
      */
     public boolean isSaved() {
