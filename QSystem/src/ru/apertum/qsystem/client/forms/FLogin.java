@@ -254,17 +254,17 @@ public class FLogin extends javax.swing.JDialog {
     }
 
     /**
-     * Логирование без предварительно созданного списка пользователей. Этот список определяется путем отправки задания на сервер.
+     * Logging without a previously created user list. This list is determined by sending a job to the server.
      *
-     * @param netProperty свойства коннекта
-     * @param owner относительно этого контрола модальность и позиционирование
-     * @param modal режим модальности
-     * @param count количество неудачных попыток, если 0 то бесконечно
-     * @param level Уровень доступа, см. LEVEL_USER, LEVEL_REPORT, LEVEL_ADMIN
-     * @return залогиневшiйся юзер.
+      * @param netProperty connection properties
+      * @param owner regarding this control modality and positioning
+      * @param modal mode of modality
+      * @param count the number of failed attempts, if 0 then infinitely
+      * @param level Access level, see LEVEL_USER, LEVEL_REPORT, LEVEL_ADMIN
+      * @return logged in user.
      */
     public static QUser logining(INetProperty netProperty, JFrame owner, boolean modal, int count, int level) {
-        QLog.l().logger().info("Вход в систему.");
+        QLog.l().logger().info("Login to the system.");
         if (loginForm == null) {
             loginForm = new FLogin(netProperty, owner, modal, level);
         } else if (loginForm.netProperty != netProperty || loginForm.parent != owner || loginForm.getLevel() != level) {
@@ -286,7 +286,7 @@ public class FLogin extends javax.swing.JDialog {
             System.exit(0);
         }
         final QUser user = loginForm.fastUser != null ? loginForm.fastUser : (QUser) loginForm.comboBoxUser.getSelectedItem(); 
-        QLog.l().logger().info("Вход в систему выполнен. Пользователь \"" + user + "\", уровень доступа \"" + level + "\".");
+        QLog.l().logger().info("Login to the system is completed. User \"" + user + "\", access level \"" + level + "\".");
         final File f = new File("temp/lusr");
         try {
             try (FileOutputStream fos = new FileOutputStream(f)) {
@@ -299,17 +299,17 @@ public class FLogin extends javax.swing.JDialog {
     }
 
     /**
-     * Логирование имея уже готовый список возможных пользователей для логирования.
+     * Logging with a ready-made list of possible users for logging.
      *
-     * @param userList список пользователей
-     * @param owner относительно этого контрола модальность и позиционирование
-     * @param modal режим модальности
-     * @param count количество неудачных попыток, если 0 то бесконечно
-     * @param level Уровень доступа, см. LEVEL_USER, LEVEL_REPORT, LEVEL_ADMIN
-     * @return залогиневшийся юзер.
+     * @param userList a list of users
+      * @param owner Regarding this, modality and positioning
+      * @param modal Mode of modality
+      * @param count The number of failed attempts, if 0 is infinite
+      * @param level Access level, see LEVEL_USER, LEVEL_REPORT, LEVEL_ADMIN
+      * @return Logged user.
      */
     public static QUser logining(QUserList userList, JFrame owner, boolean modal, int count, int level) {
-        QLog.l().logger().info("Вход в систему.");
+        QLog.l().logger().info("Login to the system.");
         if (loginForm == null) {
             loginForm = new FLogin(userList, owner, modal, level);
         } else if (loginForm.userList != userList || loginForm.parent != owner || loginForm.getLevel() != level) {
@@ -331,7 +331,7 @@ public class FLogin extends javax.swing.JDialog {
             System.exit(0);
         }
         final QUser user = loginForm.fastUser != null ? loginForm.fastUser : (QUser) loginForm.comboBoxUser.getSelectedItem();
-        QLog.l().logger().info("Вход в систему выполнен. Пользователь \"" + user + "\", уровень доступа \"" + level + "\".");
+        QLog.l().logger().info("Login to the system is completed. User \"" + user + "\", access level \"" + level + "\".");
         final File f = new File("temp/lusr");
         try {
             try (FileOutputStream fos = new FileOutputStream(f)) {
@@ -386,7 +386,7 @@ public class FLogin extends javax.swing.JDialog {
             case LEVEL_USER:
                 break;
             default:
-                throw new ClientException("Нет такого уровня доступа.");
+                throw new ClientException("There is no such level of access.");
 
         }
 

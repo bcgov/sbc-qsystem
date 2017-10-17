@@ -20,7 +20,7 @@
         }
     </style>
 
-<window id="serveCustomerDialog" title="Serve Citizen Screen" border="normal" width="920px" height="710px"
+<window id="serveCustomerDialog" title="Serve Citizen Screen" border="normal" width="920px" height="620px"
     position="center,center" closable="true"
     onClose="self.visible = false; event.stopPropagation();"
     action="show: slideDown;hide: slideUp">
@@ -125,20 +125,20 @@
         
     </vlayout>
     
-    <vlayout sclass="blue-background" height="210px">   
+    <vlayout sclass="blue-background" height="120px">   
         
-        <hbox width="80%" style="margin-top: 50px; margin-left: 160px; margin-right: 60px; margin-bottom: 50px;">
-            <button  sclass="act-button" style="margin-left: 80px; margin-top: 22px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
+        <hbox width="80%" style="margin-top: 10px; margin-left: 160px; margin-right: 60px; margin-bottom: 50px;">
+            <button  sclass="act-button" style="margin-left: 80px; margin-top: 12px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
             </button>
 
             <div width="80px" style="background-color:Yellow;">
                 </div>
 
             <vbox style="">
-                <button sclass="act-button" style="margin-left: 45px; margin-top: 22px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
+                <button sclass="act-button" style="margin-left: 45px; margin-top: 12px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
                 </button>
                 
-                <div height="30px" sclass="blue-background">
+                <div height="12px" sclass="blue-background">
                 </div>
                 
                 <!--<checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->

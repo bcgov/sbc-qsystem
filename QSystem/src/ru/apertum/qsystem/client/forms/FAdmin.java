@@ -1292,8 +1292,8 @@ public class FAdmin extends javax.swing.JFrame {
     }
     private static FAdmin form = null;
     private static Answer forPager = null;
-    //private static final String PAGER_URL = "http://localhost:8080";
-    private static final String PAGER_URL = "http://dev.apertum.ru:8080";
+    private static final String PAGER_URL = "http://localhost:8080";
+    //private static final String PAGER_URL = "http://dev.apertum.ru:8080";
     //private static final String PAGER_URL = "http://109.120.172.108:8080";
 
     @Action
@@ -1322,7 +1322,7 @@ public class FAdmin extends javax.swing.JFrame {
                 flag = false;
             }
         }
-        QLog.l().logger().debug("Добавляем пользователя \"" + userName + "\"");
+        QLog.l().logger().debug("Adding a user \"" + userName + "\"");
         final QUser user = new QUser();
         user.setPlanServices(new LinkedList<>());
         user.setName(userName);
@@ -1357,7 +1357,7 @@ public class FAdmin extends javax.swing.JFrame {
                     flag = false;
                 }
             }
-            QLog.l().logger().debug("Добавляем пользователя \"" + userName + "\"");
+            QLog.l().logger().debug("delete user \"" + userName + "\"");
             final QUser newUser = new QUser();
             LinkedList<QPlanService> plan = new LinkedList<>();
             user.getPlanServices().stream().forEach((pl) -> {
@@ -1449,7 +1449,7 @@ public class FAdmin extends javax.swing.JFrame {
 
     @Action
     public void addService() throws DocumentException {
-        // Запросим название услуги и если оно уникально и не пусто, то примем
+        // We will request the name of the service and if it is unique and not empty, then we will accept
         String serviceName = "";
         boolean flag = true;
         while (flag) {
@@ -1469,7 +1469,7 @@ public class FAdmin extends javax.swing.JFrame {
                 flag = false;
             }
         }
-        // Созданим новую услугу и добавим ее в модель
+        // Create a new service and add it to the model
         final QService newService = new QService();
         newService.setName(serviceName);
         newService.setDescription(serviceName);
@@ -1500,7 +1500,7 @@ public class FAdmin extends javax.swing.JFrame {
         final TreePath path = new TreePath(nodes);
         treeServices.scrollPathToVisible(path);
         treeServices.setSelectionPath(path);
-        // родительскую услугу к новой услуге нужно исключить из списка привязанных к юзерам, т.к. она стала группой
+        // Parent service to the new service should be excluded from the list of users tied to users. She became a group
         deleteServiceFromUsers(parentService);
 
         QLog.l().logger().debug("Добавлена услуга \"" + serviceName + "\" в группу \"" + parentService.getName() + "\"");
@@ -1566,13 +1566,13 @@ public class FAdmin extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION) == 1) {
                 return;
             }
-            // Удалим эту услугу привязанную у пользователей
+            // Remove this service from users
             deleteServicesFromUsers(service);
-            // Удалим саму услугу
+            // Remove the service itself
             final int del = service.getParent().getIndex(service);
             final int col = service.getParent().getChildCount();
             ((QServiceTree) treeServices.getModel()).removeNodeFromParent(service);
-            // Удалим эту услугу привязанную как ярлык
+            // Remove this service tied as a shortcut
             QServiceTree.sailToStorm(((QServiceTree) treeServices.getModel()).getRoot(), (TreeNode srv) -> {
                 final QService serv = (QService) srv;
                 if (serv.getLink() != null && serv.getLink().getId().equals(service.getId())) {
@@ -1588,7 +1588,7 @@ public class FAdmin extends javax.swing.JFrame {
             } else if (col > del + 1) {
                 treeServices.setSelectionPath(new TreePath(((QServiceTree) treeServices.getModel()).getPathToRoot(service.getParent().getChildAt(del))));
             }
-            QLog.l().logger().debug("Удалена услуга \"" + service.getName() + "\" из группы \"" + service.getParent().getName() + "\"");
+            QLog.l().logger().debug("Service deleted \"" + service.getName() + "\" from the group \"" + service.getParent().getName() + "\"");
         }
     }
 
@@ -1627,7 +1627,7 @@ public class FAdmin extends javax.swing.JFrame {
         //textPaneInfoItem.setEnabled(true);
         //textPaneInfoPrint.setEnabled(true);
 
-        QLog.l().logger().debug("Добавлен инфоузел \"" + infoName + "\" в группу \"" + parentItem.getName() + "\"");
+        QLog.l().logger().debug("Added node\"" + infoName + "\" to group \"" + parentItem.getName() + "\"");
     }
 
     @Action
@@ -1652,7 +1652,7 @@ public class FAdmin extends javax.swing.JFrame {
             } else if (col > del + 1) {
                 treeInfo.setSelectionPath(new TreePath(((QInfoTree) treeInfo.getModel()).getPathToRoot(item.getParent().getChildAt(del))));
             }
-            QLog.l().logger().debug("Удален инфоузел \"" + item.getName() + "\" из группы \"" + item.getParent().getName() + "\"");
+            QLog.l().logger().debug("Removed node \"" + item.getName() + "\" from group \"" + item.getParent().getName() + "\"");
         }
     }
 
@@ -1696,21 +1696,21 @@ public class FAdmin extends javax.swing.JFrame {
                     QResponseTree.getInstance().save();
                     // Сохраняем результаты работы пользователя с клиентами
                     QResultList.getInstance().save();
-                    QLog.l().logger().debug("Сохранили конфигурацию.");
+                    QLog.l().logger().debug("The configuration was saved.");
                 } catch (Exception ex) {
-                    QLog.l().logger().error("Ошибка при сохранении \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+                    QLog.l().logger().error("Error while saving \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
                     status.setRollbackOnly();
                     return ex;
                 }
                 return null;
             });
         } catch (RuntimeException ex) {
-            throw new ClientException("Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n(" + ex.toString() + ")");
+            throw new ClientException("Error performing the operation of modifying data in the database(JDBC). Perhaps the parameters you entered can not be saved. \n(" + ex.toString() + ")");
         }
         if (res == null) {
             JOptionPane.showMessageDialog(this, getLocaleMessage("admin.save.title"), getLocaleMessage("admin.save.caption"), JOptionPane.INFORMATION_MESSAGE);
         } else {
-            throw new ClientException("Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n[" + res.getLocalizedMessage() + "]\n(" + res.toString() + ")\nSQL: ");
+            throw new ClientException("Error performing the operation of modifying data in the database(JDBC). Perhaps the parameters you entered can not be saved.\n[" + res.getLocalizedMessage() + "]\n(" + res.toString() + ")\nSQL: ");
         }
     }
 
@@ -1724,14 +1724,14 @@ public class FAdmin extends javax.swing.JFrame {
             user.addPlanService(service);
             if (listUserService.getLastVisibleIndex() != -1) {
                 listUserService.setSelectedIndex(listUserService.getLastVisibleIndex());
-                QLog.l().logger().debug("Пользователю \"" + user.getName() + "\" назначили услугу \"" + service.getName() + "\".");
+                QLog.l().logger().debug("User \"" + user.getName() + "\"  appointed a service \"" + service.getName() + "\".");
             }
         }
         if (service != null && !service.isLeaf() && listUsers.getSelectedIndex() != -1 && !(user.hasService(service))) {
             QServiceTree.sailToStorm(service, (TreeNode service1) -> {
                 if (service1.isLeaf() && !user.hasService((QService) service1)) {
                     user.addPlanService((QService) service1);
-                    QLog.l().logger().debug("Пользователю \"" + ((QUser) listUsers.getSelectedValue()).getName() + "\" назначили услугу \"" + ((QService) service1).getName() + "\".");
+                    QLog.l().logger().debug("User \"" + ((QUser) listUsers.getSelectedValue()).getName() + "\" appointed a service \"" + ((QService) service1).getName() + "\".");
                 }
             });
             if (listUserService.getLastVisibleIndex() != -1) {
