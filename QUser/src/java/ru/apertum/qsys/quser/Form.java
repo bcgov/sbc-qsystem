@@ -866,7 +866,7 @@ public class Form{
             QLog.l().logger().debug("\n\n\nI GOT CHANNELS" + channelIndex +  "\n\n\n");
 
     //        customer.setChannels(1);
-            if(channelIndex==4 || channelIndex==5 || channelIndex==6){
+            if(channelIndex>3){
                 this.closeAddAndServeDialog();
                 this.finish();
     //            customer = user.getUser().getCustomer();        
