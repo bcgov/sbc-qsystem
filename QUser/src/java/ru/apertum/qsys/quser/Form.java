@@ -345,6 +345,22 @@ public class Form{
                };
                return checkCFMSType;
        }
+       
+       private boolean checkCombo = false;
+        public boolean CheckCombobox() {
+//            QLog.l().logQUser().debug("\n\n\n\nCHECK COMBO BOX\n\n Redirect:\n" + pickedRedirectServ + "\n Main Service:\n"  +pickedMainService +  "\n\n\n\n\n");
+            QLog.l().logQUser().debug("\n\n\n\nCHECK CUSTOMER\n\n :\n"   +customer +  "\n\n\n\n\n");
+            
+            if (customer == null) {
+                checkCombo = true;
+            }
+            QLog.l().logQUser().debug("\n\n\n\nCHECK CUSTOMER\n\n :\n"   +addWindowButtons[0] +  "\n\n\n\n\n");
+             return checkCombo;
+        }
+        
+        public void CloseChannelEntry(){
+            checkCombo=false;
+        }
 
        public String getCFMSHidden() {
                String qsb = System.getenv ("QSB");
@@ -474,7 +490,7 @@ public class Form{
     @Command
     @NotifyChange(value = {"btnsDisabled"})
     public void begin() {
-        QLog.l().logQUser().debug("Begin by " + user.getName() + " customer " + customer.getFullNumber());
+//        QLog.l().logQUser().debug("Begin by " + user.getName() + " customer " + customer.getFullNumber());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
         Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER).process(params, "", new byte[4]);
@@ -630,6 +646,7 @@ public class Form{
         addWindowButtons[1] = false;
         addWindowButtons[2] = false;
         addWindowButtons[3] = false;
+//        customer.setChannels(1);
         this.addTicketScreen();
     }
     
@@ -837,6 +854,31 @@ public class Form{
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         
     }
+    
+    @Command
+    public void DetermineChannels(){
+        if (pickedRedirectServ != null || pickedMainService!=null ) {
+            if (!pickedRedirectServ.isLeaf()) {
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+            int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex()+1;
+            QLog.l().logger().debug("\n\n\nI GOT CHANNELS" + channelIndex +  "\n\n\n");
+
+    //        customer.setChannels(1);
+            if(channelIndex==4 || channelIndex==5){
+                this.closeAddAndServeDialog();
+                this.finish();
+    //            customer = user.getUser().getCustomer();        
+    //            addTicketDailogWindow.setVisible(false);
+            }
+        }
+//        customer.setChannels(2);
+    }
+    
+    public void refreshChannels(){
+        ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(0);
+    }
 
     private final LinkedList<QCustomer> postponList = QPostponedList.getInstance().getPostponedCustomers();
 
@@ -969,6 +1011,8 @@ public class Form{
     public void addTicketScreen() {
         //Remove previous comments and categories searched
         this.refreshAddWindow();
+        this.refreshChannels();
+//        this.CloseChannelEntry();
         
         addTicketDailogWindow.setVisible(true);
         addTicketDailogWindow.doModal();
@@ -1098,6 +1142,8 @@ public class Form{
     
     @Command
     public void closeAddNextServiceDialog(){
+//        QLog.l().logQUser().debug("\n\nCHANNEL TO BE 2");
+//        user.getUser().getCustomer().setChannels(2);
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
@@ -1113,6 +1159,7 @@ public class Form{
             params.resultId = -1l;
             
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
+            params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
             QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
@@ -1140,42 +1187,12 @@ public class Form{
             
             final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
             this.addToQueue(params);
-//            onSort();
-//            private Listheader SortTime;
-//            Listheader listHeader1 = new Listheader();
-//            listHeader1.setLabel("ABC");
-//            Listheader hd = (Listheader)component.getFellow("SortTime");
-//            .setSortDirection("ascending");
-//            Comparator cTimeAsc;
-//            cTimeAsc = new WaitingPanelComparator(true, 1);
-//            Object child = service_list.getListhead().getChildren();
-//            ListModelList model = (ListModelList) service_list;
-//            final Listheader hd = (Listheader)SortTime;
-//            if ("natural".equals(hd.getSortDirection())) {
-//		hd.sort(true);
-//                final Listheader hd = user.getCustomerList();
-//            }
-
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
-            service_list.setModel(service_list.getModel());
-            
+            service_list.setModel(service_list.getModel());          
 
             ListModelList model = (ListModelList) service_list.getModel();
-//            ListModelList model = (ListModelList) user.getCustomerList();
-//            for (Object child : service_list.getListhead().getChildren()) {
-//                    final Listheader hd = (Listheader)child;
-//                    QLog.l().logger().debug("\n\n\n\nSORT!!!!!!!" + child + "\n\n\n\n\n");
-//                    if ("natural".equals(hd.getSortDirection())) {
-//                            model.sort(hd.getSortAscending(), true);
-//                    } else if ("ascending".equals(hd.getSortDirection())) {
-//                            model.sort(hd.getSortAscending(), true);
-//                    } else if ("descending".equals(hd.getSortDirection())) {
-//                            model.sort(hd.getSortAscending(), true);
-//                    }
-//            }
-//            final Listheader hd = (Listheader)service_list.getListhead().getChildren();
-
+            
             addTicketDailogWindow.setVisible(false);
         }
     }
@@ -1183,23 +1200,7 @@ public class Form{
     public void Sort() {
         Comparator cTimeAsc = new WaitingPanelComparator(true, 1);
         Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
-        user.getCustomerList().sort(cTimeAsc);
-//        final listheader lh = (listheader)service_list.getListhead().getChildren();
-//        new ("New Stuff").setParent(service_list);
-//        if (!"natural".cTimeAsc.getSortDirection())
-//        service_list.getListhead().getChildren().sort(cTimeAsc, true);
-//        service_list.getListbox().sort(service_list,cTimeAsc);
-//        service_list.getModel().sort();
-//        service_list.setSortDirection(cTimeAsc);
-//        service_list.sort(true);
-//service_list.sort(cTimeAsc, true);
-//        final Listheader lh = 
-//        SortTime.sort(cTimeAsc,true);
-//        if (!"natural".cTimeAsc.getSortDirection())
-//            column.sort("ascending".equals(column.getSortDirection()));
-//          sort(service_list, true);
-//        new Listem("New Stuff").setParent(listbox);
-//        Listheader.sort(true);
+        user.getCustomerList().sort(cTimeAsc);  //Sort customerList by time asending order
     };
     
     
@@ -1212,6 +1213,7 @@ public class Form{
         params.priority = priority;
         params.isMine = isMine;
         params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
+        params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
         params.welcomeTime = user.getCustomerWelcomeTime();
         
         return params;
