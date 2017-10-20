@@ -25,9 +25,7 @@
         <module>QSystem</module>
         <module>QUser</module>
 		<module>QSmartboardPlugin</module>
-<!-- 		<module>QSmartboard</module>
-		<module>QSkyPlugin</module>  
-		<module>QSkyApi</module>   -->
+ 		<module>QSmartboard</module>
         <module>Seeder</module>        
     </modules>
 </project>
