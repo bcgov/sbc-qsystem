@@ -247,6 +247,9 @@ public final class Executer {
                 //Add Added by user
                 customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
                 
+                //Add the channel info
+                customer.setChannels(cmdParams.channels);
+                
                 //добавим нового пользователя
                 // add a new user
                 (service.getLink() != null ? service.getLink() : service).addCustomer(customer);
@@ -488,7 +491,7 @@ public final class Executer {
             
             @Override
             public void run() {
-                QLog.l().logger().debug("\n\n\n\nCUSTOMER HEREERERERE!!!!!!!!!!!!!!!!!!!!\n\n" + user.getCustomer() + "\n\n\n");
+//                QLog.l().logger().debug("\n\n\n\nCUSTOMER HEREERERERE!!!!!!!!!!!!!!!!!!!!\n\n" + user.getCustomer() + "\n\n\n");
                 final long delta = System.currentTimeMillis() - user.getCustomer().getStandTime().getTime();
                 //System.out.println("################## " + QLog.l().getPauseFirst());
                 if (delta < QConfig.cfg().getDelayFirstInvite() * 1000) {
@@ -510,8 +513,8 @@ public final class Executer {
                     
                     QLog.l().logger().debug("CUSTOMER HEREERERERE  _inside loop\n\n" + user.getCustomer() + "\n\n\n");
                 }
-                QLog.l().logger().debug("CUSTOMER HEREERERERE\n\n" + user.getCustomer() + "\n\n\n");
-                QLog.l().logger().debug("CUSTOMER HEREERERERE\n\n" + user + "\n\n\n");
+//                QLog.l().logger().debug("CUSTOMER HEREERERERE\n\n" + user.getCustomer() + "\n\n\n");
+//                QLog.l().logger().debug("CUSTOMER HEREERERERE\n\n" + user + "\n\n\n");
                 usrs.remove(user);
             }
         }
@@ -1485,6 +1488,9 @@ public final class Executer {
             
             // set added by which user
             customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
+            
+            //set channels when add new service
+            customer.setChannels(cmdParams.channels);
             
             // Переставка в другую очередь
             // Название старой очереди

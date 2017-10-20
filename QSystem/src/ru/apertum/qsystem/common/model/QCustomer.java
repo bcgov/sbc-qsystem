@@ -706,6 +706,8 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                         + (isMine != null ? " Private!" : ""));
     }
 
+
+        
     @Transient
     @Override
     public String getName() {
@@ -737,8 +739,8 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     @Column(name = "service_quantity")
     public String getQuantity() {
-        QLog.l().logger().trace("/n/nNAME\n:  " + this.getService().getName() + " \n\n\n ");
-        QLog.l().logger().trace("/n/nTTEST from Customer:  " + quantity + " \n\n ");
+        QLog.l().logger().trace("\nNAME:  " + this.getService().getName() + "\n ");
+        QLog.l().logger().trace("\nTTEST from Customer:  " + quantity + " \n ");
 //        return this.getService().getQuantity();
         return this.quantity;
     }
@@ -752,6 +754,23 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void refreshQuantity(){      
 //        customer = user.getUser().getCustomer();
         this.setQuantity("1");
+    }
+    
+    
+    
+    @Expose
+    @SerializedName("channels")
+    private int channels;
+    
+    @Column(name = "channels")
+    public int getChannels() {
+        QLog.l().logger().trace("\n\n\n\n CHANNEL NAME:\n  " + channels + "\n\n ");
+//        return this.getService().getQuantity();
+        return this.channels;
+    }
+    
+    public void setChannels(int c){
+        this.channels = c;
     }
 
 }
