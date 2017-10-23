@@ -7,6 +7,11 @@
             font-family: Helvetica; 
             color: White;
         }
+        .top-text-style{
+            font-size : 23px; 
+            font-family: Helvetica; 
+            color: White;
+        }
         .button-with-image{
             padding : 0px; 
             border: none; 
@@ -28,11 +33,18 @@
     <vlayout sclass="blue-background" height="200px">
         
         <hbox>
-            <vbox style="margin-left: 26px; margin-top: 34px;">
-                <label id="customer_number_label" value="Ticket #" sclass="text-style" style="font-weight: bold;"/>
-                <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="text-style" style="font-style: oblique; margin-left:54px;"/>
-            </vbox>
-        
+            <hbox>
+                <vbox style="margin-left: 26px; margin-top: 34px;">
+                    <label id="customer_number_label" value="Ticket #: " sclass="top-text-style" style="font-weight: bold;"/>
+                    <label id="channels_label" value="Channels: " sclass="top-text-style" style="font-weight: bold;"/>
+                    
+                </vbox>
+                <vbox style="margin-left: 26px; margin-top: 34px;">
+                    <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="top-text-style" style="font-style: oblique; margin-left:54px;"/>
+                    <label id="channel" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))" sclass="top-text-style" style="font-style: oblique; margin-left:54px;"/>
+                </vbox>
+
+            </hbox>
             <hbox style="margin-left: 18px; margin-top: 34px;">
                 
                 <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 30px; font-weight: bold;"/>
