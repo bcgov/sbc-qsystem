@@ -44,8 +44,12 @@ environments {
 //
 // phantomJs --> “./gradlew phantomJsTest”   (headless)
 // chrome    --> "./gradlew chromeTest"
-baseUrl = "https://sbc-qsystem-dev.pathfinder.gov.bc.ca/qsystem/"
 
+// Pipeline and remote testing
+// baseUrl = "https://sbc-qsystem-dev.pathfinder.gov.bc.ca/qsystem/"
+
+// local testing
+baseUrl = "http://localhost:8080/qsystem/"
 
 println """
             .  .       .
