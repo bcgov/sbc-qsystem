@@ -46,10 +46,10 @@ environments {
 // chrome    --> "./gradlew chromeTest"
 
 // Pipeline and remote testing
-// baseUrl = "https://sbc-qsystem-dev.pathfinder.gov.bc.ca/qsystem/"
+baseUrl = "https://sbc-qsystem-dev.pathfinder.gov.bc.ca/qsystem/"
 
 // local testing
-baseUrl = "http://localhost:8080/qsystem/"
+//baseUrl = "http://localhost:8080/qsystem/"
 
 println """
             .  .       .
