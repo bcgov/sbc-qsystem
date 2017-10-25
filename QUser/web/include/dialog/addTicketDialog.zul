@@ -63,12 +63,13 @@
 		                        <attribute name="onCreate">
 		                            self.setSelectedIndex(0);
 		                        </attribute>
-		                        <comboitem label="${c:l('inperson')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
-		                        <comboitem label="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
-								<comboitem label="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
+		                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
+                                <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
+		                        <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
+		                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
+		                        <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
+		                        <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
+								<comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
 		                        <!-- <comboitem label="${c:l('25min')}"/> -->
 		                        <!-- <comboitem label="${c:l('30min')}"/> -->
 	                    	</combobox>
@@ -145,12 +146,14 @@
 		                        <attribute name="onCreate">
 		                            self.setSelectedIndex(0);
 		                        </attribute>
-		                        <comboitem label="${c:l('inperson')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
-		                        <comboitem label="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
-								<comboitem label="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
+		                        
+		                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
+                                <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
+		                        <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
+		                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
+		                        <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
+		                        <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
+								<comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
 		                        <!-- <comboitem label="${c:l('25min')}"/> -->
 		                        <!-- <comboitem label="${c:l('30min')}"/> -->
 	                    	</combobox>

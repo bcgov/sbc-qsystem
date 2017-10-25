@@ -647,6 +647,7 @@ public class Form{
         addWindowButtons[2] = false;
         addWindowButtons[3] = false;
 //        customer.setChannels(1);
+        pickedRedirectServ=null;
         this.addTicketScreen();
     }
     
@@ -840,6 +841,7 @@ public class Form{
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
         //params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
+        QLog.l().logger().debug("\n\n\n\n\n\nTIMEBOX" + ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() +  "\n\n\n\n\n\n");
         params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
         params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
          
@@ -857,23 +859,28 @@ public class Form{
     
     @Command
     public void DetermineChannels(){
+        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  REDIRECT SERVE" + pickedRedirectServ +  "\n\n\n");
+        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  MAIN SERVE" + pickedMainService +  "\n\n\n");
         if (pickedRedirectServ != null || pickedMainService!=null ) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
             int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex()+1;
-            QLog.l().logger().debug("\n\n\nI GOT CHANNELS" + channelIndex +  "\n\n\n");
 
-    //        customer.setChannels(1);
-            if(channelIndex>3){
+            
+ 
+            if(channelIndex>4){
                 this.closeAddAndServeDialog();
                 this.finish();
     //            customer = user.getUser().getCustomer();        
     //            addTicketDailogWindow.setVisible(false);
             }
         }
-//        customer.setChannels(2);
+        else{
+            Messagebox.show(l("first_select_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+        }
+;
     }
     
     public void refreshChannels(){
@@ -1142,8 +1149,7 @@ public class Form{
     
     @Command
     public void closeAddNextServiceDialog(){
-//        QLog.l().logQUser().debug("\n\nCHANNEL TO BE 2");
-//        user.getUser().getCustomer().setChannels(2);
+
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
@@ -1159,7 +1165,7 @@ public class Form{
             params.resultId = -1l;
             
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
-            params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+//            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
             QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
@@ -1169,9 +1175,11 @@ public class Form{
             service_list.setModel(service_list.getModel());
             addTicketDailogWindow.setVisible(false);
             
-            
             this.invite();
             this.begin();
+            this.refreshChannels();
+            String replace = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
+            customer.setChannels(replace);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
@@ -1213,7 +1221,8 @@ public class Form{
         params.priority = priority;
         params.isMine = isMine;
         params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
-        params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+        params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+        params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
         params.welcomeTime = user.getCustomerWelcomeTime();
         
         return params;

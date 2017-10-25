@@ -101,9 +101,12 @@ public class CmdParams {
     @SerializedName("welcome_time")
     public Date welcomeTime;   
     @Expose
+    @SerializedName("channelsIndex")
+    public int channelsIndex;   
+    @Expose
     @SerializedName("channels")
-    public int channels;   
-    
+    public String channels;  
+        
     public String AAA;
     
     
