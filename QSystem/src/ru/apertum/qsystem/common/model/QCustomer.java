@@ -760,16 +760,16 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     
     @Expose
     @SerializedName("channels")
-    private int channels;
+    private String channels;
     
     @Column(name = "channels")
-    public int getChannels() {
+    public String getChannels() {
         QLog.l().logger().trace("\n\n\n\n CHANNEL NAME:\n  " + channels + "\n\n ");
 //        return this.getService().getQuantity();
         return this.channels;
     }
     
-    public void setChannels(int c){
+    public void setChannels(String c){
         this.channels = c;
     }
 

@@ -40,8 +40,8 @@
                     
                 </vbox>
                 <vbox style="margin-left: 26px; margin-top: 34px;">
-                    <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="top-text-style" style="font-style: oblique; margin-left:54px;"/>
-                    <label id="channel" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))" sclass="top-text-style" style="font-style: oblique; margin-left:54px;"/>
+                    <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="top-text-style" style="font-style: oblique;  margin-left:24px;"/>
+                    <label id="channel" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))" sclass="top-text-style" style="font-style: oblique; margin-left:24px; font-size : 16px; "/>
                 </vbox>
 
             </hbox>
@@ -49,7 +49,7 @@
                 
                 <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 30px; font-weight: bold;"/>
 
-                <textbox id="editable_comments" rows="5" cols="60" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
+                <textbox id="editable_comments" rows="5" cols="40" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
                     <!--readonly="true"-->
                 </textbox>
             </hbox> 
