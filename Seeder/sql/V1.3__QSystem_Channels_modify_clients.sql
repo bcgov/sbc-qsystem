@@ -1,8 +1,8 @@
-ALTER TABLE `qsystem`.`clients` 
+ALTER TABLE `clients` 
 CHANGE COLUMN `channels` `channels` VARCHAR(45) NULL DEFAULT NULL ,
 ADD COLUMN `channelsIndex` BIGINT(20) NOT NULL DEFAULT '1' AFTER `channels`;
 
-ALTER TABLE `qsystem`.`statistic` 
+ALTER TABLE `statistic` 
 CHANGE COLUMN `channels` `channels` VARCHAR(45) NULL DEFAULT NULL ,
 ADD COLUMN `channelsIndex` BIGINT(20) NOT NULL DEFAULT '1' AFTER `channels`;
 
