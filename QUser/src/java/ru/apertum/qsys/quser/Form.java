@@ -859,8 +859,8 @@ public class Form{
     
     @Command
     public void DetermineChannels(){
-        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  REDIRECT SERVE" + pickedRedirectServ +  "\n\n\n");
-        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  MAIN SERVE" + pickedMainService +  "\n\n\n");
+//        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  REDIRECT SERVE" + pickedRedirectServ +  "\n\n\n");
+//        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  MAIN SERVE" + pickedMainService +  "\n\n\n");
         if (pickedRedirectServ != null || pickedMainService!=null ) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
@@ -879,6 +879,7 @@ public class Form{
         }
         else{
             Messagebox.show(l("first_select_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+            refreshChannels();      //set channels to default when popup window show up. 
         }
 ;
     }
@@ -1180,6 +1181,7 @@ public class Form{
             this.refreshChannels();
             String replace = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
             customer.setChannels(replace);
+            customer.setChannelsIndex(1);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }

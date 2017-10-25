@@ -249,6 +249,8 @@ public final class Executer {
                 
                 //Add the channel info
                 customer.setChannels(cmdParams.channels);
+                customer.setChannelsIndex(cmdParams.channelsIndex);
+                
                 
                 //добавим нового пользователя
                 // add a new user
@@ -1491,7 +1493,7 @@ public final class Executer {
             
             //set channels when add new service
             customer.setChannels(cmdParams.channels);
-            
+            customer.setChannelsIndex(cmdParams.channelsIndex);
             // Переставка в другую очередь
             // Название старой очереди
             final QService oldService = customer.getService();

@@ -33,6 +33,7 @@ hs_err_pid*
 /QSmartboardPlugin/build/
 /QSmartboardPlugin/dist/
 /QSmartboardPlugin/nbproject/private/
+/QSmartboardPlugin/target/maven-archiver/pom.properties
 /QSmartboard/build/
 /QSmartboard/dist/
 
