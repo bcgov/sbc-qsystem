@@ -106,6 +106,12 @@ public class CmdParams {
     @Expose
     @SerializedName("channels")
     public String channels;  
+    @Expose
+    @SerializedName("new_channelsIndex")
+    public int new_channels_Index;   
+    @Expose
+    @SerializedName("new_channels")
+    public String new_channels; 
         
     public String AAA;
     

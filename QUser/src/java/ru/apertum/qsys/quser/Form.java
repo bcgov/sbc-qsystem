@@ -658,6 +658,8 @@ public class Form{
         addWindowButtons[1] = false;
         addWindowButtons[2] = true;
         addWindowButtons[3] = false;
+        // refresh the service list. Remove the default service selection
+        pickedRedirectServ = null;
         this.addTicketScreen();
 //        this.refreshQuantity();
     }
@@ -867,11 +869,15 @@ public class Form{
                 return;
             }
             int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex()+1;
-
             
- 
+            QLog.l().logger().debug("\n\n\nAdd and serve button, which WINDOW:    " + addWindowButtons[0] +  "\n\n\n");
+            
             if(channelIndex>4){
-                this.closeAddAndServeDialog();
+                if(addWindowButtons[0])
+                    this.closeAddAndServeDialog();
+                else
+                    this.closeAddNextServiceDialog();
+                
                 this.finish();
     //            customer = user.getUser().getCustomer();        
     //            addTicketDailogWindow.setVisible(false);
@@ -1164,6 +1170,10 @@ public class Form{
             params.serviceId = pickedRedirectServ.getId();
             params.requestBack = Boolean.FALSE;
             params.resultId = -1l;
+            params.channelsIndex = customer.getChannelsIndex();
+            params.channels = customer.getChannels();
+            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
             
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
 //            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
@@ -1180,8 +1190,8 @@ public class Form{
             this.begin();
             this.refreshChannels();
             String replace = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
-            customer.setChannels(replace);
-            customer.setChannelsIndex(1);
+            customer.setChannels(params.new_channels);
+            customer.setChannelsIndex(params.new_channels_Index);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }

@@ -1492,8 +1492,10 @@ public final class Executer {
             customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
             
             //set channels when add new service
-            customer.setChannels(cmdParams.channels);
-            customer.setChannelsIndex(cmdParams.channelsIndex);
+//            customer.setChannels(cmdParams.channels);
+//            customer.setChannelsIndex(cmdParams.channelsIndex);
+            
+            
             // Переставка в другую очередь
             // Название старой очереди
             final QService oldService = customer.getService();
