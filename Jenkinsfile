@@ -26,12 +26,6 @@ node('maven') {
         }
     }
     
-    stage('build') {
-        echo "Building..."
-        openshiftBuild bldCfg: 'qsystem', showBuildLogs: 'true'
-        openshiftTag destStream: 'qsystem', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'qsystem', srcTag: 'latest'
-        openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'dev', srcStream: 'qsystem', srcTag: 'latest'
-    }
 	stage('build') {
         echo "Building..."
         openshiftBuild bldCfg: 'qsystem', showBuildLogs: 'true'
