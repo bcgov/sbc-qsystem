@@ -49,7 +49,7 @@
                 
                 <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 30px; font-weight: bold;"/>
 
-                <textbox id="editable_comments" rows="5" cols="40" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
+                <textbox id="editable_comments" rows="5" cols="45" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
                     <!--readonly="true"-->
                 </textbox>
             </hbox> 

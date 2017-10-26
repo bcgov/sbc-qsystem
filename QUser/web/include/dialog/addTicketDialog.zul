@@ -23,10 +23,10 @@
 	                <label value="Type Service here" width="150px" />
 	                <hbox>
 	                    <vbox>
-	                        <textbox id="typeservices" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
+	                        <textbox sclass="bdd-input-search" id="typeservices" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
 	                    </vbox>
 	                    <vbox>
-	                        <combobox id="cboFmCompress" onChange="@command('changeCategory')" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
+	                        <combobox sclass="bdd-input-category" id="cboFmCompress" onChange="@command('changeCategory')" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
 	                            <comboitem label="@load(each)"/>
 	                        </combobox>
 	                    </vbox>
@@ -58,8 +58,9 @@
 	                    	 <!-- visible="@load(fmodel.addWindowButtons[0])" -->
 
 	                    	
-	                    	<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  visible="@load(fmodel.addWindowButtons[0])">
-	                    		<!-- @load(fmodel.CheckCombobox()) -->
+	                    	<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                    		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
+	                    		<!-- @load(fmodel.CheckCombobox()) --> 
 		                        <attribute name="onCreate">
 		                            self.setSelectedIndex(0);
 		                        </attribute>
@@ -76,8 +77,8 @@
 	                    	
 
 	                        <!--Add to Queue and serve-->
-	                        <button id="addToQueueBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')" visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
-	                        <button id="addAndServeBtn" hflex="min" width="100px" label="Begin service" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
+	                        <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')" visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
+	                        <button sclass= "bdd-begin-service" id="addAndServeBtn" hflex="min" width="100px" label="Begin service" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
 	                        
 	                        <!--Change Service-->
 	                        <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
@@ -90,7 +91,7 @@
 	                        <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeRedirectDialog')" visible="@load(fmodel.addWindowButtons[3])"/>
 
 	                        <!--Cancel Button For all Windows-->
-	                        <button id="closeAddTicketBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
+	                        <button sclass="bdd-cancel-service" id="closeAddTicketBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
 	                    </hbox>
 	                </div>
 	                
@@ -109,10 +110,10 @@
 	                <label value="Type Service here" width="150px" />
 	                <hbox>
 	                    <vbox>
-	                        <textbox id="typeservices" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
+	                        <textbox sclass="bdd-input-search" id="typeservices" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
 	                    </vbox>
 	                    <vbox>
-	                        <combobox id="cboFmCompress" onChange="@command('changeCategory')" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
+	                        <combobox sclass="bdd-input-category" id="cboFmCompress" onChange="@command('changeCategory')" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
 	                            <comboitem label="@load(each)"/>
 	                        </combobox>
 	                    </vbox>
@@ -141,7 +142,8 @@
 	                <hbox>
 	                	<div style="float:left; margin:10px 0px 0px 0px;">
 	                		<label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
-	                		<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  visible="@load(fmodel.addWindowButtons[0])">
+	                		<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                			<!-- visible="@load(fmodel.addWindowButtons[0])" -->
 	                    		<!-- @load(fmodel.CheckCombobox()) -->
 		                        <attribute name="onCreate">
 		                            self.setSelectedIndex(0);
@@ -163,8 +165,8 @@
 		                    <hbox>
 		                    	
 		                        <!--Add to Queue and serve-->
-		                        <button id="addToQueueBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')" visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
-		                        <button id="addAndServeBtn" hflex="min" width="100px" label="Begin service" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
+		                        <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')" visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
+		                        <button sclass= "bdd-begin-service" id="addAndServeBtn" hflex="min" width="100px" label="Begin service" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
 		                        
 		                        <!--Change Service-->
 		                        <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
@@ -177,7 +179,7 @@
 		                        <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeRedirectDialog')" visible="@load(fmodel.addWindowButtons[3])"/>
 
 		                        <!--Cancel Button For all Windows-->
-		                        <button id="closeAddTicketBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
+		                        <button sclass="bdd-cancel-service" id="closeAddTicketBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
 		                    </hbox>
 		                </div>
 	                </hbox>
