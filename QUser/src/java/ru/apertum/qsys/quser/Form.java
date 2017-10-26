@@ -1274,11 +1274,17 @@ public class Form{
             params.userId = user.getUser().getId();
             params.serviceId = pickedRedirectServ.getId();
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
+            params.channelsIndex = customer.getChannelsIndex();
+            params.channels = customer.getChannels();
+            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
             
             Executer.getInstance().getTasks().get(Uses.TASK_CHANGE_SERVICE).process(params, "", new byte[4]);
             
             service_list.setModel(service_list.getModel());
             addTicketDailogWindow.setVisible(false);
+            customer.setChannels(params.new_channels);
+            customer.setChannelsIndex(params.new_channels_Index);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
