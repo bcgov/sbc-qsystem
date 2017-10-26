@@ -31,7 +31,7 @@ node('maven') {
         openshiftBuild bldCfg: 'qsystem', showBuildLogs: 'true'
         openshiftTag destStream: 'qsystem', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'qsystem', srcTag: 'latest'
         openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'dev', srcStream: 'qsystem', srcTag: 'latest'
-        openshiftVerifyDeployment depCfg: "qsystem-$BUILD_ID", verbose: verbose
+        openshiftVerifyDeployment depCfg: 'qsystem', verbose: 'true'
    }
    
    stage('validation') {
