@@ -58,8 +58,9 @@
 	                    	 <!-- visible="@load(fmodel.addWindowButtons[0])" -->
 
 	                    	
-	                    	<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  visible="@load(fmodel.addWindowButtons[0])">
-	                    		<!-- @load(fmodel.CheckCombobox()) -->
+	                    	<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                    		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
+	                    		<!-- @load(fmodel.CheckCombobox()) --> 
 		                        <attribute name="onCreate">
 		                            self.setSelectedIndex(0);
 		                        </attribute>
@@ -141,7 +142,8 @@
 	                <hbox>
 	                	<div style="float:left; margin:10px 0px 0px 0px;">
 	                		<label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
-	                		<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  visible="@load(fmodel.addWindowButtons[0])">
+	                		<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                			<!-- visible="@load(fmodel.addWindowButtons[0])" -->
 	                    		<!-- @load(fmodel.CheckCombobox()) -->
 		                        <attribute name="onCreate">
 		                            self.setSelectedIndex(0);
