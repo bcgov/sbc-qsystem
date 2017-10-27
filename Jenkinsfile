@@ -34,7 +34,7 @@ node('maven') {
    }
 
    stage('verify') {
-        openshiftVerifyBuild bldCfg: 'qsystem', waitTime: '20', waitUnit: 'min', verbose: 'true'
+        openshiftVerifyDeployment decCfg: 'qsystem-$BUILD_ID', namespace: 'servicebc-customer-flow-dev', verbose: 'true'
    }
 
     stage('validation') {
