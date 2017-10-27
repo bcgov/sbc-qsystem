@@ -2,8 +2,8 @@ node('maven') {
 
     stage('checkout') {
         echo "checking out source"
-        echo "Build: ${BUILD_ID}"
         checkout scm
+        echo "Build: ${BUILD_ID}"
     }
 
     stage('code quality check') {
@@ -31,7 +31,11 @@ node('maven') {
         openshiftBuild bldCfg: 'qsystem', showBuildLogs: 'true'
         openshiftTag destStream: 'qsystem', verbose: 'true', destTag: '$BUILD_ID', srcStream: 'qsystem', srcTag: 'latest'
         openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'dev', srcStream: 'qsystem', srcTag: 'latest'
-    }
+   }
+
+   stage('verify') {
+        openshiftVerifyDeployment depCfg: 'qsystem', namespace: 'servicebc-customer-flow-dev', verbose: 'true'
+   }
 
     stage('validation') {
         dir('functional-tests'){
