@@ -788,5 +788,24 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setChannelsIndex(int c){
         this.channelsIndex = c;
     }
+    
+    
+
+    private LinkedList<QService> PreviousList = new LinkedList<>();
+    
+    @Column(name="previous_service", updatable=false, insertable=false)
+    public LinkedList<QService> getPreviousList(){
+        return this.PreviousList;
+    };
+    
+    public void setPreviousList(QService s){
+        PreviousList.add(s);
+        
+    };
+    
+    public void refreshPrevious(){
+        this.PreviousList = null;
+        
+    };
 
 }

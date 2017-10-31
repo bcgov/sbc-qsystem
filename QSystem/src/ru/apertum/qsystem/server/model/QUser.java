@@ -515,6 +515,8 @@ public class QUser implements IidGetter, Serializable {
     public LinkedHashMap<Long, QCustomer> getParallelCustomers() {
         return parallelCustomers;
     }
+    
+
 
     /**
      * Типо не набрасывать сюда посетителей при маршрутизации в списке услуг.
