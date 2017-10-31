@@ -39,17 +39,40 @@
                     <label id="channels_label" value="Channels: " sclass="top-text-style" style="font-weight: bold;"/>
                     
                 </vbox>
-                <vbox style="margin-left: 26px; margin-top: 34px;">
+                <vbox style="margin-left: 13px; margin-top: 34px;">
                     <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="top-text-style" style="font-style: oblique;  margin-left:24px;"/>
-                    <label id="channel" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))" sclass="top-text-style" style="font-style: oblique; margin-left:24px; font-size : 16px; "/>
+                    <!-- <label id="channel" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))" sclass="top-text-style" style="font-style: oblique; margin-left:24px; font-size : 16px; "/> -->
+<!-- 
+                    <zscript><![CDATA[
+                        int Channel_Selected = fmodel.customer.getChannels();
+                        
+                    ]]></zscript> -->
+
+                    <combobox id="Change_Channels" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))" >
+                    <!-- visible="@load(fmodel.addWindowButtons[0])" -->
+                    <!-- @load(fmodel.CheckCombobox()) --> 
+<!--                     <attribute name="onCreate">
+                        self.setSelectedIndex(${Channel_Selected});
+                    </attribute> -->
+                    <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
+                    <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
+                    <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
+                    <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
+                    <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
+                    <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
+                    <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
+                    <!-- <comboitem label="${c:l('25min')}"/> -->
+                    <!-- <comboitem label="${c:l('30min')}"/> -->
+                </combobox>
+
                 </vbox>
 
             </hbox>
             <hbox style="margin-left: 18px; margin-top: 34px;">
                 
-                <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 30px; font-weight: bold;"/>
+                <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 20px; font-weight: bold;"/>
 
-                <textbox id="editable_comments" rows="5" cols="45" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
+                <textbox id="editable_comments" rows="5" cols="40" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
                     <!--readonly="true"-->
                 </textbox>
             </hbox> 
@@ -104,16 +127,26 @@
         
         
         <div>
-            <hbox width="80%" style="margin-top: 10px; margin-left: 160px; margin-right: 60px; margin-bottom: 50px;">
+            <hbox width="80%" style="margin-top: 10px; margin-left: 160px; margin-bottom: 50px;">
 
 
-                <button sclass="act-button" style="margin-left: 80px; margin-top: 10px;" label="${c:l('previous_services')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" height="38px" width="158px">
-                </button>
+<!--                 <button sclass="act-button" style="margin-left: 80px; margin-top: 10px;" label="${c:l('previous_services')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" height="38px" width="158px">
+                </button> -->
 
-                        <div width="80px" style="background-color:White;">
+
+                <combobox sclass="bdd-previous-services" id="previous_services" autodrop="true" hflex="1" style="margin-top: 18px;" model="@load(fmodel.customer.getPreviousList())" height="38px" width="158px" placeholder="Previous Services" selectedItem="@bind(fmodel.pickedRedirectServ)" onSelect="@command('selectPreviousService')">
+                    
+                    <!-- value="@load( (fmodel.customer.getPreviousList() == null) ? '' : ('').concat(fmodel.customer.getPreviousList()))" -->
+
+                    <comboitem label="@load(each)" value="@load(each)"  style="background-color:#E8F8F5;"/>
+
+
+                </combobox>
+
+                        <div width="170px" style="background-color:White;">
                 </div>
 
-                <button sclass="act-button" style="margin-left: 45px; margin-top: 10px;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
+                <button sclass="act-button" style="margin-right: 70px; margin-top: 10px;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
                 </button>
 
 
@@ -139,22 +172,22 @@
     
     <vlayout sclass="blue-background" height="120px">   
         
-        <hbox width="80%" style="margin-top: 10px; margin-left: 160px; margin-right: 60px; margin-bottom: 50px;">
-            <button  sclass="act-button" style="margin-left: 80px; margin-top: 12px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
+        <hbox width="80%" style="margin-top: 10px; margin-left: 160px; margin-bottom: 50px;">
+            <button  sclass="act-button" style="margin-top: 12px;" label="Place on hold" disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')" id="btn_postpone" height="38px" width="158px">
             </button>
 
-            <div width="80px" style="background-color:Yellow;">
+            <div width="170px" style="background-color:Yellow;">
                 </div>
 
-            <vbox style="">
-                <button sclass="act-button" style="margin-left: 45px; margin-top: 12px;" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
+            <vbox style="margin-right: 70px; margin-top: 12px;" >
+                <button sclass="act-button" style="" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
                 </button>
                 
                 <div height="12px" sclass="blue-background">
                 </div>
                 
                 <!--<checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
-                <checkbox style="margin-left: 20px;margin-top: 20px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
+                <checkbox style="margin-right: 120px;margin-top: 20px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
 
             </vbox>
         </hbox> 
