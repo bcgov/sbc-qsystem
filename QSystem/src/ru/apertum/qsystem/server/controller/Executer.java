@@ -178,6 +178,8 @@ public final class Executer {
         public long getUID() {
             return 777L;
         }
+        
+        
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer customer) {
@@ -509,7 +511,7 @@ public final class Executer {
                         || user.getCustomer().getState() == CustomerState.STATE_BACK
                         || user.getCustomer().getState() == CustomerState.STATE_WAIT_AFTER_POSTPONED
                         || user.getCustomer().getState() == CustomerState.STATE_WAIT_COMPLEX_SERVICE)) {
-                    SoundPlayer.inviteClient(user.getCustomer().getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), isFrst);
+//                    SoundPlayer.inviteClient(user.getCustomer().getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), isFrst);
                     // Должно высветитьсяна основном табло :: Must be highlighted on the main board
                     MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
                     
@@ -762,7 +764,7 @@ public final class Executer {
             try {
                 // просигналим звуком ::: Sound with a sound
                 //SoundPlayer.play("/ru/apertum/qsystem/server/sound/sound.wav");
-                SoundPlayer.inviteClient(customer.getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), true);
+//                SoundPlayer.inviteClient(customer.getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), true);
                 // сохраняем состояния очередей.  ::: Save the state of the queues.
                 QServer.savePool();
                 //разослать оповещение о том, что появился вызванный посетитель
@@ -1172,7 +1174,7 @@ public final class Executer {
             try {
                 // просигналим звуком ::: Sound with a sound
                 //SoundPlayer.play("/ru/apertum/qsystem/server/sound/sound.wav");
-                SoundPlayer.inviteClient(customer.getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), true);
+//                SoundPlayer.inviteClient(customer.getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), true);
 
                 // сохраняем состояния очередей.  ::: Save the state of the queues.
                 QServer.savePool();
@@ -1372,6 +1374,9 @@ public final class Executer {
                 QLog.l().logger().debug("Требуется возврат после редиректа.");
                 // действия по завершению работы юзера над кастомером
                 customer.setFinishTime(new Date());
+                
+                //ANDREW
+                customer.refreshPrevious();
                 // кастомер переходит в состояние "возврата", тут еще и в базу скинется, если надо.
 //                customer.setState(CustomerState.STATE_BACK, backSrv.getId());
                 // переставить кастомера в очередь к пункту возврата
@@ -1502,6 +1507,11 @@ public final class Executer {
             // вот она новая очередь.
             final QService newServiceR = QServiceTree.getInstance().getById(cmdParams.serviceId);
             final QService newService = newServiceR.getLink() != null ? newServiceR.getLink() : newServiceR;
+            
+            //ANDREW
+            customer.setPreviousList(oldService);
+            
+//            QLog.l().logger().debug("\n\n\n\n\n\n\nPREVIOUS LIST: \n " + customer.getPreviousList() + "\n\n\n\n\n");
             // действия по завершению работы юзера над кастомером
             customer.setFinishTime(new Date());
             // кастомер переходит в состояние "перенаправленности", тут еще и в базу скинется, если надо.

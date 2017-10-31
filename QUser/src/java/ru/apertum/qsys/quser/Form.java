@@ -178,6 +178,12 @@ public class Form{
     public void setUser(User user) {
         this.user = user;
     }
+    
+    private LinkedList<QService> PreviousList = new LinkedList<>();
+    
+    public LinkedList<QService> getPreviousList(){
+        return this.PreviousList;
+    };
 
     @Command
     @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn"})
@@ -476,7 +482,11 @@ public class Form{
                     
                     params.userId = user.getUser().getId();
                     Executer.getInstance().getTasks().get(Uses.TASK_KILL_NEXT_CUSTOMER).process(params, "", new byte[4]);
+                    
+                    customer.refreshPrevious();
                     customer = null;
+                    
+                    
                     setKeyRegim(KEYS_MAY_INVITE);
                     service_list.setModel(service_list.getModel());
                     
@@ -648,6 +658,8 @@ public class Form{
         addWindowButtons[3] = false;
 //        customer.setChannels(1);
         pickedRedirectServ=null;
+        ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
+        
         this.addTicketScreen();
     }
     
@@ -687,7 +699,10 @@ public class Form{
         if (res.getResult() != null && res.getResult().getService() != null && res.getResult().getState() == CustomerState.STATE_WAIT_COMPLEX_SERVICE) {
             Messagebox.show(l("next_service") + " \"" + res.getResult().getService().getName() + "\". " + l("customer_number") + " \"" + res.getResult().getPrefix() + res.getResult().getNumber() + "\"." + "\n\n" + res.getResult().getService().getDescription(), l("contumie_complex_service"), Messagebox.OK, Messagebox.INFORMATION);
         }
+        
+        customer.refreshPrevious();
         customer = null;
+        
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
         BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -887,7 +902,17 @@ public class Form{
             Messagebox.show(l("first_select_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
             refreshChannels();      //set channels to default when popup window show up. 
         }
-;
+    }
+    
+    @Command
+    public void ChangeChannels(){
+        int channelIndex = ((Combobox) serveCustomerDialogWindow.getFellow("Change_Channels")).getSelectedIndex() + 1;
+        String channels = ((Combobox) serveCustomerDialogWindow.getFellow("Change_Channels")).getSelectedItem().getValue().toString();
+        customer.setChannels(channels);
+        customer.setChannelsIndex(channelIndex);
+        if(channelIndex>4){
+            this.finish();
+        }
     }
     
     public void refreshChannels(){
@@ -1186,6 +1211,9 @@ public class Form{
             service_list.setModel(service_list.getModel());
             addTicketDailogWindow.setVisible(false);
             
+            //Reset the combobox to default value/placeHolder 
+            ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
+            
             this.invite();
             this.begin();
             this.refreshChannels();
@@ -1194,6 +1222,50 @@ public class Form{
             customer.setChannelsIndex(params.new_channels_Index);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
+    }
+    
+    @Command
+    public void selectPreviousService(){
+//        pickedRedirectServ = ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).getSelectedItem().getValue().toString();
+        if (pickedRedirectServ != null) {
+            if (!pickedRedirectServ.isLeaf()) {
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+                return;
+            }
+
+//            this.refreshQuantity();
+            final CmdParams params = new CmdParams();
+
+            params.userId = user.getUser().getId();
+            params.serviceId = pickedRedirectServ.getId();
+            params.requestBack = Boolean.FALSE;
+            params.resultId = -1l;
+//            params.channelsIndex = customer.getChannelsIndex();
+//            params.channels = customer.getChannels();
+//            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+//            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
+            
+            params.comments = "";
+//            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+            QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
+
+            Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
+            
+            customer = null;            
+            setKeyRegim(KEYS_MAY_INVITE);
+            service_list.setModel(service_list.getModel());
+//            serveCustomerDialogWindow.setVisible(false);
+            
+            this.invite();
+            this.begin();
+            this.refreshChannels();
+            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();           
+            customer.setChannelsIndex(params.new_channels_Index);
+            customer.setChannels(params.new_channels);
+            BindUtils.postNotifyChange(null, null, Form.this, "*");
+        }
+        
     }
     
     @Command
