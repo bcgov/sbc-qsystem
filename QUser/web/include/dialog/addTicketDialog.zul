@@ -58,7 +58,7 @@
 	                    	 <!-- visible="@load(fmodel.addWindowButtons[0])" -->
 
 	                    	
-	                    	<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                    	<combobox id="Channels_options" sclass="bdd-channels-options" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
 	                    		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
 	                    		<!-- @load(fmodel.CheckCombobox()) --> 
 		                        <attribute name="onCreate">

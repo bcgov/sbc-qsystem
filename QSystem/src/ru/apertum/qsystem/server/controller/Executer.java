@@ -430,7 +430,7 @@ public final class Executer {
                     QLog.l().logger().error("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
                 } else {
                     user.setCustomer(parallelCust);
-                    QLog.l().logger().error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+//                    QLog.l().logger().error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
             // вот над этим пациентом
@@ -1081,8 +1081,8 @@ public final class Executer {
                     QLog.l().logger().error("Юзер :: User\"" + user + "\" переключился на кастомера :: Switched to a customizer \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
-            QLog.l().logger().error("УДАЛЕНИЕ: Удалили по неявке кастомера " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data() + "\"");
-            QLog.l().logger().error("REMOVING: Customer was removing because of absence " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " customer inputted \"" + user.getCustomer().getInput_data() + "\"");
+//            QLog.l().logger().error("УДАЛЕНИЕ: Удалили по неявке кастомера " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data() + "\"");
+//            QLog.l().logger().error("REMOVING: Customer was removing because of absence " + user.getCustomer().getPrefix() + "-" + user.getCustomer().getNumber() + " customer inputted \"" + user.getCustomer().getInput_data() + "\"");
             // Если кастомер имел что-то введенное на пункте регистрации, то удалить всех таких кастомеров с такими введеными данными
             // и отправить его в бан, ибо нехрен набирать кучу талонов и просирать очереди.
             // If the custodian had something entered at the registration point, then delete all such custodians with such entered data
