@@ -48,7 +48,7 @@
                         
                     ]]></zscript> -->
 
-                <combobox id="Change_Channels" disabled="@load(!fmodel.btnsDisabled[2])" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"  >
+                <combobox id="Change_Channels" sclass="bdd-channels-options" disabled="@load(!fmodel.btnsDisabled[2])" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"  >
                     <!-- visible="@load(fmodel.addWindowButtons[0])" -->
                     <!-- @load(fmodel.CheckCombobox()) --> 
 <!--                     <attribute name="onCreate">
