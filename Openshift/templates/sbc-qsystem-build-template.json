@@ -1,379 +1,437 @@
 {
-  "kind": "Template",
-  "apiVersion": "v1",
-  "metadata": {
-    "name": "sbc-cfms",
-    "annotations": {
-      "description": "",
-      "tags": "java",
-      "iconClass": "icon-java"
-    }
-  },
-  "labels": {
-    "template": "java"
-  },
-  "objects": [
-    {
-      "kind": "ImageStream",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${QSYSTEM_SERVICE_NAME}",
-        "annotations": {
-          "description": "Stores the image for the QSystem application"
-        }
-      }
-    },
-	{
-      "kind": "ImageStream",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "openshift-openjfx",
-        "annotations": {
-          "description": "Stores the image for OpenJFX"
-        }
-      }
-    },
-	{
-      "kind": "ImageStream",
-      "apiVersion": "v1",
-      "metadata":
-      {
-        "name": "s2i-nginx",
-        "generation": 1,
-        "creationTimestamp": null
-      },
-      "spec":
-      {
-        "tags": [
-          {
-            "name": "s2i-nginx",
-            "annotations": null,
-            "generation": null,
-            "importPolicy": {}
-          }
-
-        ]
-      },
-      "status": {}
-    },
-	{
-      "kind": "ImageStream",
-      "apiVersion": "v1",
-      "metadata":
-      {
-        "name": "${NGINX_SERVICE_NAME}",
-        "generation": 1,
-        "creationTimestamp": null
-      },
-      "spec":
-      {
-        "tags": [
-          {
-            "name": "${NGINX_SERVICE_NAME}",
-            "annotations": null,
-            "generation": null,
-            "importPolicy": {}
-          }
-
-        ]
-      },
-      "status": {}
-    },
-	{
-    "kind": "BuildConfig",
+    "kind": "Template",
     "apiVersion": "v1",
-    "metadata": {
-        "name": "openshift-openjfx",
-        "creationTimestamp": null,
-        "labels": {
-            "app": "openshift-openjfx"
-        }
-    },
-    "spec": {
-        "triggers": [
-            {
-                "type": "ConfigChange"
-            }
-        ],
-        "runPolicy": "Serial",
-        "source": {
-            "type": "Git",
-            "git": {
-                "uri": "https://github.com/bcgov/openshift-openjfx"
-            }
-        },
-        "strategy": {
-            "type": "Docker",
-            "dockerStrategy": {}
-        },
-        "output": {
-            "to": {
-                "kind": "ImageStreamTag",
-                "namespace": "servicebc-customer-flow-tools",
-                "name": "openshift-openjfx:latest"
-            }
-        },
-        "resources": {},
-        "postCommit": {},
-        "nodeSelector": null
-    },
-    "status": {
-        "lastVersion": 0
-    }
-},
-{
-      "kind": "BuildConfig",
-      "apiVersion": "v1",
-      "metadata":
-      {
-        "name": "s2i-nginx",
-        "creationTimestamp": null,
-        "labels":
-        {
-          "app": "s2i-nginx"
-        },
+    "metadata":
+    {
+        "name": "sbc-cfms",
         "annotations":
         {
-          "openshift.io/generated-by": "OpenShiftNewApp"
-        }
-      },
-      "spec":
-      {
-        "triggers": [
-          {
-            "type": "ConfigChange"
-          },
-          {
-            "type": "ImageChange",
-            "imageChange": {}
-          }
-        ],
-        "runPolicy": "Serial",
-        "source":
-        {
-          "type": "Git",
-          "git":
-          {
-            "uri": "https://github.com/BCDevOps/s2i-nginx.git"
-          }
-        },
-        "strategy":
-        {
-          "type": "Docker",
-          "dockerStrategy":
-          {
-          }
-        },
-        "output":
-        {
-          "to":
-          {
-            "kind": "ImageStreamTag",
-            "name": "s2i-nginx:latest"
-          }
-        },
-        "resources": {},
-        "postCommit": {},
-        "nodeSelector": null
-      },
-      "status":
-      {
-        "lastVersion": 0
-      }
-    },
-	{
-    "kind": "BuildConfig",
-    "apiVersion": "v1",
-    "metadata": {
-        "name": "${QSYSTEM_SERVICE_NAME}",
-        "creationTimestamp": null,
-        "labels": {
-            "app": "${QSYSTEM_SERVICE_NAME}"
+            "description": "",
+            "tags": "java",
+            "iconClass": "icon-java"
         }
     },
-    "spec": {
-        "triggers": [            
+    "labels":
+    {
+        "template": "java"
+    },
+    "objects": [
+    {
+        "kind": "ImageStream",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "${QSYSTEM_SERVICE_NAME}",
+            "annotations":
             {
-                "type": "ImageChange",
-                "imageChange": {}
-            },
+                "description": "Stores the image for the QSystem application"
+            }
+        }
+    },
+    {
+        "kind": "ImageStream",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "openshift-openjfx",
+            "annotations":
+            {
+                "description": "Stores the image for OpenJFX"
+            }
+        }
+    },
+    {
+        "kind": "ImageStream",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "s2i-nginx",
+            "generation": 1,
+            "creationTimestamp": null
+        },
+        "spec":
+        {
+            "tags": [
+                {
+                    "name": "s2i-nginx",
+                    "annotations": null,
+                    "generation": null,
+                    "importPolicy":
+                    {}
+                }
+
+            ]
+        },
+        "status":
+        {}
+    },
+    {
+        "kind": "ImageStream",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "${NGINX_SERVICE_NAME}",
+            "generation": 1,
+            "creationTimestamp": null
+        },
+        "spec":
+        {
+            "tags": [
+                {
+                    "name": "${NGINX_SERVICE_NAME}",
+                    "annotations": null,
+                    "generation": null,
+                    "importPolicy":
+                    {}
+                }
+
+            ]
+        },
+        "status":
+        {}
+    },
+    {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "openshift-openjfx",
+            "creationTimestamp": null,
+            "labels":
+            {
+                "app": "openshift-openjfx"
+            }
+        },
+        "spec":
+        {
+            "triggers": [
             {
                 "type": "ConfigChange"
-            }
-        ],
-        "runPolicy": "Serial",
-        "source": {
-            "type": "Git",
-            "git": {
-                "uri": "${SOURCE_REPOSITORY_URL}"
+            }],
+            "runPolicy": "Serial",
+            "source":
+            {
+                "type": "Git",
+                "git":
+                {
+                    "uri": "https://github.com/bcgov/openshift-openjfx"
+                }
             },
-            "contextDir": "/"
-        },
-        "strategy": {
-            "type": "Source",
-            "sourceStrategy": {
-                "from": {
+            "strategy":
+            {
+                "type": "Docker",
+                "dockerStrategy":
+                {}
+            },
+            "output":
+            {
+                "to":
+                {
                     "kind": "ImageStreamTag",
+                    "namespace": "servicebc-customer-flow-tools",
                     "name": "openshift-openjfx:latest"
-                },
-                "forcePull": true
-            }
+                }
+            },
+            "resources":
+            {},
+            "postCommit":
+            {},
+            "nodeSelector": null
         },
-        "output": {
-            "to": {
-                "kind": "ImageStreamTag",
-				"namespace": "servicebc-customer-flow-tools",
-                "name": "${QSYSTEM_SERVICE_NAME}:latest"
-            }
-        },
-        "resources": {},
-        "postCommit": {},
-        "nodeSelector": null
-    },
-    "status": {
-        "lastVersion": 0
-    }
-},
-{
-    "kind": "BuildConfig",
-    "apiVersion": "v1",
-    "metadata": {
-        "name": "${NGINX_SERVICE_NAME}",
-        "creationTimestamp": null,
-        "labels": {
-            "app": "${NGINX_SERVICE_NAME}"
+        "status":
+        {
+            "lastVersion": 0
         }
     },
-    "spec": {
-        "triggers": [            
+    {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "s2i-nginx",
+            "creationTimestamp": null,
+            "labels":
             {
-                "type": "ImageChange",
-                "imageChange": {}
+                "app": "s2i-nginx"
             },
+            "annotations":
+            {
+                "openshift.io/generated-by": "OpenShiftNewApp"
+            }
+        },
+        "spec":
+        {
+            "triggers": [
             {
                 "type": "ConfigChange"
-            }
-        ],
-        "runPolicy": "Serial",
-        "source": {
-            "type": "Git",
-            "git": {
-                "uri": "${SOURCE_REPOSITORY_URL}"
             },
-            "contextDir": "/Nginx"
-        },
-        "strategy": {
-            "type": "Source",
-            "sourceStrategy": {
-                "from": {
+            {
+                "type": "ImageChange",
+                "imageChange":
+                {}
+            }],
+            "runPolicy": "Serial",
+            "source":
+            {
+                "type": "Git",
+                "git":
+                {
+                    "uri": "https://github.com/BCDevOps/s2i-nginx.git"
+                }
+            },
+            "strategy":
+            {
+                "type": "Docker",
+                "dockerStrategy":
+                {}
+            },
+            "output":
+            {
+                "to":
+                {
                     "kind": "ImageStreamTag",
                     "name": "s2i-nginx:latest"
-                },
-                "forcePull": true
-            }
+                }
+            },
+            "resources":
+            {},
+            "postCommit":
+            {},
+            "nodeSelector": null
         },
-        "output": {
-            "to": {
-                "kind": "ImageStreamTag",
-				"namespace": "servicebc-customer-flow-tools",
-                "name": "${NGINX_SERVICE_NAME}:latest"
-            }
-        },
-        "resources": {},
-        "postCommit": {},
-        "nodeSelector": null
-    },
-    "status": {
-        "lastVersion": 0
-    }
-},
-{
-    "kind": "BuildConfig",
-    "apiVersion": "v1",
-    "metadata": {
-        "name": "qsystem-pipeline",
-        "creationTimestamp": null,
-        "labels": {
-            "app": "qsystem-pipeline",
-            "name": "qsystem-pipeline",
-            "template": "java"
+        "status":
+        {
+            "lastVersion": 0
         }
     },
-    "spec": {
-        "runPolicy": "Parallel",
-        "source": {
-            "type": "Git",
-            "git": {
-                "uri": "https://github.com/bcgov/sbc-qsystem.git",
-                "ref": "master"
+    {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "${QSYSTEM_SERVICE_NAME}",
+            "creationTimestamp": null,
+            "labels":
+            {
+                "app": "${QSYSTEM_SERVICE_NAME}"
             }
         },
-        "strategy": {
-            "type": "JenkinsPipeline",
-            "jenkinsPipelineStrategy": {
-                "jenkinsfilePath": "Jenkinsfile"
+        "spec":
+        {
+            "triggers": [
+            {
+                "type": "ImageChange",
+                "imageChange":
+                {}
+            },
+            {
+                "type": "ConfigChange"
+            }],
+            "runPolicy": "Serial",
+            "source":
+            {
+                "type": "Git",
+                "git":
+                {
+                    "uri": "${SOURCE_REPOSITORY_URL}"
+                },
+                "contextDir": "/"
+            },
+            "strategy":
+            {
+                "type": "Source",
+                "sourceStrategy":
+                {
+                    "from":
+                    {
+                        "kind": "ImageStreamTag",
+                        "name": "openshift-openjfx:latest"
+                    },
+                    "forcePull": true
+                }
+            },
+            "output":
+            {
+                "to":
+                {
+                    "kind": "ImageStreamTag",
+                    "namespace": "servicebc-customer-flow-tools",
+                    "name": "${QSYSTEM_SERVICE_NAME}:latest"
+                }
+            },
+            "resources":
+            {},
+            "postCommit":
+            {},
+            "nodeSelector": null
+        },
+        "status":
+        {
+            "lastVersion": 0
+        }
+    },
+    {
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "${NGINX_SERVICE_NAME}",
+            "creationTimestamp": null,
+            "labels":
+            {
+                "app": "${NGINX_SERVICE_NAME}"
             }
         },
-        "output": {},
-        "resources": {},
-        "postCommit": {},
-        "nodeSelector": null
+        "spec":
+        {
+            "triggers": [
+            {
+                "type": "ImageChange",
+                "imageChange":
+                {}
+            },
+            {
+                "type": "ConfigChange"
+            }],
+            "runPolicy": "Serial",
+            "source":
+            {
+                "type": "Git",
+                "git":
+                {
+                    "uri": "${SOURCE_REPOSITORY_URL}"
+                },
+                "contextDir": "/Nginx"
+            },
+            "strategy":
+            {
+                "type": "Source",
+                "sourceStrategy":
+                {
+                    "from":
+                    {
+                        "kind": "ImageStreamTag",
+                        "name": "s2i-nginx:latest"
+                    },
+                    "forcePull": true
+                }
+            },
+            "output":
+            {
+                "to":
+                {
+                    "kind": "ImageStreamTag",
+                    "namespace": "servicebc-customer-flow-tools",
+                    "name": "${NGINX_SERVICE_NAME}:latest"
+                }
+            },
+            "resources":
+            {},
+            "postCommit":
+            {},
+            "nodeSelector": null
+        },
+        "status":
+        {
+            "lastVersion": 0
+        }
     },
-    "status": {
-        "lastVersion": 0
-    }
-}
-],
-  "parameters": [
-	{
-      "name": "QSYSTEM_SERVICE_NAME",
-      "displayName": "Name",
-      "description": "The name assigned to all of the qsystem service objects defined in this template.",
-      "required": true,
-      "value": "qsystem"
-    },	
-	{
-      "name": "NGINX_SERVICE_NAME",
-      "displayName": "Name",
-      "description": "The name assigned to all of the nginx service objects defined in this template.",
-      "required": true,
-      "value": "cerberus"
-    },	
     {
-      "name": "S2I_NAMESPACE",
-      "displayName": "Namespace",
-      "description": "The OpenShift Namespace where the S2I ImageStream resides.",
-      "value": "openshift"
+        "kind": "BuildConfig",
+        "apiVersion": "v1",
+        "metadata":
+        {
+            "name": "qsystem-pipeline",
+            "creationTimestamp": null,
+            "labels":
+            {
+                "app": "qsystem-pipeline",
+                "name": "qsystem-pipeline",
+                "template": "java"
+            }
+        },
+        "spec":
+        {
+            "runPolicy": "Parallel",
+            "source":
+            {
+                "type": "Git",
+                "git":
+                {
+                    "uri": "https://github.com/bcgov/sbc-qsystem.git",
+                    "ref": "master"
+                }
+            },
+            "strategy":
+            {
+                "type": "JenkinsPipeline",
+                "jenkinsPipelineStrategy":
+                {
+                    "jenkinsfilePath": "Jenkinsfile"
+                }
+            },
+            "output":
+            {},
+            "resources":
+            {},
+            "postCommit":
+            {},
+            "nodeSelector": null
+        },
+        "status":
+        {
+            "lastVersion": 0
+        }
+    }],
+    "parameters": [
+    {
+        "name": "QSYSTEM_SERVICE_NAME",
+        "displayName": "Name",
+        "description": "The name assigned to all of the qsystem service objects defined in this template.",
+        "required": true,
+        "value": "qsystem"
     },
     {
-      "name": "SOURCE_REPOSITORY_URL",
-      "displayName": "Git Repository URL",
-      "description": "The URL of the repository with your application source code.",
-      "value": "https://github.com/bcgov/sbc-qsystem.git"
+        "name": "NGINX_SERVICE_NAME",
+        "displayName": "Name",
+        "description": "The name assigned to all of the nginx service objects defined in this template.",
+        "required": true,
+        "value": "cerberus"
     },
     {
-      "name": "SOURCE_REPOSITORY_REF",
-      "displayName": "Git Reference",
-      "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch."
+        "name": "S2I_NAMESPACE",
+        "displayName": "Namespace",
+        "description": "The OpenShift Namespace where the S2I ImageStream resides.",
+        "value": "openshift"
     },
     {
-      "name": "CONTEXT_DIR",
-      "displayName": "Context Directory",
-      "description": "Set this to the relative path to your project if it is not in the root of your repository."
+        "name": "SOURCE_REPOSITORY_URL",
+        "displayName": "Git Repository URL",
+        "description": "The URL of the repository with your application source code.",
+        "value": "https://github.com/bcgov/sbc-qsystem.git"
     },
     {
-      "name": "GITHUB_WEBHOOK_SECRET",
-      "displayName": "GitHub Webhook Secret",
-      "description": "A secret string used to configure the GitHub webhook.",
-      "generate": "expression",
-      "from": "[a-zA-Z0-9]{40}"
+        "name": "SOURCE_REPOSITORY_REF",
+        "displayName": "Git Reference",
+        "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch."
     },
     {
-      "name": "GENERIC_WEBHOOK_SECRET",
-      "displayName": "Generic Webhook Secret",
-      "description": "A secret string used to configure the Generic webhook.",
-      "generate": "expression",
-      "from": "[a-zA-Z0-9]{40}"
-    }
-  ]
+        "name": "CONTEXT_DIR",
+        "displayName": "Context Directory",
+        "description": "Set this to the relative path to your project if it is not in the root of your repository."
+    },
+    {
+        "name": "GITHUB_WEBHOOK_SECRET",
+        "displayName": "GitHub Webhook Secret",
+        "description": "A secret string used to configure the GitHub webhook.",
+        "generate": "expression",
+        "from": "[a-zA-Z0-9]{40}"
+    },
+    {
+        "name": "GENERIC_WEBHOOK_SECRET",
+        "displayName": "Generic Webhook Secret",
+        "description": "A secret string used to configure the Generic webhook.",
+        "generate": "expression",
+        "from": "[a-zA-Z0-9]{40}"
+    }]
 }

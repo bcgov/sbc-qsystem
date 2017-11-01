@@ -1,686 +1,777 @@
 {
-  "kind": "Template",
-  "apiVersion": "v1",
-  "metadata": {
-    "name": "sbc-qsystem",
-    "annotations": {
-      "description": "Template for deploying QSystem",
-      "tags": "java",
-      "iconClass": "icon-java"
-    }
-  },
-  "labels": {
-    "template": "sbc-qsystem-environment"
-  },
-  "objects": [
-  {
-      "kind": "Secret",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "sbc-secrets"
-      },
-      "stringData" : {
-        "database-user" : "${DATABASE_USER}",
-		"database-root-user" : "${DATABASE_ROOT_USER}",
-        "database-password" : "${DATABASE_PASSWORD}",
-        "database-root-password" : "${DATABASE_ROOT_PASSWORD}",
-		"database-server" : "${DATABASE_SERVICE_NAME}"
-      }
-    },
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata":
     {
-      "kind": "PersistentVolumeClaim",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${DATABASE_SERVICE_NAME}-data"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "resources": {
-          "requests": {
-            "storage": "${DATABASE_VOLUME_CAPACITY}"
-          }
+        "name": "sbc-qsystem",
+        "annotations":
+        {
+            "description": "Template for deploying QSystem",
+            "tags": "java",
+            "iconClass": "icon-java"
         }
-      }
     },
-	{
-      "kind": "PersistentVolumeClaim",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${QSYSTEM_SERVICE}-data"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "resources": {
-          "requests": {
-            "storage": "${QSYSTEM_VOLUME_CAPACITY}"
-          }
-        }
-      }
-    },
-	{
-      "kind": "PersistentVolumeClaim",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "cerberus-data"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "resources": {
-          "requests": {
-            "storage": "${QSYSTEM_VOLUME_CAPACITY}"
-          }
-        }
-      }
-    },
+    "labels":
     {
-      "kind": "Service",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${QSYSTEM_SERVICE}",
-        "annotations": {
-          "description": "Exposes and load balances the application pods"
-        }
-      },
-      "spec": {
-        "ports": [
-          {
-            "name": "web",
-            "port": 8080,
-            "targetPort": 8080
-          },
-		  {
-            "name": "reports",
-            "port": 8088,
-            "targetPort": 8088
-          },
-		  {
-            "name": "server",
-            "port": 3128,
-            "targetPort": 3128
-          },
-		  {
-            "name": "client",
-            "port": 3129,
-            "targetPort": 3129
-          }
-        ],
-        "selector": {
-          "name": "${QSYSTEM_SERVICE}"
-        }
-      }
+        "template": "sbc-qsystem-environment"
     },
-    {
-      "kind": "Route",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${QSYSTEM_SERVICE}"
-      },
-      "spec": {
-        "host": "sbc-qsystem-${APP_DEPLOYMENT_TAG}.pathfinder.gov.bc.ca",
-        "to": {
-          "kind": "Service",
-          "name": "${NGINX_SERVICE_NAME}"
-        }
-      }
-    },
-    {
-      "kind": "DeploymentConfig",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${QSYSTEM_SERVICE}",
-        "annotations": {
-          "description": "Defines how to deploy the application server"
-        }
-      },
-      "spec": {
-        "strategy": {
-          "type": "Rolling"
-        },
-        "triggers": [
-          {
-            "type": "ImageChange",
-            "imageChangeParams": {
-              "automatic": true,
-              "containerNames": [
-                "${QSYSTEM_SERVICE}"
-              ],
-              "from": {
-                "kind": "ImageStreamTag",
-                "namespace": "${APP_IMAGE_NAMESPACE}",
-                "name": "${APP_IMAGE_NAME}:${APP_DEPLOYMENT_TAG}"
-              }
-            }
-          },
-          {
-            "type": "ConfigChange"
-          }
-        ],
-        "replicas": 1,
-        "selector": {
-          "name": "${QSYSTEM_SERVICE}"
-        },
-        "template": {
-          "metadata": {
-            "name": "${QSYSTEM_SERVICE}",
-            "labels": {
-              "name": "${QSYSTEM_SERVICE}"
-            }
-          },
-          "spec": {	
-            "volumes": [
-                {
-                    "name": "${QSYSTEM_SERVICE}-data",
-                    "persistentVolumeClaim": {
-                        "claimName": "${QSYSTEM_SERVICE}-data"
-                    }
-                }
-            ],
-            "containers": [
-              {
-                "name": "${QSYSTEM_SERVICE}",
-                "image": " ",
-                "ports": [
-                  {
-                    "containerPort": 8080
-                  }
-                ],
-				"livenessProbe": {
-							  "timeoutSeconds": 1,
-							  "initialDelaySeconds": 120,
-							  "tcpSocket": {
-								"port": 8080
-							  }
-							},
-				"readinessProbe": {
-							  "timeoutSeconds": 1,
-							  "initialDelaySeconds": 120,
-							  "tcpSocket": {
-								"port": 8080
-							  }
-							},
-				"volumeMounts": [
-					{
-						"name": "${QSYSTEM_SERVICE}-data",
-						"mountPath": "/opt/app-root/src/source/dist/temp"
-					}
-				],
-                "env": [
-                  {
-                    "name": "MYSQL_SERVICE",
-                    "valueFrom": {
-                      "secretKeyRef" : {
-                        "name" : "sbc-secrets",
-                        "key" : "database-server"
-                      }
-                    }
-                  },
-				  {
-                    "name": "MYSQL_USER",
-                    "valueFrom": {
-                      "secretKeyRef" : {
-                        "name" : "sbc-secrets",
-                        "key" : "database-user"
-                      }
-                    }
-                  },
-				  {
-                    "name": "MYSQL_ROOT_USER",
-                    "valueFrom": {
-                      "secretKeyRef" : {
-                        "name" : "sbc-secrets",
-                        "key" : "database-root-user"
-                      }
-                    }
-                  },
-				  {
-                    "name": "MYSQL_ROOT_PASSWORD",
-                    "valueFrom": {
-                      "secretKeyRef" : {
-                        "name" : "sbc-secrets",
-                        "key" : "database-root-password"
-                      }
-                    }
-                  },
-				  {
-                    "name": "MYSQL_PASSWORD",
-                    "valueFrom": {
-                      "secretKeyRef" : {
-                        "name" : "sbc-secrets",
-                        "key" : "database-password"
-                      }
-                    }
-                  },
-				  {
-                    "name": "MYSQL_DATABASE",
-                    "value": "${DATABASE_NAME}"
-                  },
-				  {
-                    "name": "QSB",
-                    "value": "${QSB}"
-                  }					  
-                ]
-                
-              }
-            ]
-          }
-        }
-      }
-    },
-	{
-      "kind": "Service",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${NGINX_SERVICE_NAME}",
-        "annotations": {
-          "description": "Exposes and load balances the nginx pods"
-        }
-      },
-      "spec": {
-        "ports": [
-          {
-            "name": "web",
-            "port": 8080,
-            "targetPort": 8080
-          }
-        ],
-        "selector": {
-          "name": "${NGINX_SERVICE_NAME}"
-        }
-      }
-    },
-    {
-      "kind": "DeploymentConfig",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${NGINX_SERVICE_NAME}",
-        "annotations": {
-          "description": "Defines how to deploy the nginx server"
-        }
-      },
-      "spec": {
-        "strategy": {
-          "type": "Rolling"
-        },
-        "triggers": [
-          {
-            "type": "ImageChange",
-            "imageChangeParams": {
-              "automatic": true,
-              "containerNames": [
-                "${NGINX_SERVICE_NAME}"
-              ],
-              "from": {
-                "kind": "ImageStreamTag",
-                "namespace": "${APP_IMAGE_NAMESPACE}",
-                "name": "${NGINX_SERVICE_NAME}:latest"
-              }
-            }
-          },
-          {
-            "type": "ConfigChange"
-          }
-        ],
-        "replicas": 1,
-        "selector": {
-          "name": "${NGINX_SERVICE_NAME}"
-        },
-        "template": {
-          "metadata": {
-            "name": "${NGINX_SERVICE_NAME}",
-            "labels": {
-              "name": "${NGINX_SERVICE_NAME}"
-            }
-          },
-          "spec": {	
-            "volumes": [
-                {
-                    "name": "cerberus-data",
-                    "persistentVolumeClaim": {
-                        "claimName": "cerberus-data"
-                    }
-                }
-            ],		  
-            "containers": [
-				{
-                "name": "${NGINX_SERVICE_NAME}",
-                "image": " ",
-                "ports": [
-                  {
-                    "containerPort": 8080
-                  }
-                ],
-				"env": [
-                  {
-                    "name": "SEARCH_DOMAIN",
-                    "value": "servicebc-customer-flow-${APP_DEPLOYMENT_TAG}.svc.cluster.local"
-                  }
-				 ],
-                "livenessProbe": {
-							  "timeoutSeconds": 1,
-							  "initialDelaySeconds": 60,
-							  "tcpSocket": {
-								"port": 8080
-							  }
-							},
-				"readinessProbe": {
-							  "timeoutSeconds": 1,
-							  "initialDelaySeconds": 60,
-							  "tcpSocket": {
-								"port": 8080
-							  }
-							},
-				"volumeMounts": [
-					{
-						"name": "cerberus-data",
-						"mountPath": "/public/videos/"
-					}
-				]
-                
-				}
-            ]
-          }
-        }
-      }
-    },
-	{
-      "kind": "Service",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${DATABASE_SERVICE_NAME}",
-        "annotations": {
-          "description": "Exposes the database server"
-        }
-      },
-      "spec": {
-        "ports": [
-          {
-            "name": "mysql",
-			"protocol": "TCP",
-            "port": 3306,
-            "targetPort": 3306,
-			"nodePort": 0
-          }
-        ],
-        "selector": {
-          "app": "${DATABASE_SERVICE_NAME}"
-        },
-        "type": "ClusterIP",
-        "sessionAffinity": "None"
-      },
-	   "status": {
-        "loadBalancer": {}
-      }
-    },	
-	{
-		"kind": "DeploymentConfig",
-		"apiVersion": "v1",
-		"metadata": {
-			"name": "${DATABASE_SERVICE_NAME}",
-			"generation": 1,
-			"creationTimestamp": null,
-			"labels": {
-						"app": "${DATABASE_SERVICE_NAME}"
-			},			
-			"annotations": {
-				"description": "Defines how to deploy the database",
-				"openshift.io/container.postgresql.image.entrypoint": "[\"container-entrypoint\",\"run-postgresql\"]"
-			}
-		},
-		"spec": {
-			"strategy": {
-				"type": "Recreate"				
-			},
-			"triggers": [
-				{
-					"type": "ConfigChange"
-				},
-				{
-					"type": "ImageChange",
-					"imageChangeParams": {
-						"automatic": true,
-						"containerNames": [
-							"mysql"
-						],
-						"from": {
-							"kind": "ImageStreamTag",
-							"namespace":  "openshift",
-							"name": "mysql:5.6"
-						}						
-					}
-				}
-			],
-			"replicas": 1,
-			"test": false,
-			"selector": {
-				"app": "${DATABASE_SERVICE_NAME}",
-				"deploymentconfig": "${DATABASE_SERVICE_NAME}"
-			},
-				
-			"template": {
-				"metadata": {
-					"creationTimestamp": null,
-					"labels": {
-						"app": "${DATABASE_SERVICE_NAME}",
-						"deploymentconfig": "${DATABASE_SERVICE_NAME}"
-					},
-					"annotations": {
-						"openshift.io/container.postgresql.image.entrypoint": "[\"container-entrypoint\",\"run-mysql\"]"
-					}
-				},
-				"spec": {
-					"volumes": [
-						{
-							"name": "${DATABASE_SERVICE_NAME}-data",
-							"persistentVolumeClaim": {
-								"claimName": "${DATABASE_SERVICE_NAME}-data"
-							}
-						}
-					],
-					"containers": [
-						{
-							"name": "mysql",
-							"image": "registry.access.redhat.com/rhscl/mysql-56",
-							"ports": [
-								{
-									"containerPort": 3306,
-									"protocol": "TCP"
-								}
-							],
-							"resources": {
-                            "limits": {
-                                "cpu": "500m",
-                                "memory": "512Mi"
-                            },
-                            "requests": {
-                                "cpu": "10m"
-                            }
-                            },
-							"env": [
-								{
-									"name": "MYSQL_DATABASE",
-									"value": "${DATABASE_NAME}"
-								},
-								{
-									"name": "MYSQL_PASSWORD",
-									"valueFrom": {
-                                      "secretKeyRef" : {
-                                        "name" : "sbc-secrets",
-                                        "key" : "database-password"
-                                      }
-                                    }
-								},
-								{
-									"name": "MYSQL_ROOT_PASSWORD",
-									"valueFrom": {
-                                      "secretKeyRef" : {
-                                        "name" : "sbc-secrets",
-                                        "key" : "database-root-password"
-                                      }
-                                    }
-								},
-								{
-									"name": "MYSQL_USER",
-									"valueFrom": {
-                                      "secretKeyRef" : {
-                                        "name" : "sbc-secrets",
-                                        "key" : "database-user"
-                                      }
-                                    }
-								}
-							],
-							"readinessProbe": {
-								"timeoutSeconds": 1,
-							  "initialDelaySeconds": 3,
-							  "exec": {
-								"command": [ "/bin/sh", "-i", "-c", "MYSQL_PWD=\"$MYSQL_PASSWORD\" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE -e 'SELECT 1'"]                    
-							  }
-							},
-							"livenessProbe": {
-							  "timeoutSeconds": 1,
-							  "initialDelaySeconds": 30,
-							  "tcpSocket": {
-								"port": 3306
-							  }
-							},
-							"resources": {},
-							"volumeMounts": [
-								{
-									"name": "${DATABASE_SERVICE_NAME}-data",
-									"mountPath": "/var/lib/mysql/data"
-								}
-							],
-							"terminationMessagePath": "/dev/termination-log",
-							"imagePullPolicy": "IfNotPresent"
-						}
-					],
-					"restartPolicy": "Always",
-					"terminationGracePeriodSeconds": 30,
-					"dnsPolicy": "ClusterFirst",
-					"securityContext": {}
+    "objects": [
+        {
+            "kind": "Secret",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "sbc-secrets"
             },
-			"restartPolicy": "Always",
-            "dnsPolicy": "ClusterFirst"			
-		},		
-		"status": {}
-	    }
-    }
+            "stringData":
+            {
+                "database-user": "${DATABASE_USER}",
+                "database-root-user": "${DATABASE_ROOT_USER}",
+                "database-password": "${DATABASE_PASSWORD}",
+                "database-root-password": "${DATABASE_ROOT_PASSWORD}",
+                "database-server": "${DATABASE_SERVICE_NAME}"
+            }
+        },
+        {
+            "kind": "PersistentVolumeClaim",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${DATABASE_SERVICE_NAME}-data"
+            },
+            "spec":
+            {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "resources":
+                {
+                    "requests":
+                    {
+                        "storage": "${DATABASE_VOLUME_CAPACITY}"
+                    }
+                }
+            }
+        },
+        {
+            "kind": "PersistentVolumeClaim",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${QSYSTEM_SERVICE}-data"
+            },
+            "spec":
+            {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "resources":
+                {
+                    "requests":
+                    {
+                        "storage": "${QSYSTEM_VOLUME_CAPACITY}"
+                    }
+                }
+            }
+        },
+        {
+            "kind": "PersistentVolumeClaim",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "cerberus-data"
+            },
+            "spec":
+            {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "resources":
+                {
+                    "requests":
+                    {
+                        "storage": "${QSYSTEM_VOLUME_CAPACITY}"
+                    }
+                }
+            }
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${QSYSTEM_SERVICE}",
+                "annotations":
+                {
+                    "description": "Exposes and load balances the application pods"
+                }
+            },
+            "spec":
+            {
+                "ports": [
+                {
+                    "name": "web",
+                    "port": 8080,
+                    "targetPort": 8080
+                },
+                {
+                    "name": "reports",
+                    "port": 8088,
+                    "targetPort": 8088
+                },
+                {
+                    "name": "server",
+                    "port": 3128,
+                    "targetPort": 3128
+                },
+                {
+                    "name": "client",
+                    "port": 3129,
+                    "targetPort": 3129
+                }],
+                "selector":
+                {
+                    "name": "${QSYSTEM_SERVICE}"
+                }
+            }
+        },
+        {
+            "kind": "Route",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${QSYSTEM_SERVICE}"
+            },
+            "spec":
+            {
+                "host": "sbc-qsystem-${APP_DEPLOYMENT_TAG}.pathfinder.gov.bc.ca",
+                "to":
+                {
+                    "kind": "Service",
+                    "name": "${NGINX_SERVICE_NAME}"
+                }
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${QSYSTEM_SERVICE}",
+                "annotations":
+                {
+                    "description": "Defines how to deploy the application server"
+                }
+            },
+            "spec":
+            {
+                "strategy":
+                {
+                    "type": "Rolling"
+                },
+                "triggers": [
+                {
+                    "type": "ImageChange",
+                    "imageChangeParams":
+                    {
+                        "automatic": true,
+                        "containerNames": [
+                            "${QSYSTEM_SERVICE}"
+                        ],
+                        "from":
+                        {
+                            "kind": "ImageStreamTag",
+                            "namespace": "${APP_IMAGE_NAMESPACE}",
+                            "name": "${APP_IMAGE_NAME}:${APP_DEPLOYMENT_TAG}"
+                        }
+                    }
+                },
+                {
+                    "type": "ConfigChange"
+                }],
+                "replicas": 1,
+                "selector":
+                {
+                    "name": "${QSYSTEM_SERVICE}"
+                },
+                "template":
+                {
+                    "metadata":
+                    {
+                        "name": "${QSYSTEM_SERVICE}",
+                        "labels":
+                        {
+                            "name": "${QSYSTEM_SERVICE}"
+                        }
+                    },
+                    "spec":
+                    {
+                        "volumes": [
+                        {
+                            "name": "${QSYSTEM_SERVICE}-data",
+                            "persistentVolumeClaim":
+                            {
+                                "claimName": "${QSYSTEM_SERVICE}-data"
+                            }
+                        }],
+                        "containers": [
+                        {
+                            "name": "${QSYSTEM_SERVICE}",
+                            "image": " ",
+                            "ports": [
+                            {
+                                "containerPort": 8080
+                            }],
+                            "livenessProbe":
+                            {
+                                "exec":
+                                {
+                                    "command": ["ls", "/opt/app-root/src/source/dist/temp"]
+                                },
+                                "initialDelaySeconds": 10,
+                                "timeoutSeconds": 5,
+                                "periodSeconds": 60,
+                                "successThreshold": 1,
+                                "failureThreshold": 3
+                            },
+                            "readinessProbe":
+                            {
+                                "timeoutSeconds": 1,
+                                "initialDelaySeconds": 120,
+                                "tcpSocket":
+                                {
+                                    "port": 8080
+                                }
+                            },
+                            "volumeMounts": [
+                            {
+                                "name": "${QSYSTEM_SERVICE}-data",
+                                "mountPath": "/opt/app-root/src/source/dist/temp"
+                            }],
+                            "env": [
+                            {
+                                "name": "MYSQL_SERVICE",
+                                "valueFrom":
+                                {
+                                    "secretKeyRef":
+                                    {
+                                        "name": "sbc-secrets",
+                                        "key": "database-server"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "MYSQL_USER",
+                                "valueFrom":
+                                {
+                                    "secretKeyRef":
+                                    {
+                                        "name": "sbc-secrets",
+                                        "key": "database-user"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "MYSQL_ROOT_USER",
+                                "valueFrom":
+                                {
+                                    "secretKeyRef":
+                                    {
+                                        "name": "sbc-secrets",
+                                        "key": "database-root-user"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "MYSQL_ROOT_PASSWORD",
+                                "valueFrom":
+                                {
+                                    "secretKeyRef":
+                                    {
+                                        "name": "sbc-secrets",
+                                        "key": "database-root-password"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "MYSQL_PASSWORD",
+                                "valueFrom":
+                                {
+                                    "secretKeyRef":
+                                    {
+                                        "name": "sbc-secrets",
+                                        "key": "database-password"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "MYSQL_DATABASE",
+                                "value": "${DATABASE_NAME}"
+                            },
+                            {
+                                "name": "QSB",
+                                "value": "${QSB}"
+                            }]
 
-  ],
-  "parameters": [
-    {
-      "name": "QSYSTEM_SERVICE",
-      "displayName": "QSystem Service Name",
-      "description": "The name assigned to all of the QSystem objects defined in this template.",
-      "required": true,
-      "value": "qsystem"
-    },
-	{
-      "name": "QSB",
-      "displayName": "Smartboard Layout",
-      "description": "** The smartboard layout is defaulted to Non-Reception or call by Name.  If you want to setup the layout for Call by Ticket, Enter: callbyticket",
-	  "value": "nocallonsmartboard",
-      "required": true
-    },
-	{
-      "name": "NGINX_SERVICE_NAME",
-      "displayName": "Nginx Service Name",
-      "description": "The name assigned to all of the Nginx objects defined in this template.",
-      "required": true,
-      "value": "cerberus"
-    },
-	
-    {
-      "name": "DATABASE_SERVICE_NAME",
-      "displayName": "Database Service Name",
-      "value": "mysql"
-    },
-    {
-      "name": "DATABASE_USER",
-      "displayName": "DB Username",
-      "description": "Username for Database user that will be used for accessing the database.",
-      "generate": "expression",
-      "from": "user[A-Z0-9]{3}"
-    },
-	{
-      "name": "DATABASE_ROOT_USER",
-      "displayName": "DB Root Username",
-      "description": "Username for Database user that will be used for accessing the database with root access.",
-      "value": "root"
-    },
-    {
-      "name": "DATABASE_PASSWORD",
-      "displayName": "Database Password",
-      "description": "Password for the Database user.",
-      "generate": "expression",
-      "from": "[a-zA-Z0-9]{16}"
-    },
-    {
-      "name": "DATABASE_NAME",
-      "displayName": "Database Name",
-      "value": "qsystem"
-    },
-    {
-      "name": "DATABASE_ROOT_PASSWORD",
-      "displayName": "Database Root Password",
-      "description": "Password for the database root user.",
-      "generate": "expression",
-      "from": "[a-zA-Z0-9]{16}"
-    },
-    {
-      "name": "PORT",
-      "displayName": "Application port",
-      "description": "Port that application is listening on for requests.",
-      "value": "8080",
-      "required": true
-    },
-    {
-      "name": "DATABASE_VOLUME_CAPACITY",
-      "displayName": "Database Volume Capacity",
-      "description": "Volume space available for database, e.g. 512Mi, 2Gi.",
-      "value": "5Gi",
-      "required": true
-    },
-    {
-      "name": "QSYSTEM_VOLUME_CAPACITY",
-      "displayName": "QSystem Volume Capacity",
-      "description": "Volume space available for QSystem, e.g. 512Mi, 2Gi.",
-      "value": "100Mi",
-      "required": true
-    },
-    {
-      "name": "APP_IMAGE_NAME",
-      "displayName": "Application image name.",
-      "description": "Application image name.",
-      "value": "qsystem",
-      "required": true
-    },
-    {
-      "name": "APP_IMAGE_NAMESPACE",
-      "displayName": "Namespace containing application images.",
-      "description": "Namespace containing application images.",
-      "value": "servicebc-customer-flow-tools",
-      "required": true
-    },
-    {
-      "name": "APP_DEPLOYMENT_TAG",
-      "displayName": "Image tag to watch for changes and trigger deployment.",
-      "description": "Image tag to watch for changes and trigger deployment.",
-      "value": "latest",
-      "required": true
-    },
-	{
-      "name": "APPLICATION_DOMAIN",
-      "displayName": "Application domain",
-      "description": "Application domain",
-      "value": "qsystem",
-      "required": true
-    }
-	
-  ]
+                        }]
+                    }
+                }
+            }
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${NGINX_SERVICE_NAME}",
+                "annotations":
+                {
+                    "description": "Exposes and load balances the nginx pods"
+                }
+            },
+            "spec":
+            {
+                "ports": [
+                {
+                    "name": "web",
+                    "port": 8080,
+                    "targetPort": 8080
+                }],
+                "selector":
+                {
+                    "name": "${NGINX_SERVICE_NAME}"
+                }
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${NGINX_SERVICE_NAME}",
+                "annotations":
+                {
+                    "description": "Defines how to deploy the nginx server"
+                }
+            },
+            "spec":
+            {
+                "strategy":
+                {
+                    "type": "Rolling"
+                },
+                "triggers": [
+                {
+                    "type": "ImageChange",
+                    "imageChangeParams":
+                    {
+                        "automatic": true,
+                        "containerNames": [
+                            "${NGINX_SERVICE_NAME}"
+                        ],
+                        "from":
+                        {
+                            "kind": "ImageStreamTag",
+                            "namespace": "${APP_IMAGE_NAMESPACE}",
+                            "name": "${NGINX_SERVICE_NAME}:latest"
+                        }
+                    }
+                },
+                {
+                    "type": "ConfigChange"
+                }],
+                "replicas": 1,
+                "selector":
+                {
+                    "name": "${NGINX_SERVICE_NAME}"
+                },
+                "template":
+                {
+                    "metadata":
+                    {
+                        "name": "${NGINX_SERVICE_NAME}",
+                        "labels":
+                        {
+                            "name": "${NGINX_SERVICE_NAME}"
+                        }
+                    },
+                    "spec":
+                    {
+                        "volumes": [
+                        {
+                            "name": "cerberus-data",
+                            "persistentVolumeClaim":
+                            {
+                                "claimName": "cerberus-data"
+                            }
+                        }],
+                        "containers": [
+                        {
+                            "name": "${NGINX_SERVICE_NAME}",
+                            "image": " ",
+                            "ports": [
+                            {
+                                "containerPort": 8080
+                            }],
+                            "env": [
+                            {
+                                "name": "SEARCH_DOMAIN",
+                                "value": "servicebc-customer-flow-${APP_DEPLOYMENT_TAG}.svc.cluster.local"
+                            }],
+                            "livenessProbe":
+                            {
+                                "exec":
+                                {
+                                    "command": ["ls", "/public/videos/"]
+                                },
+                                "initialDelaySeconds": 10,
+                                "timeoutSeconds": 5,
+                                "periodSeconds": 60,
+                                "successThreshold": 1,
+                                "failureThreshold": 3
+                            },
+                            "readinessProbe":
+                            {
+                                "timeoutSeconds": 1,
+                                "initialDelaySeconds": 60,
+                                "tcpSocket":
+                                {
+                                    "port": 8080
+                                }
+                            },
+                            "volumeMounts": [
+                            {
+                                "name": "cerberus-data",
+                                "mountPath": "/public/videos/"
+                            }]
+
+                        }]
+                    }
+                }
+            }
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${DATABASE_SERVICE_NAME}",
+                "annotations":
+                {
+                    "description": "Exposes the database server"
+                }
+            },
+            "spec":
+            {
+                "ports": [
+                {
+                    "name": "mysql",
+                    "protocol": "TCP",
+                    "port": 3306,
+                    "targetPort": 3306,
+                    "nodePort": 0
+                }],
+                "selector":
+                {
+                    "app": "${DATABASE_SERVICE_NAME}"
+                },
+                "type": "ClusterIP",
+                "sessionAffinity": "None"
+            },
+            "status":
+            {
+                "loadBalancer":
+                {}
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata":
+            {
+                "name": "${DATABASE_SERVICE_NAME}",
+                "generation": 1,
+                "creationTimestamp": null,
+                "labels":
+                {
+                    "app": "${DATABASE_SERVICE_NAME}"
+                },
+                "annotations":
+                {
+                    "description": "Defines how to deploy the database",
+                    "openshift.io/container.postgresql.image.entrypoint": "[\"container-entrypoint\",\"run-postgresql\"]"
+                }
+            },
+            "spec":
+            {
+                "strategy":
+                {
+                    "type": "Recreate"
+                },
+                "triggers": [
+                {
+                    "type": "ConfigChange"
+                },
+                {
+                    "type": "ImageChange",
+                    "imageChangeParams":
+                    {
+                        "automatic": true,
+                        "containerNames": [
+                            "mysql"
+                        ],
+                        "from":
+                        {
+                            "kind": "ImageStreamTag",
+                            "namespace": "openshift",
+                            "name": "mysql:5.6"
+                        }
+                    }
+                }],
+                "replicas": 1,
+                "test": false,
+                "selector":
+                {
+                    "app": "${DATABASE_SERVICE_NAME}",
+                    "deploymentconfig": "${DATABASE_SERVICE_NAME}"
+                },
+
+                "template":
+                {
+                    "metadata":
+                    {
+                        "creationTimestamp": null,
+                        "labels":
+                        {
+                            "app": "${DATABASE_SERVICE_NAME}",
+                            "deploymentconfig": "${DATABASE_SERVICE_NAME}"
+                        },
+                        "annotations":
+                        {
+                            "openshift.io/container.postgresql.image.entrypoint": "[\"container-entrypoint\",\"run-mysql\"]"
+                        }
+                    },
+                    "spec":
+                    {
+                        "volumes": [
+                        {
+                            "name": "${DATABASE_SERVICE_NAME}-data",
+                            "persistentVolumeClaim":
+                            {
+                                "claimName": "${DATABASE_SERVICE_NAME}-data"
+                            }
+                        }],
+                        "containers": [
+                        {
+                            "name": "mysql",
+                            "image": "registry.access.redhat.com/rhscl/mysql-56",
+                            "ports": [
+                            {
+                                "containerPort": 3306,
+                                "protocol": "TCP"
+                            }],
+                            "resources":
+                            {
+                                "limits":
+                                {
+                                    "cpu": "500m",
+                                    "memory": "512Mi"
+                                },
+                                "requests":
+                                {
+                                    "cpu": "10m"
+                                }
+                            },
+                            "env": [
+                            {
+                                "name": "MYSQL_DATABASE",
+                                "value": "${DATABASE_NAME}"
+                            },
+                            {
+                                "name": "MYSQL_PASSWORD",
+                                "valueFrom":
+                                {
+                                    "secretKeyRef":
+                                    {
+                                        "name": "sbc-secrets",
+                                        "key": "database-password"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "MYSQL_ROOT_PASSWORD",
+                                "valueFrom":
+                                {
+                                    "secretKeyRef":
+                                    {
+                                        "name": "sbc-secrets",
+                                        "key": "database-root-password"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "MYSQL_USER",
+                                "valueFrom":
+                                {
+                                    "secretKeyRef":
+                                    {
+                                        "name": "sbc-secrets",
+                                        "key": "database-user"
+                                    }
+                                }
+                            }],
+                            "readinessProbe":
+                            {
+                                "timeoutSeconds": 1,
+                                "initialDelaySeconds": 3,
+                                "exec":
+                                {
+                                    "command": ["/bin/sh", "-i", "-c", "MYSQL_PWD=\"$MYSQL_PASSWORD\" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE -e 'SELECT 1'"]
+                                }
+                            },
+                            "livenessProbe":
+                            {
+                                "timeoutSeconds": 1,
+                                "initialDelaySeconds": 30,
+                                "tcpSocket":
+                                {
+                                    "port": 3306
+                                }
+                            },
+                            "resources":
+                            {},
+                            "volumeMounts": [
+                            {
+                                "name": "${DATABASE_SERVICE_NAME}-data",
+                                "mountPath": "/var/lib/mysql/data"
+                            }],
+                            "terminationMessagePath": "/dev/termination-log",
+                            "imagePullPolicy": "IfNotPresent"
+                        }],
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30,
+                        "dnsPolicy": "ClusterFirst",
+                        "securityContext":
+                        {}
+                    },
+                    "restartPolicy": "Always",
+                    "dnsPolicy": "ClusterFirst"
+                },
+                "status":
+                {}
+            }
+        }
+
+    ],
+    "parameters": [
+        {
+            "name": "QSYSTEM_SERVICE",
+            "displayName": "QSystem Service Name",
+            "description": "The name assigned to all of the QSystem objects defined in this template.",
+            "required": true,
+            "value": "qsystem"
+        },
+        {
+            "name": "QSB",
+            "displayName": "Smartboard Layout",
+            "description": "** The smartboard layout is defaulted to Non-Reception or call by Name.  If you want to setup the layout for Call by Ticket, Enter: callbyticket",
+            "value": "nocallonsmartboard",
+            "required": true
+        },
+        {
+            "name": "NGINX_SERVICE_NAME",
+            "displayName": "Nginx Service Name",
+            "description": "The name assigned to all of the Nginx objects defined in this template.",
+            "required": true,
+            "value": "cerberus"
+        },
+
+        {
+            "name": "DATABASE_SERVICE_NAME",
+            "displayName": "Database Service Name",
+            "value": "mysql"
+        },
+        {
+            "name": "DATABASE_USER",
+            "displayName": "DB Username",
+            "description": "Username for Database user that will be used for accessing the database.",
+            "generate": "expression",
+            "from": "user[A-Z0-9]{3}"
+        },
+        {
+            "name": "DATABASE_ROOT_USER",
+            "displayName": "DB Root Username",
+            "description": "Username for Database user that will be used for accessing the database with root access.",
+            "value": "root"
+        },
+        {
+            "name": "DATABASE_PASSWORD",
+            "displayName": "Database Password",
+            "description": "Password for the Database user.",
+            "generate": "expression",
+            "from": "[a-zA-Z0-9]{16}"
+        },
+        {
+            "name": "DATABASE_NAME",
+            "displayName": "Database Name",
+            "value": "qsystem"
+        },
+        {
+            "name": "DATABASE_ROOT_PASSWORD",
+            "displayName": "Database Root Password",
+            "description": "Password for the database root user.",
+            "generate": "expression",
+            "from": "[a-zA-Z0-9]{16}"
+        },
+        {
+            "name": "PORT",
+            "displayName": "Application port",
+            "description": "Port that application is listening on for requests.",
+            "value": "8080",
+            "required": true
+        },
+        {
+            "name": "DATABASE_VOLUME_CAPACITY",
+            "displayName": "Database Volume Capacity",
+            "description": "Volume space available for database, e.g. 512Mi, 2Gi.",
+            "value": "5Gi",
+            "required": true
+        },
+        {
+            "name": "QSYSTEM_VOLUME_CAPACITY",
+            "displayName": "QSystem Volume Capacity",
+            "description": "Volume space available for QSystem, e.g. 512Mi, 2Gi.",
+            "value": "100Mi",
+            "required": true
+        },
+        {
+            "name": "APP_IMAGE_NAME",
+            "displayName": "Application image name.",
+            "description": "Application image name.",
+            "value": "qsystem",
+            "required": true
+        },
+        {
+            "name": "APP_IMAGE_NAMESPACE",
+            "displayName": "Namespace containing application images.",
+            "description": "Namespace containing application images.",
+            "value": "servicebc-customer-flow-tools",
+            "required": true
+        },
+        {
+            "name": "APP_DEPLOYMENT_TAG",
+            "displayName": "Image tag to watch for changes and trigger deployment.",
+            "description": "Image tag to watch for changes and trigger deployment.",
+            "value": "latest",
+            "required": true
+        },
+        {
+            "name": "APPLICATION_DOMAIN",
+            "displayName": "Application domain",
+            "description": "Application domain",
+            "value": "qsystem",
+            "required": true
+        }
+
+    ]
 }
