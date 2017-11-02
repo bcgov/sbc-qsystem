@@ -22,7 +22,6 @@ if [ ! -d "$mount_point" ]; then
   curl -X POST --data-urlencode "payload={\"channel\": \"#sbc-cfms\", \"username\": \"mountbot\", \"text\": \"Liveness Probe failed on ${HOSTNAME}: could not reach ${mount_point} after $mount_timeout seconds.\", \"icon_emoji\": \":sleuth_or_spy:\"}" $SLACKHOOK
   exit 1
 else
-  curl -X POST --data-urlencode "payload={\"channel\": \"#sbc-cfms\", \"username\": \"mountbot\", \"text\": \"Liveness Probe succeeded on ${HOSTNAME}: ${mount_point} exists and is reachable.\", \"icon_emoji\": \":sleuth_or_spy:\"}" $SLACKHOOK
     echo "File test write success"
     exit 0
   fi
