@@ -418,7 +418,7 @@ public final class Executer {
         
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer pickedCustomer) {
-            QLog.l().logger().debug("\n\n\n I get HERE!!!! \n\n\n");
+//            QLog.l().logger().debug("\n\n\n I get HERE!!!! \n\n\n");
             super.process(cmdParams, ipAdress, IP, pickedCustomer);
             // вот он все это творит ::: Here he is doing it all
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -515,7 +515,7 @@ public final class Executer {
                     // Должно высветитьсяна основном табло :: Must be highlighted on the main board
                     MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
                     
-                    QLog.l().logger().debug("CUSTOMER HEREERERERE  _inside loop\n\n" + user.getCustomer() + "\n\n\n");
+//                    QLog.l().logger().debug("CUSTOMER HEREERERERE  _inside loop\n\n" + user.getCustomer() + "\n\n\n");
                 }
 //                QLog.l().logger().debug("CUSTOMER HEREERERERE\n\n" + user.getCustomer() + "\n\n\n");
 //                QLog.l().logger().debug("CUSTOMER HEREERERERE\n\n" + user + "\n\n\n");
@@ -699,7 +699,7 @@ public final class Executer {
          */
         @Override
         synchronized public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logger().debug("\n\n\n PPPPPPOSTPONMENENENEN!!!! \n\n\n");
+//            QLog.l().logger().debug("\n\n\n PPPPPPOSTPONMENENENEN!!!! \n\n\n");
             super.process(cmdParams, ipAdress, IP);
             // синхронизация работы с клиентом
             // Synchronization of work with the client

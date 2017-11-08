@@ -133,6 +133,8 @@
         <include id="incChangePostponedStatusDialog" src="/include/dialog/changePostponedStatusDialog.zul"/>
         <include id="incServeCustomerDialog" src="/include/dialog/serveCustomerDialog.zul"/>
         <include id="incAddTicketDialog" src="/include/dialog/addTicketDialog.zul"/>
+        <include id="incGAManagementDialog" src="/include/dialog/GAManagementDialog.zul"/>
+
     </div>
 
 </zk>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<zk xmlns="http://www.zkoss.org/2005/zul">
+
+    <style>
+        .top-text{
+			font-size : 23px; 
+			font-family: Helvetica; 
+			color: Black; 
+			background-color: #c2d6d6
+        }
+        .top-text-style{
+            font-size : 23px; 
+            font-family: Helvetica; 
+            color: White;
+        }
+        .button-with-image{
+            padding : 0px; 
+            border: none; 
+            background-color: transparent; 
+            outline: none;
+        }
+        .general-text{
+            font-size : 20px; 
+            font-family: Helvetica; 
+            color: Black;
+        }
+    </style>
+
+    <window id="GAManagementDialog" 
+            title="Administrator Management Board"
+            border="normal"
+            width="780px" 
+            position="center,center" closable="true"
+            onClose="self.visible = false; event.stopPropagation();"
+            action="show: slideDown;hide: slideUp">
+        <caption label="QSystem" image="/resources/img/logo32.png" />
+        <div width="50px">
+        </div>
+
+	<hbox>
+        <vbox align="center">
+	        <div width="50px">
+	        </div>
+
+<!-- style="font-size : 23px; font-family: Helvetica; color: Black; background-color: #94b8b8" -->
+        	<label value="Customer Waitings" sclass="top-text"/>
+        	<label value="@load(fmodel.user.customerList.size())" style="font-size : 42px; font-weight:bold"  />
+        	<label width="22px"/>
+
+	        <div width="50px">
+	        </div>
+		</vbox>
+
+	        <div width="50px">
+	        </div>
+
+		<vbox align="center">
+			<div width="50px">
+	        </div>
+
+			<label value="Total Number of CSRs" sclass="top-text" />
+        	<label value="@load(fmodel.user.customerList.size())" style="font-size : 42px; font-weight:bold"  />
+        	<label width="22px"/>
+
+        	<div width="50px">
+	        </div>
+        </vbox>
+
+	        <div width="50px">
+	        </div>
+
+    	<vbox align="center">
+
+    		<div width="50px">
+	        </div>
+
+			<label value="Serving CSRs" sclass="top-text" />
+	    	<label value="@load(fmodel.getUsersForLogin().size()-2)" style="font-size : 42px; font-weight:bold"  />
+	    	<label width="22px"/>
+
+    		<div width="50px">
+	        </div>
+
+		</vbox>
+	</hbox>
+        <vlayout height="260px" style="background-color:White">
+        
+	        <!-- <listbox id="service_list" model="@load(fmodel.user.customerList)"  selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max" > -->
+	        <listbox id="GA_list" model="@load(fmodel.getUsersForLogin())" selectedItem="@bind(fmodel.pickedCustomer)" onSelect=""  width="100%" height="100%"  >
+
+                <listhead>
+                    <listheader label="Staff Member" width="140px" align="center"/>
+                    <listheader label="Service" width="200px" align="center"/>
+                    <listheader label="State" width="50px" align="center" />
+                    <listheader label="Serving Time" width="90px" align="center" />
+                    <listheader label="Comments" width="100px" align="center"/> 
+
+                </listhead>
+                <template name="model" var="userList">
+                    <listitem context="servicesListPopup">
+                        <listcell label="@load(userList.getName())" />
+                        <listcell label="@load(userList.getName())"/>
+                        <listcell label="@load(userList.getName())" />
+                        <listcell label="@load(userList.getName())" />
+                        <listcell label="@load(userList.getName())" />
+                    </listitem>
+                </template>
+            </listbox>
+
+
+
+<!-- 	        <grid style="margin-left:20px; margin-right:20px; margin-top:44px; margin-bottom:26px;">
+	            <columns>
+	                <column hflex="1" label="Name" align="center"/>
+	                <column hflex="2" label="Staff Member" align="center" />
+	                <column hflex="2" label="Service" align="center" />
+	                <column hflex="1" label="Ticket Number" align="center" />
+	                <column hflex="1" label="Serving Time" align="center" />
+	                <column hflex="1" label="Online Status" align="center" />
+	            </columns>
+	            <rows>
+	                <row height="70px">
+	                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getParent().getName()))" />
+	                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" />
+	                    <label sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
+	                    <textbox
+	                        value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px" constraint="no empty, no negative" maxlength="3"
+	                                            forward = "QuantityId.onOK"  xmlns:w="client">
+	                    </textbox>
+	                    <button sclass="button-with-image" image="/resources/img/change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
+	                    </button>
+	                </row>
+	            </rows>
+	        </grid> -->
+
+
+	    </vlayout>   
+	</window>
+</zk>

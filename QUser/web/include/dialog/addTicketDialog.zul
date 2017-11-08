@@ -23,7 +23,7 @@
 	                <label value="Type Service here" width="150px" />
 	                <hbox>
 	                    <vbox>
-	                        <textbox sclass="bdd-input-search" id="typeservices" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
+	                        <textbox id="typeservices" sclass="bdd-input-search" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
 	                    </vbox>
 	                    <vbox>
 	                        <combobox sclass="bdd-input-category" id="cboFmCompress" onChange="@command('changeCategory')" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
@@ -32,20 +32,30 @@
 	                    </vbox>
 	                </hbox>
 	                <div style="margin:10px 10px 10px 10px;"></div>
+
+
+
 	                <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)" width="100%" height="250px">			
-	                <listhead>
-						<listheader label="Service" align="left" />
-						<listheader label="Category" align="left" />
-					</listhead>
-					<template name="model" var="item">
-						<listitem>
-							<listcell label="@load(item.getName())" />
-							<listcell label="@load(item.getParent().getName())"/>
-						</listitem>
-	                                
-					</template>
-				</listbox>
-	                
+		                <listhead>
+							<listheader label="Service" align="left"/>
+							<listheader label="Category" align="left" />
+						</listhead>
+
+						<template name="model" var="item">
+							<listitem >
+								
+<!-- 								<popup id="Description" width="300px" value="@load(item.getDescription())">
+								</popup> -->
+
+								<listcell label="@load(item.getName())" tooltip="@load(item.getId())"/>
+								<listcell label="@load(item.getParent().getName())" />
+							</listitem>
+         
+						</template>
+
+					</listbox>
+
+
 	                <div style="margin:5px 10px 10px 10px;"></div>
 	                
 	                
@@ -96,6 +106,15 @@
 	                </div>
 	                
 	            </vlayout>
+
+<!--             	<vlayout children="@load(fmodel.listServices)">
+				    <template name="children" var="item" >
+				          <popup id="@load(item.getId())" >
+				          		<label value="@load(item.getDescription())">
+				          		</label>
+				          </popup>
+				    </template>
+				</vlayout> -->
 	        </zk>
 
 
@@ -126,7 +145,8 @@
 					</listhead>
 					<template name="model" var="item">
 						<listitem>
-							<listcell label="@load(item.getName())" />
+
+							<listcell label="@load(item.getName())" tooltip="@load(item.getId())"/>
 							<listcell label="@load(item.getParent().getName())"/>
 						</listitem>
 	                                
@@ -186,7 +206,20 @@
 	            </vlayout>
 	        </zk>
 
+                	<vlayout children="@load(fmodel.listServices)">
+		    <template name="children" var="item" >
+		          <popup id="@load(item.getId())" >
+		          		<label value="@load(item.getDescription())">
+		          		</label>
+		          						    <!-- <html><![CDATA[
+				fmodel.listServices.getDescription()
+		    ]]></html> -->
+		          </popup>
+		    </template>
+		</vlayout>
+
         </div>
     </window>
+
 
 </zk>
