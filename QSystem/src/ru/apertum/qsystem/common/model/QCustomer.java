@@ -739,8 +739,8 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     @Column(name = "service_quantity")
     public String getQuantity() {
-        QLog.l().logger().trace("\nNAME:  " + this.getService().getName() + "\n ");
-        QLog.l().logger().trace("\nTTEST from Customer:  " + quantity + " \n ");
+//        QLog.l().logger().trace("\nNAME:  " + this.getService().getName() + "\n ");
+//        QLog.l().logger().trace("\nTTEST from Customer:  " + quantity + " \n ");
 //        return this.getService().getQuantity();
         return this.quantity;
     }
@@ -764,7 +764,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     
     @Column(name = "channels")
     public String getChannels() {
-        QLog.l().logger().trace("\n\n\n\n CHANNEL NAME:\n  " + channels + "\n\n ");
+//        QLog.l().logger().trace("\n\n\n\n CHANNEL NAME:\n  " + channels + "\n\n ");
 //        return this.getService().getQuantity();
         return this.channels;
     }

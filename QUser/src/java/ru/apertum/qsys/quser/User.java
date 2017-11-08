@@ -52,6 +52,16 @@ public class User {
         return customerWelcomeTime;
     }
     
+    private boolean GABoard;
+    
+    public boolean getGABoard(){
+        return GABoard;
+    }
+    
+    public void setGABoard(boolean ga){
+        this.GABoard = ga;
+    }
+    
     public String getPassword() {
         return password;
     }

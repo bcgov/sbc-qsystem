@@ -21,9 +21,11 @@
                            @validator('ru.apertum.qsys.quser.UserLoginValidator')">
         
         <hbox>
+
             <vbox>
                 <label sclass="login-text" value="${c:l('user')}" width="150px" />
-                <combobox sclass="bdd-usr" width="200px" tabindex="1" model="@load(fmodel.usersForLogin)" forward="onOK=btnSubmit.onClick" value="@bind(login_form.name)">
+
+                <combobox sclass="bdd-usr" id="username" width="200px" tabindex="1" model="@load(fmodel.usersForLogin)" forward="onOK=btnSubmit.onClick" value="@bind(login_form.name)">
                     <comboitem label="@load(each)"/>
                 </combobox>
             </vbox>
@@ -40,17 +42,22 @@
     
     <div style="position: absolute; right: 10px; top: 20px; margin:0px 0px 0px 0px;" visible="@load(fmodel.login)">
         <hbox>
-            <div>
-                <label sclass="login-text" value="${c:l('user')}" style="margin:0px 7px 0px 0px;"/>
-                <label sclass="login-text" value="@load(fmodel.user.name)"/>
-                <separator  bar="true"/>
-                <label sclass="login-text" value="${c:l('office')}" style="margin:0px 7px 0px 0px;"/>
-                <label sclass="login-text" value="@load(fmodel.user.user.point)" />
-                <separator  bar="true"/>
-                <button sclass="login-button" width="120px" height="34px" label="${c:l('out')}" onClick="@command('logout')">
-                </button>
-            </div>
-            <image id="" src="/resources/img/ok32_2.png"/>
+<!--             <label style="cursor:pointer;text-decoration: underline; color:green; font-size:1.2em;"
+                value="GA Board" onClick="@command('GABoard')" visible="@load(fmodel.user.getGABoard())"/> -->
+            <hbox>
+                <div>
+
+                    <label sclass="login-text" value="${c:l('user')}" style="margin:0px 7px 0px 0px;"/>
+                    <label sclass="login-text" value="@load(fmodel.user.name)"/>
+                    <separator  bar="true"/>
+                    <label sclass="login-text" value="${c:l('office')}" style="margin:0px 7px 0px 0px;"/>
+                    <label sclass="login-text" value="@load(fmodel.user.user.point)" />
+                    <separator  bar="true"/>
+                    <button sclass="login-button" width="120px" height="34px" label="${c:l('out')}" onClick="@command('logout')">
+                    </button>
+                </div>
+                <image id="" src="/resources/img/ok32_2.png"/>
+            </hbox>
         </hbox>
     </div>
 

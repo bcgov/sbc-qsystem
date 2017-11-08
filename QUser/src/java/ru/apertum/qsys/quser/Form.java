@@ -17,6 +17,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.Collections;
+import javax.swing.table.AbstractTableModel;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
@@ -70,6 +71,7 @@ import ru.apertum.qsystem.server.model.postponed.QPostponedList;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
 import ru.apertum.qsys.quser.WaitingPanelComparator;
+import ru.apertum.qsystem.client.forms.FReception;
 
 /**
  *
@@ -191,6 +193,12 @@ public class Form{
         
         Uses.userTimeZone = (TimeZone)Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone");
         QLog.l().logQUser().debug("Login : " + user.getName());
+        if(user.getName().equals("Administrator")){
+            user.setGABoard(true);
+        }
+        QLog.l().logQUser().debug("STATUS : " + user.getGABoard());
+//        ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(0);
+        
 
         final Session sess = Sessions.getCurrent();
         sess.setAttribute("userForQUser", user);
@@ -232,6 +240,17 @@ public class Form{
 
     }
 
+    @Wire("#incClientDashboard #incGAManagementDialog #GAManagementDialog")
+    Window GAManagementDialogWindow;
+    
+    @Command
+    public void GABoard() {
+        GAManagementDialogWindow.setVisible(true);
+        GAManagementDialogWindow.doModal();
+//        postponeCustomerDialog
+        
+    }
+    
     @Command
     public void about() {
         final Properties settings = new Properties();
@@ -279,8 +298,22 @@ public class Form{
     }
 
     public LinkedList<QUser> getUsersForLogin() {
+//        QLog.l().logQUser().debug("\n\n\n\nQUSERLIST\n\n :\n"   + greed.get(2).getShadow() +  "\n\n\n\n\n");
         return QUserList.getInstance().getItems();
     }
+    
+//    public LinkedList<QUser> test2 = greed.get(2).getShadow();
+//    public LinkedList<QUser> userList = QUserList.getInstance().getItems();
+
+    
+    public LinkedList<QUser> userList = new LinkedList<>();
+    public LinkedList<QUser> getuserList(){
+        return userList = QUserList.getInstance().getItems();
+    }
+ 
+    
+//    greed.get(rowIndex).getShadow()
+    //ANDREW
 
     public boolean isLogin() {
         final Session sess = Sessions.getCurrent();
@@ -443,7 +476,7 @@ public class Form{
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
         
-        QLog.l().logQUser().debug("\n\n\n\nBEFORE INTO EXCECUTE \n\n\n\n\n");
+//        QLog.l().logQUser().debug("\n\n\n\nBEFORE INTO EXCECUTE \n\n\n\n\n");
         final RpcInviteCustomer result = (RpcInviteCustomer) Executer.getInstance().getTasks().get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
         if (result.getResult() != null) {
             customer = result.getResult();
@@ -574,7 +607,7 @@ public class Form{
 
 //            Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER).process(params, "", new byte[4]);
             
-            QLog.l().logQUser().debug("\n\n\n CHECK SERVICE NAME" + user.getUser().getCustomer().getService().getName() + "\nCHECK SERVICEID: " + params.serviceId + "\n\n");
+//            QLog.l().logQUser().debug("\n\n\n CHECK SERVICE NAME" + user.getUser().getCustomer().getService().getName() + "\nCHECK SERVICEID: " + params.serviceId + "\n\n");
          
             customer = user.getUser().getCustomer();
             params.serviceId = user.getUser().getCustomer().getService().getId();
@@ -858,7 +891,7 @@ public class Form{
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
         //params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
-        QLog.l().logger().debug("\n\n\n\n\n\nTIMEBOX" + ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() +  "\n\n\n\n\n\n");
+//        QLog.l().logger().debug("\n\n\n\n\n\nTIMEBOX" + ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() +  "\n\n\n\n\n\n");
         params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
         params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
          
@@ -885,7 +918,7 @@ public class Form{
             }
             int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex()+1;
             
-            QLog.l().logger().debug("\n\n\nAdd and serve button, which WINDOW:    " + addWindowButtons[0] +  "\n\n\n");
+//            QLog.l().logger().debug("\n\n\nAdd and serve button, which WINDOW:    " + addWindowButtons[0] +  "\n\n\n");
             
             if(channelIndex>4){
                 if(addWindowButtons[0])
@@ -1026,6 +1059,11 @@ public class Form{
     @Wire("#incClientDashboard #incAddTicketDialog #addTicketDialog")
     Window addTicketDailogWindow;
     
+
+    
+    @Wire("#incClientDashboard #GAManagement")
+    Window GAManagement;
+    
     private Combobox cboFmCompress;
     
     QService pickedMainService;
@@ -1132,13 +1170,13 @@ public class Form{
             if (pickedMainService==null){
                 requiredServices = allServices
                     .stream()
-                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
+                    .filter((QService service) -> service.getParentId()!=null && (service.getDescription().toLowerCase().contains(filter.toLowerCase()) || service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
 
             }else{
                  requiredServices = allServices
                     .stream()
-                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
+                    .filter((QService service) -> service.getParentId()!=null && (service.getDescription().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && (service.getDescription().toLowerCase().contains(filter.toLowerCase()) || service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
             }
             
@@ -1202,7 +1240,7 @@ public class Form{
             
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
 //            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-            QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
+//            QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
             
@@ -1247,7 +1285,7 @@ public class Form{
             
             params.comments = "";
 //            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-            QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
+
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
             

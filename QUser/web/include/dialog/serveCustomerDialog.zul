@@ -119,7 +119,7 @@
                         value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px" constraint="no empty, no negative" maxlength="3"
                                             forward = "QuantityId.onOK"  xmlns:w="client">
                     </textbox>
-                    <button sclass="button-with-image" image="/resources/img/change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
+                    <button sclass="button-with-image" image="/resources/img/005_change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
                     </button>
                 </row>
             </rows>
