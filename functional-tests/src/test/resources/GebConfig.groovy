@@ -49,7 +49,7 @@ environments {
 baseUrl = "https://sbc-qsystem-dev.pathfinder.gov.bc.ca/qsystem/"
 
 // local testing
-//baseUrl = "http://localhost:8080/qsystem/"
+// baseUrl = "http://localhost:8080/qsystem/"
 
 println """
             .  .       .

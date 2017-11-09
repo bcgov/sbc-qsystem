@@ -12,7 +12,7 @@ class TicketModule extends Module {
         inputSearch { $("input", class: "bdd-input-search") }
         inputCategory { $("input", class: "bdd-input-category") }
         
-        selectService { $("tr", class: "z-listitem") }
+        selectService { $("tr", class: "z-listitem").findAll { it.displayed } }
 
         btnAddToQueue { $("button", class: "bdd-add-to-queue") }
         btnBegin { $("button", class: "bdd-begin-service") }
