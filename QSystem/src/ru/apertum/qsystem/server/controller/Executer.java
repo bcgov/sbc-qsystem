@@ -1221,7 +1221,7 @@ public final class Executer {
             
             final QService service = QServiceTree.getInstance().getById(cmdParams.serviceId);
             
-            customer.setWelcomeTime(cmdParams.welcomeTime);
+//            customer.setWelcomeTime(cmdParams.welcomeTime);
 
             // Define the customizer in the queue
             customer.setService(service);                

@@ -709,7 +709,27 @@ public class Form{
 //        this.refreshQuantity();
     }
     
-
+    @Command
+    public void disableButtons(){
+//        addWindowButtons[0] = false;
+//        addWindowButtons[1] = false;
+//        addWindowButtons[2] = false;
+//        addWindowButtons[3] = false;
+//        addWindowButtons[4] = false;
+//        addWindowButtons[5] = false;
+//        addWindowButtons[6] = false;
+//        addWindowButtons[7] = false;
+//        addWindowButtons[8] = false;
+        boolean[] inaccurateChecked = new boolean[]{true, true, true, true, true, false, true, true, true};
+        if(((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox")).isChecked()){
+            setBtnsDisabled(inaccurateChecked);
+        }else{setKeyRegim(KEYS_STARTED);
+        }
+        
+//        setBtnsDisabled(inaccurateChecked);
+//        QLog.l().logQUser().debug("\n\n\n\n DISABLE BUTTON");
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
+    }
 
     @Command
     @NotifyChange(value = {"btnsDisabled", "customer"})
@@ -1316,7 +1336,10 @@ public class Form{
             }
             
             final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+            
             this.addToQueue(params);
+            QLog.l().logQUser().debug("\n\n\nWELCOME TIME:\n" + user.getCustomerWelcomeTime() +  "\n\n");
+            
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());          
