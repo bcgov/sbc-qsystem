@@ -282,7 +282,7 @@ public class Form{
         final Session sess = Sessions.getCurrent();
         sess.removeAttribute("userForQUser");
         UsersInside.getInstance().getUsersInside().remove(user.getName() + user.getPassword());
-
+        user.setCustomerList(Collections.<QPlanService> emptyList());
         user.setName("");
         user.setPassword("");
         customer = null;
