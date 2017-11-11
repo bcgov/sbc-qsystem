@@ -94,7 +94,7 @@
 	                        <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
 	                        
 	                        <!--Add Next Service-->
-	                        <button id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
+	                        <button sclass="bdd-apply" id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
 
 	                        <!--Redirect / Back to Queue-->
 	                        <!--No longer exist-->                     
@@ -192,7 +192,7 @@
 		                        <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
 		                        
 		                        <!--Add Next Service-->
-		                        <button id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
+		                        <button sclass="bdd-apply" id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
 
 		                        <!--Redirect / Back to Queue-->
 		                        <!--No longer exist-->                     
