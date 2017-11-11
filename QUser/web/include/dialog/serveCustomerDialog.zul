@@ -187,7 +187,7 @@
                 </div>
                 
                 <!--<checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
-                <checkbox style="margin-right: 120px;margin-top: 20px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
+                <checkbox  onCheck="@command('disableButtons')" style="margin-right: 120px;margin-top: 20px; font-size : 14px;" sclass="text-style bdd-inaccurate-time-check-box" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
 
             </vbox>
         </hbox> 
