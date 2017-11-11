@@ -40,7 +40,7 @@
                     
                 </vbox>
                 <vbox style="margin-left: 13px; margin-top: 34px;">
-                    <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="top-text-style" style="font-style: oblique;  margin-left:24px;"/>
+                    <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="top-text-style bdd-ticket-id" style="font-style: oblique;  margin-left:24px;"/>
                     <!-- <label id="channel" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))" sclass="top-text-style" style="font-style: oblique; margin-left:24px; font-size : 16px; "/> -->
 <!-- 
                     <zscript><![CDATA[
@@ -146,7 +146,7 @@
                         <div width="170px" style="background-color:White;">
                 </div>
 
-                <button sclass="act-button" style="margin-right: 70px; margin-top: 10px;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
+                <button sclass="act-button bdd-add-next-service" style="margin-right: 70px; margin-top: 10px;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
                 </button>
 
 

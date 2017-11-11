@@ -3,7 +3,10 @@ import geb.Module
 class ServiceModule extends Module {
 
     static content = {
+        btnAddNextService { $("button", class: "bdd-add-next-service") }
         btnFinish { $("button", text: "Finish") }
+
+        textTicketId { $("span", class: "bdd-ticket-id") }
     }
 
     // match a service string to content in the list (in future return an int to index)
