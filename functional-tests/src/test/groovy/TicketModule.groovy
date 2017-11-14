@@ -18,5 +18,7 @@ class TicketModule extends Module {
         btnBegin { $("button", class: "bdd-begin-service") }
         btnApply { $("button", class: "bdd-apply") }
         btnCancel { $("button", class: "bdd-cancel-service") }
+
+        textTicketId { $("span", class: "bdd-ticket-id") }
     }
 }
