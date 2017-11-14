@@ -7,12 +7,12 @@ import pages.app.QUserPage
 import spock.lang.*
 
 @Stepwise
+@Unroll
 class FlowSpecs extends GebReportingSpec {
 
     @Shared String test_username = System.getenv('TEST_USERNAME')
     @Shared String test_password = System.getenv('TEST_PASSWORD')
 
-    @Unroll
 
     /**
      * Gherkin
@@ -25,9 +25,11 @@ class FlowSpecs extends GebReportingSpec {
      */
     def "001 - Signing in with a valid account"() {
 
+        println("001 - Signing in with a valid account")
+
         given: "given the QUserPage home page"
             to QUserPage
-            println("${ new Date().getDateTimeString() } [FlowSpecs] at Page: \"" + title + "\", url: " + getCurrentUrl())
+            println("${ new Date().getDateTimeString() } ${'[FlowSpecs]'.padRight(16)}at Page: \"" + title + "\", url: " + getCurrentUrl())
 
         and: "they are not signed in"
             assert !authModule.loggedInUser.displayed
@@ -57,11 +59,13 @@ class FlowSpecs extends GebReportingSpec {
      */
     def "002 - Work process on a single service non-queued engagement"() {
 
+        println("\n002 - Work process on a single service non-queued engagement")
+
         def srvc = "Batching - NR"
 
         given: "already logged in"
             at QUserPage
-            println("${ new Date().getDateTimeString() } [FlowSpecs] at Page: \"" + title + "\", url: " + getCurrentUrl())
+            println("${ new Date().getDateTimeString() } ${'[FlowSpecs]'.padRight(16)}at Page: \"" + title + "\", url: " + getCurrentUrl())
             assert authModule.isLoggedInUser(test_username) == true
 
         and: "they are not conducting any service"
@@ -86,7 +90,7 @@ class FlowSpecs extends GebReportingSpec {
 
         when: "the service is finished"
             waitFor { serviceModule.btnFinish.isDisplayed() == true }
-            println("Ticket ID: { ticketModule.textTicketId.text() }")
+            println("${ new Date().getDateTimeString() } ${'[FlowSpecs]'.padRight(16)}Ticket ID: " + ticketModule.textTicketId.text())
             serviceModule.btnFinish.click()
             waitFor { $("div", class:"z-modal-mask")[1].css('display') == 'none' }
 
@@ -110,12 +114,14 @@ class FlowSpecs extends GebReportingSpec {
      */
     def "003 - Work process on two-service non-queued engagement"() {
 
+        println("\n003 - Work process on two-service non-queued engagement")
+
         def srvc1 = "Payment - Rev (MSP)"
         def srvc2 = "Payment - Rev (PTAX)"
 
         given: "already logged in"
             at QUserPage
-            println("${ new Date().getDateTimeString() } [FlowSpecs] at Page: \"" + title + "\", url: " + getCurrentUrl())
+            println("${ new Date().getDateTimeString() } ${'[FlowSpecs]'.padRight(16)}at Page: \"" + title + "\", url: " + getCurrentUrl())
             assert authModule.isLoggedInUser(test_username) == true
 
         and: "they are not conducting any service"
@@ -140,7 +146,7 @@ class FlowSpecs extends GebReportingSpec {
 
         when: "the next service is started"
             waitFor { serviceModule.btnAddNextService.isDisplayed() == true }
-            println("Ticket ID: { ticketModule.textTicketId.text() }")
+            println("${ new Date().getDateTimeString() } ${'[FlowSpecs]'.padRight(16)}Ticket ID: " + ticketModule.textTicketId.text())
             serviceModule.btnAddNextService.click()
             waitFor { $("div", class:"z-modal-mask").first().css("display") == "block" }
 
@@ -159,7 +165,7 @@ class FlowSpecs extends GebReportingSpec {
 
         when: "the service is finished"
             waitFor { serviceModule.btnFinish.isDisplayed() == true }
-            println("Ticket ID: { ticketModule.textTicketId.text() }")
+            println("${ new Date().getDateTimeString() } ${'[FlowSpecs]'.padRight(16)}Ticket ID: " + ticketModule.textTicketId.text())
             serviceModule.btnFinish.click()
             waitFor { $("div", class:"z-modal-mask")[1].css('display') == 'none' }
 
@@ -177,9 +183,11 @@ class FlowSpecs extends GebReportingSpec {
      */
     def "004 - Logging out after signing in"() {
 
+        println("\n004 - Logging out after signing in")
+
         given: "CSR is already signed in"
             at QUserPage
-            println("${ new Date().getDateTimeString() } [FlowSpecs] at Page: \"" + title + "\", url: " + getCurrentUrl())
+            println("${ new Date().getDateTimeString() } ${'[FlowSpecs]'.padRight(16)}at Page: \"" + title + "\", url: " + getCurrentUrl())
             assert authModule.isLoggedInUser("") == false
 
         when: "the CSR signs out"
