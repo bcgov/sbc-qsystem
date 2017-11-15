@@ -48,7 +48,7 @@
                         
                     ]]></zscript> -->
 
-                    <combobox id="Change_Channels" sclass="bdd-channels-options" disabled="@load(!fmodel.btnsDisabled[2])" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"  >
+                    <combobox id="Change_Channels" sclass="bdd-channels-options" disabled="@load(!fmodel.btnsDisabled[2])" readonly="true" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"  >
                         <!-- visible="@load(fmodel.addWindowButtons[0])" -->
                         <!-- @load(fmodel.CheckCombobox()) --> 
     <!--                     <attribute name="onCreate">
@@ -71,7 +71,7 @@
                 
                 <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 20px; font-weight: bold;"/>
 
-                <textbox id="editable_comments" rows="5" cols="40" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
+                <textbox id="editable_comments" rows="5" cols="40" style="margin-left: 16px; font-size:14px;" onChange="@command('updateComments')" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
                     <!--readonly="true"-->
                 </textbox>
             </hbox> 
