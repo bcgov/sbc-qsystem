@@ -152,7 +152,7 @@
                             {
                                 "exec":
                                 {
-                                    "command": ["ls", "/opt/app-root/src/source/dist/temp"]
+                                    "command": ["sh", "/opt/app-root/src/source/scripts/mount_test.sh", "/opt/app-root/src/source/dist/temp/","60"]
                                 },
                                 "initialDelaySeconds": 10,
                                 "timeoutSeconds": 5,
