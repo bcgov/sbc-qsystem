@@ -48,22 +48,21 @@
                         
                     ]]></zscript> -->
 
-                <combobox id="Change_Channels" sclass="bdd-channels-options" disabled="@load(!fmodel.btnsDisabled[2])" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"  >
-                    <!-- visible="@load(fmodel.addWindowButtons[0])" -->
-                    <!-- @load(fmodel.CheckCombobox()) --> 
-<!--                     <attribute name="onCreate">
-                        self.setSelectedIndex(${Channel_Selected});
-                    </attribute> -->
-                    <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
-                    <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
-                    <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
-                    <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
-                    <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
-                    <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
-                    <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
-                    <!-- <comboitem label="${c:l('25min')}"/> -->
-                    <!-- <comboitem label="${c:l('30min')}"/> -->
-                </combobox>
+                    <combobox id="Change_Channels" sclass="bdd-channels-options" disabled="@load(!fmodel.btnsDisabled[2])" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"  >
+                        <!-- visible="@load(fmodel.addWindowButtons[0])" -->
+                        <!-- @load(fmodel.CheckCombobox()) --> 
+    <!--                     <attribute name="onCreate">
+                            self.setSelectedIndex(${Channel_Selected});
+                        </attribute> -->
+                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
+                        <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
+                        <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
+                        <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
+                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
+                        <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
+                        <!-- <comboitem label="${c:l('25min')}"/> -->
+                        <!-- <comboitem label="${c:l('30min')}"/> -->
+                    </combobox>
 
                 </vbox>
 

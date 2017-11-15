@@ -20,6 +20,29 @@
 	                <label value="${c:l('comments')}"/>
 	                <textbox id="ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
 
+
+
+
+	                <label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
+	            	    <combobox id="Channels_options" sclass="bdd-channels-options" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
+	                		<!-- @load(fmodel.CheckCombobox()) --> 
+	                        <attribute name="onCreate">
+	                            self.setSelectedIndex(0);
+	                        </attribute>
+	                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
+	                        <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
+	                        <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
+	                        <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
+	                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
+	                        <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
+							<!-- <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" /> -->
+	                        <!-- <comboitem label="${c:l('25min')}"/> -->
+	                        <!-- <comboitem label="${c:l('30min')}"/> -->
+	                	</combobox>
+
+
+
 	                <label value="Type Service here" width="150px" />
 	                <hbox>
 	                    <vbox>
@@ -59,7 +82,7 @@
 	                <div style="margin:5px 10px 10px 10px;"></div>
 	                
 	                
-	                <label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
+	                
 	                <div style="float:right; margin:1px 0px 0px 0px;">
 	                    <hbox>
 
@@ -67,23 +90,7 @@
 	                    	<!-- <label value="Channels"/> -->
 	                    	 <!-- visible="@load(fmodel.addWindowButtons[0])" -->
 
-	                    	
-	                    	<combobox id="Channels_options" sclass="bdd-channels-options" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
-	                    		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
-	                    		<!-- @load(fmodel.CheckCombobox()) --> 
-		                        <attribute name="onCreate">
-		                            self.setSelectedIndex(0);
-		                        </attribute>
-		                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
-                                <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
-		                        <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
-								<comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
-		                        <!-- <comboitem label="${c:l('25min')}"/> -->
-		                        <!-- <comboitem label="${c:l('30min')}"/> -->
-	                    	</combobox>
+	                    
 	                    	
 
 	                        <!--Add to Queue and serve-->
@@ -120,11 +127,34 @@
 
 	        <!-- This is non-recep mode UI -->
 	        <zk if="${!fmodel.getCFMSType()}">
-	        		            <vlayout>
-	                <div style="margin:10px 10px 10px 5px;"></div>
+	        	<vlayout>
+	                <div style="margin:5px 5px 5px 5px;"></div>
 
 <!-- 	                <label value="${c:l('comments')}"/>
 	                <textbox id="ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/> -->
+
+					
+	                	
+                		 <!-- style="float:left; margin:5px 0px 0px 0px;" -->
+                	<label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
+	            	    <combobox id="Channels_options" width="100%" sclass="bdd-channels-options" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
+	                		<!-- @load(fmodel.CheckCombobox()) --> 
+	                        <attribute name="onCreate">
+	                            self.setSelectedIndex(0);
+	                        </attribute>
+	                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
+	                        <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
+	                        <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
+	                        <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
+	                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
+	                        <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
+							<!-- <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" /> -->
+	                        <!-- <comboitem label="${c:l('25min')}"/> -->
+	                        <!-- <comboitem label="${c:l('30min')}"/> -->
+	                	</combobox>
+	                	
+					
 
 	                <label value="Type Service here" width="150px" />
 	                <hbox>
@@ -160,26 +190,7 @@
 	                
 
 	                <hbox>
-	                	<div style="float:left; margin:10px 0px 0px 0px;">
-	                		<label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
-	                		<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
-	                			<!-- visible="@load(fmodel.addWindowButtons[0])" -->
-	                    		<!-- @load(fmodel.CheckCombobox()) -->
-		                        <attribute name="onCreate">
-		                            self.setSelectedIndex(0);
-		                        </attribute>
-		                        
-		                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
-                                <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
-		                        <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
-								<comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
-		                        <!-- <comboitem label="${c:l('25min')}"/> -->
-		                        <!-- <comboitem label="${c:l('30min')}"/> -->
-	                    	</combobox>
-	                	</div>
+
 
 		                <div style="float:right; margin:10px 0px 0px 0px;">
 		                    <hbox>

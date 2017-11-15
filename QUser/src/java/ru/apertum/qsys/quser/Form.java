@@ -931,30 +931,31 @@ public class Form{
     public void DetermineChannels(){
 //        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  REDIRECT SERVE" + pickedRedirectServ +  "\n\n\n");
 //        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  MAIN SERVE" + pickedMainService +  "\n\n\n");
-        if (pickedRedirectServ != null || pickedMainService!=null ) {
-            if (!pickedRedirectServ.isLeaf()) {
-                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
-                return;
-            }
+//        if (pickedRedirectServ != null || pickedMainService!=null ) {
+//            if (!pickedRedirectServ.isLeaf()) {
+//                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+//                return;
+//            }
             int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex()+1;
             
 //            QLog.l().logger().debug("\n\n\nAdd and serve button, which WINDOW:    " + addWindowButtons[0] +  "\n\n\n");
             
-            if(channelIndex>4){
-                if(addWindowButtons[0])
-                    this.closeAddAndServeDialog();
-                else
-                    this.closeAddNextServiceDialog();
-                
-                this.finish();
-    //            customer = user.getUser().getCustomer();        
-    //            addTicketDailogWindow.setVisible(false);
-            }
-        }
-        else{
-            Messagebox.show(l("first_select_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
-            refreshChannels();      //set channels to default when popup window show up. 
-        }
+
+// Auto close for redirect channels
+//            if(channelIndex>4){
+//                if(addWindowButtons[0])
+//                    this.closeAddAndServeDialog();
+//                else
+//                    this.closeAddNextServiceDialog();
+//                
+//                this.finish();
+//            }
+
+//        }
+//        else{
+//            Messagebox.show(l("first_select_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+//            refreshChannels();      //set channels to default when popup window show up. 
+//        }
     }
     
     @Command
@@ -963,9 +964,9 @@ public class Form{
         String channels = ((Combobox) serveCustomerDialogWindow.getFellow("Change_Channels")).getSelectedItem().getValue().toString();
         customer.setChannels(channels);
         customer.setChannelsIndex(channelIndex);
-        if(channelIndex>4){
-            this.finish();
-        }
+//        if(channelIndex>4){
+//            this.finish();
+//        }
     }
     
     public void refreshChannels(){
