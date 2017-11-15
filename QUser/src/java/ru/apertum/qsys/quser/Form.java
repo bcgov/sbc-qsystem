@@ -931,6 +931,8 @@ public class Form{
     public void DetermineChannels(){
 //        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  REDIRECT SERVE" + pickedRedirectServ +  "\n\n\n");
 //        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  MAIN SERVE" + pickedMainService +  "\n\n\n");
+
+//        Remove selecting service first function
 //        if (pickedRedirectServ != null || pickedMainService!=null ) {
 //            if (!pickedRedirectServ.isLeaf()) {
 //                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
@@ -952,6 +954,8 @@ public class Form{
 //            }
 
 //        }
+
+//        remove pop-up alert
 //        else{
 //            Messagebox.show(l("first_select_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
 //            refreshChannels();      //set channels to default when popup window show up. 
@@ -964,6 +968,7 @@ public class Form{
         String channels = ((Combobox) serveCustomerDialogWindow.getFellow("Change_Channels")).getSelectedItem().getValue().toString();
         customer.setChannels(channels);
         customer.setChannelsIndex(channelIndex);
+//      Remove auto close channels in serve_customer window
 //        if(channelIndex>4){
 //            this.finish();
 //        }
