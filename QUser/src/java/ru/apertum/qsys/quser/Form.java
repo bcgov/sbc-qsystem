@@ -544,10 +544,19 @@ public class Form{
     }
 
     @Command
+    public void updateComments(){
+        // Inheritance the comment from Serve-customer window to hold window
+        String tempComment = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
+        customer.setTempComments(tempComment);
+        QLog.l().logQUser().debug("\n\nPostponed!!:\n" + customer.getTempComments() + "\n\n\n");
+    }
+    
+    @Command
     public void postpone() {
         QLog.l().logQUser().debug("Postpone by " + user.getName() + " customer " + customer.getFullNumber());
         postponeCustomerDialog.setVisible(true);
         postponeCustomerDialog.doModal();
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
     }
     
     @Command

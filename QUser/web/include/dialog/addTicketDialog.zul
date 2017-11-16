@@ -24,7 +24,7 @@
 
 
 	                <label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
-	            	    <combobox id="Channels_options" sclass="bdd-channels-options" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	            	    <combobox id="Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
 	                		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
 	                		<!-- @load(fmodel.CheckCombobox()) --> 
 	                        <attribute name="onCreate">
@@ -137,7 +137,7 @@
 	                	
                 		 <!-- style="float:left; margin:5px 0px 0px 0px;" -->
                 	<label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
-	            	    <combobox id="Channels_options" width="100%" sclass="bdd-channels-options" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	            	    <combobox id="Channels_options" width="100%" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
 	                		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
 	                		<!-- @load(fmodel.CheckCombobox()) --> 
 	                        <attribute name="onCreate">
