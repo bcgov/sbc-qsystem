@@ -40,7 +40,7 @@
                     
                 </vbox>
                 <vbox style="margin-left: 13px; margin-top: 34px;">
-                    <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="top-text-style" style="font-style: oblique;  margin-left:24px;"/>
+                    <label id="customer_number" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))" sclass="top-text-style bdd-ticket-id" style="font-style: oblique;  margin-left:24px;"/>
                     <!-- <label id="channel" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))" sclass="top-text-style" style="font-style: oblique; margin-left:24px; font-size : 16px; "/> -->
 <!-- 
                     <zscript><![CDATA[
@@ -48,22 +48,21 @@
                         
                     ]]></zscript> -->
 
-                <combobox id="Change_Channels" sclass="bdd-channels-options" disabled="@load(!fmodel.btnsDisabled[2])" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"  >
-                    <!-- visible="@load(fmodel.addWindowButtons[0])" -->
-                    <!-- @load(fmodel.CheckCombobox()) --> 
-<!--                     <attribute name="onCreate">
-                        self.setSelectedIndex(${Channel_Selected});
-                    </attribute> -->
-                    <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
-                    <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
-                    <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
-                    <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
-                    <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
-                    <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
-                    <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
-                    <!-- <comboitem label="${c:l('25min')}"/> -->
-                    <!-- <comboitem label="${c:l('30min')}"/> -->
-                </combobox>
+                    <combobox id="Change_Channels" sclass="bdd-channels-options" disabled="@load(!fmodel.btnsDisabled[2])" readonly="true" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"  >
+                        <!-- visible="@load(fmodel.addWindowButtons[0])" -->
+                        <!-- @load(fmodel.CheckCombobox()) --> 
+    <!--                     <attribute name="onCreate">
+                            self.setSelectedIndex(${Channel_Selected});
+                        </attribute> -->
+                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
+                        <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
+                        <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
+                        <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
+                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
+                        <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
+                        <!-- <comboitem label="${c:l('25min')}"/> -->
+                        <!-- <comboitem label="${c:l('30min')}"/> -->
+                    </combobox>
 
                 </vbox>
 
@@ -72,7 +71,7 @@
                 
                 <label id="comments_label" value="Comments:" sclass="text-style" style="margin-left: 20px; font-weight: bold;"/>
 
-                <textbox id="editable_comments" rows="5" cols="40" style="margin-left: 16px; font-size:14px;" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
+                <textbox id="editable_comments" rows="5" cols="40" style="margin-left: 16px; font-size:14px;" onChange="@command('updateComments')" sclass="general-text" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"  >
                     <!--readonly="true"-->
                 </textbox>
             </hbox> 
@@ -119,7 +118,7 @@
                         value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px" constraint="no empty, no negative" maxlength="3"
                                             forward = "QuantityId.onOK"  xmlns:w="client">
                     </textbox>
-                    <button sclass="button-with-image" image="/resources/img/change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
+                    <button sclass="button-with-image" image="/resources/img/005_change_icon.png" onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
                     </button>
                 </row>
             </rows>
@@ -146,7 +145,7 @@
                         <div width="170px" style="background-color:White;">
                 </div>
 
-                <button sclass="act-button" style="margin-right: 70px; margin-top: 10px;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
+                <button sclass="act-button bdd-add-next-service" style="margin-right: 70px; margin-top: 10px;" label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
                 </button>
 
 
@@ -187,7 +186,7 @@
                 </div>
                 
                 <!--<checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
-                <checkbox style="margin-right: 120px;margin-top: 20px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
+                <checkbox  onCheck="@command('disableButtons')" style="margin-right: 120px;margin-top: 20px; font-size : 14px;" sclass="text-style bdd-inaccurate-time-check-box" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
 
             </vbox>
         </hbox> 

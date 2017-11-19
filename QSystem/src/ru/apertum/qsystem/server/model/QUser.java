@@ -75,6 +75,7 @@ public class QUser implements IidGetter, Serializable {
      * признак удаления с проставленим даты
      * Deletion flag with date stamping
      */
+
     @Column(name = "deleted")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deleted;

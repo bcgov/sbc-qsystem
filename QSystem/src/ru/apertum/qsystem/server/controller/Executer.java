@@ -528,7 +528,7 @@ public final class Executer {
                     // Должно высветитьсяна основном табло :: Must be highlighted on the main board
                     MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
                     
-                    QLog.l().logger().debug("CUSTOMER HEREERERERE  _inside loop\n\n" + user.getCustomer() + "\n\n\n");
+//                    QLog.l().logger().debug("CUSTOMER HEREERERERE  _inside loop\n\n" + user.getCustomer() + "\n\n\n");
                 }
                 usrs.remove(user);
             }
@@ -1272,8 +1272,7 @@ public final class Executer {
             
             final QCustomer customer = user.getCustomer();
             final QService service = QServiceTree.getInstance().getById(cmdParams.serviceId);
-
-            customer.setWelcomeTime(cmdParams.welcomeTime);
+//            customer.setWelcomeTime(cmdParams.welcomeTime);
 
             // Define the customizer in the queue
             customer.setService(service);

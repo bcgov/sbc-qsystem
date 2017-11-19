@@ -17,6 +17,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.Collections;
+import javax.swing.table.AbstractTableModel;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
@@ -66,6 +67,7 @@ import ru.apertum.qsystem.server.model.postponed.QPostponedList;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
 import ru.apertum.qsys.quser.WaitingPanelComparator;
+import ru.apertum.qsystem.client.forms.FReception;
 
 /**
  *
@@ -129,23 +131,10 @@ public class Form{
     // *** Диалоги изменения состояния и вызова лтложенных Dialogs for changing the state and calling ltalges
     @Wire("#incClientDashboard #incChangePostponedStatusDialog #changePostponedStatusDialog")
     Window changePostponedStatusDialog;
-    @Wire("#incClientDashboard #incAddNextServiceDialog #addNextServiceDialog")
-    Window addNextServiceDialog;;
-    @Wire("#incClientDashboard #incServicesDialog #servicesDialog")
-    Window servicesDialogWindow;
-    @Wire("#incClientDashboard #incRedirectCustomerDialog #redirectDialog")
-    Window redirectCustomerDialog;
-    @Wire("#incClientDashboard #incChangeServiceDialog #changeServiceDialog")
-    Window changeServiceDialogWindow;
-    @Wire("#incClientDashboard #incServeCustomerDialog #serveCustomerDialog")
-    Window serveCustomerDialogWindow;
-    @Wire("#incClientDashboard #incAddTicketDialog #addTicketDialog")
-    Window addTicketDailogWindow;
 
     //*********************************************************************************************************
     //**** Кнопки и их события Buttons and their events
     //*********************************************************************************************************
-    QService pickedMainService;
     QService pickedRedirectServ;
     @Wire
     private Textbox typeservices;
@@ -253,6 +242,12 @@ public LinkedList<QService> getPreviousList(){
 
         Uses.userTimeZone = (TimeZone)Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone");
         QLog.l().logQUser().debug("Login : " + user.getName());
+        if(user.getName().equals("Administrator")){
+            user.setGABoard(true);
+        }
+        QLog.l().logQUser().debug("STATUS : " + user.getGABoard());
+//        ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(0);
+        
 
         final Session sess = Sessions.getCurrent();
         sess.setAttribute("userForQUser", user);
@@ -293,7 +288,17 @@ public LinkedList<QService> getPreviousList(){
         }
 
     }
+    @Wire("#incClientDashboard #incGAManagementDialog #GAManagementDialog")
+    Window GAManagementDialogWindow;
     
+    @Command
+    public void GABoard() {
+        GAManagementDialogWindow.setVisible(true);
+        GAManagementDialogWindow.doModal();
+//        postponeCustomerDialog
+        
+    }
+
     @Command
     public void about() {
         final Properties settings = new Properties();
@@ -325,7 +330,7 @@ public LinkedList<QService> getPreviousList(){
         final Session sess = Sessions.getCurrent();
         sess.removeAttribute("userForQUser");
         UsersInside.getInstance().getUsersInside().remove(user.getName() + user.getPassword());
-
+        user.setCustomerList(Collections.<QPlanService> emptyList());
         user.setName("");
         user.setPassword("");
         customer = null;
@@ -341,9 +346,23 @@ public LinkedList<QService> getPreviousList(){
     }
     
     public LinkedList<QUser> getUsersForLogin() {
+//        QLog.l().logQUser().debug("\n\n\n\nQUSERLIST\n\n :\n"   + greed.get(2).getShadow() +  "\n\n\n\n\n");
         return QUserList.getInstance().getItems();
     }
+
+//    public LinkedList<QUser> test2 = greed.get(2).getShadow();
+//    public LinkedList<QUser> userList = QUserList.getInstance().getItems();
+
     
+    public LinkedList<QUser> userList = new LinkedList<>();
+    public LinkedList<QUser> getuserList(){
+        return userList = QUserList.getInstance().getItems();
+    }
+ 
+    
+//    greed.get(rowIndex).getShadow()
+    //ANDREW
+
     public boolean isLogin() {
         final Session sess = Sessions.getCurrent();
         final User userL = (User) sess.getAttribute("userForQUser");
@@ -496,6 +515,7 @@ public LinkedList<QService> getPreviousList(){
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
+//        QLog.l().logQUser().debug("\n\n\n\nBEFORE INTO EXCECUTE \n\n\n\n\n");
         final RpcInviteCustomer result = (RpcInviteCustomer) Executer.getInstance().getTasks().get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
         if (result.getResult() != null) {
             customer = result.getResult();
@@ -556,10 +576,19 @@ public LinkedList<QService> getPreviousList(){
     }
 
     @Command
+    public void updateComments(){
+        // Inheritance the comment from Serve-customer window to hold window
+        String tempComment = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
+        customer.setTempComments(tempComment);
+        QLog.l().logQUser().debug("\n\nPostponed!!:\n" + customer.getTempComments() + "\n\n\n");
+    }
+    
+    @Command
     public void postpone() {
         QLog.l().logQUser().debug("Postpone by " + user.getName() + " customer " + customer.getFullNumber());
         postponeCustomerDialog.setVisible(true);
         postponeCustomerDialog.doModal();
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
     }
 
     @Command
@@ -573,8 +602,10 @@ public LinkedList<QService> getPreviousList(){
             params.welcomeTime = user.getCustomerWelcomeTime();
             params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
 
-            QLog.l().logQUser().debug("\n\n\n CHECK SERVICE NAME" + user.getUser().getCustomer().getService().getName() + "\nCHECK SERVICEID: " + params.serviceId + "\n\n");
-
+//            Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER).process(params, "", new byte[4]);
+            
+//            QLog.l().logQUser().debug("\n\n\n CHECK SERVICE NAME" + user.getUser().getCustomer().getService().getName() + "\nCHECK SERVICEID: " + params.serviceId + "\n\n");
+         
             customer = user.getUser().getCustomer();
             params.serviceId = user.getUser().getCustomer().getService().getId();
             customer.setTempComments(params.comments);
@@ -661,7 +692,29 @@ public LinkedList<QService> getPreviousList(){
         pickedRedirectServ = null;
         this.addTicketScreen();
     }
-    
+
+    @Command
+    public void disableButtons(){
+//        addWindowButtons[0] = false;
+//        addWindowButtons[1] = false;
+//        addWindowButtons[2] = false;
+//        addWindowButtons[3] = false;
+//        addWindowButtons[4] = false;
+//        addWindowButtons[5] = false;
+//        addWindowButtons[6] = false;
+//        addWindowButtons[7] = false;
+//        addWindowButtons[8] = false;
+        boolean[] inaccurateChecked = new boolean[]{true, true, true, true, true, false, true, true, true};
+        if(((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox")).isChecked()){
+            setBtnsDisabled(inaccurateChecked);
+        }else{setKeyRegim(KEYS_STARTED);
+        }
+        
+//        setBtnsDisabled(inaccurateChecked);
+//        QLog.l().logQUser().debug("\n\n\n\n DISABLE BUTTON");
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
+    }
+
     @Command
     @NotifyChange(value = {"btnsDisabled", "customer"})
     public void finish() {
@@ -798,7 +851,7 @@ public LinkedList<QService> getPreviousList(){
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
         //params.textData = ((Combobox) postponeCustomerDialog.getFellow("resultBox")).getSelectedItem().getLabel();
-        QLog.l().logger().debug("\n\n\n\n\n\nTIMEBOX" + ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() +  "\n\n\n\n\n\n");
+//        QLog.l().logger().debug("\n\n\n\n\n\nTIMEBOX" + ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() +  "\n\n\n\n\n\n");
         params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
         params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
 
@@ -817,28 +870,35 @@ public LinkedList<QService> getPreviousList(){
     public void DetermineChannels(){
 //        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  REDIRECT SERVE" + pickedRedirectServ +  "\n\n\n");
 //        QLog.l().logger().debug("\n\n\nI GOT CHANNELS  MAIN SERVE" + pickedMainService +  "\n\n\n");
-        if (pickedRedirectServ != null || pickedMainService!=null ) {
-            if (!pickedRedirectServ.isLeaf()) {
-                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
-                return;
-            }
+
+//        Remove selecting service first function
+//        if (pickedRedirectServ != null || pickedMainService!=null ) {
+//            if (!pickedRedirectServ.isLeaf()) {
+//                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+//                return;
+//            }
             int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex()+1;
+            
+//            QLog.l().logger().debug("\n\n\nAdd and serve button, which WINDOW:    " + addWindowButtons[0] +  "\n\n\n");
+            
 
-            QLog.l().logger().debug("\n\n\nAdd and serve button, which WINDOW:    " + addWindowButtons[0] +  "\n\n\n");
+// Auto close for redirect channels
+//            if(channelIndex>4){
+//                if(addWindowButtons[0])
+//                    this.closeAddAndServeDialog();
+//                else
+//                    this.closeAddNextServiceDialog();
+//                
+//                this.finish();
+//            }
 
-            if(channelIndex>4){
-                if(addWindowButtons[0])
-                    this.closeAddAndServeDialog();
-                else
-                    this.closeAddNextServiceDialog();
+//        }
 
-                this.finish();
-            }
-        }
-        else{
-            Messagebox.show(l("first_select_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
-            refreshChannels();      //set channels to default when popup window show up.
-        }
+//        remove pop-up alert
+//        else{
+//            Messagebox.show(l("first_select_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
+//            refreshChannels();      //set channels to default when popup window show up. 
+//        }
     }
     
     @Command
@@ -847,9 +907,10 @@ public LinkedList<QService> getPreviousList(){
         String channels = ((Combobox) serveCustomerDialogWindow.getFellow("Change_Channels")).getSelectedItem().getValue().toString();
         customer.setChannels(channels);
         customer.setChannelsIndex(channelIndex);
-        if(channelIndex>4){
-            this.finish();
-        }
+//      Remove auto close channels in serve_customer window
+//        if(channelIndex>4){
+//            this.finish();
+//        }
     }
 
     public void refreshChannels(){
@@ -931,6 +992,31 @@ public LinkedList<QService> getPreviousList(){
     public TreeServices getTreeServs() {
         return treeServs;
     }
+    
+    @Wire("#incClientDashboard #incAddNextServiceDialog #addNextServiceDialog")
+    Window addNextServiceDialog;
+    
+    @Wire("#incClientDashboard #incServicesDialog #servicesDialog")
+    Window servicesDialogWindow;
+
+    @Wire("#incClientDashboard #incRedirectCustomerDialog #redirectDialog")
+    Window redirectCustomerDialog;
+    
+    @Wire("#incClientDashboard #incChangeServiceDialog #changeServiceDialog")
+    Window changeServiceDialogWindow;
+    
+    @Wire("#incClientDashboard #incServeCustomerDialog #serveCustomerDialog")
+    Window serveCustomerDialogWindow;
+
+    @Wire("#incClientDashboard #incAddTicketDialog #addTicketDialog")
+    Window addTicketDailogWindow;
+    
+    @Wire("#incClientDashboard #GAManagement")
+    Window GAManagement;
+    
+    private Combobox cboFmCompress;
+    
+    QService pickedMainService;
 
     public QService getPickedMainService() {
         return pickedMainService;
@@ -1058,13 +1144,13 @@ public LinkedList<QService> getPreviousList(){
             if (pickedMainService==null){
                 requiredServices = allServices
                     .stream()
-                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
+                    .filter((QService service) -> service.getParentId()!=null && (service.getDescription().toLowerCase().contains(filter.toLowerCase()) || service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
 
             }else{
                  requiredServices = allServices
                     .stream()
-                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && (service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
+                    .filter((QService service) -> service.getParentId()!=null && (service.getDescription().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && (service.getDescription().toLowerCase().contains(filter.toLowerCase()) || service.getParent().getName().toLowerCase().contains(filter.toLowerCase()) || service.getName().toLowerCase().contains(filter.toLowerCase())) && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
             }
             listServices = filterServicesByUser(requiredServices);
@@ -1123,7 +1209,7 @@ public LinkedList<QService> getPreviousList(){
 
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).getText();
 //            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-            QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
+//            QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
 
@@ -1168,7 +1254,7 @@ public LinkedList<QService> getPreviousList(){
 
             params.comments = "";
 //            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-            QLog.l().logQUser().debug("\n\nDEBUG COMMENTS" + params.comments + "\n\n");
+
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "", new byte[4]);
 
@@ -1198,7 +1284,10 @@ public LinkedList<QService> getPreviousList(){
             }
 
             final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+            
             this.addToQueue(params);
+            QLog.l().logQUser().debug("\n\n\nWELCOME TIME:\n" + user.getCustomerWelcomeTime() +  "\n\n");
+            
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());

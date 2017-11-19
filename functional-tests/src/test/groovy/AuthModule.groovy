@@ -15,12 +15,12 @@ class AuthModule extends Module {
         loginUser.value(username)
         loginPass.value(password)
         loginButton.click()
-        println("${ new Date().getDateTimeString() } [AuthModule] signIn username: \"$username\" password: \"$password\"")
+        println("${ new Date().getDateTimeString() } ${'[AuthModule]'.padRight(16)}signIn username: \"$username\" password: \"$password\"")
     }
 
     void signOut() {
         logoutButton.click()
-        println("${ new Date().getDateTimeString() } [AuthModule] signOut ${ loginUser.value() }")
+        println("${ new Date().getDateTimeString() } ${'[AuthModule]'.padRight(16)}signOut ${ loginUser.value() }")
     }
 
     boolean isLoggedInUser(String username) {

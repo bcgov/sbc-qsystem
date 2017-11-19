@@ -20,10 +20,33 @@
 	                <label value="${c:l('comments')}"/>
 	                <textbox id="ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
 
+
+
+
+	                <label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
+	            	    <combobox id="Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
+	                		<!-- @load(fmodel.CheckCombobox()) --> 
+	                        <attribute name="onCreate">
+	                            self.setSelectedIndex(0);
+	                        </attribute>
+	                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
+	                        <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
+	                        <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
+	                        <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
+	                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
+	                        <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
+							<!-- <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" /> -->
+	                        <!-- <comboitem label="${c:l('25min')}"/> -->
+	                        <!-- <comboitem label="${c:l('30min')}"/> -->
+	                	</combobox>
+
+
+
 	                <label value="Type Service here" width="150px" />
 	                <hbox>
 	                    <vbox>
-	                        <textbox sclass="bdd-input-search" id="typeservices" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
+	                        <textbox id="typeservices" sclass="bdd-input-search" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
 	                    </vbox>
 	                    <vbox>
 	                        <combobox sclass="bdd-input-category" id="cboFmCompress" onChange="@command('changeCategory')" selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
@@ -32,24 +55,34 @@
 	                    </vbox>
 	                </hbox>
 	                <div style="margin:10px 10px 10px 10px;"></div>
+
+
+
 	                <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)" width="100%" height="250px">			
-	                <listhead>
-						<listheader label="Service" align="left" />
-						<listheader label="Category" align="left" />
-					</listhead>
-					<template name="model" var="item">
-						<listitem>
-							<listcell label="@load(item.getName())" />
-							<listcell label="@load(item.getParent().getName())"/>
-						</listitem>
-	                                
-					</template>
-				</listbox>
-	                
+		                <listhead>
+							<listheader label="Service" align="left"/>
+							<listheader label="Category" align="left" />
+						</listhead>
+
+						<template name="model" var="item">
+							<listitem >
+								
+<!-- 								<popup id="Description" width="300px" value="@load(item.getDescription())">
+								</popup> -->
+
+								<listcell label="@load(item.getName())" tooltip="@load(item.getId())"/>
+								<listcell label="@load(item.getParent().getName())" />
+							</listitem>
+         
+						</template>
+
+					</listbox>
+
+
 	                <div style="margin:5px 10px 10px 10px;"></div>
 	                
 	                
-	                <label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
+	                
 	                <div style="float:right; margin:1px 0px 0px 0px;">
 	                    <hbox>
 
@@ -57,23 +90,7 @@
 	                    	<!-- <label value="Channels"/> -->
 	                    	 <!-- visible="@load(fmodel.addWindowButtons[0])" -->
 
-	                    	
-	                    	<combobox id="Channels_options" sclass="bdd-channels-options" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
-	                    		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
-	                    		<!-- @load(fmodel.CheckCombobox()) --> 
-		                        <attribute name="onCreate">
-		                            self.setSelectedIndex(0);
-		                        </attribute>
-		                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
-                                <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
-		                        <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
-								<comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
-		                        <!-- <comboitem label="${c:l('25min')}"/> -->
-		                        <!-- <comboitem label="${c:l('30min')}"/> -->
-	                    	</combobox>
+	                    
 	                    	
 
 	                        <!--Add to Queue and serve-->
@@ -84,7 +101,7 @@
 	                        <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
 	                        
 	                        <!--Add Next Service-->
-	                        <button id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
+	                        <button sclass="bdd-apply" id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
 
 	                        <!--Redirect / Back to Queue-->
 	                        <!--No longer exist-->                     
@@ -96,16 +113,48 @@
 	                </div>
 	                
 	            </vlayout>
+
+<!--             	<vlayout children="@load(fmodel.listServices)">
+				    <template name="children" var="item" >
+				          <popup id="@load(item.getId())" >
+				          		<label value="@load(item.getDescription())">
+				          		</label>
+				          </popup>
+				    </template>
+				</vlayout> -->
 	        </zk>
 
 
 	        <!-- This is non-recep mode UI -->
 	        <zk if="${!fmodel.getCFMSType()}">
-	        		            <vlayout>
-	                <div style="margin:10px 10px 10px 5px;"></div>
+	        	<vlayout>
+	                <div style="margin:5px 5px 5px 5px;"></div>
 
 <!-- 	                <label value="${c:l('comments')}"/>
 	                <textbox id="ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/> -->
+
+					
+	                	
+                		 <!-- style="float:left; margin:5px 0px 0px 0px;" -->
+                	<label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
+	            	    <combobox id="Channels_options" width="100%" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+	                		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
+	                		<!-- @load(fmodel.CheckCombobox()) --> 
+	                        <attribute name="onCreate">
+	                            self.setSelectedIndex(0);
+	                        </attribute>
+	                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
+	                        <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
+	                        <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
+	                        <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
+	                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
+	                        <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
+							<!-- <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" /> -->
+	                        <!-- <comboitem label="${c:l('25min')}"/> -->
+	                        <!-- <comboitem label="${c:l('30min')}"/> -->
+	                	</combobox>
+	                	
+					
 
 	                <label value="Type Service here" width="150px" />
 	                <hbox>
@@ -126,7 +175,8 @@
 					</listhead>
 					<template name="model" var="item">
 						<listitem>
-							<listcell label="@load(item.getName())" />
+
+							<listcell label="@load(item.getName())" tooltip="@load(item.getId())"/>
 							<listcell label="@load(item.getParent().getName())"/>
 						</listitem>
 	                                
@@ -140,26 +190,7 @@
 	                
 
 	                <hbox>
-	                	<div style="float:left; margin:10px 0px 0px 0px;">
-	                		<label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
-	                		<combobox id="Channels_options" autodrop="true" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
-	                			<!-- visible="@load(fmodel.addWindowButtons[0])" -->
-	                    		<!-- @load(fmodel.CheckCombobox()) -->
-		                        <attribute name="onCreate">
-		                            self.setSelectedIndex(0);
-		                        </attribute>
-		                        
-		                        <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  style="background-color:#E8F8F5;"/>
-                                <comboitem label="${c:l('admin')}" value="${c:l('admin')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneassisted')}" value="${c:l('phoneassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" style="background-color:#E8F8F5;"/>
-		                        <comboitem label="${c:l('phoneredirect')}" value="${c:l('phoneredirect')}" style="background-color:#FDEDEC;"/>
-		                        <comboitem label="${c:l('catsredirect')}" value="${c:l('catsredirect')}" style="background-color:#FDEDEC;"/>
-								<comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" style="background-color:#FDEDEC;"/>
-		                        <!-- <comboitem label="${c:l('25min')}"/> -->
-		                        <!-- <comboitem label="${c:l('30min')}"/> -->
-	                    	</combobox>
-	                	</div>
+
 
 		                <div style="float:right; margin:10px 0px 0px 0px;">
 		                    <hbox>
@@ -172,7 +203,7 @@
 		                        <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
 		                        
 		                        <!--Add Next Service-->
-		                        <button id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
+		                        <button sclass="bdd-apply" id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
 
 		                        <!--Redirect / Back to Queue-->
 		                        <!--No longer exist-->                     
@@ -186,7 +217,20 @@
 	            </vlayout>
 	        </zk>
 
+                	<vlayout children="@load(fmodel.listServices)">
+		    <template name="children" var="item" >
+		          <popup id="@load(item.getId())" >
+		          		<label value="@load(item.getDescription())">
+		          		</label>
+		          						    <!-- <html><![CDATA[
+				fmodel.listServices.getDescription()
+		    ]]></html> -->
+		          </popup>
+		    </template>
+		</vlayout>
+
         </div>
     </window>
+
 
 </zk>
