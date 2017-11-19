@@ -16,63 +16,47 @@
  */
 package ru.apertum.qsystem.server.model;
 
-import java.util.Date;
-import java.util.LinkedList;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.server.Spring;
 
-/**
- * Список пользователей системы Класс, управляющий пользователями системы.
- * List of System Users A class that manages the users of the system.
- *
- * @author Evgeniy Egorov
- */
-public class QUserList extends ATListModel<QUser> {
+import java.util.Date;
+import java.util.LinkedList;
 
-    public static QUserList getInstance() {
-        return QUserListHolder.INSTANCE;
+
+public class QOfficeList extends ATListModel<QOffice> {
+
+    public static QOfficeList getInstance() {
+        return QOfficeListHolder.INSTANCE;
     }
 
     @Override
-    protected LinkedList<QUser> load() {
-        final LinkedList<QUser> users = new LinkedList<>(
+    protected LinkedList<QOffice> load() {
+        final LinkedList<QOffice> offices = new LinkedList<>(
                 Spring.getInstance().getHt().findByCriteria(
-                        DetachedCriteria.forClass(QUser.class)
+                        DetachedCriteria.forClass(QOffice.class)
                                 .add(Property.forName("deleted").isNull())
                                 .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
-        users.stream().forEach((qUser) -> {
-            qUser.setServicesCnt(qUser.getPlanServiceList().getSize());
-        });
-        return users;
+        return offices;
     }
 
-    private static class QUserListHolder {
+    private static class QOfficeListHolder {
 
-        private static final QUserList INSTANCE = new QUserList();
+        private static final QOfficeList INSTANCE = new QOfficeList();
     }
 
-    private QUserList() {
+    private QOfficeList() {
         super();
-        getItems().stream().forEach((qUser) -> {
-            qUser.setServicesCnt(qUser.getPlanServiceList().getSize());
-        });
     }
 
     @Override
     public void save() {
-        deleted.stream().forEach((qUser) -> {
-            qUser.setDeleted(new Date());
+        deleted.stream().forEach((qOffice) -> {
+            qOffice.setDeleted(new Date());
         });
         Spring.getInstance().getHt().saveOrUpdateAll(deleted);
         deleted.clear();
-        /*
-         for (QUser qUser : getItems()) {
-         qUser.savePlan();
-         } 
-         */
-        // плансервисам нул воткнуть при уладении в юзера
         Spring.getInstance().getHt().saveOrUpdateAll(getItems());
     }
 }

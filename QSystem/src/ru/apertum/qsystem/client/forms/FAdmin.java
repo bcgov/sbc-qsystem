@@ -16,6 +16,9 @@
  */
 package ru.apertum.qsystem.client.forms;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.client.model.PropsTableModel;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
@@ -80,25 +83,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
-import javax.swing.ButtonGroup;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DropMode;
-import javax.swing.ImageIcon;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
+
 import org.dom4j.DocumentException;
 import org.jdesktop.application.Action;
 import ru.apertum.qsystem.common.NetCommander;
@@ -106,21 +96,12 @@ import ru.apertum.qsystem.client.model.QTray;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.model.INetProperty;
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JTree;
-import javax.swing.ListCellRenderer;
-import javax.swing.SwingUtilities;
-import javax.swing.TransferHandler;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FontUIResource;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreeSelectionModel;
+
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.lang3.ArrayUtils;
@@ -146,16 +127,8 @@ import ru.apertum.qsystem.server.MainBoard;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.controller.IIndicatorBoard;
-import ru.apertum.qsystem.server.model.ATreeModel;
-import ru.apertum.qsystem.server.model.QAdvanceCustomer;
-import ru.apertum.qsystem.server.model.QPlanService;
-import ru.apertum.qsystem.server.model.QProperty;
+import ru.apertum.qsystem.server.model.*;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
-import ru.apertum.qsystem.server.model.QService;
-import ru.apertum.qsystem.server.model.QServiceLang;
-import ru.apertum.qsystem.server.model.QServiceTree;
-import ru.apertum.qsystem.server.model.QUser;
-import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.server.model.calendar.CalendarTableModel;
 import ru.apertum.qsystem.server.model.calendar.QCalendar;
 import ru.apertum.qsystem.server.model.calendar.QCalendarList;
@@ -351,6 +324,18 @@ public class FAdmin extends javax.swing.JFrame {
                     final QUser user = (QUser) listUsers.getSelectedValue();
                     if (user != null) {
                         FUserChangeDialog.changeUser(form, true, user);
+                    }
+                }
+            }
+        });
+
+        listOffices.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() > 1) {
+                    final QOffice office = (QOffice) listOffices.getSelectedValue();
+                    if (office != null) {
+                        FOfficeChangeDialog.changeOffice(form, true, office);
                     }
                 }
             }
@@ -625,6 +610,7 @@ public class FAdmin extends javax.swing.JFrame {
      * Действия по смене выбранного итема в списке пользоватеолей.
      */
     private void userListChange() {
+        QLog.l().logger().info("userListChanging");
         if (listUsers.getLastVisibleIndex() == -1) {
             listUserService.setListData(new Object[0]);
             textFieldUserName.setText("");
@@ -639,6 +625,7 @@ public class FAdmin extends javax.swing.JFrame {
             return;
         }
         changeUser = false;
+
         try {
             textFieldUserName.setText(user.getName());
             textFieldUserIdent.setText(user.getPoint());
@@ -657,7 +644,7 @@ public class FAdmin extends javax.swing.JFrame {
         }
     }
 
-    /**
+    /**x
      * Действия по смене выбранного итема в списке отзывов.
      */
     private void responseListChange() {
@@ -883,6 +870,7 @@ public class FAdmin extends javax.swing.JFrame {
      */
     private void loadConfig() {
         listUsers.setModel(QUserList.getInstance());
+        listOffices.setModel(QOfficeList.getInstance());
         treeResp.setModel(QResponseTree.getInstance());
         listResults.setModel(QResultList.getInstance());
         treeServices.setModel(QServiceTree.getInstance());
@@ -1301,31 +1289,114 @@ public class FAdmin extends javax.swing.JFrame {
     }
 
     @Action
+    public void addOffice() {
+        // Запросим название юзера и если оно уникально, то примем
+        String officeName = "";
+        boolean flag = true;
+
+        while (flag) {
+            officeName = (String) JOptionPane.showInputDialog(this, getLocaleMessage("admin.add_office_dialog.title"), getLocaleMessage("admin.add_office_dialog.caption"), 3, null, null, officeName);
+            if (officeName == null) {
+                return;
+            }
+            if ("".equals(officeName)) {
+                JOptionPane.showConfirmDialog(this, getLocaleMessage("admin.add_service_dialog.err1.title"), getLocaleMessage("admin.add_service_dialog.err1.caption"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+            } else if (officeName.indexOf('\"') != -1) {
+                JOptionPane.showConfirmDialog(this, getLocaleMessage("admin.add_service_dialog.err3.title"), getLocaleMessage("admin.add_service_dialog.err2.caption"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+            } else if (officeName.length() > 100) {
+                JOptionPane.showConfirmDialog(this, getLocaleMessage("admin.add_service_dialog.err4.title"), getLocaleMessage("admin.add_service_dialog.err2.caption"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+            } else {
+                flag = false;
+            }
+        }
+        QLog.l().logger().debug("Adding a user \"" + officeName + "\"");
+        final QOffice office = new QOffice();
+        office.setName(officeName);
+        office.setSmartboardType("callbyticket");
+        QOfficeList.getInstance().addElement(office);
+        listOffices.setSelectedValue(office, true);
+    }
+
+    @Action
+    public void deleteOffice() {
+        QLog.l().logger().debug("Delete Office");
+
+        if (listOffices.getSelectedIndex() != -1) {
+            if (JOptionPane.showConfirmDialog(this,
+                    getLocaleMessage("admin.remove_office_dialog.title") + " \"" + ((QOffice) listOffices.getSelectedValue()).getName() + "\"?",
+                    getLocaleMessage("admin.remove_user_dialog.caption"),
+                    JOptionPane.YES_NO_OPTION) == 1) {
+                return;
+            }
+
+            final int del = listOffices.getSelectedIndex();
+            final QOfficeList m = (QOfficeList) listOffices.getModel();
+            final int col = m.getSize();
+
+            final QOffice office = (QOffice) listOffices.getSelectedValue();
+            QOfficeList.getInstance().removeElement(office);
+
+            if (col != 1) {
+                if (col == del + 1) {
+                    listOffices.setSelectedValue(m.getElementAt(del - 1), true);
+                } else if (col > del + 1) {
+                    listOffices.setSelectedValue(m.getElementAt(del), true);
+                }
+            }
+        }
+    }
+
+    @Action
     public void addUser() {
         // Запросим название юзера и если оно уникально, то примем
         String userName = "";
+        QOffice office = null;
         boolean flag = true;
+
+        List<QOffice> offices = Spring.getInstance().getHt().findByCriteria(
+            DetachedCriteria.forClass(QOffice.class)
+                .add(Property.forName("deleted").isNull())
+                .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))
+        );
+
         while (flag) {
-            userName = (String) JOptionPane.showInputDialog(this, getLocaleMessage("admin.add_user_dialog.title"), getLocaleMessage("admin.add_user_dialog.caption"), 3, null, null, userName);
-            if (userName == null) {
-                return;
+            JTextField userNameTextField = new JTextField();
+            JComboBox officeDropdown = new JComboBox();
+
+            for (QOffice dropdownOffice : offices) {
+                officeDropdown.addItem(dropdownOffice);
             }
-            if ("".equals(userName)) {
-                JOptionPane.showConfirmDialog(this, getLocaleMessage("admin.add_user_dialog.err1.title"), getLocaleMessage("admin.add_user_dialog.err1.caption"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-            } else if (QUserList.getInstance().hasByName(userName)) {
-                JOptionPane.showConfirmDialog(this, getLocaleMessage("admin.add_user_dialog.err2.title"), getLocaleMessage("admin.add_user_dialog.err2.caption"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-            } else if (userName.indexOf('\"') != -1) {
-                JOptionPane.showConfirmDialog(this, getLocaleMessage("admin.add_user_dialog.err3.title"), getLocaleMessage("admin.add_user_dialog.err3.caption"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-            } else if (userName.length() > 150) {
-                JOptionPane.showConfirmDialog(this, getLocaleMessage("admin.add_user_dialog.err4.title"), getLocaleMessage("admin.add_user_dialog.err4.caption"), JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-            } else {
-                flag = false;
+
+            Object[] message = {
+                    "Username:", userNameTextField,
+                    "Office:", officeDropdown
+            };
+            int option = JOptionPane.showConfirmDialog(this, message, getLocaleMessage("admin.add_user_dialog.title"), JOptionPane.OK_CANCEL_OPTION);
+
+            if (option == JOptionPane.OK_OPTION) {
+                userName = userNameTextField.getText();
+                office = (QOffice) officeDropdown.getSelectedItem();
+
+                if ("".equals(userName)) {
+                    flag = true;
+                } else if (QUserList.getInstance().hasByName(userName)) {
+                    flag = true;
+                } else if (userName.indexOf('\"') != -1) {
+                    flag = true;
+                } else if (userName.length() > 150) {
+                    flag = true;
+                } else {
+                    flag = false;
+                }
+            } else if (option == JOptionPane.CANCEL_OPTION) {
+                return;
             }
         }
         QLog.l().logger().debug("Adding a user \"" + userName + "\"");
         final QUser user = new QUser();
         user.setPlanServices(new LinkedList<>());
         user.setName(userName);
+        user.setOffice(office);
         user.setPassword("");
         user.setPoint("");
         user.setAdressRS(32);
@@ -1451,6 +1522,7 @@ public class FAdmin extends javax.swing.JFrame {
     public void addService() throws DocumentException {
         // We will request the name of the service and if it is unique and not empty, then we will accept
         String serviceName = "";
+
         boolean flag = true;
         while (flag) {
             serviceName = (String) JOptionPane.showInputDialog(this, getLocaleMessage("admin.add_service_dialog.title"), getLocaleMessage("admin.add_service_dialog.caption"), 3, null, null, serviceName);
@@ -1688,6 +1760,7 @@ public class FAdmin extends javax.swing.JFrame {
 
                     // Сохраняем услуги
                     QServiceTree.getInstance().save();
+
                     // Сохраняем пользователей
                     QUserList.getInstance().save();
                     // Сохраняем инфоузлы
@@ -1696,6 +1769,9 @@ public class FAdmin extends javax.swing.JFrame {
                     QResponseTree.getInstance().save();
                     // Сохраняем результаты работы пользователя с клиентами
                     QResultList.getInstance().save();
+
+                    QLog.l().logger().debug("Saving offices");
+                    QOfficeList.getInstance().save();
                     QLog.l().logger().debug("The configuration was saved.");
                 } catch (Exception ex) {
                     QLog.l().logger().error("Error while saving \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
@@ -3012,6 +3088,52 @@ public class FAdmin extends javax.swing.JFrame {
 
         jSplitPane3.setLeftComponent(jPanel11);
 
+        jUserOfficePane = new javax.swing.JSplitPane();
+        popupOffice = new javax.swing.JPopupMenu();
+        jOfficePanel = new javax.swing.JPanel();
+        listOffices = new javax.swing.JList();
+        jOfficeScrollPane = new javax.swing.JScrollPane();
+        jAddOfficeButton = new javax.swing.JButton();
+        jDeleteOfficeButton = new javax.swing.JButton();
+
+        jOfficePanel.setName("jOfficePanel"); // NOI18N
+
+        jOfficeScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jPanelOffices.scrollPane.title"))); // NOI18N
+        jOfficeScrollPane.setName("jScrollPane1"); // NOI18N
+
+        listOffices.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listOffices.setComponentPopupMenu(popupOffice);
+        listOffices.setName("listOffices"); // NOI18N
+        jOfficeScrollPane.setViewportView(listOffices);
+
+        jAddOfficeButton.setAction(actionMap.get("addOffice")); // NOI18N
+        jAddOfficeButton.setName("jAddOfficeButton"); // NOI18N
+        jAddOfficeButton.setText(resourceMap.getString("jAddOfficeButton.text"));
+
+        jDeleteOfficeButton.setAction(actionMap.get("deleteOffice")); // NOI18N
+        jDeleteOfficeButton.setName("jDeleteOfficeButton"); // NOI18N
+        jDeleteOfficeButton.setText(resourceMap.getString("jDeleteOfficeButton.text"));
+
+        javax.swing.GroupLayout jOfficePanelLayout = new javax.swing.GroupLayout(jOfficePanel);
+        jOfficePanel.setLayout(jOfficePanelLayout);
+        jOfficePanelLayout.setHorizontalGroup(
+                jOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jOfficePanelLayout.createSequentialGroup()
+                                .addComponent(jAddOfficeButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                                .addComponent(jDeleteOfficeButton))
+                        .addComponent(jOfficeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+        );
+        jOfficePanelLayout.setVerticalGroup(
+                jOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jOfficePanelLayout.createSequentialGroup()
+                                .addComponent(jOfficeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jAddOfficeButton)
+                                        .addComponent(jDeleteOfficeButton)))
+        );
+
         jPanel27.setName("jPanel27"); // NOI18N
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("jScrollPane1.border.title"))); // NOI18N
@@ -3048,8 +3170,10 @@ public class FAdmin extends javax.swing.JFrame {
                     .addComponent(jButton2)))
         );
 
-        jSplitPane3.setRightComponent(jPanel27);
+        jUserOfficePane.setLeftComponent(jOfficePanel);
+        jUserOfficePane.setRightComponent(jPanel27);
 
+        jSplitPane3.setRightComponent(jUserOfficePane);
         jSplitPane1.setLeftComponent(jSplitPane3);
 
         jTabbedPane1.setName("jTabbedPane1"); // NOI18N
@@ -7205,5 +7329,13 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JTree treeResp;
     private javax.swing.JTree treeServices;
     private javax.swing.JList userServsList;
+
+    private javax.swing.JSplitPane jUserOfficePane;
+    private javax.swing.JPopupMenu popupOffice;
+    private javax.swing.JPanel jOfficePanel;
+    private javax.swing.JList listOffices;
+    private javax.swing.JScrollPane jOfficeScrollPane;
+    private javax.swing.JButton jAddOfficeButton;
+    private javax.swing.JButton jDeleteOfficeButton;
     // End of variables declaration//GEN-END:variables
 }

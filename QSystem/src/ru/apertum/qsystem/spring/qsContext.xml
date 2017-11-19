@@ -42,7 +42,9 @@
                 <!--prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop-->
                 <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
                 <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <prop key="use_sql_comments">false</prop>
+                <!-- <prop key="hibernate.type">trace</prop> -->
             </props>
         </property>
 		
@@ -53,7 +55,11 @@
                 <value>ru.apertum.qsystem.server.model.QStandards</value>
                 <value>ru.apertum.qsystem.server.model.QService</value>
                 <value>ru.apertum.qsystem.server.model.QServiceLang</value>
+                <!--
+                <value>ru.apertum.qsystem.server.model.QServiceOffice</value>
+                -->
                 <value>ru.apertum.qsystem.server.model.QUser</value>
+                <value>ru.apertum.qsystem.server.model.QOffice</value>
                 <value>ru.apertum.qsystem.common.model.QCustomer</value>
                 <value>ru.apertum.qsystem.server.model.QPlanService</value>
                 <value>ru.apertum.qsystem.reports.model.QReport</value>
@@ -71,11 +77,8 @@
                 <value>ru.apertum.qsystem.server.model.calendar.FreeDay</value>
             </list>
         </property>
-        
     </bean>
-	
-	
-	
+
     <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="mySessionFactory" />
     </bean>

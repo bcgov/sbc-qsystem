@@ -55,3 +55,9 @@ hs_err_pid*
 /functional-tests/build
 /functional-tests/.gradle
 /functional-tests/gebReports
+
+*.iml
+.idea
+.DS_Store
+.classpath
+.project

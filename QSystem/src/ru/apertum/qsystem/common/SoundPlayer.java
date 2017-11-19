@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.ObjectUtils;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.model.QService;
 
@@ -63,9 +65,12 @@ public class SoundPlayer implements Runnable {
      */
     public static void play(LinkedList<String> resourceList) {
         // и запускаем новый вычислительный поток (см. ф-ю run())
+        QLog.l().logQUser().debug("playThread");
         final Thread playThread = new Thread(new SoundPlayer(resourceList));
         //playThread.setDaemon(true);
+        QLog.l().logQUser().debug("setPriority");
         playThread.setPriority(Thread.NORM_PRIORITY);
+        QLog.l().logQUser().debug("start");
         playThread.start();
     }
 
@@ -588,11 +593,15 @@ public class SoundPlayer implements Runnable {
         }
 
         if (!(isFirst && gong == 3)) {
-            if (client) {
-                res.add(path + "client.wav");
-            }
-            if (cl_num) {
-                res.addAll(toSoundSimple2(path, clientNumber));
+            try {
+                if (client) {
+                    res.add(path + "client.wav");
+                }
+                if (cl_num) {
+                    res.addAll(toSoundSimple2(path, clientNumber));
+                }
+            } catch (NullPointerException e) {
+                QLog.l().logQUser().debug("Caught exception. Continue");
             }
             switch (go_to) {
                 case 1:

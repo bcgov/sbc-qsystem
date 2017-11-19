@@ -21,8 +21,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import ru.apertum.qsystem.common.CustomerState;
+import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.model.ATalkingClock;
 import ru.apertum.qsystem.common.model.QCustomer;
+import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
@@ -32,6 +34,10 @@ import ru.apertum.qsystem.server.model.QUser;
  * @author Evgeniy Egorov
  */
 abstract public class AIndicatorBoard implements IIndicatorBoard {
+
+    public AIndicatorBoard() {
+        QLog.l().logQUser().debug("Init AIndicatorBoard");
+    }
 
     /**
      * Количество строк на табло. Реализовать под конкретное табло.
@@ -98,6 +104,31 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
         final LinkedList<Record> res = new LinkedList<>();
         for (int j = 0; j < arr.size(); j++) {
             if (j >= startPos && j < startPos + getLinesCount()) {
+                res.add(arr.get(j));
+            }
+        }
+        return res;
+    }
+
+    protected LinkedList<Record> getShowRecords(QOffice office) {
+        ArrayList<Record> arr = new ArrayList<>(records.values());
+        // перевернуть массив, так как добавленные валятся в конец, а выводить их первыми
+        for (int i = 0; i < arr.size() / 2; i++) {
+            final Record a_i = arr.get(i);
+            arr.set(i, arr.get(arr.size() - 1 - i));
+            arr.set(arr.size() - 1 - i, a_i);
+        }
+
+        int pos = - 1; // позиция последнего не отвесевшего.
+        for (int i = 0; i < arr.size(); i++) {
+            if (!arr.get(i).isShowed()) {
+                pos = i;
+            }
+        }
+        final int startPos = (getLinesCountForOffice(office) - 1 > pos) ? 0 : pos - getLinesCountForOffice(office) + 1; // позиция первой строки на табло.
+        final LinkedList<Record> res = new LinkedList<>();
+        for (int j = 0; j < arr.size(); j++) {
+            if (j >= startPos && j < startPos + getLinesCountForOffice(office)) {
                 res.add(arr.get(j));
             }
         }
@@ -242,7 +273,7 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
             }
             addItem(rec);
         }
-        show(rec);
+        show(rec, user.getOffice());
     }
 
     /**
@@ -263,7 +294,7 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
                     user.getAdressRS(), getPause());
         }
         rec.setState(CustomerState.STATE_WORK);
-        show(rec);
+        show(rec, user.getOffice());
     }
 
     /**
@@ -278,7 +309,7 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
         if (rec != null) {
             rec.setState(CustomerState.STATE_DEAD);
             removeItem(rec);
-            show(rec);
+            show(rec, user.getOffice());
         }
     }
 
@@ -336,6 +367,11 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
         }
     }
 
+    protected void show(Record record, QOffice office) {
+        LinkedList<Record> newList = getShowRecords(office);
+        showOnBoardForOffice(newList, office);
+    }
+
     /**
      * При непосредственным выводом на табло нужно вызвать этот метод, чтоб промаркировать записи как начавшие висеть.
      *
@@ -356,6 +392,11 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
      * @param records Высвечиваемые записи.
      */
     abstract protected void showOnBoard(LinkedList<Record> records);
+
+
+    abstract protected void showOnBoardForOffice(LinkedList<Record> records, QOffice office);
+
+    abstract protected Integer getLinesCountForOffice(QOffice office);
 
     /**
      * Высветить запись на табло оператора.

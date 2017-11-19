@@ -22,19 +22,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.Transient;
+
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import ru.apertum.qsystem.common.CustomerState;
@@ -42,6 +32,8 @@ import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.server.model.calendar.QCalendar;
+import ru.apertum.qsystem.server.model.schedule.QSchedule;
 
 /**
  * Это пользователь. По большому счету роль и пользователь совпадают в системе. Класс пользователя системы.
@@ -299,6 +291,7 @@ public class QUser implements IidGetter, Serializable {
     public List<QPlanService> getPlanServices() {
         return planServices;
     }
+
     private QPlanServiceList planServiceList = new QPlanServiceList(new LinkedList<>());
 
     /**
@@ -309,6 +302,8 @@ public class QUser implements IidGetter, Serializable {
      */
     @Transient
     public QPlanServiceList getPlanServiceList() {
+        QLog.l().logQUser().debug("getPlanServiceList");
+        QLog.l().logQUser().debug(planServiceList);
         return planServiceList;
     }
 
@@ -318,6 +313,20 @@ public class QUser implements IidGetter, Serializable {
 
     public boolean hasService(QService service) {
         return hasService(service.getId());
+    }
+
+    @Expose
+    @SerializedName("office")
+    private QOffice office;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "office_id")
+    public QOffice getOffice() {
+        return office;
+    }
+
+    public void setOffice(QOffice office) {
+        this.office = office;
     }
 
     /**
@@ -515,8 +524,6 @@ public class QUser implements IidGetter, Serializable {
     public LinkedHashMap<Long, QCustomer> getParallelCustomers() {
         return parallelCustomers;
     }
-    
-
 
     /**
      * Типо не набрасывать сюда посетителей при маршрутизации в списке услуг.

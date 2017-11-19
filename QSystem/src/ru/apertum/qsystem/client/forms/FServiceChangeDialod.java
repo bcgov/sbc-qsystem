@@ -20,11 +20,8 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import javax.swing.ComboBoxModel;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
+import java.util.*;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.tree.TreeNode;
 import org.jdesktop.application.Application;
@@ -36,9 +33,7 @@ import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ClientException;
 import ru.apertum.qsystem.common.exceptions.ServerException;
-import ru.apertum.qsystem.server.model.QService;
-import ru.apertum.qsystem.server.model.QServiceLang;
-import ru.apertum.qsystem.server.model.QServiceTree;
+import ru.apertum.qsystem.server.model.*;
 import ru.apertum.qsystem.server.model.calendar.QCalendar;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
 
@@ -115,6 +110,22 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
         serviceChangeDialod.comboBoxCalendar.setModel(calendarModel);
         serviceChangeDialod.loadService(service);
         Uses.setLocation(serviceChangeDialod);
+
+        DefaultListModel officesAvailableModel = new DefaultListModel();
+        DefaultListModel officesSelectedModel = new DefaultListModel();
+
+        QOfficeList officeList = QOfficeList.getInstance();
+
+        for (QOffice office : officeList.getItems()) {
+            officesAvailableModel.addElement(office);
+        }
+
+        for (QOffice office : service.getOffices()) {
+            officesSelectedModel.addElement(office);
+        }
+
+        serviceChangeDialod.jOfficeAvailable.setModel(officesAvailableModel);
+        serviceChangeDialod.jOfficeSelected.setModel(officesSelectedModel);
         serviceChangeDialod.setVisible(true);
     }
 
@@ -304,6 +315,18 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
         service.setSoundTemplate(tmpl);
 
         service.setLink(getSelectedService());
+
+        //Delete the current list of offices
+        service.getOffices().clear();
+
+        ListModel model = jOfficeSelected.getModel();
+
+        //Add all of the new selected offices
+        for(int i=0; i<model.getSize(); i++) {
+            QOffice office = (QOffice) model.getElementAt(i);
+
+            service.getOffices().add(office);
+        }
     }
 
     private void setHide(boolean b) {
@@ -1209,6 +1232,57 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
 
         jTabbedPane1.addTab(resourceMap.getString("jPanel7.TabConstraints.tabTitle"), jPanel7); // NOI18N
 
+        jServiceOfficePanel = new javax.swing.JPanel();
+
+        jOfficeSelected = new javax.swing.JList();
+        jRemoveSelectedOfficeButton = new javax.swing.JButton();
+        jRemoveSelectedOfficeButton.setText("Remove Office");
+        jRemoveSelectedOfficeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRemoveSelectedOfficeButtonAction(evt);
+            }
+        });
+
+        jOfficeAvailable = new javax.swing.JList();
+        jAddSelectedOfficeButton = new javax.swing.JButton();
+        jAddSelectedOfficeButton.setText("Add Office");
+        jAddSelectedOfficeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jAddSelectedOfficeButtonAction(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jServiceOfficePanelLayout = new javax.swing.GroupLayout(jServiceOfficePanel);
+        jServiceOfficePanel.setLayout(jServiceOfficePanelLayout);
+        jServiceOfficePanelLayout.setHorizontalGroup(
+                jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jServiceOfficePanelLayout.createSequentialGroup()
+                                .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jOfficeSelected)
+                                        .addComponent(jRemoveSelectedOfficeButton))
+                                .addGap(18, 18, 18)
+                                .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jOfficeAvailable)
+                                        .addComponent(jAddSelectedOfficeButton))
+                                .addGap(18, 18, 18))
+        );
+
+        jServiceOfficePanelLayout.setVerticalGroup(
+                jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jServiceOfficePanelLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jOfficeSelected)
+                                        .addComponent(jOfficeAvailable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jRemoveSelectedOfficeButton)
+                                        .addComponent(jAddSelectedOfficeButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18))
+        );
+
+        jTabbedPane1.addTab("Map to Offices", jServiceOfficePanel);
+
         checkBoxBackoffice.setText(resourceMap.getString("checkBoxBackoffice.text")); // NOI18N
         checkBoxBackoffice.setName("checkBoxBackoffice"); // NOI18N
 
@@ -1424,6 +1498,24 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
         comboBoxServices.setSelectedItem(null);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jRemoveSelectedOfficeButtonAction(java.awt.event.ActionEvent evt){
+        QLog.l().logger().info("Removing office");
+
+        DefaultListModel model = (DefaultListModel) jOfficeSelected.getModel();
+        int selectedIndex = jOfficeSelected.getSelectedIndex();
+        if (selectedIndex != -1) {
+            model.remove(selectedIndex);
+        }
+    }
+
+    private void jAddSelectedOfficeButtonAction(java.awt.event.ActionEvent evt){
+        QLog.l().logger().info("Adding office");
+
+        DefaultListModel model = (DefaultListModel) jOfficeSelected.getModel();
+        QOffice officeToAdd = (QOffice) jOfficeAvailable.getSelectedValue();
+        model.addElement(officeToAdd);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton WysiwygButton;
     private javax.swing.ButtonGroup bgGo;
@@ -1529,5 +1621,11 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
     private javax.swing.JTextField textFieldTicketText;
     private javax.swing.JTextField tfID;
     private javax.swing.JTextField tfTabloText;
+
+    private javax.swing.JPanel jServiceOfficePanel;
+    private javax.swing.JList jOfficeSelected;
+    private javax.swing.JList jOfficeAvailable;
+    private javax.swing.JButton jRemoveSelectedOfficeButton;
+    private javax.swing.JButton jAddSelectedOfficeButton;
     // End of variables declaration//GEN-END:variables
 }

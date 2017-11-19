@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import org.dom4j.Element;
 import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.server.controller.AIndicatorBoard;
+import ru.apertum.qsystem.server.model.QOffice;
 
 /**
  * Класс для системы внешних табло Monitorium
@@ -96,6 +97,18 @@ public class QMonitoriumBoard extends AIndicatorBoard {
     @Override
     public Object getBoardForm() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void showOnBoardForOffice(LinkedList<Record> records, QOffice office) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Integer getLinesCountForOffice(QOffice office) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+
+        return 0;
     }
 
 }

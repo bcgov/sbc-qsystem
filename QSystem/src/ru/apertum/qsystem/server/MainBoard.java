@@ -44,11 +44,11 @@ public class MainBoard {
             // поддержка расширяемости плагинами
             IIndicatorBoard res = null;
             for (final IIndicatorBoard board : ServiceLoader.load(IIndicatorBoard.class)) {
-                QLog.l().logger().info("Вызов SPI расширения. Описание: " + board.getDescription());
+                QLog.l().logger().info("Creating mainboard: " + board.getDescription());
                 try {
                     res = board;
                 } catch (Throwable tr) {
-                    QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
+                    QLog.l().logger().error("Unable to create mainboard:  " + tr);
                 }
                 // раз напечатили и хорошь
                 if (res != null) {
@@ -58,9 +58,11 @@ public class MainBoard {
             if (res == null) {
                 final boolean bClassicType = IIndicatorBoard.CLASSIC.equalsIgnoreCase(ServerProps.getInstance().getProperty(IIndicatorBoard.SECTION, IIndicatorBoard.PARAMETER, IIndicatorBoard.CLASSIC));
                 if (bClassicType) {
+                    QLog.l().logger().info("QIndicatorBoardMonitor");
                     res = new QIndicatorBoardMonitor();
                     ((QIndicatorBoardMonitor) res).setConfigFile("config\\mainboard.xml");
                 } else {
+                    QLog.l().logger().info("Create QIndicatorHtmlboard");
                     res = new QIndicatorHtmlboard();
                 }
 
