@@ -1137,7 +1137,6 @@ public class Form{
         ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("");
         
         //  Reset focus, if not reception.
-        // xxx Start Here
         if (!getCFMSType()) {
           ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setFocus(true);
         }
