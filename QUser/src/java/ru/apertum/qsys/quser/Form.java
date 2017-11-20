@@ -168,7 +168,6 @@ public class Form{
     private QCustomer pickedCustomer;
     private QPlanService pickedService;
     private String oldSt = "";
-    private Combobox cboFmCompress;
     private String filter="";
     private List<QService> listServices;
 

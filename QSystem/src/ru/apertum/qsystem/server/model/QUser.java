@@ -19,11 +19,8 @@ package ru.apertum.qsystem.server.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.*;
 import javax.persistence.*;
-import java.util.List;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -291,6 +288,34 @@ public class QUser implements IidGetter, Serializable {
     //This is the truncation of the duplication when the table joins, since In QPlanService there is @OneToOne to QService, and there is @OneToMany to QServiceLang - it is duplicated by the number of translations.
     public List<QPlanService> getPlanServices() {
         return planServices;
+    }
+
+    public void addPlanServiceByOffice() {
+        QOffice currentOffice = this.office;
+
+        while(planServices.size() > 0) {
+            QPlanService qPlanService = planServices.get(0);
+            QLog.l().logQUser().debug("Deleting plan service: " + qPlanService);
+            deletePlanService(qPlanService.getService());
+        }
+
+        if (currentOffice != null) {
+            Set<QService> newUserServices = currentOffice.getServices();
+
+            for (QService s : newUserServices) {
+                boolean addService = true;
+                for (QPlanService qPlanService : planServices) {
+                    if (qPlanService.getService().getId() == s.getId()) {
+                        addService = false;
+                    }
+                }
+
+                if (addService) {
+                    addPlanService(s);
+                }
+            }
+        }
+        QLog.l().logQUser().debug("new count: " + servicesCnt);
     }
 
     private QPlanServiceList planServiceList = new QPlanServiceList(new LinkedList<>());

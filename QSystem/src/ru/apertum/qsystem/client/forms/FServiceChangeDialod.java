@@ -237,8 +237,13 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
                 cbGoNumber.setSelected(service.getSoundTemplate().endsWith("1"));
             }
         }
+
+        this.officesToAdd = new LinkedList<QOffice>();
+        this.officesToRemove = new LinkedList<QOffice>();
     }
     private QService service;
+    private List<QOffice> officesToAdd;
+    private List<QOffice> officesToRemove;
 
     private void saveService() {
         if ("".equals(textAreaButtonCaption.getText())) {
@@ -316,16 +321,35 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
 
         service.setLink(getSelectedService());
 
-        //Delete the current list of offices
-        service.getOffices().clear();
+        //Remove the requested offices
+        for (QOffice o : officesToRemove) {
+            QLog.l().logger().info("Removing office: " + o);
+            if (service.getOffices().contains(o)) {
+                QLog.l().logger().info("Service contains office to remove");
 
-        ListModel model = jOfficeSelected.getModel();
+                if (!officesToAdd.contains(o)) {
+                    QLog.l().logger().info("Office will not be re-added in next step... remove it!");
+                    service.getOffices().remove(o);
+                } else {
+                    QLog.l().logger().info("Office would be re-added in next step... continue");
+                }
 
-        //Add all of the new selected offices
-        for(int i=0; i<model.getSize(); i++) {
-            QOffice office = (QOffice) model.getElementAt(i);
+            } else {
+                QLog.l().logger().info("Service does not contain office, continue");
+            }
+        }
 
-            service.getOffices().add(office);
+        //Add the requested offices
+        for (QOffice o : officesToAdd) {
+            QLog.l().logger().info("Adding office: " + o);
+
+            if (!service.getOffices().contains(o)) {
+                QLog.l().logger().info("Service does not already have office... add it!");
+                service.getOffices().add(o);
+            } else {
+                QLog.l().logger().info("Service already has office... continue");
+            }
+
         }
     }
 
@@ -1252,33 +1276,75 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
             }
         });
 
+        jServiceOfficeButtonPanel = new javax.swing.JPanel();
+        jAddAllOfficesButton = new javax.swing.JButton();
+        jAddAllOfficesButton.setText("Add All Offices");
+        jAddAllOfficesButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jAddAllOfficesButtonAction(evt);
+            }
+        });
+        jRemoveAllOfficesButton = new javax.swing.JButton();
+        jRemoveAllOfficesButton.setText("Remove All Offices");
+        jRemoveAllOfficesButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRemoveAllOfficesButtonAction(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jServiceOfficeButtonPanelLayout = new javax.swing.GroupLayout(jServiceOfficeButtonPanel);
+        jServiceOfficeButtonPanel.setLayout(jServiceOfficeButtonPanelLayout);
+        jServiceOfficeButtonPanelLayout.setHorizontalGroup(
+            jServiceOfficeButtonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jServiceOfficeButtonPanelLayout.createSequentialGroup())
+                    .addGroup(jServiceOfficeButtonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jAddAllOfficesButton)
+                        .addComponent(jRemoveAllOfficesButton))
+        );
+
+        jServiceOfficeButtonPanelLayout.setVerticalGroup(
+                jServiceOfficeButtonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jServiceOfficeButtonPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jServiceOfficeButtonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jAddAllOfficesButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGap(18, 18, 18)
+                    .addGroup(jServiceOfficeButtonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jRemoveAllOfficesButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+
         javax.swing.GroupLayout jServiceOfficePanelLayout = new javax.swing.GroupLayout(jServiceOfficePanel);
         jServiceOfficePanel.setLayout(jServiceOfficePanelLayout);
         jServiceOfficePanelLayout.setHorizontalGroup(
-                jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jServiceOfficePanelLayout.createSequentialGroup()
-                                .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jOfficeSelected)
-                                        .addComponent(jRemoveSelectedOfficeButton))
-                                .addGap(18, 18, 18)
-                                .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jOfficeAvailable)
-                                        .addComponent(jAddSelectedOfficeButton))
-                                .addGap(18, 18, 18))
+            jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jServiceOfficePanelLayout.createSequentialGroup()
+                    .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jOfficeSelected, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jRemoveSelectedOfficeButton))
+                    .addGap(18, 18, 18)
+                    .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jOfficeAvailable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jAddSelectedOfficeButton))
+                    .addGap(18, 18, 18)
+                    .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jServiceOfficeButtonPanel))
+                    .addGap(18, 18, 18)
+                )
         );
 
         jServiceOfficePanelLayout.setVerticalGroup(
-                jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jServiceOfficePanelLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jOfficeSelected)
-                                        .addComponent(jOfficeAvailable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jRemoveSelectedOfficeButton)
-                                        .addComponent(jAddSelectedOfficeButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18))
+            jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jServiceOfficePanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jOfficeSelected, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jOfficeAvailable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jServiceOfficeButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(18, 18, 18)
+                    .addGroup(jServiceOfficePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jRemoveSelectedOfficeButton)
+                        .addComponent(jAddSelectedOfficeButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(18, 18, 18))
         );
 
         jTabbedPane1.addTab("Map to Offices", jServiceOfficePanel);
@@ -1499,21 +1565,60 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jRemoveSelectedOfficeButtonAction(java.awt.event.ActionEvent evt){
-        QLog.l().logger().info("Removing office");
-
         DefaultListModel model = (DefaultListModel) jOfficeSelected.getModel();
         int selectedIndex = jOfficeSelected.getSelectedIndex();
+        QOffice officeToRemove = (QOffice) jOfficeSelected.getSelectedValue();
         if (selectedIndex != -1) {
             model.remove(selectedIndex);
+        }
+        officesToRemove.add(officeToRemove);
+
+        //Remove the office from the "Add" list, if it exists there
+        if (officesToAdd.contains(officeToRemove)) {
+            officesToAdd.remove(officeToRemove);
         }
     }
 
     private void jAddSelectedOfficeButtonAction(java.awt.event.ActionEvent evt){
-        QLog.l().logger().info("Adding office");
-
         DefaultListModel model = (DefaultListModel) jOfficeSelected.getModel();
         QOffice officeToAdd = (QOffice) jOfficeAvailable.getSelectedValue();
         model.addElement(officeToAdd);
+        officesToAdd.add(officeToAdd);
+
+        //Remove the office from the "Remove" list, if it exists there
+        if (officesToRemove.contains(officeToAdd)) {
+            officesToRemove.remove(officeToAdd);
+        }
+    }
+
+    private void jAddAllOfficesButtonAction(java.awt.event.ActionEvent evt) {
+        DefaultListModel availableModel = (DefaultListModel) jOfficeAvailable.getModel();
+        DefaultListModel selectedModel = (DefaultListModel) jOfficeSelected.getModel();
+
+        for(int i=0; i < availableModel.getSize(); i++) {
+            QOffice officeToAdd = (QOffice) availableModel.getElementAt(i);
+
+            if (!selectedModel.contains(officeToAdd)) {
+                selectedModel.addElement(officeToAdd);
+                officesToAdd.add(officeToAdd);
+            }
+        }
+
+        //Clear the remove list, since we're adding all of the offices
+        officesToRemove = new LinkedList<QOffice>();
+    }
+
+    private void jRemoveAllOfficesButtonAction(java.awt.event.ActionEvent evt) {
+        DefaultListModel selectedModel = (DefaultListModel) jOfficeSelected.getModel();
+
+        while(selectedModel.getSize() > 0) {
+            QOffice officeToRemove = (QOffice) selectedModel.getElementAt(0);
+            selectedModel.removeElement(officeToRemove);
+            officesToRemove.add(officeToRemove);
+        }
+
+        //Clear the add list, since we're removing all of the offices
+        officesToAdd = new LinkedList<QOffice>();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1627,5 +1732,8 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
     private javax.swing.JList jOfficeAvailable;
     private javax.swing.JButton jRemoveSelectedOfficeButton;
     private javax.swing.JButton jAddSelectedOfficeButton;
+    private javax.swing.JPanel jServiceOfficeButtonPanel;
+    private javax.swing.JButton jAddAllOfficesButton;
+    private javax.swing.JButton jRemoveAllOfficesButton;
     // End of variables declaration//GEN-END:variables
 }

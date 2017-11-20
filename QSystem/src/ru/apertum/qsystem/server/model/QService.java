@@ -1185,7 +1185,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         this.langs = langs;
     }
 
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = { CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(
             name = "services_offices",
             joinColumns = { @JoinColumn(name = "service_id") },

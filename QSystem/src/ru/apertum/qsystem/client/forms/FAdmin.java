@@ -17,6 +17,7 @@
 package ru.apertum.qsystem.client.forms;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.client.model.PropsTableModel;
@@ -1356,6 +1357,7 @@ public class FAdmin extends javax.swing.JFrame {
         List<QOffice> offices = Spring.getInstance().getHt().findByCriteria(
             DetachedCriteria.forClass(QOffice.class)
                 .add(Property.forName("deleted").isNull())
+                    .setFetchMode("services", FetchMode.EAGER)
                 .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))
         );
 
@@ -1400,6 +1402,7 @@ public class FAdmin extends javax.swing.JFrame {
         user.setPassword("");
         user.setPoint("");
         user.setAdressRS(32);
+        user.addPlanServiceByOffice();
         QUserList.getInstance().addElement(user);
         listUsers.setSelectedValue(user, true);
     }
@@ -1770,9 +1773,7 @@ public class FAdmin extends javax.swing.JFrame {
                     // Сохраняем результаты работы пользователя с клиентами
                     QResultList.getInstance().save();
 
-                    QLog.l().logger().debug("Saving offices");
                     QOfficeList.getInstance().save();
-                    QLog.l().logger().debug("The configuration was saved.");
                 } catch (Exception ex) {
                     QLog.l().logger().error("Error while saving \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
                     status.setRollbackOnly();

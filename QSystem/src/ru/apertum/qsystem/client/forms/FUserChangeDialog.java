@@ -19,13 +19,18 @@ package ru.apertum.qsystem.client.forms;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
+import javax.persistence.FetchType;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import org.jdesktop.application.Application;
@@ -34,8 +39,7 @@ import ru.apertum.qsystem.QSystem;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.server.Spring;
-import ru.apertum.qsystem.server.model.QOffice;
-import ru.apertum.qsystem.server.model.QUser;
+import ru.apertum.qsystem.server.model.*;
 
 /**
  *
@@ -91,6 +95,7 @@ public class FUserChangeDialog extends javax.swing.JDialog {
         offices = Spring.getInstance().getHt().findByCriteria(
                 DetachedCriteria.forClass(QOffice.class)
                         .add(Property.forName("deleted").isNull())
+                        .setFetchMode("services", FetchMode.EAGER)
                         .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))
         );
 
@@ -125,7 +130,6 @@ public class FUserChangeDialog extends javax.swing.JDialog {
         QOffice newOffice = (QOffice) userChangeDialod.tfOfficeDropdown.getSelectedItem();
 
         user.setPoint(userChangeDialod.textFieldUserIdent.getText());
-        user.setOffice(newOffice);
         user.setAdressRS((Integer) userChangeDialod.spinnerUserZone.getValue());
         user.setPointExt(userChangeDialod.taExtPoint.getText());
         user.setTabloText(userChangeDialod.tfTabloText.getText());
@@ -133,6 +137,22 @@ public class FUserChangeDialog extends javax.swing.JDialog {
         user.setAdminAccess(userChangeDialod.checkBoxAdmin.isSelected());
         user.setReportAccess(userChangeDialod.checkBoxReport.isSelected());
         user.setParallelAccess(userChangeDialod.checkBoxParallel.isSelected());
+
+        QOffice currentOffice = user.getOffice();
+
+        if (!currentOffice.equals(newOffice)) {
+            user.setOffice(newOffice);
+
+            List<QPlanService> planServices = user.getPlanServices();
+
+            while (planServices.size() > 0) {
+                user.deletePlanService(planServices.get(0).getService().getId());
+            }
+
+            for (QService s : newOffice.getServices()) {
+                user.addPlanService(s);
+            }
+        }
     }
 
     /**
