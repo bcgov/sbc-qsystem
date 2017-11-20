@@ -171,6 +171,11 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
         } else {
             comboBoxCalendar.getModel().setSelectedItem(service.getCalendar());
         }
+        if ("Y".equals(service.getSmartboard())) {
+            jServiceSmartboardYnCheckbox.setSelected(true);
+        } else {
+            jServiceSmartboardYnCheckbox.setSelected(false);
+        }
         checkBoxInputRequired.setSelected(service.getInput_required());
         textFieldInputCaption.setText(service.getInput_caption());
         cbRequaredAsColumnExt.setSelected(service.getInputedAsExt());
@@ -294,6 +299,11 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
         }
         service.setSchedule((QSchedule) comboBoxSchedule.getModel().getSelectedItem());
         service.setCalendar((QCalendar) comboBoxCalendar.getModel().getSelectedItem());
+        if (jServiceSmartboardYnCheckbox.isSelected()) {
+            service.setSmartboard("Y");
+        } else {
+            service.setSmartboard("N");
+        }
         service.setInput_required(checkBoxInputRequired.isSelected());
         service.setInput_caption(textFieldInputCaption.getText());
         service.setInputedAsExt(cbRequaredAsColumnExt.isSelected());
@@ -538,6 +548,9 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
         buttonSave = new javax.swing.JButton();
         buttonCancel = new javax.swing.JButton();
 
+        jServiceSmartboardYnCheckbox = new javax.swing.JCheckBox();
+        jServiceSmartboardYnCheckbox.setText("Display for SmartBoards?");
+
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FServiceChangeDialod.class);
         jLabel13.setText(resourceMap.getString("jLabel13.text")); // NOI18N
         jLabel13.setName("jLabel13"); // NOI18N
@@ -696,6 +709,7 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
                                     .addGroup(jPanel3Layout.createSequentialGroup()
                                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(checkBoxResultRequired)
+                                            .addComponent(jServiceSmartboardYnCheckbox)
                                             .addGroup(jPanel3Layout.createSequentialGroup()
                                                 .addComponent(jLabel8)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -790,6 +804,8 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
                     .addComponent(jLabel26)
                     .addComponent(spinnerExpectation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel25))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jServiceSmartboardYnCheckbox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(checkBoxResultRequired)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -1726,6 +1742,8 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
     private javax.swing.JTextField textFieldTicketText;
     private javax.swing.JTextField tfID;
     private javax.swing.JTextField tfTabloText;
+
+    private javax.swing.JCheckBox jServiceSmartboardYnCheckbox;
 
     private javax.swing.JPanel jServiceOfficePanel;
     private javax.swing.JList jOfficeSelected;
