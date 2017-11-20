@@ -20,6 +20,7 @@ import java.util.Collections;
 import javax.swing.table.AbstractTableModel;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
+import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
@@ -37,6 +38,7 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.InputEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -1170,10 +1172,24 @@ public class Form{
         this.filter = filter;
     }
     
+    private String filterCa="";
+    
+    public String getFilterCa() {
+        return filterCa;
+    }
+    
+    @NotifyChange
+    public void setFilterCa(String filterCa) {
+        this.filterCa = filterCa;
+    }
+    
+    
     @NotifyChange("listServices")
     @Command    
-    public void changeCategory(){
+    public void changeCategory(InputEvent event){
         ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText( "" );
+//        String Category_Search = "";
+//        Category_Search = ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).getValue().toString();   
         
         LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
         List<QService> requiredServices = null;
@@ -1182,18 +1198,54 @@ public class Form{
             QLog.l().logQUser().debug("null category was selected");
             requiredServices = allServices
                     .stream()
-                    .filter((QService service) -> service.getParentId()!=null  && !service.getParentId().equals(1L))
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).getValue().toLowerCase()))  && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
+                    QLog.l().logQUser().debug("The getvalue() returns : \n");
+
         } else {
             QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
             requiredServices = allServices
                     .stream()
-                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase()) || service.getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && !service.getParentId().equals(1L))
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(pickedMainService.getName().toLowerCase())) && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
         }
         
         listServices = requiredServices;
     }
+    
+    
+    //Andrew 
+    //onChanging category updates the category searching algorithm, searching while typing
+    @NotifyChange("listServices")
+    @Command
+    public void changingCategory(@BindingParam("v") String value, @ContextParam(ContextType.TRIGGER_EVENT) InputEvent event){
+
+//        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText( "" ); 
+        listServices.clear();
+        LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
+        List<QService> requiredServices = null;
+
+        if (getPickedMainService() == null){
+            QLog.l().logQUser().debug("null category was selected");
+            requiredServices = allServices
+                    .stream()
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(event.getValue().toLowerCase()))  && !service.getParentId().equals(1L))
+                    .collect(Collectors.toList());
+//                    QLog.l().logQUser().debug("IN CHANGING The getvalue() returns : \n" + event.getValue().toLowerCase());
+//                    QLog.l().logQUser().debug("IN CHANGING The getvalue() returns : \n" + requiredServices);
+
+        } else {
+            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            requiredServices = allServices
+                    .stream()
+                    .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(event.getValue().toLowerCase())) && !service.getParentId().equals(1L))
+                    .collect(Collectors.toList());
+        }
+        
+        listServices = requiredServices;
+    }
+    
+    
     
     @NotifyChange("listServices")
     @Command
@@ -1353,7 +1405,7 @@ public class Form{
             final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
             
             this.addToQueue(params);
-            QLog.l().logQUser().debug("\n\n\nWELCOME TIME:\n" + user.getCustomerWelcomeTime() +  "\n\n");
+//            QLog.l().logQUser().debug("\n\n\nWELCOME TIME:\n" + user.getCustomerWelcomeTime() +  "\n\n");
             
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
