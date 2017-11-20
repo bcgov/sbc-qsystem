@@ -23,6 +23,7 @@ import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.controller.AIndicatorBoard;
 import ru.apertum.qsystem.server.model.QOffice;
+import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
@@ -76,6 +77,13 @@ public class QSBoard extends AIndicatorBoard {
     public synchronized void inviteCustomer(QUser user, QCustomer customer) {
         QLog.l().logQUser().debug("QSBoard: inviteCustomer");
         super.inviteCustomer(user, customer);
+
+        //Only set invited sound if the service is smartboard enabled
+        QService service = customer.getService();
+        if (!"Y".equals(service.getSmartboard())) {
+            QLog.l().logQUser().debug("Smartboard not enabled for service, return");
+            return;
+        }
         getPrintRecordsByOffice(user.getOffice()).setInvited(true);
     }
 

@@ -25,6 +25,7 @@ import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.model.ATalkingClock;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.model.QOffice;
+import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
@@ -255,6 +256,14 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
 
     @Override
     public synchronized void inviteCustomer(QUser user, QCustomer customer) {
+        QService service = customer.getService();
+
+        //Only set invited sound if the service is smartboard enabled
+        if (!"Y".equals(service.getSmartboard())) {
+            QLog.l().logQUser().debug("Smartboard not enabled for service, return");
+            return;
+        }
+
         Record rec = records.get(user.getName());
         if (rec == null) {
             rec = new Record(user.getName(), user.getPoint(), customer.getPrefix(), customer.getNumber(),

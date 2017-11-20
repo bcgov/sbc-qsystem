@@ -295,6 +295,7 @@ public final class Executer {
 
                 // Должно высветитьсяна основном табло в таблице ближайших
                 // Must be highlighted on the main scoreboard in the nearest table
+                QLog.l().logQUser().debug("AddCustomerTask MainBoard standIn");
                 MainBoard.getInstance().customerStandIn(customer);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
@@ -526,6 +527,7 @@ public final class Executer {
                         || user.getCustomer().getState() == CustomerState.STATE_WAIT_COMPLEX_SERVICE)) {
                     SoundPlayer.inviteClient(user.getCustomer().getService(), user.getCustomer().getPrefix() + user.getCustomer().getNumber(), user.getPoint(), isFrst);
                     // Должно высветитьсяна основном табло :: Must be highlighted on the main board
+                    QLog.l().logQUser().debug("inviteCustomerTask MainBoard inviteCustomer");
                     MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
                     
 //                    QLog.l().logger().debug("CUSTOMER HEREERERERE  _inside loop\n\n" + user.getCustomer() + "\n\n\n");
@@ -802,7 +804,7 @@ public final class Executer {
                 // Должно высветитьсяна основном табло
                 // send out an alert that a visitor has been called
                 // Must be highlighted on the main display
-                QLog.l().logQUser().debug("MainBoard");
+                QLog.l().logQUser().debug("invitePostponedTask MainBoard invite");
                 MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
                 //разослать оповещение о том, что отложенного вызвали, состояние очереди изменилось не изменилось, но пул отложенных изменился
                 //рассылаем широковещетельно по UDP на определенный порт
@@ -1165,6 +1167,7 @@ public final class Executer {
                 //QServer.savePool();
                 //разослать оповещение о том, что посетитель откланен
                 // Должно подтереться основном табло
+                QLog.l().logQUser().debug("killCustomerTask MainBoard kill");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
@@ -1190,6 +1193,7 @@ public final class Executer {
             user.getCustomer().setPostponPeriod(0);
             // кастомер переходит в состояние "Начала обработки" или "Продолжение работы"
             user.getCustomer().setState(user.getCustomer().getState() == CustomerState.STATE_INVITED ? CustomerState.STATE_WORK : CustomerState.STATE_WORK_SECONDARY);
+            QLog.l().logQUser().debug("getStartCustomerTask MainBoard work");
             MainBoard.getInstance().workCustomer(user);
             // сохраняем состояния очередей.
 
@@ -1236,6 +1240,7 @@ public final class Executer {
                 // Должно высветитьсяна основном табло
                 // send out an alert that a visitor has been called
                 // Must be highlighted on the main display
+                QLog.l().logQUser().debug("startCustomerTask MainBoard invite");
                 MainBoard.getInstance().inviteCustomer(user, customer);
                
                 //разослать оповещение о том, что отложенного вызвали, состояние очереди изменилось не изменилось, но пул отложенных изменился
@@ -1308,6 +1313,7 @@ public final class Executer {
 
                 // Должно высветитьсяна основном табло в таблице ближайших
                 // Must be highlighted on the main scoreboard in the nearest table
+                QLog.l().logQUser().debug("customerReturnQueueTask MainBoard standInf");
                 MainBoard.getInstance().customerStandIn(customer);
             } catch (Throwable t) {
                 QLog.l().logger().error("return to queue error", t);
@@ -1365,6 +1371,7 @@ public final class Executer {
                 //разослать оповещение о том, что посетитель отложен
                 Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL, ServerProps.getInstance().getProps().getClientPort());
                 //рассылаем широковещетельно по UDP на определенный порт. Должно высветитьсяна основном табло
+                QLog.l().logQUser().debug("customerToPostponeTask MainBoard kill");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Throwable t) {
                 QLog.l().logger().error("Загнулось под конец.", t);
@@ -1509,6 +1516,7 @@ public final class Executer {
                 //QServer.savePool();
                 //разослать оповещение о том, что посетитель откланен
                 //рассылаем широковещетельно по UDP на определенный порт. Должно высветитьсяна основном табло
+                QLog.l().logQUser().debug("getFinishCustomerTask MainBoard kill");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
@@ -1609,6 +1617,7 @@ public final class Executer {
                 Uses.sendUDPBroadcast(oldService.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
                 //разослать оповещение о том, что посетитель откланен
                 //рассылаем широковещетельно по UDP на определенный порт. Должно подтереться на основном табло
+                QLog.l().logQUser().debug("redirectCustomerTask MainBoard kill");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
