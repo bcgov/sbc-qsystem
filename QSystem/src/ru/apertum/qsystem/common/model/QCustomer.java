@@ -350,7 +350,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
             // Crutch. If the customizer left a comment before getting into the database, ie. While working with him.
             if (resps.size() > 0) {
-                QLog.l().logQUser().info("saving response");
                 Spring.getInstance().getHt().saveAll(resps);
                 resps.clear();
             }
@@ -379,8 +378,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     @Transient
     public IPriority getPriority() {
-        QLog.l().logQUser().debug(priority);
-        QLog.l().logQUser().debug("make new priority");
         return new Priority(priority);
     }
     

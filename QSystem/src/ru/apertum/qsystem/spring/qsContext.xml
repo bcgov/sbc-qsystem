@@ -55,9 +55,6 @@
                 <value>ru.apertum.qsystem.server.model.QStandards</value>
                 <value>ru.apertum.qsystem.server.model.QService</value>
                 <value>ru.apertum.qsystem.server.model.QServiceLang</value>
-                <!--
-                <value>ru.apertum.qsystem.server.model.QServiceOffice</value>
-                -->
                 <value>ru.apertum.qsystem.server.model.QUser</value>
                 <value>ru.apertum.qsystem.server.model.QOffice</value>
                 <value>ru.apertum.qsystem.common.model.QCustomer</value>

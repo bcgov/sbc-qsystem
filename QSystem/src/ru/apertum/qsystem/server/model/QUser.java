@@ -329,7 +329,6 @@ public class QUser implements IidGetter, Serializable {
     @Transient
     public QPlanServiceList getPlanServiceList() {
         QLog.l().logQUser().debug("getPlanServiceList");
-        QLog.l().logQUser().debug(planServiceList);
         return planServiceList;
     }
 

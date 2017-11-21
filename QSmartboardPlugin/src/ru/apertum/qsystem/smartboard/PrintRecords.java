@@ -28,6 +28,7 @@ import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
+ * Keeps track of the state of a smartboard for a specific office.
  *
  * @author Evgeniy Egorov
  */

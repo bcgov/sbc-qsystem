@@ -16,8 +16,6 @@
  */
 package ru.apertum.qsystem.server.model;
 
-import ru.apertum.qsystem.common.QLog;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -37,8 +35,6 @@ public class QPlanServiceList extends AbstractListModel implements List {
     private final List<QPlanService> services;
 
     public List<QPlanService> getServices() {
-        QLog.l().logQUser().debug("getPlanServiceList");
-        QLog.l().logQUser().debug(services);
         return services;
     }
 

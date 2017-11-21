@@ -65,12 +65,9 @@ public class SoundPlayer implements Runnable {
      */
     public static void play(LinkedList<String> resourceList) {
         // и запускаем новый вычислительный поток (см. ф-ю run())
-        QLog.l().logQUser().debug("playThread");
         final Thread playThread = new Thread(new SoundPlayer(resourceList));
         //playThread.setDaemon(true);
-        QLog.l().logQUser().debug("setPriority");
         playThread.setPriority(Thread.NORM_PRIORITY);
-        QLog.l().logQUser().debug("start");
         playThread.start();
     }
 

@@ -959,40 +959,6 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         return customer;
     }
 
-    public void refreshClients(QOffice office) {
-        for (QCustomer c : getCustomers()) {
-            QLog.l().logQUser().debug(c);
-        }
-
-/*        final LinkedList<QCustomer> dbCustomers = new LinkedList<QCustomer>(Spring.getInstance().getHt().findByCriteria(
-                DetachedCriteria.forClass(QCustomer.class)
-                        .add(Property.forName("stateIn").ne(0))
-                        .add(Property.forName("stateIn").ne(10))
-                        .add(Property.forName("stateIn").ne(13))
-                        .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
-
-        QLog.l().logQUser().debug("Current queue");
-        for (QCustomer cust : getCustomers()) {
-            QLog.l().logQUser().debug(cust);
-        }
-        QLog.l().logQUser().debug("====================");
-
-        for (QCustomer cust : dbCustomers) {
-            QLog.l().logQUser().debug(cust);
-            if (!getCustomers().contains(cust)) {
-                QLog.l().logQUser().debug("User doesn't exist. Adding user into the queue");
-                cust.setPriority(0);
-                Integer state = cust.getStateIn();
-                cust.setState(state);
-
-                addCustomer(cust);
-            }
-        }*/
-
-        return;
-
-    }
-
     /**
      * Удалить любого в очереди кастомера.
      * Remove any in the queue of the customizer.

@@ -154,7 +154,6 @@
 <!--                 <div width="720px" style="background-color:#003366;">
                 </div> -->
                 <label sclass="toolbar-items" value="${c:l('versions')}"/>
-                <!--<timer id="timer_customer_list" delay="2000" repeats="true" running="true" onTimer="@command('syncCustomerList')"/>-->
                 <!-- label=   "version 0.2" -->
             </toolbar>
         </south>
