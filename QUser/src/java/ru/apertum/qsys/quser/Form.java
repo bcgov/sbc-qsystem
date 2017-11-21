@@ -1138,6 +1138,11 @@ public class Form{
         ((Textbox) addTicketDailogWindow.getFellow("ticket_comments")).setText("");
         ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("");
         
+        //  Reset focus, if not reception.
+        if (!getCFMSType()) {
+          ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setFocus(true);
+        }
+        
         listServices = getAllListServices();
         pickedMainService=null;
         BindUtils.postNotifyChange(null, null, Form.this, "listServices");
