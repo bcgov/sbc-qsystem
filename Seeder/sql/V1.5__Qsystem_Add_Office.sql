@@ -80,3 +80,5 @@ CREATE TABLE `services_offices` (
 );
 
 ALTER TABLE `qsystem`.`services` ADD COLUMN smartboard_yn char(1) NOT NULL DEFAULT 'Y';
+
+ALTER TABLE `qsystem`.`clients` ADD COLUMN comments varchar(2500);

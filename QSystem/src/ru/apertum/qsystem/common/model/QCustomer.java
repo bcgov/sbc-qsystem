@@ -17,7 +17,7 @@
 package ru.apertum.qsystem.common.model;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.*;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -32,13 +32,9 @@ import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.results.QResult;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.util.Arrays;
-import java.util.Date;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.ServiceLoader;
-import java.util.TimeZone;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -342,6 +338,13 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 //                /Here is the same zhed by the pull of the pull to set the contention that the entered data is not zero, and they rarely need this input
                 input_data = "";
             }
+
+            List<Integer> finishStates = Arrays.asList(0, 10, 13);
+            if (finishStates.contains(getStateIn())) {
+                QLog.l().logQUser().info("Client is in finish state, clear comments...");
+                setTempComments("");
+            }
+
             Spring.getInstance().getHt().saveOrUpdate(this);
             QLog.l().logQUser().info("Saved customer");
             // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
@@ -652,7 +655,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @SerializedName("temp_comments")
     private String tempComments = "";
 
-    @Transient
+    @Column(name = "comments")
     public String getTempComments() {
         return tempComments;
     }

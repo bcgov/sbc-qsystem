@@ -170,6 +170,7 @@ public class Form{
     private String oldSt = "";
     private String filter="";
     private List<QService> listServices;
+    private String officeName = "";
 
     public String l(String resName) {
         return Labels.getLabel(resName);
@@ -283,10 +284,15 @@ public LinkedList<QService> getPreviousList(){
             }
         } else {
             setKeyRegim(KEYS_MAY_INVITE);
-
         }
 
+        QUser quser = user.getUser();
+
+        if (quser != null) {
+            officeName = user.getUser().getOffice().getName();
+        }
     }
+
     @Wire("#incClientDashboard #incGAManagementDialog #GAManagementDialog")
     Window GAManagementDialogWindow;
     
@@ -341,6 +347,7 @@ public LinkedList<QService> getPreviousList(){
             }
         }
         // тут уже ретурн может быть и есть There may already be a rethurn
+        officeName = "";
 
     }
     
@@ -1436,26 +1443,5 @@ public void Sort() {
     public void refreshQuantity(){      
         customer = user.getUser().getCustomer();
         customer.setQuantity("1");
-    }
-
-    @Command
-    public void syncCustomerList() {
-        QLog.l().logQUser().debug("syncCustomerList");
-
-        if (this.user == null) {
-            return;
-        }
-
-        QUser qUser = this.user.getUser();
-
-        if (qUser == null) {
-            return;
-        }
-        QOffice office = qUser.getOffice();
-
-        for(QService s : listServices) {
-            s.refreshClients(office);
-        }
-        return;
     }
 }

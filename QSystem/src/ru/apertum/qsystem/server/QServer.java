@@ -439,7 +439,7 @@ public class QServer extends Thread {
 
             QLog.l().logQUser().debug("Adding customer to serviceTree");
             QLog.l().logQUser().debug("setPriority");
-            cust.setPriority(0);
+            cust.setPriority(1);
 
             QLog.l().logQUser().debug("setState");
             QLog.l().logQUser().debug(cust.getStateIn());
