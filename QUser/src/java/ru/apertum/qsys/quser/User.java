@@ -3,14 +3,12 @@ package ru.apertum.qsys.quser;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.zkoss.util.resource.Labels;
-import ru.apertum.qsystem.server.model.QPlanService;
-import ru.apertum.qsystem.server.model.QServiceTree;
-import ru.apertum.qsystem.server.model.QUser;
-import ru.apertum.qsystem.server.model.QUserList;
+import ru.apertum.qsystem.server.model.*;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.model.QCustomer;
-import ru.apertum.qsystem.server.model.QService;
 
 public class User {
 
@@ -91,15 +89,33 @@ public class User {
     }
     
     public void setCustomerList(List<QPlanService> planServices) {
+
+        QOffice userOffice = this.getUser().getOffice();
         while (!customerList.isEmpty()) {
             customerList.removeFirst();
         }
         planServices.forEach((QPlanService p) -> {
             QService ser = QServiceTree.getInstance().getById(p.getService().getId());
-                    ser.getClients().stream().forEach((c) -> {
-                        customerList.add(c);
-                });            
+            ser.getClients().stream().forEach((c) -> {
+                if (c.getOffice().equals(userOffice)) {
+                    customerList.add(c);
+                }
+            });
         });
+    }
+
+    private LinkedList<QCustomer> filterCustomerList(LinkedList<QCustomer> customers) {
+        QOffice userOffice = this.user.getOffice();
+
+        if (userOffice != null) {
+            customers = customers
+                    .stream()
+                    .filter((QCustomer c) -> (c.getUser() == null ||
+                            c.getUser().getOffice().equals(userOffice)))
+                    .collect(Collectors.toCollection(LinkedList::new));
+        }
+
+        return customers;
     }
     
     public LinkedList<QCustomer> getCustomerList(){
@@ -107,13 +123,37 @@ public class User {
     }
 
 
-    public int getLineSize(long serviceId) {      
-        return QServiceTree.getInstance().getById(serviceId).getCountCustomers();
+    public int getLineSize(long serviceId) {
+        QUser u = this.getUser();
+
+        if (u != null) {
+            return QServiceTree.getInstance()
+                    .getById(serviceId)
+                    .getCountCustomersByOffice(u.getOffice());
+        } else {
+            return QServiceTree.getInstance()
+                    .getById(serviceId)
+                    .getCountCustomers();
+        }
     }
 
     public int getTotalLineSize() {
         int total = 0;
-        total = plan.stream().map((plan1) -> QServiceTree.getInstance().getById(plan1.getService().getId()).getCountCustomers()).reduce(total, Integer::sum);
+        QUser u = this.getUser();
+
+        if (u != null) {
+            total = plan.stream()
+                    .map((plan1) -> QServiceTree.getInstance()
+                            .getById(plan1.getService().getId())
+                            .getCountCustomersByOffice(u.getOffice()))
+                    .reduce(total, Integer::sum);
+        } else {
+            total = plan.stream()
+                    .map((plan1) -> QServiceTree.getInstance()
+                            .getById(plan1.getService().getId())
+                            .getCountCustomers())
+                    .reduce(total, Integer::sum);
+        }
         return total;
     }
 

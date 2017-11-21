@@ -13,7 +13,7 @@
 		</center>
 		<east border="2">
             <div width="100%" height="100%" style="@load(fmodel.rightVisible)">
-                <timer id="timer_ses" delay="0" repeats="true" running="true" onTimer="@command('clickMe')"/>
+                <timer id="timer_ses" delay="1000" repeats="true" running="true" onTimer="@command('clickMe')"/>
                 <!--button label="add item" w:onClick="DHTMLSound();"/-->
                 <!--button label="Click me" onClick="@command('clickMe')"/-->	
                 <columnlayout width="@load(fmodel.rightSize)" height="100%">
@@ -46,16 +46,16 @@
             <div width="100%" height="100%">
                   <columnlayout width="100%" height="100%">
                     <columnchildren id="bottom_center1" width="100%" style="@load(fmodel.customerDisplay)">
-					<div width="100%">
-                        <hbox align="center" pack="center" hflex="1" vflex="1"> 
-                            <label style="font-size: 2em;" value="Currently waiting:"  />
-                            <label style="font-size: 2em;" value="@load(fmodel.customersCount)"  />
-                        </hbox>
-					</div>
-                        <timer id="timer_service_list" delay="1" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
-                    </columnchildren> 
+                        <div width="100%">
+                            <hbox align="center" pack="center" hflex="1" vflex="1">
+                                <label style="font-size: 2em;" value="Currently waiting:"  />
+                                <label style="font-size: 2em;" value="@load(fmodel.customersCount)"  />
+                            </hbox>
+                        </div>
+                        <timer id="timer_service_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
+                        </columnchildren>
 					<columnchildren id="bottom_center2" width="100%">
-							<iframe scrolling="false" id="3" src="@load(fmodel.bottomUrl)" width="100%" />
+                        <iframe scrolling="false" id="3" src="@load(fmodel.bottomUrl)" width="100%" />
 					</columnchildren> 
                 </columnlayout>                
             </div>		

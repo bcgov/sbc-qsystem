@@ -23,6 +23,9 @@ import java.util.LinkedList;
 import javax.swing.DefaultListModel;
 import javax.swing.Timer;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
@@ -30,7 +33,9 @@ import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.ServerProps;
+import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.controller.Executer;
+import ru.apertum.qsystem.server.model.QUser;
 
 /**
  *
@@ -39,22 +44,18 @@ import ru.apertum.qsystem.server.controller.Executer;
 public class QPostponedList extends DefaultListModel {
 
     public QPostponedList loadPostponedList(LinkedList<QCustomer> customers) {
+        QLog.l().logQUser().debug("loadPostponedList");
         clear();
-        for (QCustomer cust : customers) {
+        final LinkedList<QCustomer> dbCustomers = new LinkedList<QCustomer>(
+                Spring.getInstance().getHt().findByCriteria(
+                DetachedCriteria.forClass(QCustomer.class)
+                        .add(Property.forName("stateIn").eq(11))
+                        .add(Property.forName("stateIn").eq(12))
+                        .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
 
-            boolean fl = true;
-            for (int i = 0; i < size(); i++) {
-                final QCustomer inn = (QCustomer) get(i);
-                if (inn.getPostponedStatus().compareTo(cust.getPostponedStatus()) > 0) {
-                    add(i, cust);
-                    fl = false;
-                    break;
-                }
-            }
-            if (fl) {
-                addElement(cust);
-            }
-
+        for (QCustomer cust : dbCustomers) {
+            QLog.l().logQUser().debug("addCustomer: " + cust);
+            addElement(cust);
         }
         return this;
     }

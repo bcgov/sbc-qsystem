@@ -37,6 +37,7 @@ import ru.apertum.qsystem.common.exceptions.ClientException;
 import ru.apertum.qsystem.server.model.ATreeModel;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QServiceTree;
+import ru.apertum.qsystem.server.model.QUser;
 
 /**
  * Диалог получения названия услуги для переадресации и сопутствующих параметров. Created on 29 Сентябрь 2008 г., 10:30 Класс диалоговой формы с выбором
@@ -152,6 +153,7 @@ public class FRedirect extends JDialog {
         protected LinkedList<QService> load() {
             return list;
         }
+
     }
     private final HashMap<String, Long> ids = new HashMap<>();
 

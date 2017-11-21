@@ -153,7 +153,7 @@
                 <toolbarbutton sclass="toolbar-items" label="Powered by Government of British Columbia" href="gww.gov.bc.ca" target="_blank" />
 <!--                 <div width="720px" style="background-color:#003366;">
                 </div> -->
-                <label sclass="toolbar-items" value="${c:l('versions')}"/> 
+                <label sclass="toolbar-items" value="${c:l('versions')}"/>
                 <!-- label=   "version 0.2" -->
             </toolbar>
         </south>

@@ -44,11 +44,9 @@ public class MainBoard {
             // поддержка расширяемости плагинами
             IIndicatorBoard res = null;
             for (final IIndicatorBoard board : ServiceLoader.load(IIndicatorBoard.class)) {
-                QLog.l().logger().info("Вызов SPI расширения. Описание: " + board.getDescription());
                 try {
                     res = board;
                 } catch (Throwable tr) {
-                    QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
                 }
                 // раз напечатили и хорошь
                 if (res != null) {

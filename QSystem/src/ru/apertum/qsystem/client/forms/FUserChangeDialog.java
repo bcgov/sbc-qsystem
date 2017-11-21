@@ -19,15 +19,27 @@ package ru.apertum.qsystem.client.forms;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
+import javax.persistence.FetchType;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.server.model.QUser;
+import ru.apertum.qsystem.server.Spring;
+import ru.apertum.qsystem.server.model.*;
 
 /**
  *
@@ -76,8 +88,26 @@ public class FUserChangeDialog extends javax.swing.JDialog {
             userChangeDialod = new FUserChangeDialog(parent, modal);
         }
 
+        QLog.l().logger().info("Office: " + user.getOffice().getName());
+        QOffice userOffice = user.getOffice();
+
+        //Reload to office dropdown in case it has been updated
+        offices = Spring.getInstance().getHt().findByCriteria(
+                DetachedCriteria.forClass(QOffice.class)
+                        .add(Property.forName("deleted").isNull())
+                        .setFetchMode("services", FetchMode.EAGER)
+                        .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))
+        );
+
+        userChangeDialod.tfOfficeDropdown.removeAllItems();
+
+        for(QOffice office : offices) {
+            userChangeDialod.tfOfficeDropdown.addItem(office);
+        }
+
         userChangeDialod.tfUserName.setText(user.getName());
         userChangeDialod.tfUserId.setText(user.getId() == null ? "" : user.getId().toString());
+        userChangeDialod.tfOfficeDropdown.setSelectedItem(user.getOffice());
         userChangeDialod.textFieldUserIdent.setText(user.getPoint());
         userChangeDialod.spinnerUserZone.setValue(user.getAdressRS());
         userChangeDialod.taExtPoint.setText(user.getPointExt());
@@ -94,8 +124,11 @@ public class FUserChangeDialog extends javax.swing.JDialog {
     }
 
     private QUser user;
+    private static List<QOffice> offices;
 
     private void saveUser() {
+        QOffice newOffice = (QOffice) userChangeDialod.tfOfficeDropdown.getSelectedItem();
+
         user.setPoint(userChangeDialod.textFieldUserIdent.getText());
         user.setAdressRS((Integer) userChangeDialod.spinnerUserZone.getValue());
         user.setPointExt(userChangeDialod.taExtPoint.getText());
@@ -104,6 +137,22 @@ public class FUserChangeDialog extends javax.swing.JDialog {
         user.setAdminAccess(userChangeDialod.checkBoxAdmin.isSelected());
         user.setReportAccess(userChangeDialod.checkBoxReport.isSelected());
         user.setParallelAccess(userChangeDialod.checkBoxParallel.isSelected());
+
+        QOffice currentOffice = user.getOffice();
+
+        if (!currentOffice.equals(newOffice)) {
+            user.setOffice(newOffice);
+
+            List<QPlanService> planServices = user.getPlanServices();
+
+            while (planServices.size() > 0) {
+                user.deletePlanService(planServices.get(0).getService().getId());
+            }
+
+            for (QService s : newOffice.getServices()) {
+                user.addPlanService(s);
+            }
+        }
     }
 
     /**
@@ -126,6 +175,9 @@ public class FUserChangeDialog extends javax.swing.JDialog {
         taExtPoint = new javax.swing.JTextArea();
         tfUserName = new javax.swing.JTextField();
         tfUserId = new javax.swing.JTextField();
+        tfOfficeDropdown = new javax.swing.JComboBox<>();
+
+        labelOfficeDropdown = new javax.swing.JLabel();
         tfTabloText = new javax.swing.JTextField();
         labelTabloText = new javax.swing.JLabel();
         UserPermitionsPanel = new javax.swing.JPanel();
@@ -168,6 +220,7 @@ public class FUserChangeDialog extends javax.swing.JDialog {
         tfUserId.setText("null");
 
         labelTabloText.setText(resourceMap.getString("tablo_text")); // NOI18N
+        labelOfficeDropdown.setText("Office");
 
         javax.swing.GroupLayout MainUserPropsPanelLayout = new javax.swing.GroupLayout(MainUserPropsPanel);
         MainUserPropsPanel.setLayout(MainUserPropsPanelLayout);
@@ -179,15 +232,17 @@ public class FUserChangeDialog extends javax.swing.JDialog {
                     .addGroup(MainUserPropsPanelLayout.createSequentialGroup()
                         .addGroup(MainUserPropsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel3))
+                            .addComponent(jLabel3)
+                            .addComponent(labelOfficeDropdown))
                         .addGap(18, 18, 18)
                         .addGroup(MainUserPropsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(tfUserName)
-                            .addComponent(tfUserId)))
+                            .addComponent(tfUserId)
+                            .addComponent(tfOfficeDropdown)))
                     .addGroup(MainUserPropsPanelLayout.createSequentialGroup()
-                        .addComponent(labelTabloText)
-                        .addGap(18, 18, 18)
-                        .addComponent(tfTabloText))
+                            .addComponent(labelTabloText)
+                            .addGap(18, 18, 18)
+                            .addComponent(tfTabloText))
                     .addGroup(MainUserPropsPanelLayout.createSequentialGroup()
                         .addGroup(MainUserPropsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(MainUserPropsPanelLayout.createSequentialGroup()
@@ -214,7 +269,10 @@ public class FUserChangeDialog extends javax.swing.JDialog {
                 .addGroup(MainUserPropsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(tfUserId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addGap(18, 18, 18)
+                .addGroup(MainUserPropsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelOfficeDropdown)
+                    .addComponent(tfOfficeDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)).addGap(18, 18, 18)
                 .addGroup(MainUserPropsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(textFieldUserIdent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -354,11 +412,13 @@ public class FUserChangeDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelTabloText;
+    private javax.swing.JLabel labelOfficeDropdown;
     private javax.swing.JPasswordField passwordFieldUser;
     private javax.swing.JSpinner spinnerUserZone;
     private javax.swing.JTextArea taExtPoint;
     private javax.swing.JTextField textFieldUserIdent;
     private javax.swing.JTextField tfTabloText;
+    private javax.swing.JComboBox tfOfficeDropdown;
     private javax.swing.JTextField tfUserId;
     private javax.swing.JTextField tfUserName;
     // End of variables declaration//GEN-END:variables

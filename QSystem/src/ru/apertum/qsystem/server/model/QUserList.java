@@ -39,7 +39,9 @@ public class QUserList extends ATListModel<QUser> {
     protected LinkedList<QUser> load() {
         final LinkedList<QUser> users = new LinkedList<>(
                 Spring.getInstance().getHt().findByCriteria(
-                        DetachedCriteria.forClass(QUser.class).add(Property.forName("deleted").isNull()).setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
+                        DetachedCriteria.forClass(QUser.class)
+                                .add(Property.forName("deleted").isNull())
+                                .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
         users.stream().forEach((qUser) -> {
             qUser.setServicesCnt(qUser.getPlanServiceList().getSize());
         });

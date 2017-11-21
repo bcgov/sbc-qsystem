@@ -32,27 +32,21 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.PriorityQueue;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.Transient;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+
+import org.hibernate.Criteria;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import ru.apertum.qsystem.client.Locales;
 import ru.apertum.qsystem.common.CustomerState;
@@ -90,6 +84,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     private PriorityQueue<QCustomer> getCustomers() {
         return customers;
     }
+
     @Transient
     //@Expose
     //@SerializedName("clients")
@@ -529,6 +524,17 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         return getName().trim().isEmpty() ? "<NO_NAME>" : getName();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj != null && obj instanceof QService) {
+            final QService o = (QService) obj;
+            return (id == null ? o.getId() == null : id.equals(o.getId()))
+                    && (name == null ? o.getName() == null : name.equals(o.getName()));
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Получить номер для сделующего кастомера. Произойдет инкремент счетчика номеров.
      *
@@ -808,9 +814,15 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
      * @param customer это кастомер которого добавляем в очередь к услуге
      */
     public void addCustomer(QCustomer customer) {
+        QLog.l().logQUser().debug("addCustomer");
         if (customer.getPrefix() == null) {
+            QLog.l().logQUser().debug("Set Prefix");
             customer.setPrefix(getPrefix());
         }
+        if (customer == null) {
+            QLog.l().logQUser().debug("customer is null");
+        }
+        QLog.l().logQUser().debug(customer.getPriority());
         if (!getCustomers().add(customer)) {
             throw new ServerException("Невозможно добавить нового кастомера в хранилище кастомеров.");
         }
@@ -921,6 +933,32 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         return customer;
     }
 
+    public QCustomer polCustomerByOffice(QOffice office) {
+        QLog.l().logQUser().debug("polCustomerByOffice");
+        PriorityQueue<QCustomer> customers = getCustomers();
+        QCustomer customer = null;
+
+        for (Iterator<QCustomer> itr = customers.iterator(); itr.hasNext();) {
+            final QCustomer cust = itr.next();
+            if (cust.getOffice().equals(office)) {
+                customer = cust;
+                break;
+            }
+        }
+
+        if (customer != null) {
+            // поддержка расширяемости плагинами
+            for (final ICustomerChangePosition event : ServiceLoader.load(ICustomerChangePosition.class)) {
+                QLog.l().logQUser().debug("Removing user out of the queue");
+                event.remove(customer);
+            }
+        }
+
+        clients.clear();
+        clients.addAll(getCustomers());
+        return customer;
+    }
+
     /**
      * Удалить любого в очереди кастомера.
      * Remove any in the queue of the customizer.
@@ -947,9 +985,22 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
      *
      * @return количество кастомеров в этой услуге
      */
-    public int getCountCustomers() {         
-         return getCustomers().size();
-         
+    public int getCountCustomers() {
+        return getCustomers().size();
+    }
+
+    public int getCountCustomersByOffice(QOffice office) {
+        PriorityQueue<QCustomer> customers = getCustomers();
+        int count = 0;
+
+        for (Iterator<QCustomer> itr = customers.iterator(); itr.hasNext();) {
+            final QCustomer c = itr.next();
+            if (c.getOffice().equals(office)) {
+                count += 1;
+            }
+        }
+
+        return count;
     }
 
     public boolean changeCustomerPriorityByNumber(String number, int newPriority) {
@@ -1061,7 +1112,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public void setLink(QService link) {
         this.link = link;
     }
-
+    
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "schedule_id")
     private QSchedule schedule;
@@ -1073,6 +1124,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public void setSchedule(QSchedule schedule) {
         this.schedule = schedule;
     }
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "calendar_id")
     private QCalendar calendar;
@@ -1084,6 +1136,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public void setCalendar(QCalendar calendar) {
         this.calendar = calendar;
     }
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "services_id")
     @Expose
@@ -1097,6 +1150,32 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public void setLangs(Set<QServiceLang> langs) {
         this.langs = langs;
     }
+
+    @ManyToMany(cascade = { CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "services_offices",
+            joinColumns = { @JoinColumn(name = "service_id") },
+            inverseJoinColumns = { @JoinColumn(name = "office_id") }
+    )
+    private Set<QOffice> offices = new HashSet<>();
+
+    public Set<QOffice> getOffices() {
+        return offices;
+    }
+
+    @Expose
+    @SerializedName("smartboard")
+    @Column(name = "smartboard_yn")
+    private String smartboard;
+
+    public void setSmartboard(String smartboard) {
+        this.smartboard = smartboard;
+    }
+
+    public String getSmartboard() {
+        return smartboard;
+    }
+
     @Transient
     private HashMap<String, QServiceLang> qslangs = null;
 

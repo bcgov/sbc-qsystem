@@ -443,6 +443,7 @@ public final class FClient extends javax.swing.JFrame {
      * @throws AWTException
      */
     public FClient(QUser user, final IClientNetProperty netProperty) throws AWTException {
+        QLog.l().logQUser().debug("FClient");
         this.user = user;
         this.netProperty = netProperty;
         // инициализим trayIcon, т.к. setSituation() требует работу с tray
@@ -467,6 +468,7 @@ public final class FClient extends javax.swing.JFrame {
     }
 
     private void init(QUser user, final IClientNetProperty netProperty) {
+        QLog.l().logQUser().debug("init");
         addWindowListener(new WindowListener() {
 
             @Override
@@ -703,7 +705,15 @@ public final class FClient extends javax.swing.JFrame {
      * @param plan - ситуация в XML
      */
     public void setSituation(SelfSituation plan) {
-        QLog.l().logger().trace("Обновляем видимую ситуацию.");
+        QLog.l().logger().info("Set situation?");
+
+        if (plan.getParallelList().size() == 0) {
+            QLog.l().logger().info("parallelList is zero");
+        }
+
+        for (QCustomer cu : plan.getParallelList()) {
+            QLog.l().logger().info(cu);
+        }
         refreshTime = System.currentTimeMillis();
         if (plan.getSelfservices() == null) {
             return;
@@ -903,6 +913,7 @@ public final class FClient extends javax.swing.JFrame {
      */
     @Action
     public void inviteNextCustomer(ActionEvent evt) {
+        QLog.l().logQUser().debug("inviteNextCustomer");
         try {
             final long start = go();
             // Вызываем кастомера
@@ -931,6 +942,7 @@ public final class FClient extends javax.swing.JFrame {
      */
     @Action
     public void killCustomer(ActionEvent evt) {
+        QLog.l().logQUser().debug("killCustomer");
         try {
             if (customer.getService().getExpectation() != 0 && (new Date().getTime() - customer.getStandTime().getTime()) / 1000 / 60 < customer.getService().getExpectation()) {
                 if (fkill) {
@@ -981,6 +993,7 @@ public final class FClient extends javax.swing.JFrame {
      */
     @Action
     public void getStartCustomer(ActionEvent evt) {
+        QLog.l().logQUser().debug("getStartCustomer");
         try {
             final long start = go();
             // Переводим кастомера в разряд обрабатываемых
@@ -1003,6 +1016,7 @@ public final class FClient extends javax.swing.JFrame {
      */
     @Action
     public void getStopCustomer(ActionEvent evt) {
+        QLog.l().logQUser().debug("getStopCustomer");
         try {
             //Обозначим результат если требуется
             final long start = go();
@@ -1046,6 +1060,7 @@ public final class FClient extends javax.swing.JFrame {
      */
     @Action
     public void redirectCustomer(ActionEvent evt) {
+        QLog.l().logQUser().debug("redirectCustomer");
         try {
             final long start = go();
             // Обозначим результат если надо

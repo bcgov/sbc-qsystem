@@ -24,9 +24,11 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Properties;
 import ru.apertum.qsystem.server.controller.AIndicatorBoard;
+import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
+ * Keeps track of the state of a smartboard for a specific office.
  *
  * @author Evgeniy Egorov
  */
@@ -48,6 +50,7 @@ public class PrintRecords {
     private String customerDisplay="padding:0px";
     private String display = "";
     private QUser user = null;
+    private QOffice office;
 
     public int getLinesCount() {
         return linesCount;
@@ -99,56 +102,60 @@ public class PrintRecords {
     
     public String getCustomerDisplay() {        
         return customerDisplay;
-    }    
+    }
+
+    public QOffice getOffice() {
+        return office;
+    }
     
-    public PrintRecords() {
-		String qsb = System.getenv ("QSB");
-		File f = new File("config/QSmartboardPlugin.properties");
-		if (qsb.equalsIgnoreCase("callbyticket")) {
-			f = new File("config/QSmartboardPlugin-original.properties");
-		};
-		if (qsb.equalsIgnoreCase("callbyname")) {
-			f = new File("config/QSmartboardPlugin-name.properties");
-		};		
-		if (f.exists()) {
-            final FileInputStream inStream;
-            try {
-                inStream = new FileInputStream(f);
-            } catch (FileNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
-            final Properties settings = new Properties();
-            try {
-                settings.load(new InputStreamReader(inStream, "UTF-8"));
-            } catch (IOException ex) {
-                throw new RuntimeException("Cant read version. " + ex);
-            }
+    public PrintRecords(QOffice office) {
+        this.office = office;
+        String qsb = "";
 
-            linesCount = Integer.parseInt(settings.getProperty("lines_count", "6"));
-            topSize = settings.getProperty("top.size").matches("^-?\\d+(%|px)$") ? settings.getProperty("top.size") : "0px";
-            topUrl = settings.getProperty("top.url");
-            leftSize = settings.getProperty("left.size").matches("^-?\\d+(%|px)$") ? settings.getProperty("left.size") : "0px";
-            leftUrl = settings.getProperty("left.url");
-            rightSize = settings.getProperty("right.size").matches("^-?\\d+(%|px)$") ? settings.getProperty("right.size") : "0px";
-            rightUrl = settings.getProperty("right.url");
-            bottomSize = settings.getProperty("bottom.size").matches("^-?\\d+(%|px)$") ? settings.getProperty("bottom.size") : "0px";
-            bottomUrl = settings.getProperty("bottom.url");
-
-            columnFirst = settings.getProperty("column.first");
-            columnSecond = settings.getProperty("column.second");
-            columnExt = settings.getProperty("column.ext");
-            customerDisplay = settings.getProperty("customer.display");  
+        if (office != null) {
+            qsb = office.getSmartboardType();
         }
-    }
 
-       
-    public static PrintRecords getInstance() {
-        return PrintRecordsHolder.INSTANCE;
-    }
+        if (qsb != null && !qsb.isEmpty()) {
+            File f = new File("config/QSmartboardPlugin.properties");
+            if (qsb.equalsIgnoreCase("callbyticket")) {
+                f = new File("config/QSmartboardPlugin-original.properties");
+            }
 
-    private static class PrintRecordsHolder {
+            if (qsb.equalsIgnoreCase("callbyname")) {
+                f = new File("config/QSmartboardPlugin-name.properties");
+            }
 
-        private static final PrintRecords INSTANCE = new PrintRecords();
+            if (f.exists()) {
+                final FileInputStream inStream;
+                try {
+                    inStream = new FileInputStream(f);
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+                final Properties settings = new Properties();
+                try {
+                    settings.load(new InputStreamReader(inStream, "UTF-8"));
+                } catch (IOException ex) {
+                    throw new RuntimeException("Cant read version. " + ex);
+                }
+
+                linesCount = Integer.parseInt(settings.getProperty("lines_count", "6"));
+                topSize = settings.getProperty("top.size").matches("^-?\\d+(%|px)$") ? settings.getProperty("top.size") : "0px";
+                topUrl = settings.getProperty("top.url");
+                leftSize = settings.getProperty("left.size").matches("^-?\\d+(%|px)$") ? settings.getProperty("left.size") : "0px";
+                leftUrl = settings.getProperty("left.url");
+                rightSize = settings.getProperty("right.size").matches("^-?\\d+(%|px)$") ? settings.getProperty("right.size") : "0px";
+                rightUrl = settings.getProperty("right.url");
+                bottomSize = settings.getProperty("bottom.size").matches("^-?\\d+(%|px)$") ? settings.getProperty("bottom.size") : "0px";
+                bottomUrl = settings.getProperty("bottom.url");
+
+                columnFirst = settings.getProperty("column.first");
+                columnSecond = settings.getProperty("column.second");
+                columnExt = settings.getProperty("column.ext");
+                customerDisplay = settings.getProperty("customer.display");
+            }
+        }
     }
 
     private LinkedList<AIndicatorBoard.Record> records = new LinkedList<>();
@@ -177,6 +184,9 @@ public class PrintRecords {
         
     public void setCurrentUser(QUser user) {
         this.user = user;
-    }    
-  
+    }
+
+    public void setOffice(QOffice office) {
+        this.office = office;
+    }
 }

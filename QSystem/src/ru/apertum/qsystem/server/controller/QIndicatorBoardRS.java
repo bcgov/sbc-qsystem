@@ -29,6 +29,7 @@ import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.common.model.QCustomer;
+import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.evgenic.rxtx.serialPort.ISerialPort;
 
@@ -334,5 +335,16 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
     @Override
     public void showBoard() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void showOnBoardForOffice(LinkedList<Record> records, QOffice office) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Integer getLinesCountForOffice(QOffice office) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        return 0;
     }
 }

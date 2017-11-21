@@ -17,7 +17,7 @@
 package ru.apertum.qsystem.common.model;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.*;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -25,18 +25,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.results.QResult;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.util.Arrays;
-import java.util.Date;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.ServiceLoader;
-import java.util.TimeZone;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -146,7 +144,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             case STATE_BACK:
                 return "Comes back after redirect";
             case STATE_FINISH:
-                return "Finsihed";
+                return "Finished";
             case STATE_POSTPONED:
                 return "Postponed";
             case STATE_POSTPONED_REDIRECT:
@@ -174,6 +172,60 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         setState(state, new Long(-1));
     }
 
+    public void setState(Integer state) {
+        CustomerState customerState = CustomerState.STATE_DEAD;
+
+        switch(state) {
+            case 0:
+                customerState = CustomerState.STATE_DEAD;
+                break;
+            case 1:
+                customerState = CustomerState.STATE_WAIT;
+                break;
+            case 2:
+                customerState = CustomerState.STATE_WAIT_AFTER_POSTPONED;
+                break;
+            case 3:
+                customerState = CustomerState.STATE_WAIT_COMPLEX_SERVICE;
+                break;
+            case 4:
+                customerState = CustomerState.STATE_INVITED;
+                break;
+            case 5:
+                customerState = CustomerState.STATE_INVITED_SECONDARY;
+                break;
+            case 6:
+                customerState = CustomerState.STATE_REDIRECT;
+                break;
+            case 7:
+                customerState = CustomerState.STATE_WORK;
+                break;
+            case 8:
+                customerState = CustomerState.STATE_WORK_SECONDARY;
+                break;
+            case 9:
+                customerState = CustomerState.STATE_BACK;
+                break;
+            case 10:
+                customerState = CustomerState.STATE_FINISH;
+                break;
+            case 11:
+                customerState = CustomerState.STATE_POSTPONED;
+                break;
+            case 12:
+                customerState = CustomerState.STATE_POSTPONED_REDIRECT;
+                break;
+            case 13:
+                customerState = CustomerState.STATE_INACCURATE_TIME;
+                break;
+            default:
+                customerState = CustomerState.STATE_DEAD;
+                break;
+        }
+        QLog.l().logQUser().debug(customerState);
+        setState(customerState);
+    }
+
     /**
      * Специально для редиректа и возврата после редиректа
      *
@@ -186,7 +238,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         stateIn = state.ordinal();
 
         // можно будет следить за тенью кастомера у юзера и за его изменениями
-        if (getUser() != null) {
+        if (getUser() != null && getUser().getShadow() != null) {
             getUser().getShadow().setCustomerState(state);
         }
 
@@ -198,7 +250,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 // только финиш_тайм надо проставить, хер сним, и старт_тайм тоже, ядренбатон
                 setStartTime(new Date());
                 setFinishTime(new Date());
-                saveToSelfDB();
                 break;
             case STATE_WAIT:
                 QLog.l().logger().debug("Статус: Кастомер пришел и ждет с номером \"" + getPrefix() + getNumber() + "\"");
@@ -219,7 +270,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 QLog.l().logger().debug("Статус: Кастомера редиректили с номером \"" + getPrefix() + getNumber() + "\"");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе
-                saveToSelfDB();
                 this.refreshQuantity();
                 break;
             case STATE_WORK:
@@ -236,28 +286,24 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
-                saveToSelfDB();
                 break;
             case STATE_POSTPONED:
                 QLog.l().logger().debug("Кастомер с номером \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
-                saveToSelfDB();
                 break;
             case STATE_POSTPONED_REDIRECT:
                 QLog.l().logger().debug("Customer to postpone prefix \"" + getPrefix() + getNumber() + "\" идет ждать в список отложенных");
                 startTime = standTime;
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
-//                saveToSelfDB();
                 break;
             case STATE_INACCURATE_TIME:
                 QLog.l().logger().debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber() + "\" закончили работать");
                 getUser().getPlanService(getService()).inkWorked(new Date().getTime() - getStartTime().getTime());
-                
-                saveToSelfDB();
                 break;
         }
+        saveToSelfDB();
 
         // поддержка расширяемости плагинами :: Support extensibility plug-ins
         for (final IChangeCustomerStateEvent event : ServiceLoader.load(IChangeCustomerStateEvent.class)) {
@@ -277,6 +323,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         resps.add(event);
     }
 
+    public void save() {
+        saveToSelfDB();
+    }
+
     private void saveToSelfDB() {
         // сохраним кастомера в базе
         final DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -288,7 +338,15 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 //                /Here is the same zhed by the pull of the pull to set the contention that the entered data is not zero, and they rarely need this input
                 input_data = "";
             }
+
+            List<Integer> finishStates = Arrays.asList(0, 10, 13);
+            if (finishStates.contains(getStateIn())) {
+                QLog.l().logQUser().info("Client is in finish state, clear comments...");
+                setTempComments("");
+            }
+
             Spring.getInstance().getHt().saveOrUpdate(this);
+            QLog.l().logQUser().info("Saved customer");
             // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
             // Crutch. If the customizer left a comment before getting into the database, ie. While working with him.
             if (resps.size() > 0) {
@@ -594,7 +652,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @SerializedName("temp_comments")
     private String tempComments = "";
 
-    @Transient
+    @Column(name = "comments")
     public String getTempComments() {
         return tempComments;
     }
@@ -703,12 +761,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public String toString() {
         return getFullNumber()
                 + (getInput_data().isEmpty() ? "" : " " + getInput_data())
-                + (postponedStatus.isEmpty() ? "" : " " + postponedStatus + (postponPeriod > 0 ? " (" + postponPeriod + "min.)" : "")
+                + ((postponedStatus == null || postponedStatus.isEmpty()) ? "" : " " + postponedStatus + (postponPeriod > 0 ? " (" + postponPeriod + "min.)" : "")
                         + (isMine != null ? " Private!" : ""));
     }
 
-
-        
     @Transient
     @Override
     public String getName() {
@@ -756,9 +812,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 //        customer = user.getUser().getCustomer();
         this.setQuantity("1");
     }
-    
-    
-    
+
     @Expose
     @SerializedName("channels")
     private String channels;
@@ -773,8 +827,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setChannels(String c){
         this.channels = c;
     }
-    
-    
+
     @Expose
     @SerializedName("channelsIndex")
     private int channelsIndex;
@@ -789,8 +842,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setChannelsIndex(int c){
         this.channelsIndex = c;
     }
-    
-    
 
     private LinkedList<QService> PreviousList = new LinkedList<>();
     
@@ -808,5 +859,19 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         this.PreviousList = null;
         
     };
+
+    @Expose
+    @SerializedName("office")
+    private QOffice office;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "office_id")
+    public QOffice getOffice() {
+        return office;
+    }
+
+    public void setOffice(QOffice office) {
+        this.office = office;
+    }
 
 }
