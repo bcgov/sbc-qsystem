@@ -39,7 +39,7 @@ node('maven') {
 
    stage('verify') {
         if (!params.quickPush) {
-            openshiftVerifyDeployment depCfg: 'qsystem', namespace: 'servicebc-customer-flow-dev', verbose: 'true'
+            openshiftVerifyDeployment depCfg: 'qsystem-mt', namespace: 'servicebc-customer-flow-dev', verbose: 'true'
         }
    }
 
@@ -48,12 +48,12 @@ node('maven') {
             dir('functional-tests'){
                 try {
                     TEST_USERNAME = sh (
-                                script: 'oc env bc/qsystem --list | awk  -F  "=" \'/TEST_USERNAME/{print $2}\'',
+                                script: 'oc env bc/qsystem-mt --list | awk  -F  "=" \'/TEST_USERNAME/{print $2}\'',
                                 returnStdout: true
                                 ).trim()
                           
                     TEST_PASSWORD = sh (
-                                script: 'oc env bc/qsystem --list | awk  -F  "=" \'/TEST_PASSWORD/{print $2}\'',
+                                script: 'oc env bc/qsystem-mt --list | awk  -F  "=" \'/TEST_PASSWORD/{print $2}\'',
                                 returnStdout: true
                                 ).trim()
                           
