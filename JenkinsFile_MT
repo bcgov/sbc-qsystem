@@ -5,7 +5,7 @@ node('maven') {
     stage('checkout') {
         echo "checking out source"
         checkout scm
-        echo "Build: ${BRANCH_NAME}.${BUILD_ID}"
+        echo "Build: MT.${BUILD_ID}"
     }
 
     stage('code quality check') {
@@ -33,7 +33,7 @@ node('maven') {
     stage('build') {
         echo "Building..."
         openshiftBuild bldCfg: 'qsystem', showBuildLogs: 'true'
-        openshiftTag destStream: 'qsystem', verbose: 'true', destTag: '$BRANCH_NAME.$BUILD_ID', srcStream: 'qsystem', srcTag: 'latest'
+        openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'MT.$BUILD_ID', srcStream: 'qsystem', srcTag: 'latest'
         openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'dev-mt', srcStream: 'qsystem', srcTag: 'latest'
    }
 
@@ -73,7 +73,7 @@ stage('deploy-test') {
     if (!params.quickPush) {
         input "Deploy to test?"
         node('master'){
-            openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'test-mt', srcStream: 'qsystem', srcTag: '$BRANCH_NAME.$BUILD_ID'
+            openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'test-mt', srcStream: 'qsystem', srcTag: 'MT.$BUILD_ID'
         }
     }
 }
