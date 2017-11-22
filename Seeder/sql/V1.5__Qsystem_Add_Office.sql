@@ -36,7 +36,7 @@ ALTER TABLE `clients`
 MODIFY COLUMN invite_time DATETIME NULL;
 
 ALTER TABLE `clients`
-MODIFY COLUMN client_stand_time DATETIME NULL;
+MODIFY COLUMN stand_time DATETIME NULL;
 
 ALTER TABLE `statistic`
 MODIFY COLUMN user_start_time DATETIME NULL;
@@ -57,6 +57,9 @@ ALTER TABLE `statistic`
 MODIFY COLUMN client_wait_period DATETIME NULL;
 
 ALTER TABLE `statistic`
+ADD COLUMN office_id int(11) NOT NULL DEFAULT 1;
+
+ALTER TABLE `clients`
 ADD COLUMN office_id int(11) NOT NULL DEFAULT 1;
 
 ALTER TABLE `clients` 
