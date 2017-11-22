@@ -35,8 +35,8 @@ MODIFY COLUMN welcome_time DATETIME NULL;
 ALTER TABLE `clients`
 MODIFY COLUMN invite_time DATETIME NULL;
 
-ALTER TABLE `clients`
-MODIFY COLUMN stand_time DATETIME NULL;
+ALTER TABLE `statistic`
+MODIFY COLUMN client_stand_time DATETIME NULL;
 
 ALTER TABLE `statistic`
 MODIFY COLUMN user_start_time DATETIME NULL;
