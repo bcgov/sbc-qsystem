@@ -32,7 +32,7 @@ node('maven') {
     
     stage('build') {
         echo "Building..."
-        openshiftBuild bldCfg: 'qsystem', showBuildLogs: 'true'
+        openshiftBuild bldCfg: 'qsystem-pipeline-mt', showBuildLogs: 'true'
         openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'MT.$BUILD_ID', srcStream: 'qsystem', srcTag: 'latest'
         openshiftTag destStream: 'qsystem', verbose: 'true', destTag: 'dev-mt', srcStream: 'qsystem', srcTag: 'latest'
    }
