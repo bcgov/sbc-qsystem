@@ -2,8 +2,9 @@ CREATE TABLE IF NOT EXISTS `offices` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `smartboard_type` VARCHAR(45) NOT NULL DEFAULT 'callbyticket',
-  `deleted` DATETIME
-  PRIMARY KEY (`id`));
+  `deleted` DATETIME,
+  CONSTRAINT `offices.pk` PRIMARY KEY (`id`)
+  );
 
 INSERT INTO `offices` (name)    
 select 'Test Office' from dual   
@@ -15,7 +16,7 @@ ADD INDEX `fk_users_office_idx` (`office_id` ASC);
 ALTER TABLE `users` 
 ADD CONSTRAINT `fk_users_office`
   FOREIGN KEY (`office_id`)
-  REFERENCES 'offices` (`id`)
+  REFERENCES `offices`(`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
@@ -43,7 +44,7 @@ MODIFY COLUMN user_start_time DATETIME NULL;
 ALTER TABLE `statistic`
 MODIFY COLUMN user_finish_time DATETIME NULL;
 
-ALTER TABLE 'statistic`
+ALTER TABLE `statistic`
 MODIFY COLUMN client_welcome_time DATETIME NULL;
 
 ALTER TABLE `statistic`
