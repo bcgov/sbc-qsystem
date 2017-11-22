@@ -1551,6 +1551,7 @@ public class FAdmin extends javax.swing.JFrame {
         newService.setStatus(1);
         newService.setSoundTemplate("021111");
         newService.setAdvanceTimePeriod(60);
+        newService.setSmartboard("Y");
         newService.setCalendar(QCalendarList.getInstance().getById(1));
         if (QScheduleList.getInstance().getSize() != 0) {
             newService.setSchedule(QScheduleList.getInstance().getElementAt(0));
