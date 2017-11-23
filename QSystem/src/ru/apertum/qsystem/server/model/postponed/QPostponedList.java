@@ -46,14 +46,24 @@ public class QPostponedList extends DefaultListModel {
     public QPostponedList loadPostponedList(LinkedList<QCustomer> customers) {
         QLog.l().logQUser().debug("loadPostponedList");
         clear();
-        final LinkedList<QCustomer> dbCustomers = new LinkedList<QCustomer>(
+        final LinkedList<QCustomer> dbCustomers_postponed = new LinkedList<QCustomer>(
                 Spring.getInstance().getHt().findByCriteria(
-                DetachedCriteria.forClass(QCustomer.class)
-                        .add(Property.forName("stateIn").eq(11))
-                        .add(Property.forName("stateIn").eq(12))
-                        .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
+                        DetachedCriteria.forClass(QCustomer.class)
+                                .add(Property.forName("stateIn").eq(11))
+                                .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
 
-        for (QCustomer cust : dbCustomers) {
+        for (QCustomer cust : dbCustomers_postponed) {
+            QLog.l().logQUser().debug("addCustomer: " + cust);
+            addElement(cust);
+        }
+
+        final LinkedList<QCustomer> dbCustomers_redirect = new LinkedList<QCustomer>(
+                Spring.getInstance().getHt().findByCriteria(
+                        DetachedCriteria.forClass(QCustomer.class)
+                                .add(Property.forName("stateIn").eq(12))
+                                .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
+
+        for (QCustomer cust : dbCustomers_redirect) {
             QLog.l().logQUser().debug("addCustomer: " + cust);
             addElement(cust);
         }
