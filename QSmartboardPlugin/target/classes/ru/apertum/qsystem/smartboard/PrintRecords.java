@@ -23,11 +23,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Properties;
+
+import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.controller.AIndicatorBoard;
 import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
+ * Keeps track of the state of a smartboard for a specific office.
  *
  * @author Evgeniy Egorov
  */
@@ -108,24 +111,29 @@ public class PrintRecords {
     }
     
     public PrintRecords(QOffice office) {
+        QLog.l().logQUser().debug("Creating print records");
         this.office = office;
         String qsb = "";
 
         if (office != null) {
             qsb = office.getSmartboardType();
         }
+        QLog.l().logQUser().debug("qsb: " + qsb);
 
         if (qsb != null && !qsb.isEmpty()) {
             File f = new File("config/QSmartboardPlugin.properties");
             if (qsb.equalsIgnoreCase("callbyticket")) {
+                QLog.l().logQUser().debug("getting file callbyticket");
                 f = new File("config/QSmartboardPlugin-original.properties");
             }
 
             if (qsb.equalsIgnoreCase("callbyname")) {
+                QLog.l().logQUser().debug("Getting file callbyname");
                 f = new File("config/QSmartboardPlugin-name.properties");
             }
 
             if (f.exists()) {
+                QLog.l().logQUser().debug("File exists");
                 final FileInputStream inStream;
                 try {
                     inStream = new FileInputStream(f);

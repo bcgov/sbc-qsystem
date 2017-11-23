@@ -263,6 +263,10 @@ public class QBoard extends GenericForwardComposer {
     }
 
     public boolean getBottomVisible() {
+        QLog.l().logQUser().debug(getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize());
+        QLog.l().logQUser().debug( checkPlugin() ? !"".equals(getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize().replaceAll("0|%|(px)", "")) : false);
+
+
         return checkPlugin() ? !"".equals(getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize().replaceAll("0|%|(px)", "")) : false;
     }
 
@@ -283,7 +287,7 @@ public class QBoard extends GenericForwardComposer {
     }
     
     public String getCustomerDisplay() {
-        return checkPlugin() ? getPrintRecordsByOfficeId(1).getCustomerDisplay(): "padding:0px" ;
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getCustomerDisplay(): "padding:0px" ;
     }   
 
     

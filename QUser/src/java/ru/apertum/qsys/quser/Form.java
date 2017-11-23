@@ -157,6 +157,7 @@ public class Form{
        private String checkCFMSHidden = "display: none;";
        private String checkCFMSHeight = "0%";
        private boolean checkCombo = false;
+       public String officeType;
     private QCustomer customer = null;
     @Wire("#btn_invite")
     private Button btn_invite;
@@ -293,6 +294,10 @@ public LinkedList<QService> getPreviousList(){
         if (quser != null) {
             officeName = user.getUser().getOffice().getName();
         }
+
+        QLog.l().logQUser().debug("Set attributes on login");
+        setOfficeType();
+        QLog.l().logQUser().debug("Done");
     }
 
     @Wire("#incClientDashboard #incGAManagementDialog #GAManagementDialog")
@@ -412,23 +417,51 @@ public LinkedList<QService> getPreviousList(){
         this.addWindowButtons = addWindowButtons;
     }
 
+    public String getOfficeType() {
+        return officeType;
+    }
+
+    private void setOfficeType() {
+        QLog.l().logQUser().debug("setOfficeType");
+        String receptionType = "non-reception";
+        if (getCFMSType()) {
+            receptionType = "reception";
+        }
+        QLog.l().logQUser().debug("setOfficeType: " + receptionType);
+        officeType = receptionType;
+    }
+
+    public String getCFMSTypeString() {
+        QLog.l().logQUser().debug("getCFMSTypeString");
+        String receptionType = "non-reception2";
+        if (getCFMSType()) {
+            receptionType = "reception2";
+        }
+        QLog.l().logQUser().debug("getCFMSTypeString: " + receptionType);
+        return receptionType;
+    }
+
     public boolean getCFMSType() {
         if (user == null) {
+            QLog.l().logQUser().debug("getCFMSType: User is null");
             return false;
         }
         QUser quser = user.getUser();
 
         if (quser == null) {
+            QLog.l().logQUser().debug("CFMS Type: " + false);
             return false;
         }
 
         String qsb = quser.getOffice().getSmartboardType();
+        QLog.l().logQUser().debug("qsb: " + qsb);
         if (qsb.equalsIgnoreCase("callbyticket")) {
             checkCFMSType = true;
-        };
+        }
         if (qsb.equalsIgnoreCase("callbyname")) {
             checkCFMSType = true;
-        };
+        }
+        QLog.l().logQUser().debug("CFMS Type: " + checkCFMSType);
         return checkCFMSType;
     }
 
@@ -445,39 +478,47 @@ public LinkedList<QService> getPreviousList(){
 
        public String getCFMSHidden() {
            if (user == null) {
+               QLog.l().logQUser().debug("CFMS Hidden: " + checkCFMSHidden);
                return checkCFMSHidden;
            }
            QUser quser = user.getUser();
 
            if (quser == null) {
+               QLog.l().logQUser().debug("CFMS Hidden: " + checkCFMSHidden);
                return checkCFMSHidden;
            }
            String qsb = quser.getOffice().getSmartboardType();
+           QLog.l().logQUser().debug("qsb: " + qsb);
            if (qsb.equalsIgnoreCase("callbyticket")) {
                checkCFMSHidden = "display: inline;";
-           };
+           }
            if (qsb.equalsIgnoreCase("callbyname")) {
                checkCFMSHidden = "display: inline;";
-           };
+           }
+           QLog.l().logQUser().debug("CFMS Hidden: " + checkCFMSHidden);
            return checkCFMSHidden;
        }
 
        public String getCFMSHeight() {
            if (user == null) {
+               QLog.l().logQUser().debug("CFMS Hieght: " + checkCFMSHeight);
                return checkCFMSHeight;
            }
            QUser quser = user.getUser();
 
            if (quser == null) {
+               QLog.l().logQUser().debug("CFMS Height: " + checkCFMSHeight);
                return checkCFMSHeight;
            }
            String qsb = quser.getOffice().getSmartboardType();
+           QLog.l().logQUser().debug("qsb: " + qsb);
            if (qsb.equalsIgnoreCase("callbyticket")) {
                checkCFMSHeight = "70%";
-           };
+           }
            if (qsb.equalsIgnoreCase("callbyname")) {
                checkCFMSHeight = "70%";
-           };
+           }
+           QLog.l().logQUser().debug("CFMS Height: " + checkCFMSHeight);
            return checkCFMSHeight;
        }
 
@@ -926,6 +967,7 @@ public LinkedList<QService> getPreviousList(){
     }
     
     public LinkedList<QCustomer> getPostponList() {
+        QLog.l().logger().debug("getPostponList");
         LinkedList<QCustomer> postponedCustomers = QPostponedList.getInstance().getPostponedCustomers();
         postponedCustomers = filterPostponedCustomersByUser(postponedCustomers);
         return postponedCustomers;
@@ -1091,12 +1133,16 @@ public LinkedList<QService> getPreviousList(){
 
         if (this.user != null && this.user.getUser() != null) {
             QOffice userOffice = this.user.getUser().getOffice();
+            QLog.l().logger().debug("Filtering by office: " + userOffice);
 
-            customers = customers
-                    .stream()
-                    .filter((QCustomer c) -> (c.getUser() == null ||
-                            c.getUser().getOffice().equals(userOffice)))
-                    .collect(Collectors.toCollection(LinkedList::new));
+            if (userOffice != null) {
+                customers = customers
+                        .stream()
+                        .filter((QCustomer c) -> (userOffice.equals(c.getOffice())))
+                        .collect(Collectors.toCollection(LinkedList::new));
+            }
+        } else {
+            QLog.l().logger().debug("Office is null");
         }
 
         return customers;
