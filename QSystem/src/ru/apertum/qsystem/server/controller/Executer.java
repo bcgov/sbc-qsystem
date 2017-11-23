@@ -631,7 +631,7 @@ public final class Executer {
                     for (QPlanService plan : user.getPlanServices()) {
                         final QService serv = QServiceTree.getInstance().getById(plan.getService().getId()); // очередная очередь
                         QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER peekCustomer");
-                        final QCustomer cust = serv.peekCustomer(); // первый в этой очереди
+                        final QCustomer cust = serv.peekCustomerByOffice(user.getOffice()); // первый в этой очереди
                         QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER isRecall: " + cust);
                         // если очередь пуста
                         if (cust == null) {
@@ -639,34 +639,43 @@ public final class Executer {
                         }
                         // учтем приоритетность кастомеров и приоритетность очередей для юзера в которые они стоят
                         final Integer prior = plan.getCoefficient();
+                        QLog.l().logQUser().debug("Co-efficient: " + prior);
                         if (prior > servPriority || (prior == servPriority && customer != null && customer.compareTo(cust) == 1)) {
                             servPriority = prior;
                             customer = cust;
                         }
                     }
+                    QLog.l().logQUser().debug("Customer: " + customer);
                     //Найденного самого первого из первых кастомера переносим на хранение юзеру, при этом удалив его из общей очереди.
                     // Случай, когда всех разобрали, но вызов сделан
                     //При приглашении очередного клиента пользователем очереди оказались пустые.
                     if (customer == null) {
+                        QLog.l().logQUser().debug("Customer null");
                         return new RpcInviteCustomer(null);
                     }
+                    QLog.l().logQUser().debug("Getting customer");
                     customer = QServiceTree.getInstance()
                             .getById(customer.getService().getId())
                             .polCustomerByOffice(user.getOffice());
-
+                    QLog.l().logQUser().debug("Found him: " + customer);
                     for (QService service: QServiceTree.getInstance().getNodes()){
+                        QLog.l().logQUser().debug("TLooping for service: " + service);
                         for (QCustomer c : service.getClients()){
+                            QLog.l().logQUser().debug("Looping through service clients");
                             if (c.getId() == customer.getId()){
+                                QLog.l().logQUser().debug("Remove customer from service list");
                                 service.removeCustomer(c);
                             }
                         }
                     }
-
+                    QLog.l().logQUser().debug("Done");
                     if (customer == null) {
+                        QLog.l().logQUser().debug("Customer null");
                         return new RpcInviteCustomer(null);
                     }
                 }
             } catch (Exception ex) {
+                QLog.l().logQUser().debug("Exception: " + ex.getMessage());
                 throw new ServerException("Ошибка при постановке клиента в очередь" + ex);
             } finally {
                 CLIENT_TASK_LOCK.unlock();

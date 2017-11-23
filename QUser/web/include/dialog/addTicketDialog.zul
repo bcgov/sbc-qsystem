@@ -11,7 +11,7 @@
             action="show: slideDown;hide: slideUp">
         <caption label="QSystem" image="/resources/img/logo32.png" />
         <div style="margin:10px 10px 10px 10px;">
-
+            <label value="@load(fmodel.getOfficeType())"/>
         	<zk if="${fmodel.getCFMSType()}">
 
 	            <vlayout>
@@ -80,9 +80,9 @@
 
 
 	                <div style="margin:5px 10px 10px 10px;"></div>
-	                
-	                
-	                
+
+
+
 	                <div style="float:right; margin:1px 0px 0px 0px;">
 	                    <hbox>
 
@@ -90,28 +90,28 @@
 	                    	<!-- <label value="Channels"/> -->
 	                    	 <!-- visible="@load(fmodel.addWindowButtons[0])" -->
 
-	                    
-	                    	
+
+
 
 	                        <!--Add to Queue and serve-->
 	                        <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')" visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
 	                        <button sclass= "bdd-begin-service" id="addAndServeBtn" hflex="min" width="100px" label="Begin service" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
-	                        
+
 	                        <!--Change Service-->
 	                        <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
-	                        
+
 	                        <!--Add Next Service-->
 	                        <button sclass="bdd-apply" id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
 
 	                        <!--Redirect / Back to Queue-->
-	                        <!--No longer exist-->                     
+	                        <!--No longer exist-->
 	                        <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeRedirectDialog')" visible="@load(fmodel.addWindowButtons[3])"/>
 
 	                        <!--Cancel Button For all Windows-->
 	                        <button sclass="bdd-cancel-service" id="closeAddTicketBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
 	                    </hbox>
 	                </div>
-	                
+
 	            </vlayout>
 
 <!--             	<vlayout children="@load(fmodel.listServices)">
@@ -133,13 +133,13 @@
 <!-- 	                <label value="${c:l('comments')}"/>
 	                <textbox id="ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/> -->
 
-					
-	                	
+
+
                 		 <!-- style="float:left; margin:5px 0px 0px 0px;" -->
                 	<label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
 	            	    <combobox id="Channels_options" width="100%" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
 	                		<!-- visible="@load(fmodel.addWindowButtons[0])" -->
-	                		<!-- @load(fmodel.CheckCombobox()) --> 
+	                		<!-- @load(fmodel.CheckCombobox()) -->
 	                        <attribute name="onCreate">
 	                            self.setSelectedIndex(0);
 	                        </attribute>
@@ -153,8 +153,8 @@
 	                        <!-- <comboitem label="${c:l('25min')}"/> -->
 	                        <!-- <comboitem label="${c:l('30min')}"/> -->
 	                	</combobox>
-	                	
-					
+
+
 
 	                <label value="Type Service here" width="150px" />
 	                <hbox>
@@ -168,7 +168,7 @@
 	                    </vbox>
 	                </hbox>
 	                <div style="margin:10px 10px 10px 10px;"></div>
-	                <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)" width="100%" height="250px">			
+	                <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)" width="100%" height="250px">
 	                <listhead>
 						<listheader label="Service" align="left" />
 						<listheader label="Category" align="left" />
@@ -179,15 +179,15 @@
 							<listcell label="@load(item.getName())" tooltip="@load(item.getId())"/>
 							<listcell label="@load(item.getParent().getName())"/>
 						</listitem>
-	                                
+
 					</template>
 				</listbox>
-	                
+
 	                <div style="margin:5px 10px 10px 10px;"></div>
 	                <label value="${c:l('comments')}"/>
                 	<textbox id="ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
-	                
-	                
+
+
 
 	                <hbox>
 

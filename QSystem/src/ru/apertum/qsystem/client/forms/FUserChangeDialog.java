@@ -150,7 +150,10 @@ public class FUserChangeDialog extends javax.swing.JDialog {
             }
 
             for (QService s : newOffice.getServices()) {
-                user.addPlanService(s);
+                //Only add child services, not the root or the category
+                if (s.isLeaf()) {
+                    user.addPlanService(s);
+                }
             }
         }
     }

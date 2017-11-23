@@ -402,17 +402,18 @@ public class QServer extends Thread {
      */
     static public void loadPool() {
         QLog.l().logQUser().debug("loadPool");
-        QPostponedList.getInstance().loadPostponedList(new LinkedList<QCustomer>());
 
         final LinkedList<QCustomer> customers = new LinkedList<QCustomer>(
                 Spring.getInstance().getHt().findByCriteria(
                         DetachedCriteria.forClass(QCustomer.class)
                                 .add(Property.forName("stateIn").ne(0))
                                 .add(Property.forName("stateIn").ne(10))
+                                .add(Property.forName("stateIn").ne(11))
+                                .add(Property.forName("stateIn").ne(12))
                                 .add(Property.forName("stateIn").ne(13))
                                 .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
 
-        QLog.l().logQUser().debug("adding Customers from database");
+        QLog.l().logQUser().debug("adding Customers to hold list from database");
         for (QCustomer cust : customers) {
             QLog.l().logQUser().debug("Customer: " + cust + ", " + cust.getId());
             QLog.l().logQUser().debug("serviceId: " + cust.getService().getId());
@@ -437,20 +438,20 @@ public class QServer extends Thread {
                 cust.setUser(QUserList.getInstance().getById(user.getId()));
             }
 
-            QLog.l().logQUser().debug("Adding customer to serviceTree");
             QLog.l().logQUser().debug("setPriority");
             cust.setPriority(1);
 
-            QLog.l().logQUser().debug("setState");
-            QLog.l().logQUser().debug(cust.getStateIn());
-
+            QLog.l().logQUser().debug("setState: " + cust.getStateIn());
             Integer state = cust.getStateIn();
             cust.setState(state);
 
-            cust.setState(cust.getStateIn());
+            QLog.l().logQUser().debug("Adding customer to serviceTree");
             QServiceTree.getInstance().getById(cust.getService().getId())
                     .addCustomer(cust);
         }
+
+        QLog.l().logQUser().debug("Refreshing postponed list");
+        QPostponedList.getInstance().loadPostponedList(new LinkedList<QCustomer>());
 
         return;
     }
