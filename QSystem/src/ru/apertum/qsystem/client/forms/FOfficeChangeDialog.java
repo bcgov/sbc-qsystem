@@ -58,9 +58,14 @@ public class FOfficeChangeDialog extends javax.swing.JDialog {
 
     private void saveOffice() {
         QLog.l().logger().info("Save the office");
-        String smartboard = tfOfficeSmartboard.getSelectedItem().toString();
+        Object selectedSmartboard = tfOfficeSmartboard.getSelectedItem();
+        String smartboard = "";
 
-        if (smartboard != "nocallonsmartboard" || smartboard != "callbyname" || smartboard != "callbyticket") {
+        if (selectedSmartboard != null) {
+            smartboard = selectedSmartboard.toString();
+        }
+
+        if (!"nocallonsmartboard".equals(smartboard) && !"callbyname".equals(smartboard) && !"callbyticket".equals(smartboard)) {
             smartboard = "callbyticket";
         }
 
