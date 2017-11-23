@@ -51,10 +51,10 @@ ALTER TABLE `statistic`
 MODIFY COLUMN client_invite_time DATETIME NULL;
 
 ALTER TABLE `statistic`
-MODIFY COLUMN user_work_period DATETIME NULL;
+MODIFY COLUMN user_work_period INT NULL;
 
 ALTER TABLE `statistic`
-MODIFY COLUMN client_wait_period DATETIME NULL;
+MODIFY COLUMN client_wait_period INT NULL;
 
 ALTER TABLE `statistic`
 ADD COLUMN office_id int(11) NOT NULL DEFAULT 1;
