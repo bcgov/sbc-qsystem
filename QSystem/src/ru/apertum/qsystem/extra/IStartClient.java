@@ -16,12 +16,11 @@
  */
 package ru.apertum.qsystem.extra;
 
+import java.awt.event.ActionEvent;
 import ru.apertum.qsystem.client.forms.FClient;
 import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation;
 import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.server.model.QUser;
-
-import java.awt.event.ActionEvent;
 
 /**
  * Интерфейс плагинов, которые просто стартуют при старте программы оператора
@@ -37,5 +36,6 @@ public interface IStartClient extends IExtra {
      */
     public void start(FClient form);
 
-    public void pressButton(QUser user, INetProperty netProperty, RpcGetSelfSituation.SelfSituation situation, ActionEvent evt, int keyId);
+    public void pressButton(QUser user, INetProperty netProperty,
+        RpcGetSelfSituation.SelfSituation situation, ActionEvent evt, int keyId);
 }

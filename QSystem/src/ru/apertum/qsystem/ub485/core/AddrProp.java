@@ -11,17 +11,12 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class AddrProp {
 
-    final private HashMap<Long, ButtonDevice> addrs = new HashMap<>();
-
-    public HashMap<Long, ButtonDevice> getAddrs() {
-        return addrs;
-    }
     final static private File ADDR_FILE = new File("config/qub.adr");
+    final private HashMap<Long, ButtonDevice> addrs = new HashMap<>();
 
     private AddrProp() {
         try (FileInputStream fis = new FileInputStream(ADDR_FILE); Scanner s = new Scanner(fis)) {
@@ -30,7 +25,9 @@ public class AddrProp {
                 if (!line.isEmpty() && !line.startsWith("#")) {
                     final String[] ss = line.split("=");
                     final String[] ssl = ss[1].split(" ");
-                    addrs.put(Long.valueOf(ss[0]), new ButtonDevice(Long.valueOf(ss[0]), Byte.parseByte(ssl[0]), ssl.length == 1 ? null : Long.parseLong(ssl[1])));
+                    addrs.put(Long.valueOf(ss[0]),
+                        new ButtonDevice(Long.valueOf(ss[0]), Byte.parseByte(ssl[0]),
+                            ssl.length == 1 ? null : Long.parseLong(ssl[1])));
                 }
             }
         } catch (IOException ex) {
@@ -43,17 +40,25 @@ public class AddrProp {
         return AddrPropHolder.INSTANCE;
     }
 
-    private static class AddrPropHolder {
+    public static void main(String[] ss) {
+        System.out.println("addrs:");
+        getInstance().addrs.keySet().stream().forEach((l) -> {
+            System.out.println(l + "=" + getInstance().getAddr(l).addres
+                + " " + getInstance().getAddr(l).redirectServiceId);
+        });
+    }
 
-        private static final AddrProp INSTANCE = new AddrProp();
+    public HashMap<Long, ButtonDevice> getAddrs() {
+        return addrs;
     }
 
     public ButtonDevice getAddr(Long userId) {
         return addrs.get(userId);
     }
-    
+
     public ButtonDevice getAddrByRSAddr(byte rsAddr) {
-        for (ButtonDevice adr : AddrProp.getInstance().getAddrs().values().toArray(new ButtonDevice[0])) {
+        for (ButtonDevice adr : AddrProp.getInstance().getAddrs().values()
+            .toArray(new ButtonDevice[0])) {
             if (adr.addres == rsAddr) {
                 return adr;
             }
@@ -61,11 +66,8 @@ public class AddrProp {
         return null;
     }
 
-    public static void main(String[] ss) {
-        System.out.println("addrs:");
-        getInstance().addrs.keySet().stream().forEach((l) -> {
-            System.out.println(l + "=" + getInstance().getAddr(l).addres
-                    + " " + getInstance().getAddr(l).redirectServiceId);
-        });
+    private static class AddrPropHolder {
+
+        private static final AddrProp INSTANCE = new AddrProp();
     }
 }

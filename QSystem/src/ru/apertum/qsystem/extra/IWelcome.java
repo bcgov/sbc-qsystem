@@ -16,6 +16,7 @@
  */
 package ru.apertum.qsystem.extra;
 
+import java.awt.Frame;
 import ru.apertum.qsystem.common.cmd.RpcGetAllServices;
 import ru.apertum.qsystem.common.model.IClientNetProperty;
 import ru.apertum.qsystem.common.model.INetProperty;
@@ -23,10 +24,7 @@ import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.model.QAdvanceCustomer;
 import ru.apertum.qsystem.server.model.QService;
 
-import java.awt.*;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public interface IWelcome extends IExtra {
@@ -43,9 +41,11 @@ public interface IWelcome extends IExtra {
      * @param modal модальный диалог или нет
      * @param fullscreen растягивать форму на весь экран и прятать мышку или нет
      * @param delay задержка перед скрытием диалога. если 0, то нет автозакрытия диалога
-     * @return продолжат сравить кастомера в очередь или нет, типа если true - все одобрено, false - что-то не понравилось клиенту и он не будет стоять
+     * @return продолжат сравить кастомера в очередь или нет, типа если true - все одобрено, false -
+     * что-то не понравилось клиенту и он не будет стоять
      */
-    public boolean showPreInfoDialog(Frame parent, INetProperty netProperty, String htmlText, String printText, boolean modal, boolean fullscreen, int delay);
+    public boolean showPreInfoDialog(Frame parent, INetProperty netProperty, String htmlText,
+        String printText, boolean modal, boolean fullscreen, int delay);
 
     /**
      * Статический метод который показывает модально диалог ввода строки.
@@ -57,9 +57,11 @@ public interface IWelcome extends IExtra {
      * @param delay задержка перед скрытием диалога. если 0, то нет автозакрытия диалога
      * @param caption название на нужном языке
      * @param service услуга, в которую встает
-     * @return XML-описание результата предварительной записи, по сути это номерок. если null, то отказались от предварительной записи
+     * @return XML-описание результата предварительной записи, по сути это номерок. если null, то
+     * отказались от предварительной записи
      */
-    public String showInputDialog(Frame parent, boolean modal, INetProperty netProperty, boolean fullscreen, int delay, String caption, QService service);
+    public String showInputDialog(Frame parent, boolean modal, INetProperty netProperty,
+        boolean fullscreen, int delay, String caption, QService service);
 
     /**
      * Событие нажатия кнопки на таче.
@@ -72,7 +74,6 @@ public interface IWelcome extends IExtra {
      * Событие - Встал в очередь
      *
      * @param customer этот встал в очередь.
-     * @param service
      */
     public void readyNewCustomer(QCustomer customer, QService service);
 
@@ -80,7 +81,6 @@ public interface IWelcome extends IExtra {
      * Событие - записался предварительно
      *
      * @param advCustomer этот и записался
-     * @param service
      */
     public void readyNewAdvCustomer(QAdvanceCustomer advCustomer, QService service);
 

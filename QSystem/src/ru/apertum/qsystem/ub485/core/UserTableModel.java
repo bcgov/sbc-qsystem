@@ -7,7 +7,6 @@ package ru.apertum.qsystem.ub485.core;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class UserTableModel extends AbstractTableModel {
@@ -37,14 +36,19 @@ public class UserTableModel extends AbstractTableModel {
             case 1:
                 return props.getAddr(userId).addres;
             case 2:
-                return props.getAddr(userId).serveceName == null ? (props.getAddr(userId).redirectServiceId == null || props.getAddr(userId).redirectServiceId == 0 ? "нет" : props.getAddr(userId).redirectServiceId.toString()) : props.getAddr(userId).serveceName;
+                return props.getAddr(userId).serveceName == null ? (
+                    props.getAddr(userId).redirectServiceId == null
+                        || props.getAddr(userId).redirectServiceId == 0 ? "нет"
+                        : props.getAddr(userId).redirectServiceId.toString())
+                    : props.getAddr(userId).serveceName;
             case 3:
                 return props.getAddr(userId).qsize;
             case 4:
                 if (props.getAddr(userId).getUser() == null) {
                     return "Неизвестно";
                 }
-                if (props.getAddr(userId).getUser().getShadow() == null || props.getAddr(userId).getUser().getShadow().getCustomerState() == null) {
+                if (props.getAddr(userId).getUser().getShadow() == null
+                    || props.getAddr(userId).getUser().getShadow().getCustomerState() == null) {
                     return "Не работает";
                 } else {
                     switch (props.getAddr(userId).getUser().getShadow().getCustomerState()) {

@@ -16,6 +16,9 @@
  */
 package ru.apertum.qsystem.client.forms;
 
+import java.awt.Frame;
+import java.text.ParseException;
+import javax.swing.DefaultComboBoxModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -27,40 +30,96 @@ import ru.apertum.qsystem.server.model.schedule.QBreaks;
 import ru.apertum.qsystem.server.model.schedule.QBreaksList;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
 
-import javax.swing.*;
-import java.awt.*;
-import java.text.ParseException;
-
 /**
  * Created on 27.08.2009, 11:13:04
+ *
  * @author Evgeniy Egorov
  */
 public class FScheduleChangeDialod extends javax.swing.JDialog {
 
     private static FScheduleChangeDialod scheduleChangeDialod;
+    private static ResourceMap localeMap = null;
+    private QSchedule schedule;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonCancel;
+    private javax.swing.ButtonGroup buttonGroupTypes;
+    private javax.swing.JButton buttonSave;
+    private javax.swing.JCheckBox c1;
+    private javax.swing.JCheckBox c2;
+    private javax.swing.JCheckBox c3;
+    private javax.swing.JCheckBox c4;
+    private javax.swing.JCheckBox c5;
+    private javax.swing.JCheckBox c6;
+    private javax.swing.JCheckBox c7;
+    private javax.swing.JComboBox cb1;
+    private javax.swing.JComboBox cb2;
+    private javax.swing.JComboBox cb3;
+    private javax.swing.JComboBox cb4;
+    private javax.swing.JComboBox cb5;
+    private javax.swing.JComboBox cb6;
+    private javax.swing.JComboBox cb7;
+    private javax.swing.JFormattedTextField e1;
+    private javax.swing.JFormattedTextField e2;
+    private javax.swing.JFormattedTextField e3;
+    private javax.swing.JFormattedTextField e4;
+    private javax.swing.JFormattedTextField e5;
+    private javax.swing.JFormattedTextField e6;
+    private javax.swing.JFormattedTextField e7;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel panelButtons;
+    private javax.swing.JPanel panelProps;
+    private javax.swing.JPanel panelWeek;
+    private javax.swing.JRadioButton radioButtonChet;
+    private javax.swing.JRadioButton radioButtonWeek;
+    private javax.swing.JFormattedTextField s1;
+    private javax.swing.JFormattedTextField s2;
+    private javax.swing.JFormattedTextField s3;
+    private javax.swing.JFormattedTextField s4;
+    private javax.swing.JFormattedTextField s5;
+    private javax.swing.JFormattedTextField s6;
+    private javax.swing.JFormattedTextField s7;
+    private javax.swing.JTextField textFieldPlaneName;
 
-    /** Creates new form FServiceChangeDialod
-     * @param parent
-     * @param modal
+    /**
+     * Creates new form FServiceChangeDialod
      */
     public FScheduleChangeDialod(Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
-    private static ResourceMap localeMap = null;
 
     private static String getLocaleMessage(String key) {
         if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(FScheduleChangeDialod.class);
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(FScheduleChangeDialod.class);
         }
         return localeMap.getString(key);
     }
 
     /**
      * Основной метод редактирования услуги.
-     * @param parent
-     * @param modal
-     * @param schedule
      */
     public static void changeSchedule(Frame parent, boolean modal, QSchedule schedule) {
         QLog.l().logger().info("Редактирование услуги \"" + schedule.getName() + "\"");
@@ -117,7 +176,7 @@ public class FScheduleChangeDialod extends javax.swing.JDialog {
 
         QBreaks[] o = QBreaksList.getInstance().getItems().toArray(new QBreaks[0]);
         o = (QBreaks[]) ArrayUtils.addAll(new QBreaks[1], o);
-        
+
         cb1.setModel(new DefaultComboBoxModel(o));
         cb2.setModel(new DefaultComboBoxModel(o));
         cb3.setModel(new DefaultComboBoxModel(o));
@@ -125,7 +184,6 @@ public class FScheduleChangeDialod extends javax.swing.JDialog {
         cb5.setModel(new DefaultComboBoxModel(o));
         cb6.setModel(new DefaultComboBoxModel(o));
         cb7.setModel(new DefaultComboBoxModel(o));
-
 
         cb1.setSelectedItem(schedule.getBreaks_1());
         cb2.setSelectedItem(schedule.getBreaks_2());
@@ -136,25 +194,31 @@ public class FScheduleChangeDialod extends javax.swing.JDialog {
         cb7.setSelectedItem(schedule.getBreaks_7());
 
     }
-    private QSchedule schedule;
 
     private void saveSchedule() {
         schedule.setName(textFieldPlaneName.getText());
         schedule.setType(radioButtonWeek.isSelected() ? 0 : 1);
         try {
-            schedule.setTime_begin_1(c1.isSelected() ? Uses.FORMAT_HH_MM.parse(s1.getText()) : null);
+            schedule
+                .setTime_begin_1(c1.isSelected() ? Uses.FORMAT_HH_MM.parse(s1.getText()) : null);
             schedule.setTime_end_1(c1.isSelected() ? Uses.FORMAT_HH_MM.parse(e1.getText()) : null);
-            schedule.setTime_begin_2(c2.isSelected() ? Uses.FORMAT_HH_MM.parse(s2.getText()) : null);
+            schedule
+                .setTime_begin_2(c2.isSelected() ? Uses.FORMAT_HH_MM.parse(s2.getText()) : null);
             schedule.setTime_end_2(c2.isSelected() ? Uses.FORMAT_HH_MM.parse(e2.getText()) : null);
-            schedule.setTime_begin_3(c3.isSelected() ? Uses.FORMAT_HH_MM.parse(s3.getText()) : null);
+            schedule
+                .setTime_begin_3(c3.isSelected() ? Uses.FORMAT_HH_MM.parse(s3.getText()) : null);
             schedule.setTime_end_3(c3.isSelected() ? Uses.FORMAT_HH_MM.parse(e3.getText()) : null);
-            schedule.setTime_begin_4(c4.isSelected() ? Uses.FORMAT_HH_MM.parse(s4.getText()) : null);
+            schedule
+                .setTime_begin_4(c4.isSelected() ? Uses.FORMAT_HH_MM.parse(s4.getText()) : null);
             schedule.setTime_end_4(c4.isSelected() ? Uses.FORMAT_HH_MM.parse(e4.getText()) : null);
-            schedule.setTime_begin_5(c5.isSelected() ? Uses.FORMAT_HH_MM.parse(s5.getText()) : null);
+            schedule
+                .setTime_begin_5(c5.isSelected() ? Uses.FORMAT_HH_MM.parse(s5.getText()) : null);
             schedule.setTime_end_5(c5.isSelected() ? Uses.FORMAT_HH_MM.parse(e5.getText()) : null);
-            schedule.setTime_begin_6(c6.isSelected() ? Uses.FORMAT_HH_MM.parse(s6.getText()) : null);
+            schedule
+                .setTime_begin_6(c6.isSelected() ? Uses.FORMAT_HH_MM.parse(s6.getText()) : null);
             schedule.setTime_end_6(c6.isSelected() ? Uses.FORMAT_HH_MM.parse(e6.getText()) : null);
-            schedule.setTime_begin_7(c7.isSelected() ? Uses.FORMAT_HH_MM.parse(s7.getText()) : null);
+            schedule
+                .setTime_begin_7(c7.isSelected() ? Uses.FORMAT_HH_MM.parse(s7.getText()) : null);
             schedule.setTime_end_7(c7.isSelected() ? Uses.FORMAT_HH_MM.parse(e7.getText()) : null);
 
             schedule.setBreaks_1((QBreaks) cb1.getSelectedItem());
@@ -242,7 +306,9 @@ public class FScheduleChangeDialod extends javax.swing.JDialog {
 
         buttonGroupTypes.add(radioButtonWeek);
         radioButtonWeek.setSelected(true);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FScheduleChangeDialod.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(FScheduleChangeDialod.class);
         radioButtonWeek.setText(resourceMap.getString("radioButtonWeek.text")); // NOI18N
         radioButtonWeek.setName("radioButtonWeek"); // NOI18N
         radioButtonWeek.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -381,147 +447,224 @@ public class FScheduleChangeDialod extends javax.swing.JDialog {
         jLabel13.setText(resourceMap.getString("jLabel13.text")); // NOI18N
         jLabel13.setName("jLabel13"); // NOI18N
 
-        cb3.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cb3.setModel(
+            new javax.swing.DefaultComboBoxModel(
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         cb3.setName("cb3"); // NOI18N
 
-        cb4.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cb4.setModel(
+            new javax.swing.DefaultComboBoxModel(
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         cb4.setName("cb4"); // NOI18N
 
-        cb5.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cb5.setModel(
+            new javax.swing.DefaultComboBoxModel(
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         cb5.setName("cb5"); // NOI18N
 
-        cb6.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cb6.setModel(
+            new javax.swing.DefaultComboBoxModel(
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         cb6.setName("cb6"); // NOI18N
 
-        cb7.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cb7.setModel(
+            new javax.swing.DefaultComboBoxModel(
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         cb7.setName("cb7"); // NOI18N
 
         javax.swing.GroupLayout panelWeekLayout = new javax.swing.GroupLayout(panelWeek);
         panelWeek.setLayout(panelWeekLayout);
         panelWeekLayout.setHorizontalGroup(
             panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelWeekLayout.createSequentialGroup()
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(c7)
-                    .addComponent(c6)
-                    .addComponent(c5)
-                    .addComponent(c4)
-                    .addComponent(c3))
-                .addGap(18, 18, 18)
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelWeekLayout.createSequentialGroup()
-                        .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel19)
-                            .addComponent(jLabel18)
-                            .addComponent(jLabel17))
-                        .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(panelWeekLayout.createSequentialGroup()
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(c7)
+                            .addComponent(c6)
+                            .addComponent(c5)
+                            .addComponent(c4)
+                            .addComponent(c3))
+                    .addGap(18, 18, 18)
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelWeekLayout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(s6))
+                                .addGroup(panelWeekLayout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel19)
+                                    .addComponent(jLabel18)
+                                    .addComponent(jLabel17))
+                                .addGroup(panelWeekLayout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                        false)
+                                    .addGroup(panelWeekLayout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addComponent(s6))
+                                    .addGroup(panelWeekLayout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addComponent(s7, javax.swing.GroupLayout.DEFAULT_SIZE, 52,
+                                            Short.MAX_VALUE))
+                                    .addGroup(panelWeekLayout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addComponent(s5))))
+                            .addGroup(panelWeekLayout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                    false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                    panelWeekLayout.createSequentialGroup()
+                                        .addComponent(jLabel16)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(s4))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                    panelWeekLayout.createSequentialGroup()
+                                        .addComponent(jLabel11)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(s3, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                            54,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGap(18, 18, 18)
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel24)
+                            .addComponent(jLabel23)
+                            .addComponent(jLabel22)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel20))
+                    .addGap(18, 18, 18)
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelWeekLayout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                    false)
+                                .addComponent(e4, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(e3, javax.swing.GroupLayout.Alignment.LEADING,
+                                    javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
+                                .addComponent(e6, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(e5, javax.swing.GroupLayout.Alignment.LEADING,
+                                    javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE))
+                            .addComponent(e7, javax.swing.GroupLayout.PREFERRED_SIZE, 49,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(28, 28, 28)
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelWeekLayout.createSequentialGroup()
+                                .addComponent(jLabel13)
                                 .addGap(18, 18, 18)
-                                .addComponent(s7, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE))
+                                .addComponent(cb7, 0, 162, Short.MAX_VALUE))
                             .addGroup(panelWeekLayout.createSequentialGroup()
+                                .addComponent(jLabel12)
                                 .addGap(18, 18, 18)
-                                .addComponent(s5))))
-                    .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelWeekLayout.createSequentialGroup()
-                            .addComponent(jLabel16)
-                            .addGap(18, 18, 18)
-                            .addComponent(s4))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelWeekLayout.createSequentialGroup()
-                            .addComponent(jLabel11)
-                            .addGap(18, 18, 18)
-                            .addComponent(s3, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel24)
-                    .addComponent(jLabel23)
-                    .addComponent(jLabel22)
-                    .addComponent(jLabel21)
-                    .addComponent(jLabel20))
-                .addGap(18, 18, 18)
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(e4, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(e3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
-                        .addComponent(e6, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(e5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE))
-                    .addComponent(e7, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelWeekLayout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addGap(18, 18, 18)
-                        .addComponent(cb7, 0, 162, Short.MAX_VALUE))
-                    .addGroup(panelWeekLayout.createSequentialGroup()
-                        .addComponent(jLabel12)
-                        .addGap(18, 18, 18)
-                        .addComponent(cb6, 0, 162, Short.MAX_VALUE))
-                    .addGroup(panelWeekLayout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addGap(18, 18, 18)
-                        .addComponent(cb5, 0, 162, Short.MAX_VALUE))
-                    .addGroup(panelWeekLayout.createSequentialGroup()
-                        .addComponent(jLabel9)
-                        .addGap(18, 18, 18)
-                        .addComponent(cb4, 0, 162, Short.MAX_VALUE))
-                    .addGroup(panelWeekLayout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addGap(18, 18, 18)
-                        .addComponent(cb3, 0, 162, Short.MAX_VALUE)))
-                .addContainerGap())
+                                .addComponent(cb6, 0, 162, Short.MAX_VALUE))
+                            .addGroup(panelWeekLayout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addGap(18, 18, 18)
+                                .addComponent(cb5, 0, 162, Short.MAX_VALUE))
+                            .addGroup(panelWeekLayout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addGap(18, 18, 18)
+                                .addComponent(cb4, 0, 162, Short.MAX_VALUE))
+                            .addGroup(panelWeekLayout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addGap(18, 18, 18)
+                                .addComponent(cb3, 0, 162, Short.MAX_VALUE)))
+                    .addContainerGap())
         );
         panelWeekLayout.setVerticalGroup(
             panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelWeekLayout.createSequentialGroup()
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(c3)
-                    .addComponent(jLabel11)
-                    .addComponent(s3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel24)
-                    .addComponent(e3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8)
-                    .addComponent(cb3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(c4)
-                    .addComponent(jLabel16)
-                    .addComponent(s4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel23)
-                    .addComponent(e4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9)
-                    .addComponent(cb4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(c5)
-                        .addComponent(jLabel17))
-                    .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(s5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel22)
-                        .addComponent(e5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel10)
-                        .addComponent(cb5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(c6)
-                    .addComponent(jLabel18)
-                    .addComponent(s6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel21)
-                    .addComponent(e6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12)
-                    .addComponent(cb6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelWeekLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(c7)
-                    .addComponent(s7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel19)
-                    .addComponent(jLabel20)
-                    .addComponent(e7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13)
-                    .addComponent(cb7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(11, Short.MAX_VALUE))
+                .addGroup(panelWeekLayout.createSequentialGroup()
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(c3)
+                            .addComponent(jLabel11)
+                            .addComponent(s3, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel24)
+                            .addComponent(e3, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8)
+                            .addComponent(cb3, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(c4)
+                            .addComponent(jLabel16)
+                            .addComponent(s4, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel23)
+                            .addComponent(e4, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9)
+                            .addComponent(cb4, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelWeekLayout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(c5)
+                                .addComponent(jLabel17))
+                            .addGroup(panelWeekLayout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(s5, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                    javax.swing.GroupLayout.DEFAULT_SIZE,
+                                    javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel22)
+                                .addComponent(e5, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                    javax.swing.GroupLayout.DEFAULT_SIZE,
+                                    javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel10)
+                                .addComponent(cb5, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                    javax.swing.GroupLayout.DEFAULT_SIZE,
+                                    javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(c6)
+                            .addComponent(jLabel18)
+                            .addComponent(s6, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel21)
+                            .addComponent(e6, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel12)
+                            .addComponent(cb6, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        panelWeekLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(c7)
+                            .addComponent(s7, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel19)
+                            .addComponent(jLabel20)
+                            .addComponent(e7, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13)
+                            .addComponent(cb7, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(11, Short.MAX_VALUE))
         );
 
         jLabel6.setText(resourceMap.getString("jLabel6.text")); // NOI18N
@@ -530,78 +673,114 @@ public class FScheduleChangeDialod extends javax.swing.JDialog {
         jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
         jLabel7.setName("jLabel7"); // NOI18N
 
-        cb1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cb1.setModel(
+            new javax.swing.DefaultComboBoxModel(
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         cb1.setName("cb1"); // NOI18N
 
-        cb2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cb2.setModel(
+            new javax.swing.DefaultComboBoxModel(
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         cb2.setName("cb2"); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelWeek, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(c1)
-                            .addComponent(c2))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel3))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(s2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(s1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(17, 17, 17)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(18, 18, 18)
-                                .addComponent(e2))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(18, 18, 18)
-                                .addComponent(e1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(30, 30, 30)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(panelWeek, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel7)
+                                .addGroup(jPanel1Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(c1)
+                                    .addComponent(c2))
                                 .addGap(18, 18, 18)
-                                .addComponent(cb2, 0, 162, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel6)
+                                .addGroup(jPanel1Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel3))
                                 .addGap(18, 18, 18)
-                                .addComponent(cb1, 0, 162, Short.MAX_VALUE)))
-                        .addContainerGap())))
+                                .addGroup(jPanel1Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(s2, javax.swing.GroupLayout.PREFERRED_SIZE, 52,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(s1, javax.swing.GroupLayout.PREFERRED_SIZE, 51,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(17, 17, 17)
+                                .addGroup(jPanel1Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                        false)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                        jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jLabel4)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(e2))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                        jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jLabel2)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(e1,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                48, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(30, 30, 30)
+                                .addGroup(jPanel1Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel7)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(cb2, 0, 162, Short.MAX_VALUE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel6)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(cb1, 0, 162, Short.MAX_VALUE)))
+                                .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(c1)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(e1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(s1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(cb1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(c2)
-                    .addComponent(s2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(e2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7)
-                    .addComponent(cb2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelWeek, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        jPanel1Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(c1)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(e1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(s1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6)
+                            .addComponent(cb1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        jPanel1Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(c2)
+                            .addComponent(s2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(e2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7)
+                            .addComponent(cb2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(panelWeek, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
@@ -614,30 +793,41 @@ public class FScheduleChangeDialod extends javax.swing.JDialog {
         panelProps.setLayout(panelPropsLayout);
         panelPropsLayout.setHorizontalGroup(
             panelPropsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPropsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelPropsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(radioButtonChet, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(radioButtonWeek, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(textFieldPlaneName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    panelPropsLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(panelPropsLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(radioButtonChet,
+                                javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(radioButtonWeek,
+                                javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(textFieldPlaneName,
+                                javax.swing.GroupLayout.Alignment.LEADING,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE))
+                        .addContainerGap())
         );
         panelPropsLayout.setVerticalGroup(
             panelPropsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPropsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textFieldPlaneName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(radioButtonWeek)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(radioButtonChet)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(panelPropsLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel5)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(textFieldPlaneName, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(radioButtonWeek)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(radioButtonChet)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap())
         );
 
         panelButtons.setBorder(new javax.swing.border.MatteBorder(null));
@@ -663,116 +853,67 @@ public class FScheduleChangeDialod extends javax.swing.JDialog {
         panelButtons.setLayout(panelButtonsLayout);
         panelButtonsLayout.setHorizontalGroup(
             panelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelButtonsLayout.createSequentialGroup()
-                .addContainerGap(393, Short.MAX_VALUE)
-                .addComponent(buttonSave)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(buttonCancel)
-                .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    panelButtonsLayout.createSequentialGroup()
+                        .addContainerGap(393, Short.MAX_VALUE)
+                        .addComponent(buttonSave)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(buttonCancel)
+                        .addContainerGap())
         );
         panelButtonsLayout.setVerticalGroup(
             panelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelButtonsLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonCancel)
-                    .addComponent(buttonSave))
-                .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    panelButtonsLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(panelButtonsLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(buttonCancel)
+                            .addComponent(buttonSave))
+                        .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(panelProps, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelProps, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(panelProps, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addComponent(panelProps, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(panelButtons, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
+    private void buttonSaveActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
         saveSchedule();
         setVisible(false);
     }//GEN-LAST:event_buttonSaveActionPerformed
 
-    private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
+    private void buttonCancelActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
         setVisible(false);
     }//GEN-LAST:event_buttonCancelActionPerformed
 
-    private void radioButtonWeekStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_radioButtonWeekStateChanged
-        c1.setText(radioButtonWeek.isSelected() ? getLocaleMessage("c1.text") : getLocaleMessage("dialog.parity"));
-        c2.setText(radioButtonWeek.isSelected() ? getLocaleMessage("c2.text") : getLocaleMessage("dialog.not_parity"));
+    private void radioButtonWeekStateChanged(
+        javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_radioButtonWeekStateChanged
+        c1.setText(radioButtonWeek.isSelected() ? getLocaleMessage("c1.text")
+            : getLocaleMessage("dialog.parity"));
+        c2.setText(radioButtonWeek.isSelected() ? getLocaleMessage("c2.text")
+            : getLocaleMessage("dialog.not_parity"));
         panelWeek.setVisible(radioButtonWeek.isSelected());
     }//GEN-LAST:event_radioButtonWeekStateChanged
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonCancel;
-    private javax.swing.ButtonGroup buttonGroupTypes;
-    private javax.swing.JButton buttonSave;
-    private javax.swing.JCheckBox c1;
-    private javax.swing.JCheckBox c2;
-    private javax.swing.JCheckBox c3;
-    private javax.swing.JCheckBox c4;
-    private javax.swing.JCheckBox c5;
-    private javax.swing.JCheckBox c6;
-    private javax.swing.JCheckBox c7;
-    private javax.swing.JComboBox cb1;
-    private javax.swing.JComboBox cb2;
-    private javax.swing.JComboBox cb3;
-    private javax.swing.JComboBox cb4;
-    private javax.swing.JComboBox cb5;
-    private javax.swing.JComboBox cb6;
-    private javax.swing.JComboBox cb7;
-    private javax.swing.JFormattedTextField e1;
-    private javax.swing.JFormattedTextField e2;
-    private javax.swing.JFormattedTextField e3;
-    private javax.swing.JFormattedTextField e4;
-    private javax.swing.JFormattedTextField e5;
-    private javax.swing.JFormattedTextField e6;
-    private javax.swing.JFormattedTextField e7;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel panelButtons;
-    private javax.swing.JPanel panelProps;
-    private javax.swing.JPanel panelWeek;
-    private javax.swing.JRadioButton radioButtonChet;
-    private javax.swing.JRadioButton radioButtonWeek;
-    private javax.swing.JFormattedTextField s1;
-    private javax.swing.JFormattedTextField s2;
-    private javax.swing.JFormattedTextField s3;
-    private javax.swing.JFormattedTextField s4;
-    private javax.swing.JFormattedTextField s5;
-    private javax.swing.JFormattedTextField s6;
-    private javax.swing.JFormattedTextField s7;
-    private javax.swing.JTextField textFieldPlaneName;
     // End of variables declaration//GEN-END:variables
 }

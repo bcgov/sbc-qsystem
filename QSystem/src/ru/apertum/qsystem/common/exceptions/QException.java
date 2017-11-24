@@ -19,7 +19,6 @@ package ru.apertum.qsystem.common.exceptions;
 import ru.apertum.qsystem.common.QLog;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QException extends Exception {

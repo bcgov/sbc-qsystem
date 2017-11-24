@@ -16,15 +16,13 @@
  */
 package ru.apertum.qsystem;
 
-import ru.apertum.qsystem.client.forms.FAbout;
-import ru.apertum.qsystem.common.exceptions.ServerException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import ru.apertum.qsystem.client.forms.FAbout;
+import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class About {
@@ -35,7 +33,8 @@ public class About {
 
     public static void load() {
         final Properties settings = new Properties();
-        final InputStream inStream = settings.getClass().getResourceAsStream("/ru/apertum/qsystem/common/version.properties");
+        final InputStream inStream = settings.getClass()
+            .getResourceAsStream("/ru/apertum/qsystem/common/version.properties");
 
         try {
             settings.load(inStream);

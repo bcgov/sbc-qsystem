@@ -18,15 +18,17 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.util.LinkedList;
 import ru.apertum.qsystem.common.model.QCustomer;
 
-import java.util.LinkedList;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetPostponedPoolInfo extends JsonRPC20 {
+
+    @Expose
+    @SerializedName("result")
+    private LinkedList<QCustomer> result;
 
     public RpcGetPostponedPoolInfo() {
     }
@@ -35,15 +37,11 @@ public class RpcGetPostponedPoolInfo extends JsonRPC20 {
         this.result = result;
     }
 
-    @Expose
-    @SerializedName("result")
-    private LinkedList<QCustomer> result;
+    public LinkedList<QCustomer> getResult() {
+        return result;
+    }
 
     public void setResult(LinkedList<QCustomer> result) {
         this.result = result;
-    }
-
-    public LinkedList<QCustomer> getResult() {
-        return result;
     }
 }

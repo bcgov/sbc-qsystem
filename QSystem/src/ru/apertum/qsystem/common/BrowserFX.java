@@ -16,6 +16,9 @@
  */
 package ru.apertum.qsystem.common;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.util.Set;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -29,30 +32,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import javax.swing.JPanel;
 import ru.apertum.qsystem.common.exceptions.ClientException;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Set;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class BrowserFX extends JPanel {
 
     private final JFXPanel javafxPanel;
+    volatile boolean ready = false;
     private Browser bro;
-
-    public WebEngine getWebEngine() {
-        return bro.getWebEngine();
-    }
-
-    public void executeJavascript(String javascript) {
-        Platform.runLater(() -> {
-            getWebEngine().executeScript(javascript);
-        });
-    }
 
     public BrowserFX() {
         javafxPanel = new JFXPanel();
@@ -73,7 +63,15 @@ public class BrowserFX extends JPanel {
         });
     }
 
-    volatile boolean ready = false;
+    public WebEngine getWebEngine() {
+        return bro.getWebEngine();
+    }
+
+    public void executeJavascript(String javascript) {
+        Platform.runLater(() -> {
+            getWebEngine().executeScript(javascript);
+        });
+    }
 
     private void waitBrowser() {
         if (!ready) {
@@ -131,10 +129,6 @@ public class BrowserFX extends JPanel {
         final private WebView browser = new WebView();
         final private WebEngine webEngine = browser.getEngine();
 
-        private WebEngine getWebEngine() {
-            return webEngine;
-        }
-
         public Browser() {
             browser.getChildrenUnmodifiable().addListener((Change<? extends Node> change) -> {
                 final Set<Node> deadSeaScrolls = browser.lookupAll(".scroll-bar");
@@ -143,6 +137,10 @@ public class BrowserFX extends JPanel {
                 });
             });
             getChildren().add(browser);
+        }
+
+        private WebEngine getWebEngine() {
+            return webEngine;
         }
 
         public void load(String url) {
@@ -183,7 +181,9 @@ public class BrowserFX extends JPanel {
             Platform.runLater(() -> {
                 history.go(1);
             });
-            return entryList.get(currentIndex < entryList.size() - 1 ? currentIndex + 1 : currentIndex).getUrl();
+            return entryList
+                .get(currentIndex < entryList.size() - 1 ? currentIndex + 1 : currentIndex)
+                .getUrl();
         }
     }
 }

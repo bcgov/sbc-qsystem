@@ -18,6 +18,12 @@ package ru.apertum.qsystem.server;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import org.hibernate.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import ru.apertum.qsystem.common.QLog;
@@ -27,10 +33,7 @@ import ru.apertum.qsystem.server.model.QNet;
 import ru.apertum.qsystem.server.model.QProperty;
 import ru.apertum.qsystem.server.model.QStandards;
 
-import java.util.*;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class ServerProps {
@@ -38,6 +41,17 @@ public class ServerProps {
     private final QNet netProp = new QNet();
     private final QStandards standards = new QStandards();
     private final LinkedHashMap<String, Section> properties = new LinkedHashMap<>();
+
+    private ServerProps() {
+        load();
+        ServerEvents.getInstance().registerListener(() -> {
+            load();
+        });
+    }
+
+    public static ServerProps getInstance() {
+        return ServerPropsHolder.INSTANCE;
+    }
 
     public QNet getProps() {
         return netProp;
@@ -49,13 +63,6 @@ public class ServerProps {
 
     public LinkedHashMap<String, Section> getDBproperties() {
         return properties;
-    }
-
-    private ServerProps() {
-        load();
-        ServerEvents.getInstance().registerListener(() -> {
-            load();
-        });
     }
 
     private void load() {
@@ -75,15 +82,6 @@ public class ServerProps {
             final Section section = properties.get(p.getSection());
             section.addProperty(p);
         });
-    }
-
-    public static ServerProps getInstance() {
-        return ServerPropsHolder.INSTANCE;
-    }
-
-    private static class ServerPropsHolder {
-
-        private static final ServerProps INSTANCE = new ServerProps();
     }
 
     /**
@@ -154,79 +152,9 @@ public class ServerProps {
         return properties.values();
     }
 
-    public static final class Section {
-
-        @Expose
-        @SerializedName("name")
-        private final String name;
-        @Expose
-        @SerializedName("properties")
-        private final LinkedHashMap<String, QProperty> properties;
-
-        public Section(String name, LinkedHashMap<String, QProperty> properties) {
-            this.name = name;
-            this.properties = properties;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public LinkedHashMap<String, QProperty> getProperties() {
-            return properties;
-        }
-
-        /**
-         * Получить параметр из секции
-         *
-         * @param key ключ параметра
-         * @return требуемый параметр. Может быть NULL если по имени не нашлось.
-         */
-        public QProperty getProperty(String key) {
-            return properties.get(key);
-        }
-
-        public QProperty addProperty(String key, String value, String comment) {
-            final QProperty res = new QProperty(name, key, value, comment);
-            properties.put(key, res);
-            return res;
-        }
-
-        public void addProperty(QProperty prop) {
-            if ((prop.getSection() == null && name == null) || name.equals(prop.getSection())) {
-                if (properties.containsKey(prop.getKey())) {
-                    throw new IllegalArgumentException("Key " + prop.getKey() + " already exists in this section \"" + name + "\"");
-                }
-                properties.put(prop.getKey(), prop);
-            } else {
-                throw new IllegalArgumentException("Property " + prop + " already has the section but not from \"" + name + "\"");
-            }
-
-        }
-
-        public void removeProperty(QProperty prop) {
-            if ((prop.getSection() == null && name == null) || name.equals(prop.getSection())) {
-                properties.remove(prop.getKey());
-            } else {
-                throw new IllegalArgumentException("Property " + prop + " is not from this section \"" + name + "\"");
-            }
-        }
-
-        public void removeProperty(String key) {
-            if (properties.containsKey(key)) {
-                properties.remove(key);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-    }
-
     /**
-     * Получает параметр по имени из секции. Секция должна существовать и параметр должен присутствовать, иначе NULL.
+     * Получает параметр по имени из секции. Секция должна существовать и параметр должен
+     * присутствовать, иначе NULL.
      *
      * @param section название секции
      * @param key название параметра
@@ -260,7 +188,8 @@ public class ServerProps {
      * @param deafultСomment этот коммент добавится к созданному параметру
      * @return найденный или созданный параметр.
      */
-    public QProperty getProperty(String section, String key, String deafultValue, String deafultComment) {
+    public QProperty getProperty(String section, String key, String deafultValue,
+        String deafultComment) {
         final QProperty p = getProperty(section, key);
         if (p == null) {
             return saveOrUpdateProperty(section, key, deafultValue, deafultComment);
@@ -275,8 +204,8 @@ public class ServerProps {
     }
 
     /**
-     * Добавляем параметр. Если нет секции или параметер не существует, то секция или параметер будут созданы. Если параметер существует, то он будет изменен и
-     * сохранен в БД.
+     * Добавляем параметр. Если нет секции или параметер не существует, то секция или параметер
+     * будут созданы. Если параметер существует, то он будет изменен и сохранен в БД.
      *
      * @param section параметер в этой секции
      * @param key с таким ключем
@@ -284,7 +213,8 @@ public class ServerProps {
      * @param comment коментарий по параметру
      * @return созданный или сохраненный параметр
      */
-    public QProperty saveOrUpdateProperty(String section, String key, String value, String comment) {
+    public QProperty saveOrUpdateProperty(String section, String key, String value,
+        String comment) {
         if (key == null) {
             throw new IllegalArgumentException("Key must be not NULL");
         }
@@ -320,7 +250,8 @@ public class ServerProps {
             final LinkedList<QProperty> res = new LinkedList<>();
             properties.values().forEach(sec -> {
                 sec.properties.values().forEach(p -> {
-                    if (p.equals(prop) && p.getId().equals(prop.getId()) && p.hashCode() == prop.hashCode()) {
+                    if (p.equals(prop) && p.getId().equals(prop.getId()) && p.hashCode() == prop
+                        .hashCode()) {
                         res.add(prop);
                     }
                 });
@@ -328,7 +259,9 @@ public class ServerProps {
             if (res.size() == 1) {
                 return saveProp(prop);
             } else {
-                throw new IllegalArgumentException("Properties " + prop + " is weird. It has ID but among the properties was not found.");
+                throw new IllegalArgumentException(
+                    "Properties " + prop
+                        + " is weird. It has ID but among the properties was not found.");
             }
         }
     }
@@ -358,17 +291,24 @@ public class ServerProps {
                         Spring.getInstance().getHt().delete(prop);
                     }
                 } catch (Exception ex) {
-                    QLog.l().logger().error("Ошибка при " + (save ? "сохранении" : "удалении") + " \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+                    QLog.l().logger().error(
+                        "Ошибка при " + (save ? "сохранении" : "удалении") + " \n" + ex.toString()
+                            + "\n"
+                            + Arrays.toString(ex.getStackTrace()));
                     status.setRollbackOnly();
                     return ex;
                 }
                 return null;
             });
         } catch (TransactionException ex) {
-            throw new ServerException("Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n(" + ex.toString() + ")");
+            throw new ServerException(
+                "Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n("
+                    + ex.toString() + ")");
         }
         if (res != null) {
-            throw new ServerException("Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n[" + res.getLocalizedMessage() + "]\n(" + res.toString() + ")\nSQL: ");
+            throw new ServerException(
+                "Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n["
+                    + res.getLocalizedMessage() + "]\n(" + res.toString() + ")\nSQL: ");
         }
         return prop;
     }
@@ -384,17 +324,23 @@ public class ServerProps {
                 try {
                     Spring.getInstance().getHt().saveOrUpdateAll(col);
                 } catch (Exception ex) {
-                    QLog.l().logger().error("Ошибка при сохранении \n" + ex.toString() + "\n" + Arrays.toString(ex.getStackTrace()));
+                    QLog.l().logger()
+                        .error("Ошибка при сохранении \n" + ex.toString() + "\n" + Arrays
+                            .toString(ex.getStackTrace()));
                     status.setRollbackOnly();
                     return ex;
                 }
                 return null;
             });
         } catch (TransactionException ex) {
-            throw new ServerException("Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n(" + ex.toString() + ")");
+            throw new ServerException(
+                "Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n("
+                    + ex.toString() + ")");
         }
         if (res != null) {
-            throw new ServerException("Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n[" + res.getLocalizedMessage() + "]\n(" + res.toString() + ")\nSQL: ");
+            throw new ServerException(
+                "Ошибка выполнения операции изменения данных в БД(JDBC). Возможно введенные вами параметры не могут быть сохранены.\n["
+                    + res.getLocalizedMessage() + "]\n(" + res.toString() + ")\nSQL: ");
         }
     }
 
@@ -441,5 +387,85 @@ public class ServerProps {
                 secmap.removeProperty(prop);
             }
         }
+    }
+
+    private static class ServerPropsHolder {
+
+        private static final ServerProps INSTANCE = new ServerProps();
+    }
+
+    public static final class Section {
+
+        @Expose
+        @SerializedName("name")
+        private final String name;
+        @Expose
+        @SerializedName("properties")
+        private final LinkedHashMap<String, QProperty> properties;
+
+        public Section(String name, LinkedHashMap<String, QProperty> properties) {
+            this.name = name;
+            this.properties = properties;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public LinkedHashMap<String, QProperty> getProperties() {
+            return properties;
+        }
+
+        /**
+         * Получить параметр из секции
+         *
+         * @param key ключ параметра
+         * @return требуемый параметр. Может быть NULL если по имени не нашлось.
+         */
+        public QProperty getProperty(String key) {
+            return properties.get(key);
+        }
+
+        public QProperty addProperty(String key, String value, String comment) {
+            final QProperty res = new QProperty(name, key, value, comment);
+            properties.put(key, res);
+            return res;
+        }
+
+        public void addProperty(QProperty prop) {
+            if ((prop.getSection() == null && name == null) || name.equals(prop.getSection())) {
+                if (properties.containsKey(prop.getKey())) {
+                    throw new IllegalArgumentException(
+                        "Key " + prop.getKey() + " already exists in this section \"" + name
+                            + "\"");
+                }
+                properties.put(prop.getKey(), prop);
+            } else {
+                throw new IllegalArgumentException(
+                    "Property " + prop + " already has the section but not from \"" + name + "\"");
+            }
+
+        }
+
+        public void removeProperty(QProperty prop) {
+            if ((prop.getSection() == null && name == null) || name.equals(prop.getSection())) {
+                properties.remove(prop.getKey());
+            } else {
+                throw new IllegalArgumentException(
+                    "Property " + prop + " is not from this section \"" + name + "\"");
+            }
+        }
+
+        public void removeProperty(String key) {
+            if (properties.containsKey(key)) {
+                properties.remove(key);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
     }
 }

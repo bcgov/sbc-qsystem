@@ -18,6 +18,7 @@ package ru.apertum.qsystem.extra;
 
 /**
  * Интерфейс плагинов, которые просто стартуют при старте сервера СУО
+ *
  * @author Evgeniy Egorov
  */
 public interface IStartServer extends IExtra {

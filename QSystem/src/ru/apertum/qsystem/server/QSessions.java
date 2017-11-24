@@ -16,12 +16,11 @@
  */
 package ru.apertum.qsystem.server;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.model.QUserList;
-
-import java.util.Arrays;
-import java.util.LinkedList;
 
 /**
  * Тут сессии пользователей. Истекают черех N минут = константа в сессии
@@ -30,6 +29,9 @@ import java.util.LinkedList;
  */
 public class QSessions {
 
+    private final LinkedList<QSession> sessions = new LinkedList<>();
+    private int i = 0;
+
     private QSessions() {
     }
 
@@ -37,18 +39,9 @@ public class QSessions {
         return SessionsHolder.INSTANCE;
     }
 
-    private static class SessionsHolder {
-
-        private static final QSessions INSTANCE = new QSessions();
-    }
-
-    private final LinkedList<QSession> sessions = new LinkedList<>();
-
     public LinkedList<QSession> getSessions() {
         return sessions;
     }
-
-    private int i = 0;
 
     public synchronized void update(Long userId, String ipAdress, byte[] IP) {
         if (++i > 1000) {
@@ -61,7 +54,7 @@ public class QSessions {
         }
         for (QSession session : sessions) {
             if ((ipAdress.equals(session.getIpAdress()) || Arrays.equals(IP, session.getIP()))
-                    && (userId != null && userId.equals(session.getUser().getId()))) {
+                && (userId != null && userId.equals(session.getUser().getId()))) {
                 session.update();
                 return;
             }
@@ -71,21 +64,26 @@ public class QSessions {
     public synchronized boolean check(Long userId, String ipAdress, byte[] IP) {
         for (QSession session : sessions) {
             if ((session.isValid())
-                    && ((!QConfig.cfg().isTerminal() && (ipAdress.equals(session.getIpAdress()) || Arrays.equals(IP, session.getIP())))
+                && (
+                (!QConfig.cfg().isTerminal() && (ipAdress.equals(session.getIpAdress()) || Arrays
+                    .equals(IP, session.getIP())))
                     || (userId != null && userId.equals(session.getUser().getId())))) {
 
-                if ((QConfig.cfg().isTerminal() || (ipAdress.equals(session.getIpAdress()) || Arrays.equals(IP, session.getIP())))
-                        && (userId != null && userId.equals(session.getUser().getId()))) {
+                if ((QConfig.cfg().isTerminal() || (ipAdress.equals(session.getIpAdress()) || Arrays
+                    .equals(IP, session.getIP())))
+                    && (userId != null && userId.equals(session.getUser().getId()))) {
                     continue;
                 }
 
-                QLog.l().logger().warn("Bad QSession for userID=" + userId + " adress=" + ipAdress + " ip=" + Arrays.toString(IP));
+                QLog.l().logger().warn(
+                    "Bad QSession for userID=" + userId + " adress=" + ipAdress + " ip=" + Arrays
+                        .toString(IP));
                 return false;
             }
         }
         for (QSession session : sessions) {
             if ((ipAdress.equals(session.getIpAdress()) || Arrays.equals(IP, session.getIP()))
-                    && (userId != null && userId.equals(session.getUser().getId()))) {
+                && (userId != null && userId.equals(session.getUser().getId()))) {
                 session.update();
                 return true;
             }
@@ -100,6 +98,11 @@ public class QSessions {
                 return;
             }
         }
+    }
+
+    private static class SessionsHolder {
+
+        private static final QSessions INSTANCE = new QSessions();
     }
 
 }

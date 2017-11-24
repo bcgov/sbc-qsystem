@@ -16,25 +16,25 @@
  */
 package ru.apertum.qsystem.reports.formirovators;
 
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.reports.common.Response;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Формирует источник данных для отчета.
- * Здесь реализация всей  логики сбора данных и подготовки их для формирования документа.
+ * Формирует источник данных для отчета. Здесь реализация всей  логики сбора данных и подготовки их
+ * для формирования документа.
+ *
  * @author Evgeniy Egorov
  */
 public interface IFormirovator {
 
-    /** 
-     * Получение источника данных для отчета.
-     * При построении отчета через коннект SQL-выражение находится в шаблоне отчета, по этому метод getDataSource() 
-     * не вызывается.
+    /**
+     * Получение источника данных для отчета. При построении отчета через коннект SQL-выражение
+     * находится в шаблоне отчета, по этому метод getDataSource() не вызывается.
+     *
      * @param driverClassName имя драйвера используемого для подключения к СУБД
      * @param password пароль с которым пользователь соединяется с базой
      * @param url использыемай база в СУБД
@@ -42,7 +42,8 @@ public interface IFormirovator {
      * @param username пользователь СУБД
      * @return Готовая структура для компилирования в документ.
      */
-    public JRDataSource getDataSource(String driverClassName, String url, String username, String password, HttpRequest request);
+    public JRDataSource getDataSource(String driverClassName, String url, String username,
+        String password, HttpRequest request);
 
     /*
      * Метод выполнения неких действия для подготовки данных отчета.
@@ -62,10 +63,11 @@ public interface IFormirovator {
      
     public byte[] preparation(String driverClassName, String url, String username, String password, HttpRequest request);
 */
+
     /**
-     * Метод выполнения неких действия для подготовки данных отчета.
-     * Если он возвращает заполненный массив байт, то его нужно отдать клиенту,
-     * иначе если null то продолжаем генерировать отчет.
+     * Метод выполнения неких действия для подготовки данных отчета. Если он возвращает заполненный
+     * массив байт, то его нужно отдать клиенту, иначе если null то продолжаем генерировать отчет.
+     *
      * @param driverClassName имя драйвера используемого для подключения к СУБД
      * @param request данные пришедшие от браузера
      * @param password пароль с которым пользователь соединяется с базой
@@ -73,52 +75,56 @@ public interface IFormirovator {
      * @param username пользователь СУБД
      * @return данные для выдачи на клиента. или null если ничего выдавать не нужно
      */
-    public Response preparationReport(String driverClassName, String url, String username, String password, HttpRequest request);
+    public Response preparationReport(String driverClassName, String url, String username,
+        String password, HttpRequest request);
 
     /**
-     * Получение страници диалога ввода параметров перед генерацией отчета.
-     * Если диалог не нужет то вернуть null
-     * @param driverClassName имя драйвера используемого для подключения к СУБД
-     * @param request данные пришедшие от браузера
-     * @param password пароль с которым пользователь соединяется с базой
-     * @param url использыемай база в СУБД
-     * @param username пользователь СУБД
-     * @param errorMessage это сообщение об ошибке предыдущего ввода. Может быть null если вводится первый раз.
-     * @return данные для выдачи на клиента или null.
-     */
-    public Response getDialog(String driverClassName, String url, String username, String password, HttpRequest request, String errorMessage);
-
-    /**
+     * Получение страници диалога ввода параметров перед генерацией отчета. Если диалог не нужет то
+     * вернуть null
      *
      * @param driverClassName имя драйвера используемого для подключения к СУБД
      * @param request данные пришедшие от браузера
      * @param password пароль с которым пользователь соединяется с базой
      * @param url использыемай база в СУБД
      * @param username пользователь СУБД
-     * @param params параметры из HttpRequest request
-     * @return null если все хорошо, сообщение обошибке если что-то не в порядке. Это сообщение будет передано
-     * в повторный вызов метода getDialog()
+     * @param errorMessage это сообщение об ошибке предыдущего ввода. Может быть null если вводится
+     * первый раз.
+     * @return данные для выдачи на клиента или null.
      */
-    public String validate(String driverClassName, String url, String username, String password, HttpRequest request, HashMap<String, String> params);
+    public Response getDialog(String driverClassName, String url, String username, String password,
+        HttpRequest request, String errorMessage);
 
     /**
-     * Метод формирования параметров для отчета.
-     * В отчет нужно передать некие параметры. Они упаковываются в Мар.
-     * Если параметры не нужны, то сформировать пустой Мар.
      * @param driverClassName имя драйвера используемого для подключения к СУБД
      * @param request данные пришедшие от браузера
      * @param password пароль с которым пользователь соединяется с базой
      * @param url использыемай база в СУБД
      * @param username пользователь СУБД
-     * @return
+     * @param params параметры из HttpRequest request
+     * @return null если все хорошо, сообщение обошибке если что-то не в порядке. Это сообщение
+     * будет передано в повторный вызов метода getDialog()
      */
-    public Map getParameters(String driverClassName, String url, String username, String password, HttpRequest request);
+    public String validate(String driverClassName, String url, String username, String password,
+        HttpRequest request, HashMap<String, String> params);
 
     /**
-     * Метод получения коннекта к базе если отчет строится через коннект.
-     * Если отчет строится не через коннект, а формироватором, то выдать null.
-     * При построении отчета через коннект SQL-выражение находится в шаблоне отчета, по этому метод getDataSource() 
-     * не вызывается.
+     * Метод формирования параметров для отчета. В отчет нужно передать некие параметры. Они
+     * упаковываются в Мар. Если параметры не нужны, то сформировать пустой Мар.
+     *
+     * @param driverClassName имя драйвера используемого для подключения к СУБД
+     * @param request данные пришедшие от браузера
+     * @param password пароль с которым пользователь соединяется с базой
+     * @param url использыемай база в СУБД
+     * @param username пользователь СУБД
+     */
+    public Map getParameters(String driverClassName, String url, String username, String password,
+        HttpRequest request);
+
+    /**
+     * Метод получения коннекта к базе если отчет строится через коннект. Если отчет строится не
+     * через коннект, а формироватором, то выдать null. При построении отчета через коннект
+     * SQL-выражение находится в шаблоне отчета, по этому метод getDataSource() не вызывается.
+     *
      * @param driverClassName имя драйвера используемого для подключения к СУБД
      * @param request данные пришедшие от браузера
      * @param password пароль с которым пользователь соединяется с базой
@@ -126,5 +132,6 @@ public interface IFormirovator {
      * @param username пользователь СУБД
      * @return коннект соединения к базе или null.
      */
-    public Connection getConnection(String driverClassName, String url, String username, String password, HttpRequest request);
+    public Connection getConnection(String driverClassName, String url, String username,
+        String password, HttpRequest request);
 }

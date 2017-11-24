@@ -17,6 +17,14 @@
 package ru.apertum.qsystem.server.http;
 
 import com.google.gson.Gson;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Properties;
+import java.util.Scanner;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import ru.apertum.qsystem.client.forms.FAbout;
@@ -28,17 +36,7 @@ import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.controller.Executer;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Properties;
-import java.util.Scanner;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class CommandHandler extends AbstractHandler {
@@ -48,7 +46,8 @@ public class CommandHandler extends AbstractHandler {
     public static final String INFO_URL_PATTERN = "/info";
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
+    public void handle(String target, Request baseRequest, HttpServletRequest request,
+        HttpServletResponse response) {
         final String result;
         final int status;
         String contentType = "text/json;charset=utf-8";
@@ -60,33 +59,44 @@ public class CommandHandler extends AbstractHandler {
                 QLog.l().logger().trace("HTTP task: " + INFO_URL_PATTERN);
                 final Properties settings = new Properties();
                 //"/ru/apertum/qsystem/reports/web/"
-                final InputStream inStream = this.getClass().getResourceAsStream("/ru/apertum/qsystem/common/version.properties");
+                final InputStream inStream = this.getClass()
+                    .getResourceAsStream("/ru/apertum/qsystem/common/version.properties");
 
                 try {
                     settings.load(inStream);
                 } catch (IOException ex) {
                     throw new ServerException("Проблемы с чтением версии. " + ex);
                 }
-                result = "<html><h1>QSystem<hr><br>Welcome to server QSystem!<br><br>Добро пожаловать на сервер QSystem!</h1><br>"
-                        + FAbout.getLocaleMessage("about.version") + " : " + settings.getProperty(FAbout.VERSION)
+                result =
+                    "<html><h1>QSystem<hr><br>Welcome to server QSystem!<br><br>Добро пожаловать на сервер QSystem!</h1><br>"
+                        + FAbout.getLocaleMessage("about.version") + " : " + settings
+                        .getProperty(FAbout.VERSION)
                         + "<br>"
-                        + FAbout.getLocaleMessage("about.db_version") + " : " + ServerProps.getInstance().getProps().getVersion()
+                        + FAbout.getLocaleMessage("about.db_version") + " : " + ServerProps
+                        .getInstance()
+                        .getProps().getVersion()
                         + "<br>"
-                        + FAbout.getLocaleMessage("about.data") + " : " + settings.getProperty(FAbout.DATE);
+                        + FAbout.getLocaleMessage("about.data") + " : " + settings
+                        .getProperty(FAbout.DATE);
                 status = HttpServletResponse.SC_OK;
                 contentType = "text/html;charset=utf-8";
                 break;
             case CMD_URL_PATTERN:
                 final JsonRPC20 rpc;
                 if ("GET".equalsIgnoreCase(request.getMethod())) {
-                    QLog.l().logger().trace("HTTP GET task: \"" + request.getParameter(CmdParams.CMD) + "\"\n" + request.getQueryString());
-                    rpc = new JsonRPC20(request.getParameter(CmdParams.CMD), new CmdParams(request.getQueryString()));
+                    QLog.l().logger().trace(
+                        "HTTP GET task: \"" + request.getParameter(CmdParams.CMD) + "\"\n" + request
+                            .getQueryString());
+                    rpc = new JsonRPC20(request.getParameter(CmdParams.CMD),
+                        new CmdParams(request.getQueryString()));
                 } else {//POST
                     final String data;
                     try {
                         request.setCharacterEncoding("utf-8");
                         final StringBuilder sb = new StringBuilder();
-                        try (ServletInputStream fis = request.getInputStream(); Scanner s = new Scanner(new InputStreamReader(fis, "UTF-8"))) {
+                        try (ServletInputStream fis = request
+                            .getInputStream(); Scanner s = new Scanner(
+                            new InputStreamReader(fis, "UTF-8"))) {
                             while (s.hasNextLine()) {
                                 final String line = s.nextLine().trim();
                                 sb.append(line);
@@ -112,7 +122,10 @@ public class CommandHandler extends AbstractHandler {
                         QLog.l().logger().error("Не получен текст команды по http..");
                         break;
                     }
-                    QLog.l().logger().trace("HTTP POST task:\n" + (data.length() > 200 ? (data.substring(0, 200) + "...") : data));
+                    QLog.l().logger().trace(
+                        "HTTP POST task:\n" + (data.length() > 200 ? (data.substring(0, 200)
+                            + "...")
+                            : data));
 
                     final Gson gson = GsonPool.getInstance().borrowGson();
                     try {
@@ -127,7 +140,8 @@ public class CommandHandler extends AbstractHandler {
                 boolean f = false;
                 try {
                     // полученное задание передаем в пул
-                    final Object res = Executer.getInstance().doTask(rpc, request.getRemoteAddr(), request.getRemoteAddr().getBytes());
+                    final Object res = Executer.getInstance()
+                        .doTask(rpc, request.getRemoteAddr(), request.getRemoteAddr().getBytes());
                     answer = gson.toJson(res);
 
                 } catch (Exception ex) {
@@ -139,8 +153,11 @@ public class CommandHandler extends AbstractHandler {
                 }
                 result = answer;
                 // выводим данные:
-                QLog.l().logger().trace("HTTP response:\n" + (answer.length() > 200 ? (answer.substring(0, 200) + "...") : answer));
-                status = f ? HttpServletResponse.SC_INTERNAL_SERVER_ERROR : HttpServletResponse.SC_OK;
+                QLog.l().logger().trace(
+                    "HTTP response:\n" + (answer.length() > 200 ? (answer.substring(0, 200) + "...")
+                        : answer));
+                status =
+                    f ? HttpServletResponse.SC_INTERNAL_SERVER_ERROR : HttpServletResponse.SC_OK;
                 break;
             default:
                 //status = HttpServletResponse.SC_OK;

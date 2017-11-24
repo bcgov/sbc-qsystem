@@ -24,21 +24,20 @@ import java.net.URLEncoder;
 import java.util.Scanner;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class Exit {
 
     /**
      * @param args the command line arguments
-     * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
         final String data;
         try {
             final Socket socket = new Socket();
             try {
-                socket.connect(new InetSocketAddress("127.0.0.1", ServerProps.getInstance().getProps().getServerPort()), 3000);
+                socket.connect(new InetSocketAddress("127.0.0.1",
+                    ServerProps.getInstance().getProps().getServerPort()), 3000);
             } catch (IOException ex) {
                 throw new Exception("Fail to connect to server. ", ex);
             }
@@ -56,5 +55,5 @@ public class Exit {
             throw new Exception("Unable to get a response from the server. ", ex);
         }
     }
-    
+
 }

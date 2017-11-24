@@ -18,8 +18,31 @@ package ru.apertum.qsystem.client.model;
 
 import com.sun.java.swing.plaf.motif.MotifComboBoxUI;
 import com.sun.java.swing.plaf.windows.WindowsComboBoxUI;
-
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -28,9 +51,13 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.ComboBoxUI;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
-import javax.swing.tree.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 public final class JTreeComboBox extends JComboBox implements TreeSelectionListener {
 
@@ -43,6 +70,67 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
     public JTreeComboBox(TreeModel aTreeModel) {
         initializeTree();
         setTreeModel(aTreeModel);
+    }
+
+    //////////////////////////////////////////////////////////////
+    // This is only included to provide a sample GUI
+    //////////////////////////////////////////////////////////////
+    public static void main(String args[]) {
+        DefaultMutableTreeNode root1 = new DefaultMutableTreeNode("test1");
+        DefaultTreeModel treeModel1 = new DefaultTreeModel(root1);
+        DefaultMutableTreeNode root2 = new DefaultMutableTreeNode("test2");
+        DefaultTreeModel treeModel2 = new DefaultTreeModel(root2);
+
+        for (int i = 1; i < 10; i++) {
+            treeModel1.insertNodeInto(new DefaultMutableTreeNode("Node" + i),
+                root1, root1.getChildCount());
+        }
+
+        for (int i = 1; i < 10; i++) {
+            treeModel2.insertNodeInto(new DefaultMutableTreeNode("Node" + i),
+                root2, root2.getChildCount());
+        }
+        //TreeComboBox tc1 = new TreeComboBox();
+        //tc1.setTree(t1);
+
+        JFrame f = new JFrame();
+        Container p = f.getContentPane();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+
+        JPanel c = new JPanel();
+        c.setLayout(new BoxLayout(c, BoxLayout.X_AXIS));
+        c.add(new JLabel("Tree 1:"));
+        JTreeComboBox cb = new JTreeComboBox(treeModel1);
+        c.add(cb);
+        c.add(new JLabel("Tree 2:"));
+        JTreeComboBox dcb = new JTreeComboBox(treeModel2);
+        dcb.setEditable(true);
+        c.add(dcb);
+
+        cb.addActionListener((ActionEvent e) -> {
+            JTreeComboBox src = (JTreeComboBox) e.getSource();
+            //System.out.println("Selected " + src.getSelectedItem());
+        });
+        //c.add(new DateComboBox());
+        //c.add(new JComboBox(new String[] {"Item"}));
+         /*
+        JComboBox cb = new JComboBox(new String[] {"Item"});
+        cb.setEditable(true);
+        c.add(cb);
+         */
+        p.add(c);
+        p.add(Box.createVerticalStrut(200));
+        p.add(Box.createVerticalGlue());
+
+        f.addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        f.setSize(500, 200);
+        f.setVisible(true);
     }
 
     private void initializeTree() {
@@ -154,10 +242,17 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
     // TreePopup inner class
     //////////////////////////////////////////////////////////////
     final class TreePopup implements ComboPopup, MouseMotionListener,
-            MouseListener, KeyListener, PopupMenuListener {
+        MouseListener, KeyListener, PopupMenuListener {
 
         protected JComboBox comboBox;
         protected JPopupMenu popup;
+        protected JList list = new JList();
+        protected boolean mouseInside = false;
+        protected boolean hideNext = false;
+        //
+        // end Utility methods
+        //=================================================================
+        JScrollPane scroller = new JScrollPane();
 
         public TreePopup(JComboBox comboBox) {
             this.comboBox = comboBox;
@@ -195,7 +290,6 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
         public void hide() {
             popup.setVisible(false);
         }
-        protected JList list = new JList();
 
         @Override
         public JList getList() {
@@ -241,6 +335,7 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
         @Override
         public void mouseReleased(MouseEvent e) {
         }
+
         // something else registered for MousePressed
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -258,7 +353,6 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
             }
             togglePopup();
         }
-        protected boolean mouseInside = false;
 
         @Override
         public void mouseEntered(MouseEvent e) {
@@ -291,19 +385,18 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
         @Override
         public void keyReleased(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_SPACE
-                    || e.getKeyCode() == KeyEvent.VK_ENTER) {
+                || e.getKeyCode() == KeyEvent.VK_ENTER) {
                 togglePopup();
             }
         }
 
         /**
-         * Variables hideNext and mouseInside are used to 
-         * hide the popupMenu by clicking the mouse in the JComboBox
+         * Variables hideNext and mouseInside are used to hide the popupMenu by clicking the mouse
+         * in the JComboBox
          */
         @Override
         public void popupMenuCanceled(PopupMenuEvent e) {
         }
-        protected boolean hideNext = false;
 
         @Override
         public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
@@ -330,10 +423,6 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
             }
             hideNext = false;
         }
-        //
-        // end Utility methods
-        //=================================================================
-        JScrollPane scroller = new JScrollPane();
 
         protected void initializePopup() {
             popup = new JPopupMenu();
@@ -383,12 +472,12 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
 
         @Override
         public Component getTreeCellRendererComponent(
-                JTree tree, Object value,
-                boolean isSelected, boolean isExpanded,
-                boolean isLeaf, int row, boolean hasFocus) {
+            JTree tree, Object value,
+            boolean isSelected, boolean isExpanded,
+            boolean isLeaf, int row, boolean hasFocus) {
 
             JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value,
-                    isSelected, isExpanded, isLeaf, row, hasFocus);
+                isSelected, isExpanded, isLeaf, row, hasFocus);
             if (value == lastNode || (lastNode == null && isSelected)) {
                 label.setBackground(selectedBackground);
                 //label.setBackground(Color.red);
@@ -400,67 +489,5 @@ public final class JTreeComboBox extends JComboBox implements TreeSelectionListe
 
             return label;
         }
-    }
-
-    //////////////////////////////////////////////////////////////
-    // This is only included to provide a sample GUI
-    //////////////////////////////////////////////////////////////
-    public static void main(String args[]) {
-        DefaultMutableTreeNode root1 = new DefaultMutableTreeNode("test1");
-        DefaultTreeModel treeModel1 = new DefaultTreeModel(root1);
-        DefaultMutableTreeNode root2 = new DefaultMutableTreeNode("test2");
-        DefaultTreeModel treeModel2 = new DefaultTreeModel(root2);
-
-        for (int i = 1; i < 10; i++) {
-            treeModel1.insertNodeInto(new DefaultMutableTreeNode("Node" + i),
-                    root1, root1.getChildCount());
-        }
-
-
-        for (int i = 1; i < 10; i++) {
-            treeModel2.insertNodeInto(new DefaultMutableTreeNode("Node" + i),
-                    root2, root2.getChildCount());
-        }
-        //TreeComboBox tc1 = new TreeComboBox();
-        //tc1.setTree(t1);
-
-        JFrame f = new JFrame();
-        Container p = f.getContentPane();
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-
-        JPanel c = new JPanel();
-        c.setLayout(new BoxLayout(c, BoxLayout.X_AXIS));
-        c.add(new JLabel("Tree 1:"));
-        JTreeComboBox cb = new JTreeComboBox(treeModel1);
-        c.add(cb);
-        c.add(new JLabel("Tree 2:"));
-        JTreeComboBox dcb = new JTreeComboBox(treeModel2);
-        dcb.setEditable(true);
-        c.add(dcb);
-
-        cb.addActionListener((ActionEvent e) -> {
-            JTreeComboBox src = (JTreeComboBox) e.getSource();
-            //System.out.println("Selected " + src.getSelectedItem());
-        });
-        //c.add(new DateComboBox());
-        //c.add(new JComboBox(new String[] {"Item"}));
-         /*
-        JComboBox cb = new JComboBox(new String[] {"Item"});
-        cb.setEditable(true);
-        c.add(cb);
-         */
-        p.add(c);
-        p.add(Box.createVerticalStrut(200));
-        p.add(Box.createVerticalGlue());
-
-        f.addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
-        f.setSize(500, 200);
-        f.setVisible(true);
     }
 }

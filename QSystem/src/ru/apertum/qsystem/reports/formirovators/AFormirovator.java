@@ -16,6 +16,12 @@
  */
 package ru.apertum.qsystem.reports.formirovators;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.client.forms.FAbout;
@@ -25,57 +31,51 @@ import ru.apertum.qsystem.reports.common.RepResBundle;
 import ru.apertum.qsystem.reports.common.Response;
 import ru.apertum.qsystem.reports.net.NetUtil;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Формирует источник данных для отчета.
- * Сделан для удобства. чтоб не делать каждый раз ненужные методы.
+ * Формирует источник данных для отчета. Сделан для удобства. чтоб не делать каждый раз ненужные
+ * методы.
+ *
  * @author Evgeniy Egorov
  */
 abstract public class AFormirovator implements IFormirovator {
 
-    /** 
+    /**
      * Получение источника данных для отчета.
+     *
      * @return Готовая структура для компилирования в документ.
      */
     @Override
-    public JRDataSource getDataSource(String driverClassName, String url, String username, String password, HttpRequest request) {
+    public JRDataSource getDataSource(String driverClassName, String url, String username,
+        String password, HttpRequest request) {
         return null;
     }
 
     /**
-     * Метод формирования параметров для отчета.
-     * В отчет нужно передать некие параметры. Они упаковываются в Мар.
-     * Если параметры не нужны, то сформировать пустой Мар. Иначе перекрыть и сформировать Map с параметрами.
-     * Перекрыть при необходимости.
-     * @return
+     * Метод формирования параметров для отчета. В отчет нужно передать некие параметры. Они
+     * упаковываются в Мар. Если параметры не нужны, то сформировать пустой Мар. Иначе перекрыть и
+     * сформировать Map с параметрами. Перекрыть при необходимости.
      */
     @Override
-    public Map getParameters(String driverClassName, String url, String username, String password, HttpRequest request) {
+    public Map getParameters(String driverClassName, String url, String username, String password,
+        HttpRequest request) {
         return new HashMap();
     }
 
     /**
-     * Метод получения коннекта к базе если отчет строится через коннект.
-     * Если отчет строится не через коннект, а формироватором, то выдать null.
-     * Перекрыть при необходимости.
+     * Метод получения коннекта к базе если отчет строится через коннект. Если отчет строится не
+     * через коннект, а формироватором, то выдать null. Перекрыть при необходимости.
+     *
      * @return коннект соединения к базе или null.
      */
     @Override
-    public Connection getConnection(String driverClassName, String url, String username, String password, HttpRequest request) {
+    public Connection getConnection(String driverClassName, String url, String username,
+        String password, HttpRequest request) {
         return null;
     }
 
     /**
      * Типо если просто нужно отдать страницу
-     * @param HTMLfilePath
-     * @param request 
-     * @param errorMessage
+     *
      * @return готовая загруженная страница
      */
     protected Response getDialog(String HTMLfilePath, HttpRequest request, String errorMessage) {
@@ -99,27 +99,26 @@ abstract public class AFormirovator implements IFormirovator {
         Response res = null;
         try {
             res = new Response(RepResBundle.getInstance().prepareString(new String(result, "UTF-8").
-                    replaceFirst(Uses.ANCHOR_DATA_FOR_REPORT, NetUtil.getUrl(request)).
-                    replaceFirst(Uses.ANCHOR_ERROR_INPUT_DATA, errorMessage).
-                    replaceFirst(Uses.ANCHOR_PROJECT_NAME_FOR_REPORT, Uses.getLocaleMessage("project.name" + FAbout.getCMRC_SUFF()))).
-                    getBytes("UTF-8"));
+                replaceFirst(Uses.ANCHOR_DATA_FOR_REPORT, NetUtil.getUrl(request)).
+                replaceFirst(Uses.ANCHOR_ERROR_INPUT_DATA, errorMessage).
+                replaceFirst(Uses.ANCHOR_PROJECT_NAME_FOR_REPORT,
+                    Uses.getLocaleMessage("project.name" + FAbout.getCMRC_SUFF()))).
+                getBytes("UTF-8"));
         } catch (UnsupportedEncodingException ex) {
         }
         return res;
     }
 
     /**
-     * Ксли ничего дополнительного не требуется то метод и так вернет null.
-     * При необходимости перекрыть
-     * @param driverClassName
-     * @param url
-     * @param username
-     * @param password
-     * @param request
-     * @return данные. которые будут отосланы пользователю, т.к. этого не требуется то для удобства null чтобы постоянно его не реализовывать
+     * Ксли ничего дополнительного не требуется то метод и так вернет null. При необходимости
+     * перекрыть
+     *
+     * @return данные. которые будут отосланы пользователю, т.к. этого не требуется то для удобства
+     * null чтобы постоянно его не реализовывать
      */
     @Override
-    public Response preparationReport(String driverClassName, String url, String username, String password, HttpRequest request) {
+    public Response preparationReport(String driverClassName, String url, String username,
+        String password, HttpRequest request) {
         return null;
     }
 }

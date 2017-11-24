@@ -16,6 +16,16 @@
  */
 package ru.apertum.qsystem.reports.model;
 
+import java.io.Serializable;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.common.exceptions.ReportException;
@@ -24,14 +34,9 @@ import ru.apertum.qsystem.reports.formirovators.IFormirovator;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.IidGetter;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Класс описания аналитических отчетов.
+ *
  * @author Evgeniy Egorov
  */
 @Entity
@@ -39,6 +44,9 @@ import java.util.Map;
 public class QReport extends AGenerator implements IidGetter, Serializable {
 
     private Long id;
+    private String className;
+    private IFormirovator formirovator;
+    private String name;
 
     @Id
     @Column(name = "id")
@@ -51,7 +59,6 @@ public class QReport extends AGenerator implements IidGetter, Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    private String className;
 
     @Column(name = "className")
     public String getClassName() {
@@ -70,8 +77,6 @@ public class QReport extends AGenerator implements IidGetter, Serializable {
             throw new ReportException("Класс не найден \"" + className + "\". " + ex);
         }
     }
-    private IFormirovator formirovator;
-    private String name;
 
     @Column(name = "name")
     @Override
@@ -90,31 +95,46 @@ public class QReport extends AGenerator implements IidGetter, Serializable {
 
     @Override
     protected JRDataSource getDataSource(HttpRequest request) {
-        return formirovator.getDataSource(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(), Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request);
+        return formirovator
+            .getDataSource(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(),
+                Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request);
     }
 
-     @Override
+    @Override
     protected Map getParameters(HttpRequest request) {
-        return formirovator.getParameters(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(), Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request);
+        return formirovator
+            .getParameters(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(),
+                Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request);
     }
 
     @Override
     protected Connection getConnection(HttpRequest request) {
-        return formirovator.getConnection(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(), Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request);
+        return formirovator
+            .getConnection(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(),
+                Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request);
     }
 
     @Override
     protected Response preparationReport(HttpRequest request) {
-        return formirovator.preparationReport(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(), Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request);
+        return formirovator
+            .preparationReport(Spring.getInstance().getDriverClassName(),
+                Spring.getInstance().getUrl(),
+                Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request);
     }
 
     @Override
     protected Response getDialog(HttpRequest request, String errorMessage) {
-        return formirovator.getDialog(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(), Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request, errorMessage);
+        return formirovator
+            .getDialog(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(),
+                Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request,
+                errorMessage);
     }
 
     @Override
     protected String validate(HttpRequest request, HashMap<String, String> params) {
-        return formirovator.validate(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(), Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request, params);
+        return formirovator
+            .validate(Spring.getInstance().getDriverClassName(), Spring.getInstance().getUrl(),
+                Spring.getInstance().getUsername(), Spring.getInstance().getPassword(), request,
+                params);
     }
 }

@@ -16,6 +16,14 @@
  */
 package ru.apertum.qsystem.server.controller;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import javax.swing.Timer;
 import org.dom4j.Element;
 import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.common.QLog;
@@ -25,20 +33,29 @@ import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.evgenic.rxtx.serialPort.ISerialPort;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * Движок для герлянды табло на RS.
+ *
  * @author Evgeniy Egorov
  */
 public class QIndicatorBoardRS extends AIndicatorBoard {
+
+    //******************************************************************************************************************
+    //******************************************************************************************************************
+    //***************************************** таймер вывода времени  *************************************************
+    private static final int DELAY_BLINK = 5000;
+    /**
+     * Таймер вывода времени.
+     */
+    private final Timer timer = new Timer(DELAY_BLINK, new TimerPrinter());
+    /**
+     * Поле для списка адресов многострочного табло.
+     */
+    private List<Integer> adresses;
+    /**
+     * COM порт через который будем работать с герляндой.
+     */
+    private ISerialPort serialPort;
 
     public QIndicatorBoardRS() {
         // нет мигания - нет его старта. устройства все равно не переварят
@@ -50,34 +67,22 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
         super.finalize();
         timer.stop();
     }
-    /**
-     * Поле для списка адресов многострочного табло.
-     */
-    private List<Integer> adresses;
 
-    /** 
-     * @return the adresses. 
+    /**
+     * @return the adresses.
      */
     public List<Integer> getAdresses() {
         return adresses;
     }
 
-    /** 
-     * @param adresses The adresses to set. 
+    /**
+     * @param adresses The adresses to set.
      */
     public void setAdresses(List<Integer> adresses) {
         this.adresses = adresses;
         timer.start();
         timer.setDelay(60000);
     }
-    //******************************************************************************************************************
-    //******************************************************************************************************************
-    //***************************************** таймер вывода времени  *************************************************
-    private static final int DELAY_BLINK = 5000;
-    /**
-     * Таймер вывода времени.
-     */
-    private final Timer timer = new Timer(DELAY_BLINK, new TimerPrinter());
 
     @Override
     public void refresh() {
@@ -91,17 +96,20 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
 
     @Override
     public String getDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public long getUID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     protected Integer getLinesCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -109,23 +117,8 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
         return null;
     }
 
-    /**
-     * Собыите вывода времени на таймер.
-     */
-    private class TimerPrinter implements ActionListener {
+    ;
 
-        /**
-         * Обеспечение вывода времени.
-         * @param e
-         */
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-            final DateFormat dateFormat = new SimpleDateFormat("HH:mm");
-            final Date d = new java.util.Date();
-            sendMessage(" " + dateFormat.format(new Date(d.getTime())), adresses.get(adresses.size() - 1).byteValue());
-        }
-    };
     //***************************************** таймер вывода времени  *************************************************
     @Override
     public void inviteCustomer(QUser user, QCustomer customer) {
@@ -202,21 +195,21 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
 
     /**
      * Вывод записи только на общее табло
-     * @param record
      */
     protected void showToBoard(Record record) {
         //if (record.onBoard >= 0 && record.onBoard < adresses.size() - 1) {
-          //  sendMessage(record.customerNumber + Uses.getNumeration().getDelimiter() + record.point, adresses.get(record.onBoard).byteValue());
-       // }
+        //  sendMessage(record.customerNumber + Uses.getNumeration().getDelimiter() + record.point, adresses.get(record.onBoard).byteValue());
+        // }
     }
-    
+
     /**
      * Вывод записи только на табло оператора
-     * @param record
      */
     @Override
     protected void showToUser(Record record) {
-            sendMessage(record.customerPrefix + (record.customerNumber == null ? "" : record.customerNumber), record.adressRS.byteValue());
+        sendMessage(
+            record.customerPrefix + (record.customerNumber == null ? "" : record.customerNumber),
+            record.adressRS.byteValue());
     }
 
 
@@ -237,9 +230,9 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
     protected void clear(Integer adress, Record record) {
         // чтоб перестало моргать на главном табло через некоторое время.
         if (record != null) {
-         //   if (record.onBoard >= 0 && record.onBoard < adresses.size() - 1) {
-          //      sendMessage("       ", adresses.get(record.onBoard).byteValue());
-          //  }
+            //   if (record.onBoard >= 0 && record.onBoard < adresses.size() - 1) {
+            //      sendMessage("       ", adresses.get(record.onBoard).byteValue());
+            //  }
         }
         // У юзера подотреем номер кастомера.
         sendMessage("       ", adress.byteValue());
@@ -256,13 +249,10 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
             sendMessage("       ", i.byteValue());
         });
     }
-    /**
-     * COM порт через который будем работать с герляндой.
-     */
-    private ISerialPort serialPort;
 
     /**
      * Так через Spring мы установим объект работы с COM портом.
+     *
      * @param serialPort этот рапаметр определяется в Spring
      */
     public void setComPort(ISerialPort serialPort) {
@@ -280,9 +270,10 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
     }
 
     /**
-     * Отсылаем сообщение на табло.
-     * В отдельным потоке, чтоб не тормозил вывод выполнение основного.
-     * Синхронизированно, т.к. команды шлются по одной и с интервалом 0.3 секунды, чтобы успевало все выполняться.
+     * Отсылаем сообщение на табло. В отдельным потоке, чтоб не тормозил вывод выполнение основного.
+     * Синхронизированно, т.к. команды шлются по одной и с интервалом 0.3 секунды, чтобы успевало
+     * все выполняться.
+     *
      * @param message Строка которая отобразиться на табло.
      * @param adress адрес устройства вывода строки.
      */
@@ -347,5 +338,23 @@ public class QIndicatorBoardRS extends AIndicatorBoard {
     public Integer getLinesCountForOffice(QOffice office) {
         //throw new UnsupportedOperationException("Not supported yet.");
         return 0;
+    }
+
+    /**
+     * Собыите вывода времени на таймер.
+     */
+    private class TimerPrinter implements ActionListener {
+
+        /**
+         * Обеспечение вывода времени.
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            final DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            final Date d = new java.util.Date();
+            sendMessage(" " + dateFormat.format(new Date(d.getTime())),
+                adresses.get(adresses.size() - 1).byteValue());
+        }
     }
 }

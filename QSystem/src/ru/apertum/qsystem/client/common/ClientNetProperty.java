@@ -16,11 +16,10 @@
  */
 package ru.apertum.qsystem.client.common;
 
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.model.IClientNetProperty;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.model.IClientNetProperty;
 
 /**
  * Класс интерфейса INetPropertyImpl, для обработки командной строки клиентских модулей

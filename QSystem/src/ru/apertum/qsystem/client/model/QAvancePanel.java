@@ -16,16 +16,21 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import ru.apertum.qsystem.common.Uses;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Point;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+import ru.apertum.qsystem.common.Uses;
 
 /**
  * Класс панели для нажатия при выборе время предварительной записи.
+ *
  * @author Evgeniy Egorov
  */
 public class QAvancePanel extends QPanel {
@@ -48,7 +53,11 @@ public class QAvancePanel extends QPanel {
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setFont(Font.getFont("Verdana"));
         //label.setText("<html><b><p align=center><span style='font-size:12.0pt;color:black'>" + ( "00:00".equals(Uses.FORMAT_HH_MM.format(data)) ? "24:00" : Uses.FORMAT_HH_MM.format(data) ) + "</span><br/><span style='font-size:13.0pt;color:" + (enable ? "green'>Свободно" : "red'>Занято"));
-        label.setText("<html><p align=center><span style='font-size:15.0pt;color:" + (enable ? "black" : "red") + "'>" + ("00:00".equals(Uses.FORMAT_HH_MM.format(data)) ? "24:00" : Uses.FORMAT_HH_MM.format(data)) + "</span>");
+        label.setText(
+            "<html><p align=center><span style='font-size:15.0pt;color:" + (enable ? "black"
+                : "red")
+                + "'>" + ("00:00".equals(Uses.FORMAT_HH_MM.format(data)) ? "24:00"
+                : Uses.FORMAT_HH_MM.format(data)) + "</span>");
         add(label);
         //Реакция на нажатие мышки
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -66,7 +75,8 @@ public class QAvancePanel extends QPanel {
         setStartColor(Color.white);
         final GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(data);
-        if (gc.get(GregorianCalendar.DAY_OF_WEEK) == 1 || gc.get(GregorianCalendar.DAY_OF_WEEK) == 7) {
+        if (gc.get(GregorianCalendar.DAY_OF_WEEK) == 1
+            || gc.get(GregorianCalendar.DAY_OF_WEEK) == 7) {
             setEndColor(Color.red);
         } else {
             setEndColor(Color.green);

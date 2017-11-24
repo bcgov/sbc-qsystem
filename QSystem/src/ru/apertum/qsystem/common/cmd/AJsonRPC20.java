@@ -19,14 +19,24 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.Date;
 
 /**
  * Class for input protocol. Using RPC2.0
+ *
  * @author Evgeniy Egorov
  */
 public abstract class AJsonRPC20 {
+
+    @Expose
+    @SerializedName("jsonrpc")
+    final private String jsonrpc = "2.0";
+    @Expose
+    @SerializedName("method")
+    protected String method;
+    @Expose
+    @SerializedName("id")
+    private String id = Long.toString(new Date().getTime());
 
     public AJsonRPC20() {
     }
@@ -35,14 +45,6 @@ public abstract class AJsonRPC20 {
         this.id = id;
     }
 
-    @Expose
-    @SerializedName("jsonrpc")
-    final private String jsonrpc = "2.0";
-
-    @Expose
-    @SerializedName("id")
-    private String id = Long.toString(new Date().getTime());
-
     public String getId() {
         return id;
     }
@@ -50,15 +52,12 @@ public abstract class AJsonRPC20 {
     public void setId(String id) {
         this.id = id;
     }
-    @Expose
-    @SerializedName("method")
-    protected String method;
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
 
     public String getMethod() {
         return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
     }
 }

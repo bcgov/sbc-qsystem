@@ -18,7 +18,6 @@
 package ru.apertum.qsystem.server.controller;
 
 /**
- *
  * @author egorov
  */
 @FunctionalInterface

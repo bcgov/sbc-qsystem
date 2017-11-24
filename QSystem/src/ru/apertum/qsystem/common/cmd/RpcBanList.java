@@ -18,15 +18,15 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import ru.apertum.qsystem.common.model.QCustomer;
-import ru.apertum.qsystem.server.ServerProps;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import ru.apertum.qsystem.common.model.QCustomer;
+import ru.apertum.qsystem.server.ServerProps;
 
 /**
  * Список забаненых по неявке.
+ *
  * @author Evgeniy Egorov
  */
 public class RpcBanList extends JsonRPC20 {
@@ -34,15 +34,11 @@ public class RpcBanList extends JsonRPC20 {
     @Expose
     @SerializedName("result")
     private final LinkedList<String> banCustomers = new LinkedList<>();
-
-    public LinkedList<String> getBanList() {
-        return banCustomers;
-    }
     private final HashMap<String, Long> banSrok = new HashMap<>();
 
     /**
-     * @deprecated Эт вообще синглтн. Нужет тлько для отправки банлиста в админку.
-     * Эт лист нигде не сохраняется, только сливается сюда инфа при удалении кастомера за неявку.
+     * @deprecated Эт вообще синглтн. Нужет тлько для отправки банлиста в админку. Эт лист нигде не
+     * сохраняется, только сливается сюда инфа при удалении кастомера за неявку.
      */
     public RpcBanList() {
     }
@@ -51,9 +47,8 @@ public class RpcBanList extends JsonRPC20 {
         return BanListHolder.INSTANCE;
     }
 
-    private static class BanListHolder {
-
-        private static final RpcBanList INSTANCE = new RpcBanList();
+    public LinkedList<String> getBanList() {
+        return banCustomers;
     }
 
     /**
@@ -64,7 +59,9 @@ public class RpcBanList extends JsonRPC20 {
             final LinkedList<String> li = new LinkedList<>();
             for (String string : banCustomers) {
                 final Long l = banSrok.get(string);
-                if (l != null && new Date().getTime() - l > 1000 * 60 * ServerProps.getInstance().getProps().getBlackTime()) {
+                if (l != null && new Date().getTime() - l > 1000 * 60 * ServerProps.getInstance()
+                    .getProps()
+                    .getBlackTime()) {
                     deleteFromBanList(string);
                     li.add(string);
                 }
@@ -72,7 +69,9 @@ public class RpcBanList extends JsonRPC20 {
             banCustomers.removeAll(li);
         } else {
             final Long l = banSrok.get(data.trim());
-            if (l != null && new Date().getTime() - l > 1000 * 60 * ServerProps.getInstance().getProps().getBlackTime()) {
+            if (l != null && new Date().getTime() - l > 1000 * 60 * ServerProps.getInstance()
+                .getProps()
+                .getBlackTime()) {
                 deleteFromBanList(data.trim());
             }
         }
@@ -90,12 +89,14 @@ public class RpcBanList extends JsonRPC20 {
 
     public boolean isBaned(QCustomer customer) {
         udo(customer.getInput_data());
-        return ServerProps.getInstance().getProps().getBlackTime() > 0 && banCustomers.contains(customer.getInput_data().trim());
+        return ServerProps.getInstance().getProps().getBlackTime() > 0 && banCustomers
+            .contains(customer.getInput_data().trim());
     }
 
     public boolean isBaned(String data) {
         udo(data);
-        return ServerProps.getInstance().getProps().getBlackTime() > 0 && banCustomers.contains(data.trim());
+        return ServerProps.getInstance().getProps().getBlackTime() > 0 && banCustomers
+            .contains(data.trim());
     }
 
     public void deleteFromBanList(QCustomer customer) {
@@ -106,5 +107,10 @@ public class RpcBanList extends JsonRPC20 {
     public void deleteFromBanList(String data) {
         banCustomers.remove(data.trim());
         banSrok.remove(data.trim());
+    }
+
+    private static class BanListHolder {
+
+        private static final RpcBanList INSTANCE = new RpcBanList();
     }
 }

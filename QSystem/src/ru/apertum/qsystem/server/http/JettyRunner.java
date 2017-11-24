@@ -16,7 +16,12 @@
  */
 package ru.apertum.qsystem.server.http;
 
-import org.eclipse.jetty.server.*;
+import java.io.File;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -24,8 +29,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ServerException;
-
-import java.io.File;
 
 /*
  import java.io.FilenameFilter;
@@ -49,6 +52,10 @@ import java.io.File;
  * @author Evgeniy Egorov
  */
 public class JettyRunner implements Runnable {
+
+    private static volatile Server jetty = null;
+    private static int servetPort = 8081;
+    private static Thread jetthread = null;
 
     /**
      * Страт Jetty
@@ -88,15 +95,12 @@ public class JettyRunner implements Runnable {
         }
         QLog.l().logger().info("Сервер Jetty успешно остановлен.");
     }
-    private static volatile Server jetty = null;
-    private static int servetPort = 8081;
-    private static Thread jetthread = null;
 
     @Override
     public void run() {
         QLog.l().logger().info("Старт сервера Jetty на порту " + servetPort);
         jetty = new Server();
-        
+
         //org.eclipse.jetty.io.nio.AsyncConnection d;
         HttpConfiguration http_config = new HttpConfiguration();
         http_config.setSecureScheme("https");
@@ -106,7 +110,8 @@ public class JettyRunner implements Runnable {
         http_config.setResponseHeaderSize(8192);
         http_config.setSendServerVersion(true);
         http_config.setSendDateHeader(false);
-        ServerConnector http_connector = new ServerConnector(jetty, new HttpConnectionFactory(http_config));
+        ServerConnector http_connector = new ServerConnector(jetty,
+            new HttpConnectionFactory(http_config));
         http_connector.setIdleTimeout(30000);
         http_connector.setPort(servetPort);
         jetty.addConnector(http_connector);
@@ -128,10 +133,11 @@ public class JettyRunner implements Runnable {
         /* By Convention, the service name is the same as the database name.  This is convenient as there are no other environment variables containing the service name.
         We need to set the context prefix to this in order for the nginx proxy to work.
         */
-        
-        String contextPrefix = "/" + System.getenv("MYSQL_DATABASE");            
-            
-        final ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
+
+        String contextPrefix = "/" + System.getenv("MYSQL_DATABASE");
+
+        final ServletContextHandler servletContext = new ServletContextHandler(
+            ServletContextHandler.SESSIONS);
         servletContext.setContextPath(contextPrefix);
         //При необходимости иметь сервлет, добавляяем их в обработчики вот так
         //servletContext.addServlet(new ServletHolder(new HelloServlet()), "/hell");
@@ -150,13 +156,13 @@ public class JettyRunner implements Runnable {
         final HandlerList handlers = new HandlerList();
 
         // wrap resource handler
-        
+
         ContextHandler ctxResources = new ContextHandler(contextPrefix); /* the server uri path */
-        ctxResources.setHandler (resource_handler);
-        
+        ctxResources.setHandler(resource_handler);
+
         ContextHandler ctxCommand = new ContextHandler(contextPrefix + "/qsystem"); /* the server uri path */
-        ctxCommand.setHandler (new CommandHandler());
-        
+        ctxCommand.setHandler(new CommandHandler());
+
         // Важный момент - поряд следования хандлеров
         // по этому порядку будет передоваться запрос, если он еще не обработан
         // т.е. с начала ищется файл, если не найден, то урл передается на исполнение команды,
@@ -164,13 +170,15 @@ public class JettyRunner implements Runnable {
         //handlers.setHandlers(new Handler[]{resource_handler, new CommandHandler(), qWebSocketHandler});
         handlers.setHandlers(new Handler[]{ctxResources, ctxCommand, servletContext});
 
-        // Загрузка war из папки 
+        // Загрузка war из папки
         String folder = "./www/war/";
         QLog.l().logger().info("Загрузка war из папки " + folder);
-        final File[] list = new File(folder).listFiles((File dir, String name) -> name.toLowerCase().endsWith(".war"));
+        final File[] list = new File(folder)
+            .listFiles((File dir, String name) -> name.toLowerCase().endsWith(".war"));
         if (list != null && list.length != 0) {
             for (File file : list) {
-                final String name = file.getName().substring(0, file.getName().lastIndexOf(".")).toLowerCase();
+                final String name = file.getName().substring(0, file.getName().lastIndexOf("."))
+                    .toLowerCase();
                 QLog.l().logger().debug("WAR " + name + ": " + file.getAbsolutePath());
                 final WebAppContext webapp = new WebAppContext();
                 webapp.setContextPath(contextPrefix + "/" + name);

@@ -16,22 +16,21 @@
  */
 package ru.apertum.qsystem.server.model;
 
+import java.util.LinkedList;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.controller.ServerEvents;
 
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-import java.util.LinkedList;
-
 /**
- *
- * @param <T>
  * @author Evgeniy Egorov
  */
 public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeModel {
+
+    protected final LinkedList<T> deleted = new LinkedList<>();
 
     protected ATreeModel() {
         super(null);
@@ -39,6 +38,20 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
         ServerEvents.getInstance().registerListener(() -> {
             createTree();
         });
+    }
+
+    /**
+     * Перебор всех услуг до одной включая корень и узлы
+     */
+    public static void sailToStorm(TreeNode root, ISailListener listener) {
+        seil(root, listener);
+    }
+
+    private static void seil(TreeNode parent, ISailListener listener) {
+        listener.actionPerformed(parent);
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            seil(parent.getChildAt(i), listener);
+        }
     }
 
     protected abstract LinkedList<T> load();
@@ -78,7 +91,6 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
     /**
      * Получить услугу по ID
      *
-     * @param id
      * @return если не найдено то вернет null.
      */
     public T getById(long id) {
@@ -112,23 +124,6 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
 
     public int size() {
         return getNodes().size();
-    }
-
-    /**
-     * Перебор всех услуг до одной включая корень и узлы
-     *
-     * @param root
-     * @param listener
-     */
-    public static void sailToStorm(TreeNode root, ISailListener listener) {
-        seil(root, listener);
-    }
-
-    private static void seil(TreeNode parent, ISailListener listener) {
-        listener.actionPerformed(parent);
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            seil(parent.getChildAt(i), listener);
-        }
     }
 
     @Override
@@ -166,7 +161,6 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
         super.removeNodeFromParent(node);
         updateSeqSibling((QService) node.getParent());
     }
-    protected final LinkedList<T> deleted = new LinkedList<>();
 
     @Override
     public void insertNodeInto(MutableTreeNode newChild, MutableTreeNode parent, int index) {
@@ -180,8 +174,8 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
      * This is a backup, arose unexpectedly when sorting
      *
      * @param moveChild What are we moving
-      * @param parent Where are we moving
-      * @param index How to insert the child
+     * @param parent Where are we moving
+     * @param index How to insert the child
      */
     public void moveNode(MutableTreeNode moveChild, MutableTreeNode parent, int index) {
         if (((QService) moveChild.getParent()).getId().equals(((QService) parent).getId())) {
@@ -202,12 +196,13 @@ public abstract class ATreeModel<T extends ITreeIdGetter> extends DefaultTreeMod
     }
 
     /**
-     * Это подпорка, неожиданно возникла при реализации сортировки
-     * This is a backup, arose unexpectedly when sorting
+     * Это подпорка, неожиданно возникла при реализации сортировки This is a backup, arose
+     * unexpectedly when sorting
      *
-     * @param parent парент для расставления последовательности у его дочерних :: Parent for sequencing of its children
+     * @param parent парент для расставления последовательности у его дочерних :: Parent for
+     * sequencing of its children
      */
-    public void updateSeqSibling(QService parent) { 
+    public void updateSeqSibling(QService parent) {
         // это подпорка, неожиданно возникла при реализации сортировки
         // This is a backup, arose unexpectedly when implementing a sort
         QService sib = (QService) ((QService) parent).getFirstChild();

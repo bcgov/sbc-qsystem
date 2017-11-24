@@ -8,7 +8,6 @@ package ru.apertum.qsys.quser;
 import java.util.HashMap;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class UsersInside {
@@ -18,12 +17,12 @@ public class UsersInside {
     private UsersInside() {
     }
 
-    public HashMap<String, Long> getUsersInside() {
-        return usersInside;
-    }
-
     public static UsersInside getInstance() {
         return UsersInsideHolder.INSTANCE;
+    }
+
+    public HashMap<String, Long> getUsersInside() {
+        return usersInside;
     }
 
     private static class UsersInsideHolder {

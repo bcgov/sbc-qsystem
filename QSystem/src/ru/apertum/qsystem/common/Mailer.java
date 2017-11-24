@@ -16,31 +16,48 @@
  */
 package ru.apertum.qsystem.common;
 
-import ru.apertum.qsystem.common.exceptions.ServerException;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.*;
-import javax.mail.internet.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.Authenticator;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
+import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class Mailer {
 
     static final String ENCODING = "UTF-8";
+    private static Properties fMailServerConfig;
 
     public static void main(String args[]) throws MessagingException, UnsupportedEncodingException {
         sendReporterMail(null, null, null, new File("asd.pdf"));
     }
 
-    public static void sendReporterMailAtFon(String subject, String content, String addrs_to, final String attachment) {
+    public static void sendReporterMailAtFon(String subject, String content, String addrs_to,
+        final String attachment) {
         final Thread t = new Thread(() -> {
             final File attach = new File(attachment);
             try {
@@ -52,15 +69,19 @@ public class Mailer {
         t.start();
     }
 
-    public static void sendReporterMail(String subject, String content, String addrs_to, File attachment) throws MessagingException, UnsupportedEncodingException {
+    public static void sendReporterMail(String subject, String content, String addrs_to,
+        File attachment) throws MessagingException, UnsupportedEncodingException {
         Properties props = fetchConfig();
 
-        final Authenticator auth = new MyAuthenticator(props.getProperty("mail.smtp.user"), props.getProperty("mail.password"));
+        final Authenticator auth = new MyAuthenticator(props.getProperty("mail.smtp.user"),
+            props.getProperty("mail.password"));
         final Session session = Session.getDefaultInstance(props, auth);
 
         final MimeMessage msg = new MimeMessage(session);
         String to = addrs_to == null ? props.getProperty("mail.smtp.to") : addrs_to;
-        to = to.replaceAll("  ", " ").replaceAll(" ;", ";").replaceAll(" ,", ",").replaceAll(", ", ",").replaceAll("; ", ",").replaceAll(";", ",").replaceAll(" ", ",").replaceAll(",,", ",");
+        to = to.replaceAll("  ", " ").replaceAll(" ;", ";").replaceAll(" ,", ",")
+            .replaceAll(", ", ",")
+            .replaceAll("; ", ",").replaceAll(";", ",").replaceAll(" ", ",").replaceAll(",,", ",");
         final String[] ss = to.split(",");
         final ArrayList<InternetAddress> adresses = new ArrayList<>();
         for (String str : ss) {
@@ -87,10 +108,14 @@ public class Mailer {
             while (s.hasNext()) {
                 sb.append(s.next());
             }
-            messageBodyPart.setContent(content == null ? sb.toString() : content, "text/html; charset=\"UTF-8\"");
+            messageBodyPart
+                .setContent(content == null ? sb.toString() : content,
+                    "text/html; charset=\"UTF-8\"");
             sb.setLength(0);
         } else {
-            messageBodyPart.setContent(content == null ? props.getProperty("mail.content") : content, "text/plain; charset=\"UTF-8\"");
+            messageBodyPart
+                .setContent(content == null ? props.getProperty("mail.content") : content,
+                    "text/plain; charset=\"UTF-8\"");
         }
 
         final Multipart multipart = new MimeMultipart();
@@ -110,7 +135,8 @@ public class Mailer {
     }
 
     /**
-     * Open a specific text file containing mail server parameters, and populate a corresponding Properties object.
+     * Open a specific text file containing mail server parameters, and populate a corresponding
+     * Properties object.
      *
      * @return props
      */
@@ -142,7 +168,6 @@ public class Mailer {
         }
         return fMailServerConfig;
     }
-    private static Properties fMailServerConfig;
 }
 
 class MyAuthenticator extends Authenticator {

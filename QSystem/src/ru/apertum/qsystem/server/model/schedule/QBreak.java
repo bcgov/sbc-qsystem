@@ -16,20 +16,49 @@
  */
 package ru.apertum.qsystem.server.model.schedule;
 
+import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.server.model.IidGetter;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
-
 /**
  * Перерывы в работе для предвариловки
+ *
  * @author Evgeniy Egorov
  */
 @Entity
 @Table(name = "break")
 public class QBreak implements IidGetter, Serializable {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    /**
+     * Время начала перерыва
+     */
+    @Column(name = "from_time")
+    @Temporal(TemporalType.TIME)
+    private Date from_time;
+    /**
+     * Время конца перерыва
+     */
+    @Column(name = "to_time")
+    @Temporal(TemporalType.TIME)
+    private Date to_time;
+    @ManyToOne
+    @JoinColumn(name = "breaks_id")
+    private QBreaks breaks;
 
     public QBreak(Date from_time, Date to_time, QBreaks breaks) {
         this.from_time = from_time;
@@ -39,21 +68,11 @@ public class QBreak implements IidGetter, Serializable {
 
     public QBreak() {
     }
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     @Override
     public Long getId() {
         return id;
     }
-    /**
-     * Время начала перерыва
-     */
-    @Column(name = "from_time")
-    @Temporal(TemporalType.TIME)
-    private Date from_time;
 
     public Date getFrom_time() {
         return from_time;
@@ -62,12 +81,6 @@ public class QBreak implements IidGetter, Serializable {
     public void setFrom_time(Date from_time) {
         this.from_time = from_time;
     }
-    /**
-     * Время конца перерыва
-     */
-    @Column(name = "to_time")
-    @Temporal(TemporalType.TIME)
-    private Date to_time;
 
     public Date getTo_time() {
         return to_time;
@@ -86,10 +99,6 @@ public class QBreak implements IidGetter, Serializable {
     public String toString() {
         return Uses.FORMAT_HH_MM.format(from_time) + "-" + Uses.FORMAT_HH_MM.format(to_time);
     }
-    
-    @ManyToOne
-    @JoinColumn(name = "breaks_id")
-    private QBreaks breaks;
 
     public QBreaks getBreaks() {
         return breaks;
@@ -98,9 +107,9 @@ public class QBreak implements IidGetter, Serializable {
     public void setBreaks(QBreaks breaks) {
         this.breaks = breaks;
     }
-    
-    public long diff(){
+
+    public long diff() {
         return getTo_time().getTime() - getFrom_time().getTime();
     }
-    
+
 }

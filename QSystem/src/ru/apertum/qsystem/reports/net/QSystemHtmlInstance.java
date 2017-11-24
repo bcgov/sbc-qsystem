@@ -23,26 +23,29 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.*;
+import org.apache.http.protocol.BasicHttpProcessor;
+import org.apache.http.protocol.HttpRequestHandlerRegistry;
+import org.apache.http.protocol.HttpService;
+import org.apache.http.protocol.ResponseConnControl;
+import org.apache.http.protocol.ResponseContent;
+import org.apache.http.protocol.ResponseDate;
+import org.apache.http.protocol.ResponseServer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QSystemHtmlInstance {
 
     private static final QSystemHtmlInstance HTML_INSTANCE = new QSystemHtmlInstance();
-
-    public static QSystemHtmlInstance htmlInstance(){
-        return HTML_INSTANCE;
-    }
+    private final HttpParams params = new BasicHttpParams();
+    private final HttpService httpService;
 
     private QSystemHtmlInstance() {
         this.params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 5000).
-                setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024).
-                setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false).
-                setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true).
-                setParameter(CoreProtocolPNames.ORIGIN_SERVER, "QSystemReportHttpServer/1.1");
+            setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024).
+            setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false).
+            setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true).
+            setParameter(CoreProtocolPNames.ORIGIN_SERVER, "QSystemReportHttpServer/1.1");
 
         // Set up the HTTP protocol processor
         final BasicHttpProcessor httpproc = new BasicHttpProcessor();
@@ -57,12 +60,14 @@ public class QSystemHtmlInstance {
 
         // Set up the HTTP service
         this.httpService = new HttpService(
-                httpproc,
-                new DefaultConnectionReuseStrategy(),
-                new DefaultHttpResponseFactory(), reqistry, this.params);
+            httpproc,
+            new DefaultConnectionReuseStrategy(),
+            new DefaultHttpResponseFactory(), reqistry, this.params);
     }
-    private final HttpParams params = new BasicHttpParams();
-    private final HttpService httpService;
+
+    public static QSystemHtmlInstance htmlInstance() {
+        return HTML_INSTANCE;
+    }
 
     public HttpService getHttpService() {
         return httpService;

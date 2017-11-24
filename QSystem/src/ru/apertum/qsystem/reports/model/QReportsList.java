@@ -16,6 +16,13 @@
  */
 package ru.apertum.qsystem.reports.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import javax.swing.ComboBoxModel;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.entity.BasicHttpEntity;
@@ -35,19 +42,20 @@ import ru.apertum.qsystem.server.model.ATListModel;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.QUserList;
 
-import javax.swing.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.LinkedList;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QReportsList extends ATListModel<QReport> implements ComboBoxModel {
+
+    // задания, доступны по их ссылкам
+    private final static HashMap<String, IGenerator> generators = new HashMap<>();
+    private QReport selected;
+    private String htmlRepList;
+    private String htmlUsersList;
+    /**
+     * Список паролей пользователей имя - пароль
+     */
+    private HashMap<String, String> passMap;
 
     private QReportsList() {
         super();
@@ -57,14 +65,14 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
         return QResultListHolder.INSTANCE;
     }
 
-    private static class QResultListHolder {
-
-        private static final QReportsList INSTANCE = new QReportsList();
+    private static void addGenerator(IGenerator generator) {
+        generators.put(generator.getHref().toLowerCase(), generator);
     }
 
     @Override
     protected LinkedList<QReport> load() {
-        final LinkedList<QReport> reports = new LinkedList<>(Spring.getInstance().getHt().loadAll(QReport.class));
+        final LinkedList<QReport> reports = new LinkedList<>(
+            Spring.getInstance().getHt().loadAll(QReport.class));
         QLog.l().logRep().debug("Загружено из базы " + reports.size() + " отчетов.");
 
         passMap = new HashMap<>();
@@ -75,10 +83,12 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
             return report;
         }).forEach((report) -> {
             htmlRepList = htmlRepList.concat(
-                    "<tr>\n"
+                "<tr>\n"
                     + "<td style=\"text-align: left; padding-left: 60px;\">\n"
                     + "<a href=\"" + report.getHref() + ".html\" target=\"_blank\">"
-                    + (RepResBundle.getInstance().present(report.getHref()) ? RepResBundle.getInstance().getStringSafe(report.getHref()) : report.getName())
+                    + (RepResBundle.getInstance().present(report.getHref()) ? RepResBundle
+                    .getInstance()
+                    .getStringSafe(report.getHref()) : report.getName())
                     + "</a>\n"
                     + "<a href=\"" + report.getHref() + ".rtf\" target=\"_blank\">[RTF]</a>\n"
                     + "<a href=\"" + report.getHref() + ".pdf\" target=\"_blank\">[PDF]</a>\n"
@@ -86,7 +96,9 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
                     + "<a href=\"" + report.getHref() + ".csv\" target=\"_blank\">[CSV]</a>\n"
                     + "</td>\n"
                     + "</tr>\n");
-            report.setName(RepResBundle.getInstance().present(report.getHref()) ? RepResBundle.getInstance().getStringSafe(report.getHref()) : report.getName());
+            report.setName(
+                RepResBundle.getInstance().present(report.getHref()) ? RepResBundle.getInstance()
+                    .getStringSafe(report.getHref()) : report.getName());
         });
         /*
          * Это не отчет. это генератор списка отчетов, который проверяет пароль и пользователя и формирует
@@ -97,17 +109,20 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
         /*
          * Отчет по текущему состоянию в разрее услуг
          */
-        addGenerator(new ReportCurrentServices(Uses.REPORT_CURRENT_SERVICES.toLowerCase(), "/ru/apertum/qsystem/reports/templates/currentStateServices.jasper"));
+        addGenerator(new ReportCurrentServices(Uses.REPORT_CURRENT_SERVICES.toLowerCase(),
+            "/ru/apertum/qsystem/reports/templates/currentStateServices.jasper"));
         /*
          * Отчет по текущему состоянию в разрезе пользователей
          */
-        addGenerator(new RepCurrentUsers(Uses.REPORT_CURRENT_USERS.toLowerCase(), "/ru/apertum/qsystem/reports/templates/currentStateUsers.jasper"));
+        addGenerator(new RepCurrentUsers(Uses.REPORT_CURRENT_USERS.toLowerCase(),
+            "/ru/apertum/qsystem/reports/templates/currentStateUsers.jasper"));
 
         String sel = " selected";
         for (QUser user : QUserList.getInstance().getItems()) {
             // список пользователей, допущенных до отчетов
             if (user.getReportAccess()) {
-                htmlUsersList = htmlUsersList.concat("<option" + sel + ">").concat(user.getName()).concat("</option>\n");
+                htmlUsersList = htmlUsersList.concat("<option" + sel + ">").concat(user.getName())
+                    .concat("</option>\n");
                 sel = "";
                 if (user.getReportAccess()) {
                     passMap.put(user.getName(), user.getPassword());
@@ -117,37 +132,24 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
 
         return reports;
     }
-    private QReport selected;
+
+    @Override
+    public Object getSelectedItem() {
+        return selected;
+    }
 
     @Override
     public void setSelectedItem(Object anItem) {
         selected = (QReport) anItem;
     }
 
-    @Override
-    public Object getSelectedItem() {
-        return selected;
-    }
-    // задания, доступны по их ссылкам
-    private final static HashMap<String, IGenerator> generators = new HashMap<>();
-
-    private static void addGenerator(IGenerator generator) {
-        generators.put(generator.getHref().toLowerCase(), generator);
-    }
-    private String htmlRepList;
-
     public String getHtmlRepList() {
         return htmlRepList;
     }
-    private String htmlUsersList;
 
     public String getHtmlUsersList() {
         return htmlUsersList;
     }
-    /**
-     * Список паролей пользователей имя - пароль
-     */
-    private HashMap<String, String> passMap;
 
     public boolean isTrueUser(String userName, String pwd) {
         return pwd.equals(passMap.get(userName));
@@ -162,7 +164,8 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
     public synchronized Response generate(HttpRequest request) {
         final long start = System.currentTimeMillis();
         String url = NetUtil.getUrl(request);
-        final String nameReport = url.lastIndexOf(".") == -1 ? url.substring(1) : url.substring(1, url.lastIndexOf("."));
+        final String nameReport =
+            url.lastIndexOf(".") == -1 ? url.substring(1) : url.substring(1, url.lastIndexOf("."));
 
         final IGenerator generator = generators.get(nameReport.toLowerCase());
         // если нет такого отчета
@@ -184,7 +187,8 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
                 // если куков нет
                 return getLoginPage();
             }
-            final HashMap<String, String> cookie = NetUtil.getCookie(request.getFirstHeader("Cookie").getValue(), "; ");
+            final HashMap<String, String> cookie = NetUtil
+                .getCookie(request.getFirstHeader("Cookie").getValue(), "; ");
             final String pass = cookie.get("password");
             final String usr = cookie.get("username");
             if (pass == null || usr == null) {
@@ -203,7 +207,8 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
          */
         final Response result = generator.process(request);
 
-        QLog.l().logRep().info("Генерация завершено. Затрачено времени: " + ((double) (System.currentTimeMillis() - start)) / 1000 + " сек.");
+        QLog.l().logRep().info("Генерация завершено. Затрачено времени: "
+            + ((double) (System.currentTimeMillis() - start)) / 1000 + " сек.");
         return result;
     }
 
@@ -230,7 +235,8 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
     private Response getLoginPage() {
         byte[] result = null;
         // Выдаем ресурс  "/ru/apertum/qsystem/reports/web/"
-        final InputStream inStream = getClass().getResourceAsStream("/ru/apertum/qsystem/reports/web/login.html");
+        final InputStream inStream = getClass()
+            .getResourceAsStream("/ru/apertum/qsystem/reports/web/login.html");
         if (inStream != null) {
             try {
                 result = Uses.readInputStream(inStream);
@@ -243,9 +249,11 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
         }
         Response res = null;
         try {
-            res = new Response(RepResBundle.getInstance().prepareString(new String(result, "UTF-8")).
+            res = new Response(
+                RepResBundle.getInstance().prepareString(new String(result, "UTF-8")).
                     replaceFirst(Uses.ANCHOR_USERS_FOR_REPORT, getHtmlUsersList()).
-                    replaceFirst(Uses.ANCHOR_PROJECT_NAME_FOR_REPORT, Uses.getLocaleMessage("project.name" + FAbout.getCMRC_SUFF())).
+                    replaceFirst(Uses.ANCHOR_PROJECT_NAME_FOR_REPORT,
+                        Uses.getLocaleMessage("project.name" + FAbout.getCMRC_SUFF())).
                     getBytes("UTF-8")); //"Cp1251"
         } catch (UnsupportedEncodingException ex) {
         }
@@ -266,5 +274,10 @@ public class QReportsList extends ATListModel<QReport> implements ComboBoxModel 
             }
         }
         return res;
+    }
+
+    private static class QResultListHolder {
+
+        private static final QReportsList INSTANCE = new QReportsList();
     }
 }

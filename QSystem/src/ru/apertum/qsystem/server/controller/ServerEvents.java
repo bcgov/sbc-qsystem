@@ -19,10 +19,11 @@ package ru.apertum.qsystem.server.controller;
 import java.util.ArrayList;
 
 /**
- *
  * @author egorov
  */
 public class ServerEvents implements IServerListener {
+
+    private final ArrayList<IServerListener> listeners = new ArrayList<>();
 
     private ServerEvents() {
     }
@@ -30,14 +31,6 @@ public class ServerEvents implements IServerListener {
     public static ServerEvents getInstance() {
         return ServerEventsHolder.INSTANCE;
     }
-
-    private static class ServerEventsHolder {
-
-        private static final ServerEvents INSTANCE = new ServerEvents();
-    }
-
-
-    private final ArrayList<IServerListener> listeners = new ArrayList<>();
 
     public void registerListener(IServerListener listener) {
         listeners.add(listener);
@@ -48,5 +41,10 @@ public class ServerEvents implements IServerListener {
         listeners.stream().forEach((listener) -> {
             listener.restartEvent();
         });
+    }
+
+    private static class ServerEventsHolder {
+
+        private static final ServerEvents INSTANCE = new ServerEvents();
     }
 }

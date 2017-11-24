@@ -38,7 +38,6 @@ import javafx.util.Duration;
  */
 
 /**
- *
  * @author Евгений
  */
 public class OrangeClientboard extends ABoardFX {

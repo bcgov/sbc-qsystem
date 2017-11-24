@@ -21,22 +21,22 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class ClientsStatTrigger implements org.h2.api.Trigger {
 
     @Override
-    public void init(Connection conn, String schemaName, String triggerName, String tableName, boolean before, int type) throws SQLException {
+    public void init(Connection conn, String schemaName, String triggerName, String tableName,
+        boolean before, int type) throws SQLException {
     }
 
     /*
      * SET @finish_start= TIMEDIFF(NEW.finish_time, NEW.start_time);
      * SET @start_starnd = TIMEDIFF(NEW.start_time, NEW.stand_time);
      * INSERT
-     *    INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time) 
+     *    INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time)
      * VALUES
-     *    (NEW.state_in, NEW.result_id, NEW.user_id, NEW.id, NEW.service_id, NEW.start_time, NEW.finish_time, NEW.stand_time, 
+     *    (NEW.state_in, NEW.result_id, NEW.user_id, NEW.id, NEW.service_id, NEW.start_time, NEW.finish_time, NEW.stand_time,
      *    round(
      *            (HOUR(@finish_start) * 60 * 60 +
      *             MINUTE(@finish_start) * 60 +
@@ -51,8 +51,8 @@ public class ClientsStatTrigger implements org.h2.api.Trigger {
     @Override
     public void fire(Connection conn, Object[] oldRow, Object[] newRow) throws SQLException {
         // newRow:
-        // 0:ID 1:SERVICE_ID  2:USER_ID  3:SERVICE_PREFIX  4:NUMBER 5:STAND_TIME  6:START_TIME 7:FINISH_TIME 8:CLIENTS_AUTHORIZATION_ID 9:RESULT_ID  10:INPUT_DATA  11:STATE_IN 
-        // 12:WELCOME_TIME 13:INVITE_TIME 
+        // 0:ID 1:SERVICE_ID  2:USER_ID  3:SERVICE_PREFIX  4:NUMBER 5:STAND_TIME  6:START_TIME 7:FINISH_TIME 8:CLIENTS_AUTHORIZATION_ID 9:RESULT_ID  10:INPUT_DATA  11:STATE_IN
+        // 12:WELCOME_TIME 13:INVITE_TIME
         /*
          for (Object newRow1 : newRow) {
          if (newRow1 != null) {
@@ -68,14 +68,14 @@ public class ClientsStatTrigger implements org.h2.api.Trigger {
 
         if (newRow[9] == null) {
             prep = conn.prepareStatement(
-                    "INSERT "
+                "INSERT "
                     + "        INTO statistic(state_in,             user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, client_invite_time)  "
                     + "    VALUES "
                     + "        (?,    ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ");
             i = 1;
         } else {
             prep = conn.prepareStatement(
-                    "INSERT "
+                "INSERT "
                     + "        INTO statistic(state_in, results_id, user_id, client_id, service_id, user_start_time, user_finish_time, client_stand_time, user_work_period, client_wait_period, client_welcome_time, clien_invite_time)  "
                     + "    VALUES "
                     + "        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ");
@@ -91,11 +91,15 @@ public class ClientsStatTrigger implements org.h2.api.Trigger {
         prep.setTimestamp(7 - i, (java.sql.Timestamp) newRow[7]);
         prep.setTimestamp(8 - i, (java.sql.Timestamp) newRow[5]);
 
-        int finish_start = (int) (((java.sql.Timestamp) newRow[7]).getTime() - ((java.sql.Timestamp) newRow[6]).getTime()) / 1000 / 60;
-        int start_starnd = (int) (((java.sql.Timestamp) newRow[6]).getTime() - ((java.sql.Timestamp) newRow[5]).getTime()) / 1000 / 60;
+        int finish_start =
+            (int) (((java.sql.Timestamp) newRow[7]).getTime() - ((java.sql.Timestamp) newRow[6])
+                .getTime()) / 1000 / 60;
+        int start_starnd =
+            (int) (((java.sql.Timestamp) newRow[6]).getTime() - ((java.sql.Timestamp) newRow[5])
+                .getTime()) / 1000 / 60;
         prep.setInt(9 - i, finish_start == 0 ? 1 : finish_start);
         prep.setInt(10 - i, start_starnd == 0 ? 1 : start_starnd);
-        
+
         prep.setTimestamp(11 - i, (java.sql.Timestamp) newRow[12]);
         prep.setTimestamp(12 - i, (java.sql.Timestamp) newRow[13]);
         prep.execute();

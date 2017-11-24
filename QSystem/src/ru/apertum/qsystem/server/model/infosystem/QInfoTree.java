@@ -16,17 +16,22 @@
  */
 package ru.apertum.qsystem.server.model.infosystem;
 
+import java.util.LinkedList;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.controller.ServerEvents;
 import ru.apertum.qsystem.server.model.ATreeModel;
 
-import java.util.LinkedList;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QInfoTree extends ATreeModel<QInfoItem> {
+
+    private QInfoTree() {
+        super();
+        ServerEvents.getInstance().registerListener(() -> {
+            createTree();
+        });
+    }
 
     public static QInfoTree getInstance() {
         return QInfoTreeHolder.INSTANCE;
@@ -40,12 +45,5 @@ public class QInfoTree extends ATreeModel<QInfoItem> {
     private static class QInfoTreeHolder {
 
         private static final QInfoTree INSTANCE = new QInfoTree();
-    }
-
-    private QInfoTree() {
-        super();
-        ServerEvents.getInstance().registerListener(() -> {
-            createTree();
-        });
     }
 }

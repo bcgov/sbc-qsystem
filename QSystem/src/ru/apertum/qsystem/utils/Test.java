@@ -19,7 +19,6 @@ package ru.apertum.qsystem.utils;
 import java.util.regex.Pattern;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class Test {
@@ -32,15 +31,14 @@ public class Test {
         //System.out.println(sf);
         sf = String.format(sf, "AAA", "BBB");
         //System.out.println(sf);
-        
-        
+
         String lim = "LIMIT  12";
-        if (Pattern.compile("(limit|LIMIT)\\s+\\d+").matcher(lim).find()){
+        if (Pattern.compile("(limit|LIMIT)\\s+\\d+").matcher(lim).find()) {
             System.out.println("YES");
         } else {
             System.out.println("no...");
         }
-        
+
     }
 
     @Override
@@ -53,7 +51,6 @@ public class Test {
         int hash = 7;
         return hash;
     }
-    
-    
+
 
 }

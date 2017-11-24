@@ -21,24 +21,15 @@ import com.google.gson.annotations.SerializedName;
 import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcStandInService extends JsonRPC20 {
 
-    public RpcStandInService() {
-    }
-    
     @Expose
     @SerializedName("result")
     private QCustomer result;
 
-    public void setResult(QCustomer result) {
-        this.result = result;
-    }
-
-    public QCustomer getResult() {
-        return result;
+    public RpcStandInService() {
     }
 
     public RpcStandInService(QCustomer result) {
@@ -47,12 +38,18 @@ public class RpcStandInService extends JsonRPC20 {
 
     /**
      * Спецкостыль что-бы передать текст ошибки при постановки в очередь предварительного
-     * @param result
-     * @param method
      */
     public RpcStandInService(QCustomer result, String method) {
         this.result = result;
         this.method = method;
+    }
+
+    public QCustomer getResult() {
+        return result;
+    }
+
+    public void setResult(QCustomer result) {
+        this.result = result;
     }
 
 

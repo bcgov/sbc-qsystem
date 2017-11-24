@@ -16,8 +16,30 @@
  */
 package ru.apertum.qsystem.reports.model;
 
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.export.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRCsvExporterParameter;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRRtfExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.client.Locales;
@@ -27,21 +49,18 @@ import ru.apertum.qsystem.common.exceptions.ReportException;
 import ru.apertum.qsystem.reports.common.Response;
 import ru.apertum.qsystem.reports.net.NetUtil;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import java.io.*;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Базовый класс генераторов отчетов. сам себя складывает в HashMap [ String, IGenerator ] generators. Для получения отчета генератор использует методы
- * интерфейса IFormirovator. метод process генерирует отчет.
+ * Базовый класс генераторов отчетов. сам себя складывает в HashMap [ String, IGenerator ]
+ * generators. Для получения отчета генератор использует методы интерфейса IFormirovator. метод
+ * process генерирует отчет.
  *
  * @author Evgeniy Egorov
  */
 @MappedSuperclass
 public abstract class AGenerator implements IGenerator {
+
+    private String template;
+    private String href;
 
     /**
      * только для hibernate.
@@ -49,7 +68,32 @@ public abstract class AGenerator implements IGenerator {
     public AGenerator() {
         // javax.imageio.ImageIO.read(getClass().getResource("/ru/apertum/qsystem/reports/eximbank/resources/banner1.jpg"));
     }
-    private String template;
+
+    public AGenerator(String href, String resourceNameTemplate) {
+        this.href = href;
+        this.template = resourceNameTemplate;
+    }
+
+    /**
+     * Метод генерации PDF-отчетов через файл. Вынесен в отдельный метод для синхронизации.
+     *
+     * @param jasperPrint этот готовый отчет и экспортим в PDF
+     * @return возвращает готовый отчет в виде массива байт
+     */
+    synchronized private static byte[] genPDF(JasperPrint jasperPrint)
+        throws JRException, FileNotFoundException, IOException {
+        // сгенерим отчет во временный файл
+        JRPdfExporter exporter = new JRPdfExporter();
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+        exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME,
+            Uses.TEMP_FOLDER + File.separator + "temppdf.pdf");
+        exporter.exportReport();
+        // отправим данные из файла и удалим его
+        final File pdf = new File(Uses.TEMP_FOLDER + File.separator + "temppdf.pdf");
+        final FileInputStream inStream = new FileInputStream(pdf);
+        pdf.delete();
+        return Uses.readInputStream(inStream);
+    }
 
     @Column(name = "template")
     public String getTemplate() {
@@ -59,7 +103,6 @@ public abstract class AGenerator implements IGenerator {
     public void setTemplate(String template) {
         this.template = template;
     }
-    private String href;
 
     @Column(name = "href")
     @Override
@@ -71,40 +114,28 @@ public abstract class AGenerator implements IGenerator {
         this.href = href;
     }
 
-    public AGenerator(String href, String resourceNameTemplate) {
-        this.href = href;
-        this.template = resourceNameTemplate;
-    }
-
     /**
      * Абстрактный метод формирования данных отчета.
-     *
-     * @param request
-     * @return
      */
     abstract protected JRDataSource getDataSource(HttpRequest request);
 
     /**
      * Абстрактный метод формирования параметров для отчета.
-     *
-     * @param request
-     * @return
      */
     abstract protected Map getParameters(HttpRequest request);
 
     /**
      * Метод получения коннекта к базе если отчет строится через коннект.
      *
-     * @param request
      * @return коннект соединения к базе или null.
      */
     abstract protected Connection getConnection(HttpRequest request);
 
     /**
-     * Абстрактный метод выполнения неких действия для подготовки данных отчета. Если он возвращает заполненный массив байт, то его нужно отдать клиенту, иначе
-     * если null то продолжаем генерировать отчет.
+     * Абстрактный метод выполнения неких действия для подготовки данных отчета. Если он возвращает
+     * заполненный массив байт, то его нужно отдать клиенту, иначе если null то продолжаем
+     * генерировать отчет.
      *
-     * @param request
      * @return массив байт для выдачи на клиента. Может быть null если выдовать ничего не надо.
      */
     abstract protected Response preparationReport(HttpRequest request);
@@ -112,23 +143,21 @@ public abstract class AGenerator implements IGenerator {
     /**
      * Сформируем диалог дл ввода параметров
      *
-     * @param request
      * @param errorMessage сообщение об ощибке предыдущего ввода, иначе null
-     * @return
      */
     abstract protected Response getDialog(HttpRequest request, String errorMessage);
 
     /**
      * Проверка параметров если они были введены
      *
-     * @param request
      * @param params параметры из request
      * @return сообщение об ошибке если была, иначе null
      */
     abstract protected String validate(HttpRequest request, HashMap<String, String> params);
 
     /**
-     * Метод получения документа-отчета или другого какого документа в виде массива байт. Сдесь испольщуем методы интерфейса IFormirovator для получения отчета.
+     * Метод получения документа-отчета или другого какого документа в виде массива байт. Сдесь
+     * испольщуем методы интерфейса IFormirovator для получения отчета.
      *
      * @param request ? какого формата отчет хотим получить(html, pdf, rtf)
      * @return данные документа.
@@ -140,7 +169,7 @@ public abstract class AGenerator implements IGenerator {
         /*
          * Перед формированием отчета возможно необходимо получить некие параметры.
          * Для этого надо выдать клиенту форму для заполнения и принять от него введенные данные.
-         * А по этим данным уже формировать отчетные данные. 
+         * А по этим данным уже формировать отчетные данные.
          */
         /*
          * Логика следующая:
@@ -194,18 +223,21 @@ public abstract class AGenerator implements IGenerator {
                 inStr = getClass().getResourceAsStream(template);
             }
             if (inStr == null) {
-                throw new ReportException("Шаблон не найден. \"" + template + "\" Либо отсутствует требуемый файл, либо некорректная запись в базе данных.");
+                throw new ReportException("Шаблон не найден. \"" + template
+                    + "\" Либо отсутствует требуемый файл, либо некорректная запись в базе данных.");
             }
-            // теперь посмотрим, не сформировали ли коннект 
+            // теперь посмотрим, не сформировали ли коннект
             //если есть коннект, то строим отчет по коннекту, иначе формируем данные формироватором.
             final Connection conn = getConnection(request);
             final Map paramsForFilling = getParameters(request);
             paramsForFilling.put(JRParameter.REPORT_LOCALE, Locales.getInstance().getLangCurrent());
             final JasperPrint jasperPrint;
             if (conn == null) {
-                jasperPrint = JasperFillManager.fillReport(inStr, paramsForFilling, getDataSource(request));//это используя уже откампиленный
+                jasperPrint = JasperFillManager.fillReport(inStr, paramsForFilling,
+                    getDataSource(request));//это используя уже откампиленный
             } else {
-                jasperPrint = JasperFillManager.fillReport(inStr, paramsForFilling, conn);//это используя уже откампиленный
+                jasperPrint = JasperFillManager
+                    .fillReport(inStr, paramsForFilling, conn);//это используя уже откампиленный
             }
             byte[] result = null;
 
@@ -227,14 +259,20 @@ public abstract class AGenerator implements IGenerator {
                 // для этого нужно чтоб вебсервер умел выдовать и файла с диска и файлы из временных папок.
                 final JRHtmlExporter exporterToTempFile = new JRHtmlExporter();
                 exporterToTempFile.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-                exporterToTempFile.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, Uses.TEMP_FOLDER + File.separator + "temphtml.html");
+                exporterToTempFile.setParameter(JRExporterParameter.OUTPUT_FILE_NAME,
+                    Uses.TEMP_FOLDER + File.separator + "temphtml.html");
                 exporterToTempFile.exportReport();
 
                 final StringBuffer buf = new StringBuffer("UTF-8");
                 exporter.setParameter(JRExporterParameter.OUTPUT_STRING_BUFFER, buf);
                 exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, "UTF-8");
                 exporter.exportReport();
-                result = buf.toString().replaceAll("nullpx", "resources/px").replaceFirst("<body text=\"#000000\"", "<body text=\"#000000\"  background=\"resources/fp.png\" bgproperties=\"fixed\"").replaceAll("bgcolor=\"white\"", "bgcolor=\"CCDDEE\"").replaceAll("nullimg_", "img_").getBytes("UTF-8");
+                result = buf.toString().replaceAll("nullpx", "resources/px")
+                    .replaceFirst("<body text=\"#000000\"",
+                        "<body text=\"#000000\"  background=\"resources/fp.png\" bgproperties=\"fixed\"")
+                    .replaceAll("bgcolor=\"white\"", "bgcolor=\"CCDDEE\"")
+                    .replaceAll("nullimg_", "img_")
+                    .getBytes("UTF-8");
                 dataType = "text/html";
             } else if (Uses.REPORT_FORMAT_RTF.equalsIgnoreCase(format)) {
                 final JRRtfExporter exporter = new JRRtfExporter();
@@ -245,27 +283,30 @@ public abstract class AGenerator implements IGenerator {
                 result = baos.toByteArray();
                 dataType = "application/rtf";
             } else if (Uses.REPORT_FORMAT_XLSX.equalsIgnoreCase(format)) {
-                //final JROdsExporter exporter = new JROdsExporter(); 
+                //final JROdsExporter exporter = new JROdsExporter();
                 final JRXlsxExporter exporter = new JRXlsxExporter();
                 exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, baos);
-                exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, true);
-                exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, true);
+                exporter
+                    .setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, true);
+                exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS,
+                    true);
                 exporter.setParameter(JRXlsExporterParameter.IS_COLLAPSE_ROW_SPAN, true);
                 exporter.setParameter(JRXlsExporterParameter.IS_IGNORE_GRAPHICS, true);
                 exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, true);
                 exporter.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, true);
                 exporter.exportReport();
                 result = baos.toByteArray();
-                //dataType = "application/ods";    
+                //dataType = "application/ods";
                 dataType = "application/xlsx";
             } else if (Uses.REPORT_FORMAT_PDF.equalsIgnoreCase(format)) {
                 // создадим файл со шрифтами если его нет
                 final File f = new File("tahoma.ttf");
                 if (!f.exists()) {
                     try (FileOutputStream fo = new FileOutputStream(f)) {
-                        final InputStream inStream = getClass().getResourceAsStream("/ru/apertum/qsystem/reports/fonts/tahoma.ttf");
+                        final InputStream inStream = getClass()
+                            .getResourceAsStream("/ru/apertum/qsystem/reports/fonts/tahoma.ttf");
                         final byte[] b = Uses.readInputStream(inStream);
                         fo.write(b);
                         fo.flush();
@@ -292,27 +333,5 @@ public abstract class AGenerator implements IGenerator {
             throw new ReportException("Ошибка генерации. " + ex);
         }
 
-    }
-
-    /**
-     * Метод генерации PDF-отчетов через файл. Вынесен в отдельный метод для синхронизации.
-     *
-     * @param jasperPrint этот готовый отчет и экспортим в PDF
-     * @return возвращает готовый отчет в виде массива байт
-     * @throws net.sf.jasperreports.engine.JRException
-     * @throws java.io.FileNotFoundException
-     * @throws java.io.IOException
-     */
-    synchronized private static byte[] genPDF(JasperPrint jasperPrint) throws JRException, FileNotFoundException, IOException {
-        // сгенерим отчет во временный файл
-        JRPdfExporter exporter = new JRPdfExporter();
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-        exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, Uses.TEMP_FOLDER + File.separator + "temppdf.pdf");
-        exporter.exportReport();
-        // отправим данные из файла и удалим его
-        final File pdf = new File(Uses.TEMP_FOLDER + File.separator + "temppdf.pdf");
-        final FileInputStream inStream = new FileInputStream(pdf);
-        pdf.delete();
-        return Uses.readInputStream(inStream);
     }
 }

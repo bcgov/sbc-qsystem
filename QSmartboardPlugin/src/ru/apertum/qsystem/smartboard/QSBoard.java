@@ -16,6 +16,7 @@
  */
 package ru.apertum.qsystem.smartboard;
 
+import java.util.LinkedList;
 import org.dom4j.Element;
 import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.common.QLog;
@@ -25,10 +26,7 @@ import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QUser;
 
-import java.util.LinkedList;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QSBoard extends AIndicatorBoard {
@@ -54,7 +52,7 @@ public class QSBoard extends AIndicatorBoard {
         for (int i = 1; i < elements.length; i++) {
             StackTraceElement s = elements[i];
             QLog.l().logQUser().debug("\tat " + s.getClassName() + "." + s.getMethodName()
-                    + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+                + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
         }
 
         return 0;
@@ -68,7 +66,7 @@ public class QSBoard extends AIndicatorBoard {
         for (int i = 1; i < elements.length; i++) {
             StackTraceElement s = elements[i];
             QLog.l().logQUser().debug("\tat " + s.getClassName() + "." + s.getMethodName()
-                    + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+                + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
         }
 
         return;
@@ -105,9 +103,8 @@ public class QSBoard extends AIndicatorBoard {
     }
 
     /**
-     *
-     * @param record
-     * @deprecated при конфигурации с мониторами в качестве табло пользовательские моники подключаются к пользовательским компам.
+     * @deprecated при конфигурации с мониторами в качестве табло пользовательские моники
+     * подключаются к пользовательским компам.
      */
     @Deprecated
     @Override
@@ -139,19 +136,22 @@ public class QSBoard extends AIndicatorBoard {
     @Override
     public Element getConfig() {
         QLog.l().logQUser().debug("QSBoard: getConfig");
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void saveConfig(Element element) {
         QLog.l().logQUser().debug("QSBoard: saveConfig");
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public AFBoardRedactor getRedactor() {
         QLog.l().logQUser().debug("QSBoard: getRedactor");
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

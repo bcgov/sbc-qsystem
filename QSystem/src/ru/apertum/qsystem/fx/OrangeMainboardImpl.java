@@ -16,6 +16,11 @@
  */
 package ru.apertum.qsystem.fx;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import javax.swing.Timer;
 import org.dom4j.Element;
 import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.common.model.QCustomer;
@@ -24,14 +29,7 @@ import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.LinkedList;
-
 /**
- *
  * @author Евгений
  */
 public class OrangeMainboardImpl implements IIndicatorBoard {
@@ -46,6 +44,8 @@ public class OrangeMainboardImpl implements IIndicatorBoard {
             timer.stop();
         }
     });
+    final private ArrayList<QUser> forBlink = new ArrayList<>();
+    final private ArrayList<QUser> forShow = new ArrayList<>();
     private boolean flag = true;
 
     @Override
@@ -73,8 +73,6 @@ public class OrangeMainboardImpl implements IIndicatorBoard {
         }
         //todo  board.showNextCustomers(nests);
     }
-    final private ArrayList<QUser> forBlink = new ArrayList<>();
-    final private ArrayList<QUser> forShow = new ArrayList<>();
 
     @Override
     public void workCustomer(QUser user) {
@@ -128,16 +126,19 @@ public class OrangeMainboardImpl implements IIndicatorBoard {
 
     @Override
     public String getDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public long getUID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Object getBoardForm() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

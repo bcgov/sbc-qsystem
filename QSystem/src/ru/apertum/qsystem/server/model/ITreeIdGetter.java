@@ -19,7 +19,6 @@ package ru.apertum.qsystem.server.model;
 import javax.swing.tree.MutableTreeNode;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public interface ITreeIdGetter extends IidGetter, MutableTreeNode {

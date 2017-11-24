@@ -16,28 +16,101 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.VideoPlayer;
-import ru.apertum.qsystem.common.exceptions.ServerException;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Point;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.Serializable;
+import javax.swing.JPanel;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.VideoPlayer;
+import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
- * Панель, имеющая фон, загруженный из ресурсов или из файла.
- * Панель может проигрывать фидеофайлы *.mpg, *.jpg.
- * Класс панели с перекрытым методом painComponent()
- * Панель может проигрывать фидеофайлы *.mpg, *.jpg.
- * Для этого используется установленная предварительно на компьютере среда JMF.
+ * Панель, имеющая фон, загруженный из ресурсов или из файла. Панель может проигрывать фидеофайлы
+ * *.mpg, *.jpg. Класс панели с перекрытым методом painComponent() Панель может проигрывать
+ * фидеофайлы *.mpg, *.jpg. Для этого используется установленная предварительно на компьютере среда
+ * JMF.
+ *
  * @author Evgeniy Egorov
  */
 public class QPanel extends JPanel implements Serializable {
 
+    public static final String PROP_BACKGROUND_IMG = "backgroundImgage";
+    public static final String PROP_VIDEO_FILE = "video_file_name";
+    public static final String PROP_VIDEO_NATIVE_POSITION = "video_native_position";
+    public static final String PROP_START_COLOR = "startColor";
+    public static final String PROP_END_COLOR = "endColor";
+    public static final String PROP_START_POINT = "startPoint";
+    public static final String PROP_END_POINT = "endPoint";
+    public static final String PROP_CYCLE_FILL_GRADIENT = "cycleFillGradient";
+    /**
+     * Закрашивать графиентом или нет. По умолчанию не надо градиентом.
+     */
+    public static final String PROP_GRADIENT = "gradient";
     private PropertyChangeSupport propertySupport = new PropertyChangeSupport(this);
+    /**
+     * Фоновая картинка.
+     */
+    private Image backgroundImage = null;
+    private String backgroundImageFile = "";
+    private VideoPlayer player = null;
+    /**
+     * Файл выводимого видео
+     */
+    private String videoFileName = "";
+    /**
+     * Расположение выводимого видео
+     */
+    private Boolean videoNativePosition = true;
+    /**
+     * Начальный цвет для градиента
+     */
+    private Color startColor = Color.red;
+    /**
+     * Конечный цвет для градиента
+     */
+    private Color endColor = Color.blue;
+    /**
+     * Начальная точка для градиента Координаты начальной и конечной позиций в которых рисуется
+     * градиент.
+     */
+    private Point startPoint = new Point(0, 0);
+    /**
+     * Конечная точка для градиента Координаты начальной и конечной позиций в которых рисуется
+     * градиент.
+     */
+    private Point endPoint = new Point(100, 100);
+    /**
+     * Цикличность заполнения панели градиентным цветом
+     */
+    private Boolean cycleFillGradient = true;
+    private Boolean isGradient = false;
+
+    /**
+     * Создает панель и грузит картинку из ресурсов. Если Параметр пустой, то работает как обычная
+     * панель.
+     *
+     * @param resourceName путь к ресурсу в jar-файле или просто к файлу картинки. Может быть
+     * пустым.
+     */
+    public QPanel(String resourceName) {
+        if (resourceName != null && !"".equals(resourceName)) {
+            setBackgroundImgage(resourceName);
+        }
+    }
+
+    /**
+     * Конструктор по умолчанию.
+     */
+    public QPanel() {
+    }
 
     public PropertyChangeSupport getPropertySupport() {
         if (propertySupport == null) {
@@ -63,19 +136,9 @@ public class QPanel extends JPanel implements Serializable {
         }
         getPropertySupport().removePropertyChangeListener(listener);
     }
-    /**
-     * Фоновая картинка.
-     */
-    private Image backgroundImage = null;
-    private String backgroundImageFile = "";
-    public static final String PROP_BACKGROUND_IMG = "backgroundImgage";
 
     public String getBackgroundImgage() {
         return backgroundImageFile;
-    }
-
-    public Image getBackgroundImgageIMG() {
-        return backgroundImage;
     }
 
     public final void setBackgroundImgage(String resourceName) {
@@ -84,6 +147,10 @@ public class QPanel extends JPanel implements Serializable {
         this.backgroundImage = Uses.loadImage(this, resourceName, "");
         getPropertySupport().firePropertyChange(PROP_BACKGROUND_IMG, oldValue, resourceName);
         repaint();
+    }
+
+    public Image getBackgroundImgageIMG() {
+        return backgroundImage;
     }
 
     @Override
@@ -122,24 +189,6 @@ public class QPanel extends JPanel implements Serializable {
     }
 
     /**
-     *  Создает панель и грузит картинку из ресурсов.
-     *  Если Параметр пустой, то работает как обычная панель.
-     * @param resourceName путь к ресурсу в jar-файле или просто к файлу картинки. Может быть пустым.
-     */
-    public QPanel(String resourceName) {
-        if (resourceName != null && !"".equals(resourceName)) {
-            setBackgroundImgage(resourceName);
-        }
-    }
-
-    /**
-     * Конструктор по умолчанию.
-     */
-    public QPanel() {
-    }
-    private VideoPlayer player = null;
-
-    /**
      * Установит видео на панель и нечнет его проигрывать.
      */
     private void setVideoFile() {
@@ -149,7 +198,7 @@ public class QPanel extends JPanel implements Serializable {
             setLayout(new GridLayout(1, 1));
             add(player);
         }
-       player.setVideoResource(getVideoFileName());
+        player.setVideoResource(getVideoFileName());
     }
 
     public void refreshVideoSize() {
@@ -181,16 +230,17 @@ public class QPanel extends JPanel implements Serializable {
             player.close();
         }
     }
-    public static final String PROP_VIDEO_FILE = "video_file_name";
+
     /**
      * Файл выводимого видео
      */
-    private String videoFileName = "";
+    public String getVideoFileName() {
+        return videoFileName;
+    }
 
     /**
-     * Этот метод установит новое значение файла видео, выведет его на конву
-     * и отцентрирует его в зависимости от установленных выравниваний.
-     * @param videoFile
+     * Этот метод установит новое значение файла видео, выведет его на конву и отцентрирует его в
+     * зависимости от установленных выравниваний.
      */
     public void setVideoFileName(String videoFile) {
         final File f = new File(videoFile);
@@ -204,41 +254,29 @@ public class QPanel extends JPanel implements Serializable {
     }
 
     /**
-     * Файл выводимого видео
-     * @return
-     */
-    public String getVideoFileName() {
-        return videoFileName;
-    }
-    public static final String PROP_VIDEO_NATIVE_POSITION = "video_native_position";
-    /**
      * Расположение выводимого видео
-     */
-    private Boolean videoNativePosition = true;
-
-    /**
-     * Этот метод установит новое значение расположение видео, выведет его на конву
-     * и отцентрирует его в зависимости от установленных выравниваний.
-     * @param nativePosition если true, то выводится в первоначальном состоянии, если false, то растянется на всю панель
-     */
-    public void setNativePosition(Boolean nativePosition) {
-        final Boolean oldValue = nativePosition;
-        this.videoNativePosition = nativePosition;
-        getPropertySupport().firePropertyChange(PROP_VIDEO_NATIVE_POSITION, oldValue, nativePosition);
-        //setVideoFile(getVideoFileName(), nativePosition);
-    }
-
-    /**
-     * Расположение выводимого видео
-     * @return
      */
     public Boolean getNativePosition() {
         return videoNativePosition;
     }
 
     /**
+     * Этот метод установит новое значение расположение видео, выведет его на конву и отцентрирует
+     * его в зависимости от установленных выравниваний.
+     *
+     * @param nativePosition если true, то выводится в первоначальном состоянии, если false, то
+     * растянется на всю панель
+     */
+    public void setNativePosition(Boolean nativePosition) {
+        final Boolean oldValue = nativePosition;
+        this.videoNativePosition = nativePosition;
+        getPropertySupport()
+            .firePropertyChange(PROP_VIDEO_NATIVE_POSITION, oldValue, nativePosition);
+        //setVideoFile(getVideoFileName(), nativePosition);
+    }
+
+    /**
      * Включение и выключение звука
-     * @param mute 
      */
     public void setMute(boolean mute) {
 
@@ -250,11 +288,6 @@ public class QPanel extends JPanel implements Serializable {
             //System.err.println("Ошибка mute: " + e);
         }
     }
-    public static final String PROP_START_COLOR = "startColor";
-    /**
-     * Начальный цвет для градиента
-     */
-    private Color startColor = Color.red;
 
     public Color getStartColor() {
         return startColor;
@@ -265,11 +298,6 @@ public class QPanel extends JPanel implements Serializable {
         this.startColor = startColor;
         getPropertySupport().firePropertyChange(PROP_START_COLOR, oldValue, startColor);
     }
-    public static final String PROP_END_COLOR = "endColor";
-    /**
-     * Конечный цвет для градиента
-     */
-    private Color endColor = Color.blue;
 
     public Color getEndColor() {
         return endColor;
@@ -280,12 +308,6 @@ public class QPanel extends JPanel implements Serializable {
         this.endColor = endColor;
         getPropertySupport().firePropertyChange(PROP_END_COLOR, oldValue, endColor);
     }
-    public static final String PROP_START_POINT = "startPoint";
-    /**
-     * Начальная точка для градиента
-     * Координаты начальной и конечной позиций в которых рисуется градиент.
-     */
-    private Point startPoint = new Point(0, 0);
 
     public Point getStartPoint() {
         return startPoint;
@@ -296,12 +318,6 @@ public class QPanel extends JPanel implements Serializable {
         this.startPoint = startPoint;
         getPropertySupport().firePropertyChange(PROP_START_POINT, oldValue, startPoint);
     }
-    public static final String PROP_END_POINT = "endPoint";
-    /**
-     * Конечная точка для градиента
-     * Координаты начальной и конечной позиций в которых рисуется градиент.
-     */
-    private Point endPoint = new Point(100, 100);
 
     public Point getEndPoint() {
         return endPoint;
@@ -312,26 +328,17 @@ public class QPanel extends JPanel implements Serializable {
         this.endPoint = endPoint;
         getPropertySupport().firePropertyChange(PROP_END_POINT, oldValue, endPoint);
     }
-    public static final String PROP_CYCLE_FILL_GRADIENT = "cycleFillGradient";
-    /**
-     * Цикличность заполнения панели градиентным цветом
-     */
-    private Boolean cycleFillGradient = true;
-
-    public void setCycle(Boolean cycleFillGradient) {
-        final Boolean oldValue = cycleFillGradient;
-        this.cycleFillGradient = cycleFillGradient;
-        getPropertySupport().firePropertyChange(PROP_CYCLE_FILL_GRADIENT, oldValue, cycleFillGradient);
-    }
 
     public Boolean getCycle() {
         return cycleFillGradient;
     }
-    /**
-     * Закрашивать графиентом или нет. По умолчанию не надо градиентом.
-     */
-    public static final String PROP_GRADIENT = "gradient";
-    private Boolean isGradient = false;
+
+    public void setCycle(Boolean cycleFillGradient) {
+        final Boolean oldValue = cycleFillGradient;
+        this.cycleFillGradient = cycleFillGradient;
+        getPropertySupport()
+            .firePropertyChange(PROP_CYCLE_FILL_GRADIENT, oldValue, cycleFillGradient);
+    }
 
     public Boolean getGradient() {
         return isGradient;
@@ -348,7 +355,9 @@ public class QPanel extends JPanel implements Serializable {
         /* RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2.setRenderingHints(qualityHints); */
-        GradientPaint gradient = new GradientPaint(startPoint.x, startPoint.y, startColor, endPoint.x, endPoint.y, endColor, cycleFillGradient);
+        GradientPaint gradient = new GradientPaint(startPoint.x, startPoint.y, startColor,
+            endPoint.x,
+            endPoint.y, endColor, cycleFillGradient);
         g2.setPaint(gradient);
         g2.fillRect(0, 0, w, h);
 

@@ -16,6 +16,19 @@
  */
 package ru.apertum.qsystem.server.model.calendar;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.common.exceptions.ServerException;
@@ -23,13 +36,6 @@ import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.IidGetter;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
 import ru.apertum.qsystem.server.model.schedule.QSpecSchedule;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Класс календаря для расписания.
@@ -40,12 +46,22 @@ import java.util.List;
 @Table(name = "calendar")
 public class QCalendar implements IidGetter, Serializable {
 
-    public QCalendar() {
-    }
     @Id
     @Column(name = "id")
     //@GeneratedValue(strategy = GenerationType.AUTO)
     private Long id = new Date().getTime();
+    /**
+     * Наименование плана.
+     */
+    @Column(name = "name")
+    private String name;
+    //MOSCOW1
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "calendar_id", updatable = false, insertable = false)
+    private List<QSpecSchedule> specSchedules = new LinkedList<>();
+
+    public QCalendar() {
+    }
 
     @Override
     public Long getId() {
@@ -55,11 +71,6 @@ public class QCalendar implements IidGetter, Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    /**
-     * Наименование плана.
-     */
-    @Column(name = "name")
-    private String name;
 
     @Override
     public String getName() {
@@ -69,11 +80,6 @@ public class QCalendar implements IidGetter, Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
-    //MOSCOW1
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinColumn(name = "calendar_id", updatable = false, insertable = false)
-    private List<QSpecSchedule> specSchedules = new LinkedList<>();
 
     public List<QSpecSchedule> getSpecSchedules() {
         return specSchedules;
@@ -94,7 +100,8 @@ public class QCalendar implements IidGetter, Serializable {
             return false;
         }
         if (!(o instanceof QCalendar)) {
-            throw new TypeNotPresentException("Неправильный тип для сравнения", new ServerException("Неправильный тип для сравнения"));
+            throw new TypeNotPresentException("Неправильный тип для сравнения",
+                new ServerException("Неправильный тип для сравнения"));
         }
         return id.equals(((QCalendar) o).id);
     }

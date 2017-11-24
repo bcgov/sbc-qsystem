@@ -18,13 +18,16 @@ package ru.apertum.qsystem.server.model.results;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import ru.apertum.qsystem.server.model.IidGetter;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 @Entity
@@ -37,6 +40,14 @@ public class QResult implements IidGetter, Serializable {
     @Expose
     @SerializedName("id")
     private Long id;
+    /**
+     * Текст результата работы клиента с пользователем The result text of the client's work with the
+     * user
+     */
+    @Column(name = "name")
+    @Expose
+    @SerializedName("name")
+    private String name;
 
     @Override
     public Long getId() {
@@ -46,14 +57,6 @@ public class QResult implements IidGetter, Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    /**
-     * Текст результата работы клиента с пользователем
-     * The result text of the client's work with the user
-     */
-    @Column(name = "name")
-    @Expose
-    @SerializedName("name")
-    private String name;
 
     @Override
     public String getName() {
