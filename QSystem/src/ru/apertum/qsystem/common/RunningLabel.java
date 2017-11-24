@@ -86,7 +86,7 @@ public class RunningLabel extends JLabel implements Serializable {
         need = true;
         repaint();
     };
-    
+
     /**
      * Поток генерации событий смещения текста
      */
