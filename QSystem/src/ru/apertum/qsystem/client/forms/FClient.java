@@ -280,48 +280,49 @@ public final class FClient extends javax.swing.JFrame {
                 QLog.l().logger().trace("Старт PIPE.");
                 if (!new File(Uses.TEMP_FOLDER + File.separator + "pipe").exists()) {
                     new File(Uses.TEMP_FOLDER + File.separator).mkdir();
-                    PrintWriter w = null;
-                    try {
-                        w = new PrintWriter(new BufferedWriter(new FileWriter(Uses.TEMP_FOLDER + File.separator + "pipe")), true);
+                    try (PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(Uses.TEMP_FOLDER + File.separator + "pipe")), true)) {
+                        w.println("" + new Date().getTime() + "^");
                     } catch (IOException ex) {
                         throw new ServerException(ex);
                     }
-                    w.println("" + new Date().getTime() + "^");
                 }
 
                 i = 0;
                 if (t != null) {
                     t.stop();
                 }
-                RandomAccessFile raf = null;
-                try {
-                    raf = new RandomAccessFile(Uses.TEMP_FOLDER + File.separator + "pipe", "r");
+                try (RandomAccessFile raf = new RandomAccessFile(Uses.TEMP_FOLDER + File.separator + "pipe", "r")) {
+
+                    final RandomAccessFile raf2 = raf;
+                    t = new Timer(1000, (ActionEvent e) -> {
+                        i++;
+                        if (raf2 != null) {
+                            try {
+                                raf2.seek(0);
+                                final String s = raf2.readLine();
+                                final String[] ss = s.split("\\^");
+                                if (ss.length == 2 && !pref.equals(ss[0])) {
+                                    System.out.println(ss[1]);
+                                    pref = ss[0];
+                                    getData2(ss[1], null, 0);
+                                }
+                            } catch (IOException ex) {
+                                QLog.l().logger().error("Не прочитался pipe. ", ex);
+                            } finally {
+                                raf2.close();
+                            }
+                        }
+                        if (i > 180) {
+                            i = 0;
+                            checkPort();
+                        }
+                    });
+                    t.start();
                 } catch (FileNotFoundException ex) {
                     QLog.l().logger().error("Не открылся pipe. ", ex);
+                } catch (IOException ex) {
+                    QLog.l().logger().error("Error: ", ex);
                 }
-                final RandomAccessFile raf2 = raf;
-                t = new Timer(1000, (ActionEvent e) -> {
-                    i++;
-                    if (raf2 != null) {
-                        try {
-                            raf2.seek(0);
-                            final String s = raf2.readLine();
-                            final String[] ss = s.split("\\^");
-                            if (ss.length == 2 && !pref.equals(ss[0])) {
-                                System.out.println(ss[1]);
-                                pref = ss[0];
-                                getData2(ss[1], null, 0);
-                            }
-                        } catch (IOException ex) {
-                            QLog.l().logger().error("Не прочитался pipe. ", ex);
-                        }
-                    }
-                    if (i > 180) {
-                        i = 0;
-                        checkPort();
-                    }
-                });
-                t.start();
             }
         }
 
@@ -335,14 +336,18 @@ public final class FClient extends javax.swing.JFrame {
         @Override
         synchronized protected void getData(String data, InetAddress clientAddress, int clientPort) {
             if (QConfig.cfg().isTerminal()) {
-                try {
-                    if (!new File(Uses.TEMP_FOLDER + File.separator + "pipe").exists()) {
-                        new File(Uses.TEMP_FOLDER + File.separator).mkdir();
-                        final PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(Uses.TEMP_FOLDER + File.separator + "pipe")), true);
+                if (!new File(Uses.TEMP_FOLDER + File.separator + "pipe").exists()) {
+                    new File(Uses.TEMP_FOLDER + File.separator).mkdir();
+                    try (final PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(Uses.TEMP_FOLDER + File.separator + "pipe")), true)) {
                         w.println("" + new Date().getTime() + "^");
+                        w.close();
+                    } catch (IOException ex) {
+                        QLog.l().logger().error("Не записался пакет UDP в pipe. ", ex);
                     }
-                    final PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(Uses.TEMP_FOLDER + File.separator + "pipe")), true);
+                }
+                try (PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter(Uses.TEMP_FOLDER + File.separator + "pipe")), true)) {
                     w.println("" + new Date().getTime() + "^" + data);
+                    w.close();
                 } catch (IOException ex) {
                     QLog.l().logger().error("Не записался пакет UDP в pipe. ", ex);
                 }
@@ -697,7 +702,15 @@ public final class FClient extends javax.swing.JFrame {
         }
     }
     private long refreshTime = 0;
-    public static int extPriorClient = 0;
+    private static int extPriorClient = 0;
+
+    public static int getExtPriorClient() {
+        return extPriorClient;
+    }
+
+    public static void setExtPriorClient(int ext) {
+        extPriorClient = ext;
+    }
 
     /**
      * Определяет какова ситуация в очереди к пользователю.
@@ -900,7 +913,7 @@ public final class FClient extends javax.swing.JFrame {
                 new Thread(() -> {
                     event.pressButton(user, netProperty, getUserPlan(), evt, keyId);
                 }).start();
-            } catch (Throwable tr) {
+            } catch (Exception tr) {
                 QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
             }
         }
@@ -1004,7 +1017,7 @@ public final class FClient extends javax.swing.JFrame {
             // поддержка расширяемости плагинами
             extPluginIStartClientPressButton(user, netProperty, getUserPlan(), evt, 3);
             end(start);
-        } catch (Throwable th) {
+        } catch (Exception th) {
             throw new ClientException(new Exception(th));
         }
     }
@@ -1084,7 +1097,7 @@ public final class FClient extends javax.swing.JFrame {
             // поддержка расширяемости плагинами
             extPluginIStartClientPressButton(user, netProperty, getUserPlan(), evt, 4);
             end(start);
-        } catch (Throwable th) {
+        } catch (Exception th) {
             throw new ClientException(new Exception(th));
         }
     }
@@ -1787,6 +1800,7 @@ public final class FClient extends javax.swing.JFrame {
                 final DatagramSocket socket = new DatagramSocket(netProperty.getClientPort());
                 socket.close();
             } catch (SocketException ex) {
+                QLog.l().logger().info(ex.getMessage());
                 QLog.l().logger().error("Сервер UDP не запустился, вторая копия не позволяется.");
                 JOptionPane.showMessageDialog(null, getLocaleMessage("messages.restart.mess"), getLocaleMessage("messages.restart.caption"), JOptionPane.INFORMATION_MESSAGE);
                 System.exit(0);
@@ -1822,7 +1836,7 @@ public final class FClient extends javax.swing.JFrame {
                     new Thread(() -> {
                         event.start(fClient);
                     }).start();
-                } catch (Throwable tr) {
+                } catch (Exception tr) {
                     QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
                 }
             }
@@ -1860,7 +1874,7 @@ public final class FClient extends javax.swing.JFrame {
         try {
             setSituation(NetCommander.getSelfServices(netProperty, user.getId(), forced));
             spd = -1;
-        } catch (Throwable th) {
+        } catch (Exception th) {
             spd++;
             QLog.l().logger().error("Ошибка при обновлении состояния: ", th);
             if (spd % 20 == 0) {
@@ -1902,7 +1916,7 @@ public final class FClient extends javax.swing.JFrame {
             // поддержка расширяемости плагинами
             extPluginIStartClientPressButton(user, netProperty, getUserPlan(), new ActionEvent(buttonMoveToPostponed, 13, buttonMoveToPostponed.getActionCommand(), System.currentTimeMillis(), 1), 5);
             end(start);
-        } catch (Throwable th) {
+        } catch (Exception th) {
             throw new ClientException(new Exception(th));
         }
     }

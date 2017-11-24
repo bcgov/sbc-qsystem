@@ -563,10 +563,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         TimeZone currentTimeZone = Calendar.getInstance().getTimeZone();
         DateFormat zoneTimeFormat= Uses.FORMAT_HH_MM_SS;
 
-        if (Uses.userTimeZone == null){
+        if (Uses.getUserTimeZone() == null){
             zoneTimeFormat.setTimeZone(currentTimeZone);
         }else{
-            zoneTimeFormat.setTimeZone(Uses.userTimeZone);
+            zoneTimeFormat.setTimeZone(Uses.getUserTimeZone());
         }
         
         return zoneTimeFormat.format(standTime);

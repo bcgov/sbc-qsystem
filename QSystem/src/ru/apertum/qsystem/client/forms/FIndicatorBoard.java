@@ -91,7 +91,7 @@ public class FIndicatorBoard extends javax.swing.JFrame {
     /**
      * Фоновая картинка.
      */
-    public static Image background;
+    private static Image background;
     private final Element topElement;
     private final Element bottomElement;
     private final Element bottomElement2;

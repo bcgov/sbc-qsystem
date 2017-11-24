@@ -59,10 +59,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -5638,8 +5635,11 @@ private void buttonSendDataToSkyActionPerformed(java.awt.event.ActionEvent evt) 
                         + "    IFNULL(r.name, '') as res "
                         + " FROM statistic s left join results r on s.results_id=r.id, clients c, users u, services sv "
                         + " WHERE s.client_id=c.id and s.user_id=u.id and s.service_id=sv.id "
-                        + "    and s.client_stand_time>='" + std + "' and s.client_stand_time<='" + find + "'";
-                try (ResultSet set = connection.createStatement().executeQuery(sql)) {
+                        + "    and s.client_stand_time>=? and s.client_stand_time<=?";
+                PreparedStatement pstmt = connection.prepareStatement(sql);
+                pstmt.setString(1, std);
+                pstmt.setString(2, find);
+                try (ResultSet set = pstmt.executeQuery()) {
                     Writer writer;
                     try {
                         writer = new OutputStreamWriter(new FileOutputStream(file), "cp1251").append("");

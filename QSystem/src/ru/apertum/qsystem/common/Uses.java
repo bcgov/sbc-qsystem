@@ -115,7 +115,7 @@ public final class Uses {
             n = ServerProps.getInstance().getProps().getExtPriorNumber();
         }
         if (QConfig.cfg().isClient()) {
-            n = FClient.extPriorClient;
+            n = FClient.getExtPriorClient();
         }
         for (int i = 2; i <= n + 1; i++) {
             COEFF_WORD.put(i, Integer.toString(i));
@@ -441,7 +441,15 @@ public final class Uses {
      */
     public static final String HOW_DO_YOU_DO = "do you live?";
 
-    public static TimeZone userTimeZone;
+    private static TimeZone userTimeZone;
+
+    public static TimeZone getUserTimeZone() {
+        return userTimeZone;
+    }
+
+    public static void setUserTimeZone(TimeZone tz) {
+        userTimeZone = tz;
+    }
     
     /**
      * Рекурентный формирователь для public static ArrayList elements(Element root, String tagName).

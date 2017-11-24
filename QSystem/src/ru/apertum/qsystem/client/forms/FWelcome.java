@@ -144,12 +144,12 @@ public class FWelcome extends javax.swing.JFrame {
         return localeMap.getString(key);
     }
     // Состояния пункта регистрации
-    public final String LOCK = getLocaleMessage("lock");
-    public final String UNLOCK = getLocaleMessage("unlock");
-    public final String OFF = getLocaleMessage("off");
-    public String LOCK_MESSAGE = "<HTML><p align=center><b><span style='font-size:40.0pt;color:red'>" + getLocaleMessage("messages.lock_messages") + "</span></b></p>";
-    public static QService root;
-    public int pageNumber = 0;// на одном уровне может понадобиться листать услуги, не то они расползуться. Это вместо скрола.
+    private final String LOCK = getLocaleMessage("lock");
+    private final String UNLOCK = getLocaleMessage("unlock");
+    private final String OFF = getLocaleMessage("off");
+    private String LOCK_MESSAGE = "<HTML><p align=center><b><span style='font-size:40.0pt;color:red'>" + getLocaleMessage("messages.lock_messages") + "</span></b></p>";
+    private static QService root;
+    private int pageNumber = 0;// на одном уровне может понадобиться листать услуги, не то они расползуться. Это вместо скрола.
     /**
      * XML-список отзывов. перврначально null, грузится при первом обращении. Использовать через геттер.
      */
@@ -407,7 +407,7 @@ public class FWelcome extends javax.swing.JFrame {
             QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
             try {
                 event.start(netProperty, servs);
-            } catch (Throwable tr) {
+            } catch (Exception tr) {
                 QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
             }
         }
@@ -628,7 +628,7 @@ public class FWelcome extends javax.swing.JFrame {
                                 QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
                                 try {
                                     flag = event.convert(bytes);
-                                } catch (Throwable tr) {
+                                } catch (Exception tr) {
                                     QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: ", tr);
                                 }
                                 // раз конвертнули и хорошь
@@ -1065,14 +1065,14 @@ public class FWelcome extends javax.swing.JFrame {
             try {
                 f.createNewFile();
             } catch (IOException ex) {
-                System.err.println(ex);
+                QLog.l().logger().warn("Error: ", ex);
             }
         }
         final Properties p = new Properties();
         try {
             p.load(new FileInputStream(f));
         } catch (IOException ex) {
-            System.err.println(ex);
+            QLog.l().logger().warn("Error: ", ex);
             throw new RuntimeException(ex);
         }
         int i = Math.max(Integer.parseInt(p.getProperty("tickets_cnt", "0").trim()) + d, 0);
@@ -1081,7 +1081,7 @@ public class FWelcome extends javax.swing.JFrame {
         try {
             p.store(new FileOutputStream(f), "QSystem Welcome temp properties");
         } catch (IOException ex) {
-            System.err.println(ex);
+            QLog.l().logger().warn("Error: ", ex);
             throw new RuntimeException(ex);
         }
         // разошлем весточку о том что бумага заканчивается
@@ -1217,7 +1217,7 @@ public class FWelcome extends javax.swing.JFrame {
             QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
             try {
                 flag = event.printTicket(customer, FWelcome.caption);
-            } catch (Throwable tr) {
+            } catch (Exception tr) {
                 QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: ", tr);
             }
             // раз напечатили и хорошь
@@ -1416,7 +1416,7 @@ public class FWelcome extends javax.swing.JFrame {
             QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
             try {
                 flag = event.printTicketAdvance(advCustomer, FWelcome.caption);
-            } catch (Throwable tr) {
+            } catch (Exception tr) {
                 QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
             }
             // раз напечатили и хорошь

@@ -321,12 +321,16 @@ public class SoundPlayer implements Runnable {
             for (int i = 0; i < m.start(); i++) {
                 String elem = phrase.substring(i, i + 1);
                 final String fileName = reRus(elem.toLowerCase());
-                final String file = path + fileName.toLowerCase() + ".wav";
-                //System.out.println(elem);
-                // сэмплы букав должны быть в ресурсах
-                if (file.getClass().getResourceAsStream(file) != null) {
-                    //System.out.println(elem + " + " + file);
-                    res.add(file);
+                try {
+                    final String file = path + fileName.toLowerCase() + ".wav";
+                    //System.out.println(elem);
+                    // сэмплы букав должны быть в ресурсах
+                    if (file.getClass().getResourceAsStream(file) != null) {
+                        //System.out.println(elem + " + " + file);
+                        res.add(file);
+                    }
+                } catch (NullPointerException ex) {
+                    QLog.l().logger().info("Exception", ex);
                 }
             }
             phrase = phrase.substring(m.start());

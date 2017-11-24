@@ -157,7 +157,7 @@ public class Form{
        private String checkCFMSHidden = "display: none;";
        private String checkCFMSHeight = "0%";
        private boolean checkCombo = false;
-       public String officeType;
+       private String officeType;
     private QCustomer customer = null;
     @Wire("#btn_invite")
     private Button btn_invite;
@@ -243,7 +243,7 @@ public class Form{
     @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn"})
     public void login() {
 
-        Uses.userTimeZone = (TimeZone)Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone");
+        Uses.setUserTimeZone((TimeZone)Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone"));
         QLog.l().logQUser().debug("Login : " + user.getName());
         if(user.getName().equals("Administrator")){
             user.setGABoard(true);
@@ -418,7 +418,7 @@ public class Form{
     }
 
     public String getOfficeType() {
-        return officeType;
+        return this.officeType;
     }
 
     private void setOfficeType() {
@@ -428,7 +428,7 @@ public class Form{
             receptionType = "reception";
         }
         QLog.l().logQUser().debug("setOfficeType: " + receptionType);
-        officeType = receptionType;
+        this.officeType = receptionType;
     }
 
     public String getCFMSTypeString() {

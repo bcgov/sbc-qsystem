@@ -1876,7 +1876,7 @@ public class FReception extends javax.swing.JFrame {
                 new Thread(() -> {
                     event.start(fReception);
                 }).start();
-            } catch (Throwable tr) {
+            } catch (Exception tr) {
                 QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
             }
         }

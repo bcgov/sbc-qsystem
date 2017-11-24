@@ -30,11 +30,8 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+
 import static org.apache.http.HttpHeaders.USER_AGENT;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -270,6 +267,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetAllServices.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -306,6 +304,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcStandInService.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -345,6 +344,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcStandInService.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -368,6 +368,7 @@ public class NetCommander {
         try {
             send(netProperty, Uses.TASK_CHANGE_TEMP_AVAILABLE_SERVICE, params);
         } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -396,6 +397,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetServiceState.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new QException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -427,6 +429,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetServiceState.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new QException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -460,6 +463,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetInt.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new QException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -492,6 +496,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetUsersList.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -539,6 +544,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetSelfSituation.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -576,6 +582,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetBool.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -606,6 +613,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcInviteCustomer.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -629,6 +637,7 @@ public class NetCommander {
         try {
             send(netProperty, Uses.TASK_KILL_NEXT_CUSTOMER, params);
         } catch (QException e) {// вывод исключений
+            QLog.l().logger().info("Exception", e);
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -655,6 +664,7 @@ public class NetCommander {
         try {
             send(netProperty, Uses.TASK_CUSTOMER_TO_POSTPON, params);
         } catch (QException e) {// вывод исключений
+            QLog.l().logger().info("Exception", e);
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -675,6 +685,7 @@ public class NetCommander {
         try {
             send(netProperty, Uses.TASK_POSTPON_CHANGE_STATUS, params);
         } catch (QException e) {// вывод исключений
+            QLog.l().logger().info("Exception", e);
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -692,8 +703,9 @@ public class NetCommander {
         params.userId = userId;
         try {
             send(netProperty, Uses.TASK_START_CUSTOMER, params);
-        } catch (QException e) {// вывод исключений
-            throw new ClientException(Locales.locMes("command_error2"), e);
+        } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
+            throw new ClientException(Locales.locMes("command_error2"), ex);
         }
     }
 
@@ -726,6 +738,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcStandInService.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -756,8 +769,9 @@ public class NetCommander {
         params.textData = comments;
         try {
             send(netProperty, Uses.TASK_REDIRECT_CUSTOMER, params);
-        } catch (QException e) {// вывод исключений
-            throw new ClientException(Locales.locMes("command_error2"), e);
+        } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
+            throw new ClientException(Locales.locMes("command_error2"), ex);
         }
     }
 
@@ -808,6 +822,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetServerState.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -839,6 +854,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetSrt.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -873,6 +889,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetSrt.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -905,6 +922,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetSrt.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -933,6 +951,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetSrt.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -953,8 +972,9 @@ public class NetCommander {
         params.textData = boardConfig.asXML();
         try {
             send(netProperty, Uses.TASK_SAVE_BOARD_CONFIG, params);
-        } catch (QException e) {
-            throw new ClientException(Locales.locMes("bad_response") + "\n" + e.toString());
+        } catch (QException ex) {
+            QLog.l().logger().info("Exception", ex);
+            throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         }
     }
 
@@ -985,6 +1005,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetGridOfDay.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1019,6 +1040,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetGridOfWeek.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1057,6 +1079,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetAdvanceCustomer.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1087,6 +1110,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcStandInService.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1117,6 +1141,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, JsonRPC20OK.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1133,7 +1158,8 @@ public class NetCommander {
         QLog.l().logger().info("Команда на рестарт сервера.");
         try {
             send(netProperty, Uses.TASK_RESTART, null);
-        } catch (QException e) {// вывод исключений
+        } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("command_error2"), e);
         }
     }
@@ -1161,6 +1187,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetRespTree.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1191,6 +1218,7 @@ public class NetCommander {
         try {
             send(netProperty, Uses.TASK_SET_RESPONSE_ANSWER, params);
         } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
             throw new ServerException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1218,6 +1246,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetInfoTree.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1248,6 +1277,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetAuthorizCustomer.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1275,6 +1305,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetResultsList.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1307,6 +1338,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetSrt.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1337,6 +1369,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetTicketHistory.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1364,6 +1397,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetPostponedPoolInfo.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1391,6 +1425,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcBanList.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1414,6 +1449,7 @@ public class NetCommander {
         try {
             send(netProperty, Uses.TASK_INVITE_POSTPONED, params);
         } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1429,6 +1465,7 @@ public class NetCommander {
         try {
             send(serverNetProperty, Uses.TASK_RESTART_MAIN_TABLO, null);
         } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1449,6 +1486,7 @@ public class NetCommander {
         try {
             send(netProperty, Uses.TASK_CHANGE_FLEX_PRIORITY, params);
         } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1469,6 +1507,7 @@ public class NetCommander {
         try {
             send(netProperty, Uses.TASK_CHANGE_RUNNING_TEXT_ON_BOARD, params);
         } catch (QException ex) {// вывод исключений
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("command_error"), ex);
         }
     }
@@ -1493,6 +1532,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetStandards.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1525,6 +1565,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetBool.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1538,7 +1579,7 @@ public class NetCommander {
      * @param netProperty
      * @return мапа с секциями
      */
-    public static LinkedHashMap<String, ServerProps.Section> getProperties(INetProperty netProperty) {
+    public static HashMap<String, ServerProps.Section> getProperties(INetProperty netProperty) {
         QLog.l().logger().info("Получить параметры.");
         final CmdParams params = new CmdParams();
         // загрузим ответ
@@ -1553,6 +1594,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetProperties.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1567,7 +1609,7 @@ public class NetCommander {
      * @param properties
      * @return Список свежих свойств
      */
-    public static LinkedHashMap<String, ServerProps.Section> saveProperties(INetProperty netProperty, List<QProperty> properties) {
+    public static HashMap<String, ServerProps.Section> saveProperties(INetProperty netProperty, List<QProperty> properties) {
         QLog.l().logger().info("Изменить и сохранить параметеры в ДБ на сервере.");
         final CmdParams params = new CmdParams();
         params.properties = properties;
@@ -1583,6 +1625,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetProperties.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
@@ -1597,7 +1640,7 @@ public class NetCommander {
      * @param properties
      * @return Список свежих свойств
      */
-    public static LinkedHashMap<String, ServerProps.Section> initProperties(INetProperty netProperty, List<QProperty> properties) {
+    public static HashMap<String, ServerProps.Section> initProperties(INetProperty netProperty, List<QProperty> properties) {
         QLog.l().logger().info("Если таких параметров нет, то создать их в ДБ на сервере.");
         final CmdParams params = new CmdParams();
         params.properties = properties;
@@ -1613,6 +1656,7 @@ public class NetCommander {
         try {
             rpc = gson.fromJson(res, RpcGetProperties.class);
         } catch (JsonSyntaxException ex) {
+            QLog.l().logger().info("Exception", ex);
             throw new ClientException(Locales.locMes("bad_response") + "\n" + ex.toString());
         } finally {
             GsonPool.getInstance().returnGson(gson);
