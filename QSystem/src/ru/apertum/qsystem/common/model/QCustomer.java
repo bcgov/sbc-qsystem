@@ -857,7 +857,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     
     public void refreshPrevious(){
         this.PreviousList = null;
-        
     };
 
     @Expose
