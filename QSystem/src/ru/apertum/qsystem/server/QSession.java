@@ -16,9 +16,10 @@
  */
 package ru.apertum.qsystem.server;
 
-import java.util.HashMap;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.model.QUser;
+
+import java.util.HashMap;
 
 /**
  * Сессии пользователей. Т.е. те, кто уже в сервере сидит.

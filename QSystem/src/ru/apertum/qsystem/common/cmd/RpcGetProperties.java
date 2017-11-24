@@ -18,8 +18,9 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.util.LinkedHashMap;
 import ru.apertum.qsystem.server.ServerProps;
+
+import java.util.LinkedHashMap;
 
 /**
  *

@@ -16,7 +16,17 @@
  */
 package ru.apertum.qsystem.server.http;
 
+import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.webapp.WebAppContext;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.exceptions.ServerException;
+
 import java.io.File;
+
 /*
  import java.io.FilenameFilter;
  import java.io.IOException;
@@ -32,18 +42,6 @@ import java.io.File;
  import org.apache.commons.lang.ArrayUtils;
  import org.eclipse.jetty.servlet.ServletHolder;
  */
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.webapp.WebAppContext;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
  * Класс старта и останова сервера Jetty. При старте создается новый поток и в нем стартует Jetty

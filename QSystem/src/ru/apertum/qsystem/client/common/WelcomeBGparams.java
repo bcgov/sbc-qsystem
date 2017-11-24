@@ -16,12 +16,13 @@
  */
 package ru.apertum.qsystem.client.common;
 
+import ru.apertum.qsystem.common.QLog;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
-import ru.apertum.qsystem.common.QLog;
 
 /**
  *

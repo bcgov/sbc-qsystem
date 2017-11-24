@@ -4,22 +4,15 @@
  */
 package ru.apertum.qsystem.common;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonParseException;
-import java.text.ParseException;
-import ru.apertum.qsystem.common.exceptions.ServerException;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import java.awt.Color;
-import java.lang.reflect.Type;
-import java.util.Date;
+import com.google.gson.*;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.impl.SoftReferenceObjectPool;
+import ru.apertum.qsystem.common.exceptions.ServerException;
+
+import java.awt.*;
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  *

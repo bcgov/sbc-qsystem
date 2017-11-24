@@ -18,17 +18,14 @@ package ru.apertum.qsystem.server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Scanner;
 import org.dom4j.DocumentException;
 import ru.apertum.qsystem.common.GsonPool;
 import ru.apertum.qsystem.hibernate.SqlServers;
 import ru.apertum.qsystem.hibernate.SqlServers.SqlServer;
+
+import java.io.*;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
  * Утилита изменения Spring-контекста в инсталлированном приложении Класс изменения Spring-контекста в инсталлированном приложении. Консольный классик простого

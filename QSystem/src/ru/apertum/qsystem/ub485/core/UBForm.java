@@ -1,6 +1,28 @@
 package ru.apertum.qsystem.ub485.core;
 
 import gnu.io.SerialPortEvent;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import ru.apertum.qsystem.QSystem;
+import ru.apertum.qsystem.client.Locales;
+import ru.apertum.qsystem.client.model.QTray;
+import ru.apertum.qsystem.common.NetCommander;
+import ru.apertum.qsystem.common.QConfig;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.cmd.RpcGetServerState.ServiceInfo;
+import ru.apertum.qsystem.common.model.INetProperty;
+import ru.apertum.qsystem.extra.IButtonDeviceFuctory;
+import ru.apertum.qsystem.server.model.QPlanService;
+import ru.apertum.qsystem.server.model.QUser;
+import ru.evgenic.rxtx.serialPort.IReceiveListener;
+import ru.evgenic.rxtx.serialPort.ISerialPort;
+import ru.evgenic.rxtx.serialPort.RxtxSerialPort;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.table.AbstractTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -18,34 +40,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.imageio.ImageIO;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.table.AbstractTableModel;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.client.Locales;
-import ru.apertum.qsystem.client.forms.FAdmin;
-import ru.apertum.qsystem.client.model.QTray;
-import ru.apertum.qsystem.common.NetCommander;
-import ru.apertum.qsystem.common.QConfig;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.cmd.RpcGetServerState.ServiceInfo;
-import ru.apertum.qsystem.common.model.INetProperty;
-import ru.apertum.qsystem.extra.IButtonDeviceFuctory;
-import ru.apertum.qsystem.server.model.QPlanService;
-import ru.apertum.qsystem.server.model.QUser;
-import ru.evgenic.rxtx.serialPort.IReceiveListener;
-import ru.evgenic.rxtx.serialPort.ISerialPort;
-import ru.evgenic.rxtx.serialPort.RxtxSerialPort;
 
 /**
  *

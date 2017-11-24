@@ -16,21 +16,8 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
-import javax.persistence.FetchType;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
-import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import org.jdesktop.application.Application;
@@ -39,7 +26,17 @@ import ru.apertum.qsystem.QSystem;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.server.Spring;
-import ru.apertum.qsystem.server.model.*;
+import ru.apertum.qsystem.server.model.QOffice;
+import ru.apertum.qsystem.server.model.QPlanService;
+import ru.apertum.qsystem.server.model.QService;
+import ru.apertum.qsystem.server.model.QUser;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  *

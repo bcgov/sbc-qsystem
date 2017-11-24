@@ -4,16 +4,12 @@
  */
 package ru.apertum.qsystem.server.htmlboard;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import ru.apertum.qsystem.common.QLog;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Scanner;
-import ru.apertum.qsystem.common.QLog;
 
 /**
  *

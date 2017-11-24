@@ -16,13 +16,14 @@
  */
 package ru.apertum.qsystem.common;
 
-import java.util.Enumeration;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import ru.apertum.qsystem.About;
 import ru.apertum.qsystem.server.ServerProps;
+
+import java.util.Enumeration;
 
 /**
  * Собственно, логер лог4Ж Это синглтон. Тут в место getInstance() для короткого написания используется l()

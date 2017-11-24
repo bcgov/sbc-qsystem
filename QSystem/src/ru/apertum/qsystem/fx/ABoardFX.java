@@ -9,16 +9,15 @@ package ru.apertum.qsystem.fx;
 //import javafx.scene.Group;
 //import javafx.scene.Scene;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-//import javafx.application.Platform;
-//import javafx.embed.swing.JFXPanel;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import ru.apertum.qsystem.common.QConfig;
+
+import javax.swing.*;
+import java.awt.*;
+
+//import javafx.application.Platform;
+//import javafx.embed.swing.JFXPanel;
 
 /**
  *

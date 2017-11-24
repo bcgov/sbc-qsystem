@@ -16,19 +16,20 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Frame;
-import java.text.ParseException;
-import javax.swing.DefaultComboBoxModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.server.model.schedule.QBreaks;
 import ru.apertum.qsystem.server.model.schedule.QBreaksList;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
+
+import javax.swing.*;
+import java.awt.*;
+import java.text.ParseException;
 
 /**
  * Created on 27.08.2009, 11:13:04

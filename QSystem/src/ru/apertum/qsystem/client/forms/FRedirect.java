@@ -16,28 +16,27 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.GridLayout;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import ru.apertum.qsystem.QSystem;
+import ru.apertum.qsystem.client.model.JTreeComboBox;
+import ru.apertum.qsystem.common.NetCommander;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.exceptions.ClientException;
+import ru.apertum.qsystem.common.model.INetProperty;
+import ru.apertum.qsystem.server.model.ATreeModel;
+import ru.apertum.qsystem.server.model.QService;
+import ru.apertum.qsystem.server.model.QServiceTree;
+
+import javax.swing.*;
+import javax.swing.tree.TreeNode;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.tree.TreeNode;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.NetCommander;
-import ru.apertum.qsystem.common.model.INetProperty;
-import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.client.model.JTreeComboBox;
-import ru.apertum.qsystem.common.exceptions.ClientException;
-import ru.apertum.qsystem.server.model.ATreeModel;
-import ru.apertum.qsystem.server.model.QService;
-import ru.apertum.qsystem.server.model.QServiceTree;
-import ru.apertum.qsystem.server.model.QUser;
 
 /**
  * Диалог получения названия услуги для переадресации и сопутствующих параметров. Created on 29 Сентябрь 2008 г., 10:30 Класс диалоговой формы с выбором

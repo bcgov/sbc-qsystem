@@ -17,9 +17,6 @@
 package ru.apertum.qsystem.server;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
@@ -30,6 +27,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.apertum.qsystem.common.exceptions.ServerException;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  *

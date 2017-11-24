@@ -16,11 +16,12 @@
  */
 package ru.apertum.qsystem.server.model.monitorium;
 
-import java.util.LinkedList;
 import org.dom4j.Element;
 import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.server.controller.AIndicatorBoard;
 import ru.apertum.qsystem.server.model.QOffice;
+
+import java.util.LinkedList;
 
 /**
  * Класс для системы внешних табло Monitorium

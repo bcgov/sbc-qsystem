@@ -16,7 +16,6 @@
  */
 package ru.apertum.qsystem.smartboard;
 
-import java.util.LinkedList;
 import org.dom4j.Element;
 import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.common.QLog;
@@ -25,6 +24,8 @@ import ru.apertum.qsystem.server.controller.AIndicatorBoard;
 import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QUser;
+
+import java.util.LinkedList;
 
 /**
  *

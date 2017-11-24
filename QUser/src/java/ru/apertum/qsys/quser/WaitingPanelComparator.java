@@ -5,10 +5,10 @@
  */
 package ru.apertum.qsys.quser;
 
+import ru.apertum.qsystem.common.model.QCustomer;
+
 import java.io.Serializable;
 import java.util.Comparator;
-
-import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
  *

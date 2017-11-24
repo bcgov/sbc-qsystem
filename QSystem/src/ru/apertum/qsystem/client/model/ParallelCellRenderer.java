@@ -16,19 +16,17 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import javax.swing.JList;
-import javax.swing.JTextPane;
-import javax.swing.ListCellRenderer;
+import ru.apertum.qsystem.common.CustomerState;
+import ru.apertum.qsystem.common.model.QCustomer;
+
+import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
+import java.awt.*;
+
 import static ru.apertum.qsystem.client.forms.FClient.getLocaleMessage;
-import ru.apertum.qsystem.common.CustomerState;
-import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
  *

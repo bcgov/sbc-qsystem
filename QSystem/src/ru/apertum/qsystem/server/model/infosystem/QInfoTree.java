@@ -16,10 +16,11 @@
  */
 package ru.apertum.qsystem.server.model.infosystem;
 
-import java.util.LinkedList;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.controller.ServerEvents;
 import ru.apertum.qsystem.server.model.ATreeModel;
+
+import java.util.LinkedList;
 
 /**
  *

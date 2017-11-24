@@ -16,17 +16,13 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Point;
+import ru.apertum.qsystem.common.Uses;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
-import ru.apertum.qsystem.common.Uses;
 
 /**
  * Класс панели для нажатия при выборе время предварительной записи.

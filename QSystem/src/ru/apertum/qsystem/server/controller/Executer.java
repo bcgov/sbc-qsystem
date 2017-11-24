@@ -16,70 +16,23 @@
  */
 package ru.apertum.qsystem.server.controller;
 
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Property;
-import org.springframework.transaction.TransactionStatus;
-import ru.apertum.qsystem.common.SoundPlayer;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import org.dom4j.DocumentException;
-import ru.apertum.qsystem.common.model.QCustomer;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import org.dom4j.DocumentHelper;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ru.apertum.qsystem.client.Locales;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.CustomerState;
-import ru.apertum.qsystem.common.QConfig;
-import ru.apertum.qsystem.common.cmd.CmdParams;
-import ru.apertum.qsystem.common.cmd.AJsonRPC20;
-import ru.apertum.qsystem.common.cmd.JsonRPC20;
-import ru.apertum.qsystem.common.cmd.JsonRPC20Error;
-import static ru.apertum.qsystem.common.cmd.JsonRPC20Error.ErrorRPC.*;
-import ru.apertum.qsystem.common.cmd.JsonRPC20OK;
-import ru.apertum.qsystem.common.cmd.RpcGetAdvanceCustomer;
-import ru.apertum.qsystem.common.cmd.RpcGetAllServices;
-import ru.apertum.qsystem.common.cmd.RpcGetAuthorizCustomer;
-import ru.apertum.qsystem.common.cmd.RpcGetBool;
-import ru.apertum.qsystem.common.cmd.RpcGetGridOfWeek;
+import ru.apertum.qsystem.common.*;
+import ru.apertum.qsystem.common.cmd.*;
 import ru.apertum.qsystem.common.cmd.RpcGetGridOfWeek.GridAndParams;
-import ru.apertum.qsystem.common.cmd.RpcGetInfoTree;
-import ru.apertum.qsystem.common.cmd.RpcGetInt;
-import ru.apertum.qsystem.common.cmd.RpcGetPostponedPoolInfo;
-import ru.apertum.qsystem.common.cmd.RpcGetRespTree;
-import ru.apertum.qsystem.common.cmd.RpcGetResultsList;
-import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation;
-import ru.apertum.qsystem.common.cmd.RpcGetServerState;
-import ru.apertum.qsystem.common.cmd.RpcGetSrt;
-import ru.apertum.qsystem.common.cmd.RpcGetUsersList;
-import ru.apertum.qsystem.common.cmd.RpcInviteCustomer;
-import ru.apertum.qsystem.common.cmd.RpcStandInService;
 import ru.apertum.qsystem.common.exceptions.ServerException;
-import ru.apertum.qsystem.common.cmd.RpcBanList;
-import ru.apertum.qsystem.common.cmd.RpcGetGridOfDay;
-import ru.apertum.qsystem.common.cmd.RpcGetProperties;
-import ru.apertum.qsystem.common.cmd.RpcGetStandards;
-import ru.apertum.qsystem.common.cmd.RpcGetServiceState;
-import ru.apertum.qsystem.common.cmd.RpcGetTicketHistory;
+import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.extra.ISelectNextService;
 import ru.apertum.qsystem.extra.ITask;
-import ru.apertum.qsystem.server.MainBoard;
-import ru.apertum.qsystem.server.QServer;
-import ru.apertum.qsystem.server.QSessions;
-import ru.apertum.qsystem.server.ServerProps;
-import ru.apertum.qsystem.server.Spring;
-import ru.apertum.qsystem.server.http.QWebSocketHandler;
+import ru.apertum.qsystem.server.*;
 import ru.apertum.qsystem.server.model.*;
 import ru.apertum.qsystem.server.model.calendar.QCalendarList;
 import ru.apertum.qsystem.server.model.infosystem.QInfoTree;
@@ -89,6 +42,12 @@ import ru.apertum.qsystem.server.model.response.QResponseTree;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
+
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static ru.apertum.qsystem.common.cmd.JsonRPC20Error.ErrorRPC.ADVANCED_NOT_FOUND;
 
 /**
  * Пул очередей. Пул очередей - главная структура управления очередями. В системе существуют несколько очередей, например для оказания разных услуг. Пул

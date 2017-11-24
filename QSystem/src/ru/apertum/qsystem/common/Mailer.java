@@ -16,22 +16,17 @@
  */
 package ru.apertum.qsystem.common;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import ru.apertum.qsystem.common.exceptions.ServerException;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
-import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
  *

@@ -16,9 +16,6 @@
  */
 package ru.apertum.qsystem.common;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.util.Set;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -32,8 +29,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
-import javax.swing.JPanel;
 import ru.apertum.qsystem.common.exceptions.ClientException;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Set;
 
 /**
  *

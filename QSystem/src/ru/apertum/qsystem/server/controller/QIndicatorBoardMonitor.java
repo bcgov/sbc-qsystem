@@ -16,14 +16,6 @@
  */
 package ru.apertum.qsystem.server.controller;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import javax.imageio.ImageIO;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -40,6 +32,15 @@ import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
+
+import javax.imageio.ImageIO;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 /**
  * Вывод информации на мониторы. Класс-менеджер вывода информации на общее табло в виде монитора.

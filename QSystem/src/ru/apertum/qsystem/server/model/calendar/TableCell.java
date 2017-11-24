@@ -16,17 +16,14 @@
  */
 package ru.apertum.qsystem.server.model.calendar;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
+import ru.apertum.qsystem.client.forms.FAdmin;
+
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.TableCellRenderer;
-import ru.apertum.qsystem.client.forms.FAdmin;
+import java.awt.*;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Ячейка сетки календаря

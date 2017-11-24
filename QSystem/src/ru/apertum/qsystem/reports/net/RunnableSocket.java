@@ -16,16 +16,16 @@
  */
 package ru.apertum.qsystem.reports.net;
 
-import java.io.IOException;
-import java.net.Socket;
-
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpException;
 import org.apache.http.impl.DefaultHttpServerConnection;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ReportException;
+
+import java.io.IOException;
+import java.net.Socket;
 
 /**
  * Класс приема данных для Apache-HTTP Core

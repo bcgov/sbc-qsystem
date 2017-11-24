@@ -5,10 +5,6 @@
 package ru.apertum.qsystem.ub485.core;
 
 import javax.swing.table.AbstractTableModel;
-import static ru.apertum.qsystem.common.CustomerState.STATE_INVITED;
-import static ru.apertum.qsystem.common.CustomerState.STATE_INVITED_SECONDARY;
-import static ru.apertum.qsystem.common.CustomerState.STATE_WORK;
-import static ru.apertum.qsystem.common.CustomerState.STATE_WORK_SECONDARY;
 
 /**
  *

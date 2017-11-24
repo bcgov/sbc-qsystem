@@ -16,16 +16,6 @@
  */
 package ru.apertum.qsystem.reports.model;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.common.exceptions.ReportException;
@@ -33,6 +23,12 @@ import ru.apertum.qsystem.reports.common.Response;
 import ru.apertum.qsystem.reports.formirovators.IFormirovator;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.IidGetter;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Класс описания аналитических отчетов.

@@ -16,8 +16,9 @@
  */
 package ru.apertum.qsystem.common.model;
 
-import java.util.Arrays;
 import ru.apertum.qsystem.common.Uses;
+
+import java.util.Arrays;
 /**
  * @author Evgeniy Egorov
  * Реализация преоритета очередников.

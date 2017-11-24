@@ -16,11 +16,16 @@
  */
 package ru.apertum.qsystem.fx;
 
-import java.awt.event.ActionListener;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.exceptions.ServerException;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
+
 /*
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -38,18 +43,8 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
- * 
+ *
  */
-import javax.swing.Timer;
-import org.apache.commons.configuration2.FileBasedConfiguration;
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.exceptions.ServerException;
-import ru.apertum.qsystem.server.model.QUser;
 
 /**
  *

@@ -16,12 +16,13 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import java.util.HashMap;
-import javax.swing.table.AbstractTableModel;
 import ru.apertum.qsystem.client.forms.FServicePriority;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation.SelfService;
 import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation.SelfSituation;
+
+import javax.swing.table.AbstractTableModel;
+import java.util.HashMap;
 
 /**
  *

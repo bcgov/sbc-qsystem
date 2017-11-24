@@ -18,37 +18,29 @@ package ru.apertum.qsystem.client.forms;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import ru.apertum.qsystem.QSystem;
+import ru.apertum.qsystem.client.Locales;
+import ru.apertum.qsystem.common.CodepagePrintStream;
+import ru.apertum.qsystem.common.GsonPool;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.exceptions.ClientException;
+import ru.apertum.qsystem.hibernate.SqlServers;
+import ru.apertum.qsystem.hibernate.SqlServers.SqlServer;
+import ru.apertum.qsystem.server.ChangeContext;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Scanner;
-import javax.imageio.ImageIO;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.event.ListSelectionEvent;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.client.Locales;
-import ru.apertum.qsystem.common.CodepagePrintStream;
-import ru.apertum.qsystem.common.GsonPool;
-import ru.apertum.qsystem.common.exceptions.ClientException;
-import ru.apertum.qsystem.hibernate.SqlServers;
-import ru.apertum.qsystem.hibernate.SqlServers.SqlServer;
-import ru.apertum.qsystem.server.ChangeContext;
 
 /**
  * Created on 25 Май 2009 г., 13:11 Форма конфигурирования подключения к СУБД и COM-порту

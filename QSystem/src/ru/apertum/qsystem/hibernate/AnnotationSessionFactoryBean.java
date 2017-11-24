@@ -18,20 +18,17 @@ package ru.apertum.qsystem.hibernate;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Scanner;
-import javax.swing.Action;
 import ru.apertum.qsystem.common.GsonPool;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ClientException;
 import ru.apertum.qsystem.server.ChangeContext;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
+import java.io.*;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
  * Класс - не фабрика сессий не для Hibernate.

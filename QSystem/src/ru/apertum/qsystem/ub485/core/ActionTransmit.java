@@ -4,9 +4,10 @@
  */
 package ru.apertum.qsystem.ub485.core;
 
-import java.util.ServiceLoader;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.extra.IButtonDeviceFuctory;
+
+import java.util.ServiceLoader;
 
 /**
  * Класс содержит код для распараллеливаия обработки пришедшего пакета

@@ -2,20 +2,12 @@ package ru.apertum.qsystem.server.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.io.Serializable;
-import java.util.*;
-import javax.persistence.*;
 
-import org.hibernate.Criteria;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Property;
-import ru.apertum.qsystem.common.CustomerState;
-import ru.apertum.qsystem.common.exceptions.ServerException;
-import ru.apertum.qsystem.common.model.QCustomer;
-import ru.apertum.qsystem.server.Spring;
-import ru.apertum.qsystem.common.QLog;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This is the office, which is what the system is multi-tenanted keyed on.

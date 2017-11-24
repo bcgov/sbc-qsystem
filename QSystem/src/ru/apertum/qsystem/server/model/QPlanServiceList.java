@@ -16,11 +16,11 @@
  */
 package ru.apertum.qsystem.server.model;
 
+import javax.swing.*;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import javax.swing.AbstractListModel;
 
 /**
  * Список услуг, обрабатываемых пользователем. Класс - рулит списком услуг юзера. Должен строиться для каждого юзера и он же должен отображаться в админской

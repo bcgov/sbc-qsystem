@@ -16,17 +16,18 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
 import org.dom4j.Element;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
 import ru.apertum.qsystem.client.help.Helper;
 import ru.apertum.qsystem.common.Uses;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 /**
  * Created on 10 Апрель 2009 г., 10:27

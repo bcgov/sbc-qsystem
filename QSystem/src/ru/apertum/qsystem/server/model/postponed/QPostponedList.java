@@ -16,12 +16,6 @@
  */
 package ru.apertum.qsystem.server.model.postponed;
 
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import javax.swing.DefaultListModel;
-import javax.swing.Timer;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
@@ -35,7 +29,12 @@ import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.controller.Executer;
-import ru.apertum.qsystem.server.model.QUser;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
 
 /**
  *

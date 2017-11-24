@@ -16,20 +16,13 @@
  */
 package ru.apertum.qsystem.server.model.schedule;
 
+import ru.apertum.qsystem.common.exceptions.ServerException;
+import ru.apertum.qsystem.server.model.IidGetter;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import ru.apertum.qsystem.common.exceptions.ServerException;
-import ru.apertum.qsystem.server.model.IidGetter;
 
 /**
  * Класс плана для расписания.

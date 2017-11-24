@@ -16,18 +16,14 @@
  */
 package ru.apertum.qsystem.smartboard;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Properties;
-
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.controller.AIndicatorBoard;
 import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QUser;
+
+import java.io.*;
+import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * Keeps track of the state of a smartboard for a specific office.

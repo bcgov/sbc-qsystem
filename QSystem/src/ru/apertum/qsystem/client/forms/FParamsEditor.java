@@ -16,19 +16,18 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import org.dom4j.Element;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ClientException;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.io.IOException;
 
 /**
  * Редактор параметров. Универсальный для простых параметров Created on 16 Апрель 2009 г., 19:26 Визуальный редактор параметров для редактирования параметров

@@ -19,18 +19,6 @@ package ru.apertum.qsystem.server;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import java.io.*;
-import java.net.*;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Scanner;
-import java.util.ServiceLoader;
-
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
@@ -39,7 +27,6 @@ import ru.apertum.qsystem.client.Locales;
 import ru.apertum.qsystem.client.forms.FAbout;
 import ru.apertum.qsystem.common.*;
 import ru.apertum.qsystem.common.cmd.JsonRPC20;
-import ru.apertum.qsystem.common.cmd.RpcGetAdvanceCustomer;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.common.model.ATalkingClock;
 import ru.apertum.qsystem.common.model.QCustomer;
@@ -54,6 +41,10 @@ import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.server.model.postponed.QPostponedList;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 /**
  * Класс старта и exit инициализации сервера. Организация потоков выполнения заданий.

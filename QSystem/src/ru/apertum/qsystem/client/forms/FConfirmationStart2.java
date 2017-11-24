@@ -16,16 +16,6 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Cursor;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.image.MemoryImageSource;
-import java.io.File;
-import java.util.Locale;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
@@ -35,6 +25,13 @@ import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.model.ATalkingClock;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.image.MemoryImageSource;
+import java.io.File;
+import java.util.Locale;
 
 /**
  *

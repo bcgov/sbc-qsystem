@@ -18,17 +18,13 @@ package ru.apertum.qsystem.server.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import ru.apertum.qsystem.common.Uses;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import ru.apertum.qsystem.common.Uses;
 
 /**
  * Настройки системы в БД. Каждая настройка находится в своей секции. Секция может быть NULL. Значение параметра может быть NULL. Имя параметра не NULL.

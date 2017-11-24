@@ -16,21 +16,16 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import java.awt.Color;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.VideoPlayer;
+import ru.apertum.qsystem.common.exceptions.ServerException;
+
+import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.Serializable;
-import javax.swing.JPanel;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.VideoPlayer;
-import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
  * Панель, имеющая фон, загруженный из ресурсов или из файла.

@@ -16,18 +16,18 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.io.IOException;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
+import ru.apertum.qsystem.common.NetCommander;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.model.INetProperty;
-import ru.apertum.qsystem.common.NetCommander;
+
+import javax.swing.*;
+import java.io.IOException;
 
 /**
  * Created on 16 Апрель 2009 г., 20:25

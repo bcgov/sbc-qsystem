@@ -22,18 +22,15 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import org.dom4j.Element;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import org.dom4j.Element;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.Uses;
 
 /**
  *
