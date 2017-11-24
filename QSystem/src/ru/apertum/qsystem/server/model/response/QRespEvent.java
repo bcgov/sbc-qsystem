@@ -28,7 +28,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 @Entity
@@ -37,8 +36,45 @@ public class QRespEvent implements Serializable {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)// авто нельзя, т.к. id нужны для формирования дерева
+    @GeneratedValue(strategy = GenerationType.AUTO)
+// авто нельзя, т.к. id нужны для формирования дерева
     private Long id;
+    /**
+     * Время оставления отзыва
+     */
+    @Column(name = "resp_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
+    /**
+     * Какой отзыв оставили
+     */
+    @Column(name = "response_id")
+    private Long respID;
+    /**
+     * По какому оператору отзыв оставили
+     */
+    @Column(name = "users_id")
+    private Long userID;
+    /**
+     * По Какой услуге отзыв оставили
+     */
+    @Column(name = "services_id")
+    private Long serviceID;
+    /**
+     * По какому посетителю отзыв оставили
+     */
+    @Column(name = "clients_id")
+    private Long clientID;
+    /**
+     * Данные кастомера, который отзыв оставил
+     */
+    @Column(name = "client_data")
+    private String clientData = "";
+    /**
+     * Комментарии кастомера, который отзыв оставил и его попросили их оставить в настройках отзыва
+     */
+    @Column(name = "comment")
+    private String comment = "";
 
     public Long getId() {
         return id;
@@ -47,12 +83,6 @@ public class QRespEvent implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    /**
-     * Время оставления отзыва
-     */
-    @Column(name = "resp_date")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
 
     public Date getDate() {
         return date;
@@ -61,11 +91,6 @@ public class QRespEvent implements Serializable {
     public void setDate(Date date) {
         this.date = date;
     }
-    /**
-     * Какой отзыв оставили
-     */
-    @Column(name = "response_id")
-    private Long respID;
 
     public Long getRespID() {
         return respID;
@@ -74,11 +99,6 @@ public class QRespEvent implements Serializable {
     public void setRespID(Long respID) {
         this.respID = respID;
     }
-    /**
-     * По какому оператору отзыв оставили
-     */
-    @Column(name = "users_id")
-    private Long userID;
 
     public Long getUserID() {
         return userID;
@@ -87,11 +107,6 @@ public class QRespEvent implements Serializable {
     public void setUserID(Long userID) {
         this.userID = userID;
     }
-    /**
-     * По Какой услуге отзыв оставили
-     */
-    @Column(name = "services_id")
-    private Long serviceID;
 
     public Long getServiceID() {
         return serviceID;
@@ -100,11 +115,6 @@ public class QRespEvent implements Serializable {
     public void setServiceID(Long serviceID) {
         this.serviceID = serviceID;
     }
-    /**
-     * По какому посетителю отзыв оставили
-     */
-    @Column(name = "clients_id")
-    private Long clientID;
 
     public Long getClientID() {
         return clientID;
@@ -113,11 +123,6 @@ public class QRespEvent implements Serializable {
     public void setClientID(Long clientID) {
         this.clientID = clientID;
     }
-    /**
-     * Данные кастомера, который отзыв оставил
-     */
-    @Column(name = "client_data")
-    private String clientData = "";
 
     public String getClientData() {
         return clientData;
@@ -126,12 +131,6 @@ public class QRespEvent implements Serializable {
     public void setClientData(String clientData) {
         this.clientData = clientData;
     }
-    
-    /**
-     * Комментарии кастомера, который отзыв оставил и его попросили их оставить в настройках отзыва
-     */
-    @Column(name = "comment")
-    private String comment = "";
 
     public String getComment() {
         return comment;
@@ -140,5 +139,5 @@ public class QRespEvent implements Serializable {
     public void setComment(String comment) {
         this.comment = comment;
     }
-    
+
 }

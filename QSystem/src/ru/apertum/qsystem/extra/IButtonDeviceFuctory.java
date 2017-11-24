@@ -23,17 +23,30 @@ import ru.apertum.qsystem.common.cmd.RpcGetServerState;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public abstract interface IButtonDeviceFuctory extends IExtra {
+
+    /**
+     * Message from device turn into ID from qub.adr
+     *
+     * @param bytes data from hardware device for pressing a button
+     * @return Some class which ready to do something after receive data from device with ID - look
+     * out to qub.adr
+     */
+    public IButtonDevice getButtonDevice(byte[] bytes, List<QUser> users);
+
+    public LinkedList<IButtonDevice> getButtonDevices(List<QUser> users);
+
+    public AbstractTableModel getDeviceTable();
+
+    public void refreshDeviceTable(LinkedList<QUser> users,
+        LinkedList<RpcGetServerState.ServiceInfo> servs);
 
     public static interface IButtonDevice {
 
         /**
          * Приняли от устройства и что-то делаем с этим
-         *
-         * @param b
          */
         public void doAction(byte[] b);
 
@@ -59,20 +72,5 @@ public abstract interface IButtonDeviceFuctory extends IExtra {
         public String getId();
 
     }
-
-    /**
-     * Message from device turn into ID from qub.adr
-     *
-     * @param bytes data from hardware device for pressing a button
-     * @param users
-     * @return Some class which ready to do something after receive data from device with ID - look out to qub.adr
-     */
-    public IButtonDevice getButtonDevice(byte[] bytes, List<QUser> users);
-
-    public LinkedList<IButtonDevice> getButtonDevices(List<QUser> users);
-
-    public AbstractTableModel getDeviceTable();
-
-    public void refreshDeviceTable(LinkedList<QUser> users, LinkedList<RpcGetServerState.ServiceInfo> servs);
 
 }

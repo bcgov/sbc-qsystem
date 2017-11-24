@@ -21,18 +21,18 @@ import com.google.gson.annotations.SerializedName;
 import ru.apertum.qsystem.server.model.response.QRespItem;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetRespTree extends JsonRPC20 {
 
-    public RpcGetRespTree() {
-    }
     @Expose
     @SerializedName("result")
     private QRespItem result;
 
-    public void setResult(QRespItem result) {
+    public RpcGetRespTree() {
+    }
+
+    public RpcGetRespTree(QRespItem result) {
         this.result = result;
     }
 
@@ -40,7 +40,7 @@ public class RpcGetRespTree extends JsonRPC20 {
         return result;
     }
 
-    public RpcGetRespTree(QRespItem result) {
+    public void setResult(QRespItem result) {
         this.result = result;
     }
 }

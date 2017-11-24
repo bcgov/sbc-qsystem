@@ -34,28 +34,33 @@ import ru.apertum.qsystem.server.model.IidGetter;
 
 /**
  * Списки наборов перерывов для привязки к дневному расписанию
+ *
  * @author Evgeniy Egorov
  */
 @Entity
 @Table(name = "breaks")
 public class QBreaks implements IidGetter, Serializable {
 
-    public QBreaks() {
-    }
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
     /**
      * Наименование плана перерывов.
      */
     @Column(name = "name")
     private String name;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "breaks_id")
+    private Set<QBreak> breaks = new HashSet<>();
+
+    public QBreaks() {
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
 
     @Override
     public String getName() {
@@ -65,9 +70,6 @@ public class QBreaks implements IidGetter, Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinColumn(name = "breaks_id")
-    private Set<QBreak> breaks = new HashSet<>();
 
     public Set<QBreak> getBreaks() {
         return breaks;
@@ -100,8 +102,9 @@ public class QBreaks implements IidGetter, Serializable {
             return false;
         }
         final QBreaks other = (QBreaks) obj;
-        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name) && Objects.equals(this.breaks.size(), other.breaks.size());
+        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name) && Objects
+            .equals(this.breaks.size(), other.breaks.size());
     }
-    
-    
+
+
 }

@@ -17,13 +17,11 @@
 package ru.apertum.qsystem.server;
 
 import java.util.ServiceLoader;
-import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.controller.IIndicatorBoard;
 import ru.apertum.qsystem.server.controller.QIndicatorBoardMonitor;
 import ru.apertum.qsystem.server.htmlboard.QIndicatorHtmlboard;
 
 /**
- *
  * @author egorov
  */
 public class MainBoard {
@@ -54,7 +52,10 @@ public class MainBoard {
                 }
             }
             if (res == null) {
-                final boolean bClassicType = IIndicatorBoard.CLASSIC.equalsIgnoreCase(ServerProps.getInstance().getProperty(IIndicatorBoard.SECTION, IIndicatorBoard.PARAMETER, IIndicatorBoard.CLASSIC));
+                final boolean bClassicType = IIndicatorBoard.CLASSIC.equalsIgnoreCase(
+                    ServerProps.getInstance()
+                        .getProperty(IIndicatorBoard.SECTION, IIndicatorBoard.PARAMETER,
+                            IIndicatorBoard.CLASSIC));
                 if (bClassicType) {
                     res = new QIndicatorBoardMonitor();
                     ((QIndicatorBoardMonitor) res).setConfigFile("config\\mainboard.xml");

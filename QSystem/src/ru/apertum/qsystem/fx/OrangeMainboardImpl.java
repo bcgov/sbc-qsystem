@@ -30,7 +30,6 @@ import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
- *
  * @author Евгений
  */
 public class OrangeMainboardImpl implements IIndicatorBoard {
@@ -45,6 +44,8 @@ public class OrangeMainboardImpl implements IIndicatorBoard {
             timer.stop();
         }
     });
+    final private ArrayList<QUser> forBlink = new ArrayList<>();
+    final private ArrayList<QUser> forShow = new ArrayList<>();
     private boolean flag = true;
 
     @Override
@@ -72,8 +73,6 @@ public class OrangeMainboardImpl implements IIndicatorBoard {
         }
         //todo  board.showNextCustomers(nests);
     }
-    final private ArrayList<QUser> forBlink = new ArrayList<>();
-    final private ArrayList<QUser> forShow = new ArrayList<>();
 
     @Override
     public void workCustomer(QUser user) {
@@ -127,16 +126,19 @@ public class OrangeMainboardImpl implements IIndicatorBoard {
 
     @Override
     public String getDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public long getUID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Object getBoardForm() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

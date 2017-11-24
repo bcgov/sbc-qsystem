@@ -17,18 +17,27 @@
 package ru.apertum.qsystem.reports.common;
 
 /**
- * Класс данных для отправки пользоваьелю в браузер.
- * Нужет для того что-бы вместе с данными можно было добавить некоторые атрибуты.
+ * Класс данных для отправки пользоваьелю в браузер. Нужет для того что-бы вместе с данными можно
+ * было добавить некоторые атрибуты.
+ *
  * @author Evgeniy Egorov
  */
 public class Response {
+
+    /**
+     * Отсылаемые данные. Это может быть текст html или pdf или что-то другое
+     */
+    private byte[] data;
+    /**
+     * тип данных для последующей встаки в http-заголовок
+     */
+    private String contentType = "text/html";
 
     public Response() {
     }
 
     /**
      * type of content will be "text/html"
-     * @param data
      */
     public Response(byte[] data) {
         this.data = data;
@@ -38,10 +47,6 @@ public class Response {
         this.data = data;
         this.contentType = contentType;
     }
-    /**
-     * Отсылаемые данные. Это может быть текст html или pdf или что-то другое
-     */
-    private byte[] data;
 
     public byte[] getData() {
         return data;
@@ -50,10 +55,6 @@ public class Response {
     public void setData(byte[] data) {
         this.data = data;
     }
-    /**
-     * тип данных для последующей встаки в http-заголовок
-     */
-    private String contentType = "text/html";
 
     public String getContentType() {
         return contentType;

@@ -22,7 +22,6 @@ import com.google.gson.annotations.SerializedName;
 import java.awt.Color;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QSegmentParams {

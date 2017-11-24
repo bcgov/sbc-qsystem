@@ -31,20 +31,11 @@ import java.util.Locale;
 import ru.apertum.qsystem.server.model.QProperty;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class CmdParams {
 
     public static final String CMD = "cmd";
-
-    public CmdParams() {
-    }
-
-    public CmdParams(String params) {
-        initFromString(params);
-    }
-
     public boolean inAccurateFinish;
     @Expose
     @SerializedName("service_id")
@@ -99,35 +90,31 @@ public class CmdParams {
     public String comments;
     @Expose
     @SerializedName("welcome_time")
-    public Date welcomeTime;   
+    public Date welcomeTime;
     @Expose
     @SerializedName("channelsIndex")
-    public int channelsIndex;   
+    public int channelsIndex;
     @Expose
     @SerializedName("channels")
-    public String channels;  
+    public String channels;
     @Expose
     @SerializedName("new_channelsIndex")
-    public int new_channels_Index;   
+    public int new_channels_Index;
     @Expose
     @SerializedName("new_channels")
-    public String new_channels; 
-        
+    public String new_channels;
     public String AAA;
-    
-    
-   
-    
     /**
-     * услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять списков. Первый это вольнопоследовательные услуги. Остальные
-     * четыре это зависимопоследовательные услуги, т.е. пока один не закончится на другой не переходить. Что такое элемент списка. Это тоже список. Первый
-     * элемент это та самая комплексная услуга(ID). А остальные это зависимости, т.е. если есть еще не оказанные услуги но назначенные, которые в зависимостях,
-     * то их надо оказать.
+     * услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять
+     * списков. Первый это вольнопоследовательные услуги. Остальные четыре это
+     * зависимопоследовательные услуги, т.е. пока один не закончится на другой не переходить. Что
+     * такое элемент списка. Это тоже список. Первый элемент это та самая комплексная услуга(ID). А
+     * остальные это зависимости, т.е. если есть еще не оказанные услуги но назначенные, которые в
+     * зависимостях, то их надо оказать.
      */
     @Expose
     @SerializedName("complex_id")
     public LinkedList<LinkedList<LinkedList<Long>>> complexId;
-
     /**
      * Это список свойств для сохранения или инита на сервере.
      */
@@ -135,13 +122,60 @@ public class CmdParams {
     @SerializedName("properties")
     public List<QProperty> properties;
 
+
+    public CmdParams() {
+    }
+
+    public CmdParams(String params) {
+        initFromString(params);
+    }
+
+    public static void main(String[] args) {
+        CmdParams cp = new CmdParams();
+        cp.clientAuthId = "str1";
+        cp.password = "Парольчег";
+        cp.coeff = 101;
+        cp.isMine = false;
+        cp.requestBack = true;
+        cp.date = System.currentTimeMillis();
+        cp.properties = new LinkedList<>();
+        cp.properties.add(new QProperty("sec1", "key1", "Русс1", "com1"));
+        cp.properties.add(new QProperty("sec2", "key2", "Русс2", "com2"));
+        cp.properties.add(new QProperty("sec3", "key3", "Русс3", "com3"));
+
+        String url = cp.toString();
+        System.out.println(url);
+
+        cp = new CmdParams();
+        cp.initFromString(url);
+        url = cp.toString();
+        System.out.println(url);
+
+        cp = new CmdParams();
+        cp.initFromString(url);
+        url = cp.toString();
+        System.out.println(url);
+
+        cp = new CmdParams();
+        cp.initFromString("");
+        url = cp.toString();
+        System.out.println(url);
+
+        cp = new CmdParams();
+        cp.initFromString(null);
+        url = cp.toString();
+        System.out.println(url);
+
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("^?");
         final Field[] fs = getClass().getDeclaredFields();
         try {
             for (Field field : fs) {
-                if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
+                if (Modifier.isStatic(field.getModifiers()) && Modifier
+                    .isFinal(field.getModifiers())) {
                     continue;
                 }
 
@@ -157,7 +191,8 @@ public class CmdParams {
                         sb.append("&").append(field.getName()).append("=");
                         list.stream().forEach((object) -> {
                             try {
-                                sb.append(URLEncoder.encode("{" + object.toString() + "}", "utf-8"));
+                                sb.append(
+                                    URLEncoder.encode("{" + object.toString() + "}", "utf-8"));
                             } catch (UnsupportedEncodingException ex) {
                                 System.err.println(ex);
                             }
@@ -174,7 +209,8 @@ public class CmdParams {
                         sb.append("&").append(field.getName()).append("=").append(field.get(this));
                         break;
                     case "string":
-                        sb.append("&").append(field.getName()).append("=").append(URLEncoder.encode((String) field.get(this), "utf-8"));
+                        sb.append("&").append(field.getName()).append("=")
+                            .append(URLEncoder.encode((String) field.get(this), "utf-8"));
                         break;
                     case "boolean":
                         sb.append("&").append(field.getName()).append("=").append(field.get(this));
@@ -208,7 +244,8 @@ public class CmdParams {
             final Field[] fs = getClass().getDeclaredFields();
             try {
                 for (Field field : fs) {
-                    if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
+                    if (Modifier.isStatic(field.getModifiers()) && Modifier
+                        .isFinal(field.getModifiers())) {
                         continue;
                     }
 
@@ -257,44 +294,6 @@ public class CmdParams {
             }
 
         }
-    }
-
-    public static void main(String[] args) {
-        CmdParams cp = new CmdParams();
-        cp.clientAuthId = "str1";
-        cp.password = "Парольчег";
-        cp.coeff = 101;
-        cp.isMine = false;
-        cp.requestBack = true;
-        cp.date = System.currentTimeMillis();
-        cp.properties = new LinkedList<>();
-        cp.properties.add(new QProperty("sec1", "key1", "Русс1", "com1"));
-        cp.properties.add(new QProperty("sec2", "key2", "Русс2", "com2"));
-        cp.properties.add(new QProperty("sec3", "key3", "Русс3", "com3"));
-
-        String url = cp.toString();
-        System.out.println(url);
-
-        cp = new CmdParams();
-        cp.initFromString(url);
-        url = cp.toString();
-        System.out.println(url);
-
-        cp = new CmdParams();
-        cp.initFromString(url);
-        url = cp.toString();
-        System.out.println(url);
-
-        cp = new CmdParams();
-        cp.initFromString("");
-        url = cp.toString();
-        System.out.println(url);
-
-        cp = new CmdParams();
-        cp.initFromString(null);
-        url = cp.toString();
-        System.out.println(url);
-
     }
 
 }

@@ -24,12 +24,12 @@ import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation.SelfService;
 import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation.SelfSituation;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class FlexPriorityMableModel extends AbstractTableModel {
 
     final private SelfSituation plan;
+    private final HashMap<Integer, SelfService> services = new HashMap<>();
 
     public FlexPriorityMableModel(SelfSituation plan) {
         this.plan = plan;
@@ -44,7 +44,6 @@ public class FlexPriorityMableModel extends AbstractTableModel {
     public int getColumnCount() {
         return 2;
     }
-    private final HashMap<Integer, SelfService> services = new HashMap<>();
 
     public HashMap<Integer, SelfService> getServicesInRows() {
         return services;

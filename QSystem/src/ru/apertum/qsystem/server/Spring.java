@@ -32,7 +32,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
- *
  * @author egorov
  */
 public class Spring {
@@ -42,6 +41,37 @@ public class Spring {
     private final String url;
     private final String username;
     private final String password;
+
+    private Spring() {
+        try {
+            factory = new ClassPathXmlApplicationContext(
+                "/ru/apertum/qsystem/spring/qsContext.xml");
+        } catch (BeanCreationException ex) {
+            throw new ServerException(
+                "Ошибка создания класса-бина контекста приложения: \"" + ex.getCause().getMessage()
+                    + "\"\n"
+                    + "Бин с ошибкой \"" + ex.getBeanName() + "\""
+                    + "Сообщение об ошибке: \"" + ex.getCause().getMessage() + "\"\n" + ex);
+        } catch (BeansException ex) {
+            throw new ServerException(
+                "Ошибка класса-бина контекста приложения: \"" + ex.getCause().getMessage() + "\"\n"
+                    + "Сообщение об ошибке: \"" + ex.getCause().getMessage() + "\"\n" + ex);
+        } catch (Exception ex) {
+            throw new ServerException("Ошибка создания контекста приложения: " + ex);
+        }
+        //sessionFactory = factory.getBean("mySessionFactory", SessionFactoryImpl.class);
+        //ht = new HibernateTemplate(sessionFactory);
+
+        final ComboPooledDataSource bds = (ComboPooledDataSource) factory.getBean("c3p0DataSource");
+        driverClassName = bds.getDriverClass();
+        url = bds.getJdbcUrl();
+        username = bds.getUser();
+        password = bds.getPassword();
+    }
+
+    public static Spring getInstance() {
+        return SpringHolder.INSTANCE;
+    }
 
     public String getDriverClassName() {
         return driverClassName;
@@ -65,8 +95,6 @@ public class Spring {
 
     /**
      * Для транзакций через передачу на выполнениее класса с методом где реализована работа с БД
-     *
-     * @return
      */
     public TransactionTemplate getTt() {
         return new TransactionTemplate(getTxManager());
@@ -74,43 +102,9 @@ public class Spring {
 
     /**
      * Для транзакций обычным образом с открытием именованной транзакции
-     *
-     * @return
      */
     public HibernateTransactionManager getTxManager() {
         return (HibernateTransactionManager) factory.getBean("transactionManager");
-    }
-
-    private Spring() {
-        try {
-            factory = new ClassPathXmlApplicationContext("/ru/apertum/qsystem/spring/qsContext.xml");
-        } catch (BeanCreationException ex) {
-            throw new ServerException("Ошибка создания класса-бина контекста приложения: \"" + ex.getCause().getMessage() + "\"\n"
-                    + "Бин с ошибкой \"" + ex.getBeanName() + "\""
-                    + "Сообщение об ошибке: \"" + ex.getCause().getMessage() + "\"\n" + ex);
-        } catch (BeansException ex) {
-            throw new ServerException("Ошибка класса-бина контекста приложения: \"" + ex.getCause().getMessage() + "\"\n"
-                    + "Сообщение об ошибке: \"" + ex.getCause().getMessage() + "\"\n" + ex);
-        } catch (Exception ex) {
-            throw new ServerException("Ошибка создания контекста приложения: " + ex);
-        }
-        //sessionFactory = factory.getBean("mySessionFactory", SessionFactoryImpl.class);
-        //ht = new HibernateTemplate(sessionFactory);
-
-        final ComboPooledDataSource bds = (ComboPooledDataSource) factory.getBean("c3p0DataSource");
-        driverClassName = bds.getDriverClass();
-        url = bds.getJdbcUrl();
-        username = bds.getUser();
-        password = bds.getPassword();
-    }
-
-    public static Spring getInstance() {
-        return SpringHolder.INSTANCE;
-    }
-
-    private static class SpringHolder {
-
-        private static final Spring INSTANCE = new Spring();
     }
 
     public Spring getHt() {
@@ -202,5 +196,10 @@ public class Spring {
 
     public SessionFactory getSessionFactory() {
         return getTxManager().getSessionFactory();
+    }
+
+    private static class SpringHolder {
+
+        private static final Spring INSTANCE = new Spring();
     }
 }

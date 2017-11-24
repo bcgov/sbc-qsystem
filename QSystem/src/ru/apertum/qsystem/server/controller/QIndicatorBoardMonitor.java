@@ -48,8 +48,16 @@ import ru.apertum.qsystem.server.model.QUser;
  */
 public class QIndicatorBoardMonitor extends AIndicatorBoard {
 
+    /**
+     * Используемая ссылка на диалоговое окно. Singleton
+     */
+    private static FBoardConfig boardConfig;
     protected FIndicatorBoard indicatorBoard = null;
     protected String configFile;
+
+    public QIndicatorBoardMonitor() {
+        QLog.l().logger().info("Создание табло для телевизоров или мониторов.");
+    }
 
     public String getConfigFile() {
         return configFile;
@@ -65,8 +73,6 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
 
     /**
      * Заткнуть звук видеороликов для озвучки вызова голосом.
-     *
-     * @param mute
      */
     public void setMute(boolean mute) {
         if (indicatorBoard != null) {
@@ -86,12 +92,16 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
                 return;
             }
             try {
-                indicatorBoard.setIconImage(ImageIO.read(QIndicatorBoardMonitor.class.getResource("/ru/apertum/qsystem/client/forms/resources/recent.png")));
+                indicatorBoard.setIconImage(ImageIO.read(QIndicatorBoardMonitor.class
+                    .getResource("/ru/apertum/qsystem/client/forms/resources/recent.png")));
             } catch (IOException ex) {
                 System.err.println(ex);
             }
             // Определим форму на монитор
-            indicatorBoard.toPosition(QConfig.cfg().isDebug(), Integer.parseInt(rootParams.attributeValue("x")), Integer.parseInt(rootParams.attributeValue("y")));
+            indicatorBoard
+                .toPosition(QConfig.cfg().isDebug(),
+                    Integer.parseInt(rootParams.attributeValue("x")),
+                    Integer.parseInt(rootParams.attributeValue("y")));
 
             // ушло в абстрактный метод setLinesCount(indicatorBoard.getLinesCount());
             setPause(indicatorBoard.getPause());
@@ -105,10 +115,6 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
         }
     }
 
-    public QIndicatorBoardMonitor() {
-        QLog.l().logger().info("Создание табло для телевизоров или мониторов.");
-    }
-
     @Override
     protected Integer getLinesCount() {
         return indicatorBoard == null ? 1000000 : indicatorBoard.getLinesCount();
@@ -116,15 +122,16 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
 
     /**
      * Переопределено что бы вызвать появление таблички с номером вызванного поверх главного табло
-     *
-     * @param user
-     * @param customer
      */
     @Override
     public synchronized void inviteCustomer(QUser user, QCustomer customer) {
         super.inviteCustomer(user, customer);
         if (indicatorBoard != null) {
-            indicatorBoard.showCallPanel(customer.getFullNumber(), user.getPoint(), user.getTabloText(), customer.getService().getTabloText(), customer.getService().getInputedAsExt() ? (customer.getInput_data() == null ? "" : customer.getInput_data()) : "");
+            indicatorBoard
+                .showCallPanel(customer.getFullNumber(), user.getPoint(), user.getTabloText(),
+                    customer.getService().getTabloText(),
+                    customer.getService().getInputedAsExt() ? (customer.getInput_data() == null ? ""
+                        : customer.getInput_data()) : "");
         }
     }
 
@@ -133,7 +140,10 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
         if (indicatorBoard != null) {
             int i = 0;
             for (Record rec : records) {
-                indicatorBoard.printRecord(i++, rec.customerPrefix, rec.customerNumber, rec.point, rec.ext_data, rec.getState() == CustomerState.STATE_INVITED ? 0 : -1);
+                indicatorBoard
+                    .printRecord(i++, rec.customerPrefix, rec.customerNumber, rec.point,
+                        rec.ext_data,
+                        rec.getState() == CustomerState.STATE_INVITED ? 0 : -1);
             }
             for (int t = i; t < getLinesCount(); t++) {
                 indicatorBoard.printRecord(t, "", null, "", "", -1);
@@ -143,14 +153,19 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
             if (QConfig.cfg().isServer()) { // если это не сервер, то QServiceTree полезет в спринг
                 final LinkedList<String> nexts = new LinkedList<>();
                 final PriorityQueue<QCustomer> customers = new PriorityQueue<>();
-                QServiceTree.getInstance().getNodes().stream().filter((service) -> (service.isLeaf())).forEach((service) -> {
-                    service.getClients().stream().forEach((qCustomer) -> {
-                        customers.add(qCustomer);
+                QServiceTree.getInstance().getNodes().stream()
+                    .filter((service) -> (service.isLeaf()))
+                    .forEach((service) -> {
+                        service.getClients().stream().forEach((qCustomer) -> {
+                            customers.add(qCustomer);
+                        });
                     });
-                });
                 QCustomer qCustomer = customers.poll();
                 while (qCustomer != null) {
-                    nexts.add(qCustomer.getPrefix() + QConfig.cfg().getNumDivider(qCustomer.getPrefix()) + qCustomer.getNumber());
+                    nexts.add(
+                        qCustomer.getPrefix() + QConfig.cfg().getNumDivider(qCustomer.getPrefix())
+                            + qCustomer
+                            .getNumber());
                     qCustomer = customers.poll();
                 }
                 indicatorBoard.showNext(nexts);
@@ -160,19 +175,19 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
 
     /**
      * Чтоб ближайших обновить.
-     *
-     * @param customer
      */
     @Override
     public void customerStandIn(QCustomer customer) {
-        if (indicatorBoard != null && QConfig.cfg().isServer()) { // если это не сервер, то QServiceTree полезет в спринг
+        if (indicatorBoard != null && QConfig.cfg()
+            .isServer()) { // если это не сервер, то QServiceTree полезет в спринг
             final LinkedList<String> nexts = new LinkedList<>();
             final PriorityQueue<QCustomer> customers = new PriorityQueue<>();
-            QServiceTree.getInstance().getNodes().stream().filter((service) -> (service.isLeaf())).forEach((service) -> {
-                service.getClients().stream().forEach((qCustomer) -> {
-                    customers.add(qCustomer);
+            QServiceTree.getInstance().getNodes().stream().filter((service) -> (service.isLeaf()))
+                .forEach((service) -> {
+                    service.getClients().stream().forEach((qCustomer) -> {
+                        customers.add(qCustomer);
+                    });
                 });
-            });
             QCustomer qCustomer = customers.poll();
             while (qCustomer != null) {
                 nexts.add(qCustomer.getPrefix() + qCustomer.getNumber());
@@ -183,9 +198,8 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
     }
 
     /**
-     *
-     * @param record
-     * @deprecated при конфигурации с мониторами в качестве табло пользовательские моники подключаются к пользовательским компам.
+     * @deprecated при конфигурации с мониторами в качестве табло пользовательские моники
+     * подключаются к пользовательским компам.
      */
     @Deprecated
     @Override
@@ -199,11 +213,14 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
             try {
                 return new SAXReader(false).read(boardFile).getRootElement();
             } catch (DocumentException ex) {
-                QLog.l().logger().error("Невозможно прочитать файл конфигурации главного табло. " + ex.getMessage());
+                QLog.l().logger()
+                    .error("Невозможно прочитать файл конфигурации главного табло. " + ex
+                        .getMessage());
                 return DocumentHelper.createElement("Ответ");
             }
         } else {
-            QLog.l().logger().warn("Файл конфигурации главного табло \"" + configFile + "\" не найден. ");
+            QLog.l().logger()
+                .warn("Файл конфигурации главного табло \"" + configFile + "\" не найден. ");
             return DocumentHelper.createElement("Ответ");
         }
     }
@@ -215,14 +232,17 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
         try {
             fos = new FileOutputStream(getConfigFile());
         } catch (FileNotFoundException ex) {
-            throw new ServerException("Не возможно создать файл конфигурации главного табло. " + ex.getMessage());
+            throw new ServerException(
+                "Не возможно создать файл конфигурации главного табло. " + ex.getMessage());
         }
         try {
             fos.write(element.asXML().getBytes("UTF-8"));
             fos.flush();
             fos.close();
         } catch (IOException ex) {
-            throw new ServerException("Не возможно сохранить изменения в поток при сохранении файла конфигурации главного табло." + ex.getMessage());
+            throw new ServerException(
+                "Не возможно сохранить изменения в поток при сохранении файла конфигурации главного табло."
+                    + ex.getMessage());
         }
     }
 
@@ -233,10 +253,6 @@ public class QIndicatorBoardMonitor extends AIndicatorBoard {
         }
         return boardConfig;
     }
-    /**
-     * Используемая ссылка на диалоговое окно. Singleton
-     */
-    private static FBoardConfig boardConfig;
 
     @Override
     public void showBoard() {

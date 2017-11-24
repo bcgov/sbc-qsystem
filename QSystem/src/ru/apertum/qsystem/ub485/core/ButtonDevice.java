@@ -22,44 +22,8 @@ public class ButtonDevice extends Object implements IButtonDevice {
     public final boolean redirect;
     public final Long redirectServiceId;
     public final Long userId;
-    private QUser user;
-    public Integer qsize = 0;
-
-    public void setQsize(Integer qsize) {
-        if ((user == null
-                || user.getShadow() == null
-                || user.getShadow().getCustomerState() == null
-                || user.getShadow().getCustomerState() == CustomerState.STATE_BACK
-                || user.getShadow().getCustomerState() == CustomerState.STATE_DEAD
-                || user.getShadow().getCustomerState() == CustomerState.STATE_FINISH
-                || user.getShadow().getCustomerState() == CustomerState.STATE_POSTPONED
-                || user.getShadow().getCustomerState() == CustomerState.STATE_REDIRECT
-                || user.getShadow().getCustomerState() == CustomerState.STATE_REDIRECT)
-                && (this.qsize == 0 && qsize != 0)) {
-            beReadyBeep();
-        }
-        this.qsize = qsize;
-    }
-    public String serveceName = null;
-
-    public ButtonDevice(Long userId, byte addres, Long redirectServiceId) {
-        this.addres = addres;
-        this.userId = userId;
-        this.redirectServiceId = redirectServiceId;
-        this.redirect = redirectServiceId != null && redirectServiceId != 0;
-
-        mess[0] = 1;
-        mess[1] = addres;
-        mess[mess.length - 1] = 7;
-    }
-
-    @Override
-    public String toString() {
-        return user == null ? String.valueOf(userId) : user.getName();
-    }
-
     /*
-     * mess[2] = 
+     * mess[2] =
      * 0x30 – светодиод погашен;
      0x31 – включен Красный;
      0x32 – включен Зеленый;
@@ -76,6 +40,41 @@ public class ButtonDevice extends Object implements IButtonDevice {
      0x3D – писк (500 мс) + мигает Зеленый (500 мс).
      */
     final private byte[] mess = new byte[4];
+    public Integer qsize = 0;
+    public String serveceName = null;
+    private QUser user;
+
+    public ButtonDevice(Long userId, byte addres, Long redirectServiceId) {
+        this.addres = addres;
+        this.userId = userId;
+        this.redirectServiceId = redirectServiceId;
+        this.redirect = redirectServiceId != null && redirectServiceId != 0;
+
+        mess[0] = 1;
+        mess[1] = addres;
+        mess[mess.length - 1] = 7;
+    }
+
+    public void setQsize(Integer qsize) {
+        if ((user == null
+            || user.getShadow() == null
+            || user.getShadow().getCustomerState() == null
+            || user.getShadow().getCustomerState() == CustomerState.STATE_BACK
+            || user.getShadow().getCustomerState() == CustomerState.STATE_DEAD
+            || user.getShadow().getCustomerState() == CustomerState.STATE_FINISH
+            || user.getShadow().getCustomerState() == CustomerState.STATE_POSTPONED
+            || user.getShadow().getCustomerState() == CustomerState.STATE_REDIRECT
+            || user.getShadow().getCustomerState() == CustomerState.STATE_REDIRECT)
+            && (this.qsize == 0 && qsize != 0)) {
+            beReadyBeep();
+        }
+        this.qsize = qsize;
+    }
+
+    @Override
+    public String toString() {
+        return user == null ? String.valueOf(userId) : user.getName();
+    }
 
     /**
      * Тут вся логика работы кнопок и их нажатия
@@ -109,17 +108,19 @@ public class ButtonDevice extends Object implements IButtonDevice {
         } else if (user.getShadow().getCustomerState() == null) {
             System.out.println("user.getShadow().getCustomerState() == null");
         } else {
-            System.out.println("user.getShadow().getCustomerState() == " + user.getShadow().getCustomerState());
+            System.out
+                .println("user.getShadow().getCustomerState() == " + user.getShadow()
+                    .getCustomerState());
         }
         // первичный вызов
         if ((user.getShadow() == null
-                || user.getShadow().getCustomerState() == null
-                || user.getShadow().getCustomerState() == CustomerState.STATE_BACK
-                || user.getShadow().getCustomerState() == CustomerState.STATE_DEAD
-                || user.getShadow().getCustomerState() == CustomerState.STATE_FINISH
-                || user.getShadow().getCustomerState() == CustomerState.STATE_POSTPONED
-                || user.getShadow().getCustomerState() == CustomerState.STATE_REDIRECT)
-                && (b == 0x31)) {
+            || user.getShadow().getCustomerState() == null
+            || user.getShadow().getCustomerState() == CustomerState.STATE_BACK
+            || user.getShadow().getCustomerState() == CustomerState.STATE_DEAD
+            || user.getShadow().getCustomerState() == CustomerState.STATE_FINISH
+            || user.getShadow().getCustomerState() == CustomerState.STATE_POSTPONED
+            || user.getShadow().getCustomerState() == CustomerState.STATE_REDIRECT)
+            && (b == 0x31)) {
             //команда вызова кастомера
             System.out.println("Invite Next Customer by " + user.getName());
             final QCustomer cust = NetCommander.inviteNextCustomer(UBForm.form.netProperty, userId);
@@ -140,7 +141,8 @@ public class ButtonDevice extends Object implements IButtonDevice {
                 //добавляем табло на пульте
                 byte[] bytes = mess;
                 try {
-                    bytes = ("123" + (cust.getFullNumber() + "    ").substring(0, 3) + "7").getBytes("cp1251");
+                    bytes = ("123" + (cust.getFullNumber() + "    ").substring(0, 3) + "7")
+                        .getBytes("cp1251");
                 } catch (UnsupportedEncodingException ex) {
                     System.err.println("!!! ERROR !!! " + ex);
                 }
@@ -174,9 +176,11 @@ public class ButtonDevice extends Object implements IButtonDevice {
         }
 
         // повторный вызов
-        if ((user != null && user.getShadow() != null && user.getShadow().getCustomerState() != null)
-                && (user.getShadow().getCustomerState() == CustomerState.STATE_INVITED || user.getShadow().getCustomerState() == CustomerState.STATE_INVITED_SECONDARY)
-                && (b == 0x31)) {
+        if ((user != null && user.getShadow() != null
+            && user.getShadow().getCustomerState() != null)
+            && (user.getShadow().getCustomerState() == CustomerState.STATE_INVITED
+            || user.getShadow().getCustomerState() == CustomerState.STATE_INVITED_SECONDARY)
+            && (b == 0x31)) {
             //команда вызова кастомера
             System.out.println("Recall by " + user.getName());
             final QCustomer cust = NetCommander.inviteNextCustomer(UBForm.form.netProperty, userId);
@@ -185,9 +189,11 @@ public class ButtonDevice extends Object implements IButtonDevice {
         }
 
         // начало работы
-        if ((user != null && user.getShadow() != null && user.getShadow().getCustomerState() != null)
-                && (user.getShadow().getCustomerState() == CustomerState.STATE_INVITED || user.getShadow().getCustomerState() == CustomerState.STATE_INVITED_SECONDARY)
-                && (b == 0x32)) {
+        if ((user != null && user.getShadow() != null
+            && user.getShadow().getCustomerState() != null)
+            && (user.getShadow().getCustomerState() == CustomerState.STATE_INVITED
+            || user.getShadow().getCustomerState() == CustomerState.STATE_INVITED_SECONDARY)
+            && (b == 0x32)) {
             //команда вызова кастомера
             System.out.println("get Start Customer by " + user.getName());
             NetCommander.getStartCustomer(UBForm.form.netProperty, userId);
@@ -198,7 +204,9 @@ public class ButtonDevice extends Object implements IButtonDevice {
             //добавляем табло на пульте
             byte[] bytes = mess;
             try {
-                bytes = ("123" + (user.getCustomer().getFullNumber() + "    ").substring(0, 3) + "7").getBytes("cp1251");
+                bytes = ("123" + (user.getCustomer().getFullNumber() + "    ").substring(0, 3)
+                    + "7")
+                    .getBytes("cp1251");
             } catch (UnsupportedEncodingException ex) {
                 System.err.println("!!! ERROR !!! " + ex);
             }
@@ -226,9 +234,11 @@ public class ButtonDevice extends Object implements IButtonDevice {
         }
 
         // отклонить по неявке
-        if ((user != null && user.getShadow() != null && user.getShadow().getCustomerState() != null)
-                && (user.getShadow().getCustomerState() == CustomerState.STATE_INVITED || user.getShadow().getCustomerState() == CustomerState.STATE_INVITED_SECONDARY)
-                && (b == 0x34)) {
+        if ((user != null && user.getShadow() != null
+            && user.getShadow().getCustomerState() != null)
+            && (user.getShadow().getCustomerState() == CustomerState.STATE_INVITED
+            || user.getShadow().getCustomerState() == CustomerState.STATE_INVITED_SECONDARY)
+            && (b == 0x34)) {
             //команда вызова кастомера
             System.out.println("kill Next Customer by " + user.getName());
             NetCommander.killNextCustomer(UBForm.form.netProperty, userId, null);
@@ -243,9 +253,11 @@ public class ButtonDevice extends Object implements IButtonDevice {
         }
 
         // закончить работу
-        if ((user != null && user.getShadow() != null && user.getShadow().getCustomerState() != null)
-                && (user.getShadow().getCustomerState() == CustomerState.STATE_WORK || user.getShadow().getCustomerState() == CustomerState.STATE_WORK_SECONDARY)
-                && (b == 0x34)) {
+        if ((user != null && user.getShadow() != null
+            && user.getShadow().getCustomerState() != null)
+            && (user.getShadow().getCustomerState() == CustomerState.STATE_WORK
+            || user.getShadow().getCustomerState() == CustomerState.STATE_WORK_SECONDARY)
+            && (b == 0x34)) {
             //команда завершения работы
 
             System.out.println("get Finish Customer by " + user.getName());
@@ -261,12 +273,17 @@ public class ButtonDevice extends Object implements IButtonDevice {
         }
 
         // закончить работу
-        if ((user != null && user.getShadow() != null && user.getShadow().getCustomerState() != null)
-                && (user.getShadow().getCustomerState() == CustomerState.STATE_WORK || user.getShadow().getCustomerState() == CustomerState.STATE_WORK_SECONDARY)
-                && (b == 0x33) && redirect) {
+        if ((user != null && user.getShadow() != null
+            && user.getShadow().getCustomerState() != null)
+            && (user.getShadow().getCustomerState() == CustomerState.STATE_WORK
+            || user.getShadow().getCustomerState() == CustomerState.STATE_WORK_SECONDARY)
+            && (b == 0x33) && redirect) {
             //команда  редирект
             System.out.println("redirect Customer by " + user.getName());
-            NetCommander.redirectCustomer(UBForm.form.netProperty, userId, null, redirectServiceId, false, "", -1L);
+            NetCommander
+                .redirectCustomer(UBForm.form.netProperty, userId, null, redirectServiceId, false,
+                    "",
+                    -1L);
             user.getShadow().setCustomerState(CustomerState.STATE_FINISH);
             //ответ о результате на кнопку
             if (qsize == 0) {
@@ -391,17 +408,20 @@ public class ButtonDevice extends Object implements IButtonDevice {
 
     @Override
     public void getFeedback() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void changeAdress() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void check() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -410,14 +430,14 @@ public class ButtonDevice extends Object implements IButtonDevice {
     }
 
     @Override
+    public void setUser(QUser user) {
+        this.user = user;
+    }
+
+    @Override
     public String getId() {
         byte[] bb = new byte[1];
         bb[0] = addres;
         return new String(bb);
-    }
-
-    @Override
-    public void setUser(QUser user) {
-        this.user = user;
     }
 }

@@ -20,7 +20,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcToZoneServer extends JsonRPC20 {
@@ -29,19 +28,19 @@ public class RpcToZoneServer extends JsonRPC20 {
     @SerializedName("result")
     private Data result;
 
+    public RpcToZoneServer(Data result) {
+        this.result = result;
+    }
+
+    public RpcToZoneServer() {
+    }
+
     public Data getResult() {
         return result;
     }
 
     public void setResult(Data result) {
         this.result = result;
-    }
-
-    public RpcToZoneServer(Data result) {
-        this.result = result;
-    }
-
-    public RpcToZoneServer() {
     }
 
     public static class Data {
@@ -61,6 +60,18 @@ public class RpcToZoneServer extends JsonRPC20 {
         @Expose
         @SerializedName("userAddrRS")
         public int userAddrRS;
+
+        public Data() {
+        }
+
+        public Data(String userName, String userPoint, String customerPrefix, int customerNumber,
+            int userAddrRS) {
+            this.userName = userName;
+            this.userPoint = userPoint;
+            this.customerPrefix = customerPrefix;
+            this.customerNumber = customerNumber;
+            this.userAddrRS = userAddrRS;
+        }
 
         public int getCustomerNumber() {
             return customerNumber;
@@ -100,17 +111,6 @@ public class RpcToZoneServer extends JsonRPC20 {
 
         public void setUserPoint(String userPoint) {
             this.userPoint = userPoint;
-        }
-
-        public Data() {
-        }
-
-        public Data(String userName, String userPoint, String customerPrefix, int customerNumber, int userAddrRS) {
-            this.userName = userName;
-            this.userPoint = userPoint;
-            this.customerPrefix = customerPrefix;
-            this.customerNumber = customerNumber;
-            this.userAddrRS = userAddrRS;
         }
     }
 }

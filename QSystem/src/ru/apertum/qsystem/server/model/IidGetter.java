@@ -18,7 +18,6 @@
 package ru.apertum.qsystem.server.model;
 
 /**
- *
  * @author egorov
  */
 public interface IidGetter {

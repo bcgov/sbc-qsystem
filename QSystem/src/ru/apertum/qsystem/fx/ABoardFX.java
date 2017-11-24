@@ -11,8 +11,6 @@ package ru.apertum.qsystem.fx;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-//import javafx.application.Platform;
-//import javafx.embed.swing.JFXPanel;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -20,13 +18,22 @@ import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import ru.apertum.qsystem.common.QConfig;
 
+//import javafx.application.Platform;
+//import javafx.embed.swing.JFXPanel;
+
 /**
- *
  * @author Евгений
  */
 public abstract class ABoardFX extends JPanel /*implements IClientboardFX*/ {
 
     //private static JFXPanel javafxPanel;
+
+    //todo   abstract void createJavaFXContent(Group root);
+    protected int win_x = 0;
+    protected int win_y = 0;
+    protected int win_w = 0;
+    protected int win_h = 0;
+    protected FileBasedConfiguration cfg = new PropertiesConfiguration();
 
     private void initFXscene() {
         //Create the scene and the stage
@@ -40,30 +47,29 @@ public abstract class ABoardFX extends JPanel /*implements IClientboardFX*/ {
                 javafxPanel.setScene(scene);
             }
         });
-         * 
+         *
          */
     }
-
- //todo   abstract void createJavaFXContent(Group root);
-    protected int win_x = 0;
-    protected int win_y = 0;
-    protected int win_w = 0;
-    protected int win_h = 0;
-    protected FileBasedConfiguration cfg = new PropertiesConfiguration();
 
     /**
      */
     public void showBoard() {
         if (0 != cfg.getInt("device", 0)) {
 
-            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getScreenDevices();
             int i = 1;
             for (GraphicsDevice graphicsDevice : screenDevices) {
-                System.out.println("graphicsDevice = " + graphicsDevice.getIDstring() + " " + graphicsDevice.toString()
-                        + "\nРазрешение экрана " + graphicsDevice.getDefaultConfiguration().getBounds().height + "x" + graphicsDevice.getDefaultConfiguration().getBounds().width
+                System.out.println(
+                    "graphicsDevice = " + graphicsDevice.getIDstring() + " " + graphicsDevice
+                        .toString()
+                        + "\nРазрешение экрана " + graphicsDevice.getDefaultConfiguration()
+                        .getBounds().height + "x" + graphicsDevice.getDefaultConfiguration()
+                        .getBounds().width
                         + "\nГлубина цвета " + graphicsDevice.getDisplayMode().getBitDepth()
                         + "\nЧастота " + graphicsDevice.getDisplayMode().getRefreshRate()
-                        + "\nНачало координат " + graphicsDevice.getDefaultConfiguration().getBounds().x
+                        + "\nНачало координат " + graphicsDevice.getDefaultConfiguration()
+                        .getBounds().x
                         + "-" + graphicsDevice.getDefaultConfiguration().getBounds().y);
                 if (i == cfg.getInt("device")) {
                     win_x = graphicsDevice.getDefaultConfiguration().getBounds().x;
@@ -73,7 +79,6 @@ public abstract class ABoardFX extends JPanel /*implements IClientboardFX*/ {
                 }
                 i++;
             }
-
 
             SwingUtilities.invokeLater(() -> {
                 initAndShowGUI();

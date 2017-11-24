@@ -20,23 +20,17 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.LinkedList;
 import java.util.List;
-import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetTicketHistory extends JsonRPC20 {
-
-    public RpcGetTicketHistory(TicketHistory result) {
-        this.result = result;
-    }
 
     @Expose
     @SerializedName("result")
     private TicketHistory result;
 
-    public void setResult(TicketHistory result) {
+    public RpcGetTicketHistory(TicketHistory result) {
         this.result = result;
     }
 
@@ -44,20 +38,23 @@ public class RpcGetTicketHistory extends JsonRPC20 {
         return result;
     }
 
+    public void setResult(TicketHistory result) {
+        this.result = result;
+    }
+
     public static class TicketHistory {
+
+        @Expose
+        @SerializedName("info")
+        private String info;
+        @Expose
+        @SerializedName("history")
+        private List<String> custs;
 
         public TicketHistory(String info, List<String> custs) {
             this.info = info;
             this.custs = custs;
         }
-
-        @Expose
-        @SerializedName("info")
-        private String info;
-
-        @Expose
-        @SerializedName("history")
-        private List<String> custs;
 
         public String getInfo() {
             return info;

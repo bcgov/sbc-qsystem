@@ -19,7 +19,6 @@ package ru.apertum.qsystem.server.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
-
 import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,17 +31,56 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * Класс предварительно записанного кастомера.
- * Должен уметь работать с БД, генерировать XML. И прочая логика.
+ * Класс предварительно записанного кастомера. Должен уметь работать с БД, генерировать XML. И
+ * прочая логика.
+ *
  * @author Evgeniy Egorov
  */
 @Entity
 @Table(name = "advance")
 public class QAdvanceCustomer implements Serializable {
 
+    @Id
+    @Column(name = "id")
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    @Expose
+    @SerializedName("id")
+    private Long id = new Date().getTime() % 1000000;
+    @Column(name = "advance_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Expose
+    @SerializedName("advance_time")
+    private Date advanceTime;
+    @Column(name = "priority")
+    @Expose
+    @SerializedName("priority")
+    private Integer priority;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "service_id")
+    @Expose
+    @SerializedName("service")
+    private QService service;
+    /**
+     * Связь с таблицей клиентов(фамилии, имена, адреса...) если клиент авторизовался перед тем как
+     * записаться на будующее время
+     */
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "clients_authorization_id")
+    @Expose
+    @SerializedName("authorization")
+    private QAuthorizationCustomer authorizationCustomer;
+    @Column(name = "input_data")
+    @Expose
+    @SerializedName("input_data")
+    private String inputData;
+    @Column(name = "comments")
+    @Expose
+    @SerializedName("comments")
+    private String comments;
+
     public QAdvanceCustomer() {
     }
-    
+
     public QAdvanceCustomer(Long id) {
         this.id = id;
     }
@@ -50,12 +88,6 @@ public class QAdvanceCustomer implements Serializable {
     public QAdvanceCustomer(String inputData) {
         this.inputData = inputData;
     }
-    @Id
-    @Column(name = "id")
-    //@GeneratedValue(strategy = GenerationType.AUTO)
-    @Expose
-    @SerializedName("id")
-    private Long id = new Date().getTime() % 1000000;
 
     public Long getId() {
         return id;
@@ -64,11 +96,6 @@ public class QAdvanceCustomer implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    @Column(name = "advance_time")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Expose
-    @SerializedName("advance_time")
-    private Date advanceTime;
 
     public Date getAdvanceTime() {
         return advanceTime;
@@ -77,10 +104,6 @@ public class QAdvanceCustomer implements Serializable {
     public void setAdvanceTime(Date advanceTime) {
         this.advanceTime = advanceTime;
     }
-    @Column(name = "priority")
-    @Expose
-    @SerializedName("priority")
-    private Integer priority;
 
     public Integer getPriority() {
         return priority;
@@ -89,11 +112,6 @@ public class QAdvanceCustomer implements Serializable {
     public void setPriority(Integer priority) {
         this.priority = priority;
     }
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "service_id")
-    @Expose
-    @SerializedName("service")
-    private QService service;
 
     public QService getService() {
         return service;
@@ -102,14 +120,6 @@ public class QAdvanceCustomer implements Serializable {
     public void setService(QService service) {
         this.service = service;
     }
-    /**
-     * Связь с таблицей клиентов(фамилии, имена, адреса...) если клиент авторизовался перед тем как записаться на будующее время
-     */
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "clients_authorization_id")
-    @Expose
-    @SerializedName("authorization")
-    private QAuthorizationCustomer authorizationCustomer;
 
     public QAuthorizationCustomer getAuthorizationCustomer() {
         return authorizationCustomer;
@@ -118,10 +128,6 @@ public class QAdvanceCustomer implements Serializable {
     public void setAuthorizationCustomer(QAuthorizationCustomer authorizationCustomer) {
         this.authorizationCustomer = authorizationCustomer;
     }
-    @Column(name = "input_data")
-    @Expose
-    @SerializedName("input_data")
-    private String inputData;
 
     public String getInputData() {
         return inputData;
@@ -130,10 +136,6 @@ public class QAdvanceCustomer implements Serializable {
     public void setInputData(String inputData) {
         this.inputData = inputData;
     }
-    @Column(name = "comments")
-    @Expose
-    @SerializedName("comments")
-    private String comments;
 
     public String getComments() {
         return comments;

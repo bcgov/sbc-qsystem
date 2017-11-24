@@ -16,16 +16,17 @@
  */
 package ru.apertum.qsystem.common;
 
-import ru.apertum.qsystem.common.exceptions.ServerException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
- * Сервер, принимающий сообщения по протоколу UDP
- * Имеет абстрактный метод, который выполняется при получении сообщения.
+ * Сервер, принимающий сообщения по протоколу UDP Имеет абстрактный метод, который выполняется при
+ * получении сообщения.
+ *
  * @author Evgeniy Egorov
  */
 abstract public class AUDPServer implements Runnable {
@@ -38,15 +39,15 @@ abstract public class AUDPServer implements Runnable {
     private DatagramSocket socket;
     private boolean isActive = true;
 
+    public AUDPServer(int port) {
+        this.port = port;
+    }
+
     public boolean isActivate() {
         return isActive;
     }
 
-    public AUDPServer(int port) {
-        this.port = port;
-    }
-    
-    public void start(){
+    public void start() {
         thread = new Thread(this);
         thread.start();
     }
@@ -61,7 +62,8 @@ abstract public class AUDPServer implements Runnable {
             socket = new DatagramSocket(port);
         } catch (SocketException ex) {
             isActive = false;
-            throw new ServerException("Невозможно создать UDP-сокет на порту " + port + ". " + ex.getMessage());
+            throw new ServerException(
+                "Невозможно создать UDP-сокет на порту " + port + ". " + ex.getMessage());
         }
         while (true) {
             isActive = true;
@@ -72,14 +74,17 @@ abstract public class AUDPServer implements Runnable {
             } catch (IOException ex) {
                 isActive = false;
                 if (!Thread.interrupted()) {
-                    throw new ServerException("Невозможно принять UDP-сообщение. " + ex.getMessage());
+                    throw new ServerException(
+                        "Невозможно принять UDP-сообщение. " + ex.getMessage());
                 }
             }
             InetAddress client = packet.getAddress();
             if (client != null) {// это когда закрывает прогу .. грязный хак
                 int client_port = packet.getPort();
                 final String message = new String(buffer, packet.getOffset(), packet.getLength());
-                QLog.l().logger().trace("Приём UDP сообшение \"" + message + "\" ОТ адреса \"" + client.getHostName() + "\" с порта \"" + port + "\"");
+                QLog.l().logger().trace(
+                    "Приём UDP сообшение \"" + message + "\" ОТ адреса \"" + client.getHostName()
+                        + "\" с порта \"" + port + "\"");
                 getData(message, client, client_port);
             }
         }
@@ -88,6 +93,7 @@ abstract public class AUDPServer implements Runnable {
 
     /**
      * Обработка события получения сообщения
+     *
      * @param data Текст сообщения
      * @param clientAddress адрес, откуда пришло сообщение
      * @param clientPort порт, с которого послали сообщение

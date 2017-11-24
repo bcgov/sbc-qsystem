@@ -33,11 +33,16 @@ import ru.apertum.qsystem.server.Spring;
 
 /**
  * Модель для отображения сетки календаля
+ *
  * @author Evgeniy Egorov
  */
 public class CalendarTableModel extends AbstractTableModel {
 
     private final List<FreeDay> days;
+    /**
+     * В каком календаре сейчас работаем
+     */
+    final private long calcId;
     private List<FreeDay> days_del;
 
     public CalendarTableModel(long calcId) {
@@ -46,13 +51,10 @@ public class CalendarTableModel extends AbstractTableModel {
         days = getFreeDays(calcId);
         days_del = new ArrayList<>(days);
     }
-    /**
-     * В каком календаре сейчас работаем
-     */
-    final private long calcId;
 
     /**
      * Выборка из БД требуемых данных.
+     *
      * @param calcId id календаря
      * @return список выходных дней определенного календаря
      */
@@ -64,7 +66,7 @@ public class CalendarTableModel extends AbstractTableModel {
 
     /**
      * Добавляем дату. Если Такая уже есть то инвертируем
-     * @param date
+     *
      * @param noInvert true - при обнаружении выходного оставлять его выходным
      * @return Добавлена как свободная или как рабочая/ true = свободная
      */
@@ -85,8 +87,6 @@ public class CalendarTableModel extends AbstractTableModel {
 
     /**
      * Проверяем добавлена ли в выходные уже
-     * @param date
-     * @return
      */
     public FreeDay isFreeDate(Date date) {
         for (FreeDay day : days) {
@@ -124,7 +124,6 @@ public class CalendarTableModel extends AbstractTableModel {
 
     /**
      * Сбросить выделенные дни в календаре
-     * @param year
      */
     public void dropCalendar(int year) {
         QLog.l().logger().debug("Reset the calendar");
@@ -142,7 +141,6 @@ public class CalendarTableModel extends AbstractTableModel {
 
     /**
      * Пометить все субботы выходными
-     * @param year
      */
     public void checkSaturday(int year) {
         QLog.l().logger().debug("Mark all Saturdays");
@@ -160,7 +158,6 @@ public class CalendarTableModel extends AbstractTableModel {
 
     /**
      * Пометить все воскресенья выходными
-     * @param year
      */
     public void checkSunday(int year) {
         QLog.l().logger().debug("Mark all Sundays");
@@ -203,7 +200,9 @@ public class CalendarTableModel extends AbstractTableModel {
             Spring.getInstance().getHt().saveOrUpdateAll(days);
         } catch (Exception ex) {
             Spring.getInstance().getTxManager().rollback(status);
-            throw new ClientException("Error performing the operation of modifying data in the database (JDBC).\nPerhaps you added a new calendar, changed it, tried to save the contents of the calendar, but did not save the overall configuration.\nSave the entire configuration (Ctrl + S) and try again to save the contents of the calendar.\n\n[" + ex.getLocalizedMessage() + "]\n(" + ex.toString() + ")");
+            throw new ClientException(
+                "Error performing the operation of modifying data in the database (JDBC).\nPerhaps you added a new calendar, changed it, tried to save the contents of the calendar, but did not save the overall configuration.\nSave the entire configuration (Ctrl + S) and try again to save the contents of the calendar.\n\n["
+                    + ex.getLocalizedMessage() + "]\n(" + ex.toString() + ")");
         }
         Spring.getInstance().getTxManager().commit(status);
         QLog.l().logger().debug("Saved a new calendar");
@@ -213,7 +212,6 @@ public class CalendarTableModel extends AbstractTableModel {
 
     /**
      * Checking for the preservation of the calendar
-     * @return
      */
     public boolean isSaved() {
         for (FreeDay day : days) {

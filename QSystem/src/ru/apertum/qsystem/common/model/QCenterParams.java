@@ -23,6 +23,7 @@ import java.util.LinkedList;
 
 /**
  * Параметры центра табло с отображением вызовов
+ *
  * @author Evgeniy Egorov
  */
 public class QCenterParams {

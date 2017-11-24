@@ -17,8 +17,9 @@
 package ru.apertum.qsystem.common.model;
 
 /**
- * Приоритет по сути - целое число, чем больше число, тем выше приоритет.
- * Priority is essentially an integer, the higher the number, the higher the priority.
+ * Приоритет по сути - целое число, чем больше число, тем выше приоритет. Priority is essentially an
+ * integer, the higher the number, the higher the priority.
+ *
  * @author Evgeniy Egorov
  */
 public interface IPriority extends Comparable<IPriority> {

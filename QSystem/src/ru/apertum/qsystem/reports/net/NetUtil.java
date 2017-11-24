@@ -30,8 +30,7 @@ import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ReportException;
 
 /**
- *
- *@author Evgeniy Egorov
+ * @author Evgeniy Egorov
  */
 public class NetUtil {
 
@@ -71,7 +70,8 @@ public class NetUtil {
         for (String s : ss) {
             final String[] ss0 = s.split("=");
             try {
-                res.put(URLDecoder.decode(ss0[0], "utf-8"), URLDecoder.decode(ss0.length == 1 ? "" : ss0[1], "utf-8"));
+                res.put(URLDecoder.decode(ss0[0], "utf-8"),
+                    URLDecoder.decode(ss0.length == 1 ? "" : ss0[1], "utf-8"));
             } catch (UnsupportedEncodingException ex) {
                 QLog.l().logRep().error(ss0[1], ex);
             }
@@ -96,7 +96,8 @@ public class NetUtil {
             String[] ss = request.getRequestLine().getUri().split("\\?");
             if (ss.length == 2) {
                 try {
-                    data = URLDecoder.decode(request.getRequestLine().getUri().split("\\?")[1], "utf-8");
+                    data = URLDecoder
+                        .decode(request.getRequestLine().getUri().split("\\?")[1], "utf-8");
                 } catch (UnsupportedEncodingException ex) {
                     throw new ReportException(ex.toString());
                 }

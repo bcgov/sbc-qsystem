@@ -16,7 +16,6 @@
  */
 package ru.apertum.qsystem.common;
 
-import ru.apertum.qsystem.common.exceptions.ServerException;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,7 +33,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -75,11 +73,11 @@ import ru.apertum.qsystem.QSystem;
 import ru.apertum.qsystem.client.Locales;
 import ru.apertum.qsystem.client.forms.FClient;
 import ru.apertum.qsystem.client.forms.FServicePriority;
+import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.server.ServerProps;
 
 /**
  * @author Evgeniy Egorov Сдесь находятся константы и общеиспользуемые конструкции
- *
  */
 public final class Uses {
 
@@ -88,17 +86,9 @@ public final class Uses {
     public static final int PRIORITY_NORMAL = 1;
     public static final int PRIORITY_HI = 2;
     public static final int PRIORITY_VIP = 3;
-    public static final int[] PRIORITYS = {PRIORITY_LOW, PRIORITY_NORMAL, PRIORITY_HI, PRIORITY_VIP};
-    private static final LinkedHashMap<Integer, String> PRIORITYS_WORD = new LinkedHashMap<>();
+    public static final int[] PRIORITYS = {PRIORITY_LOW, PRIORITY_NORMAL, PRIORITY_HI,
+        PRIORITY_VIP};
     public static final String PROPERTIES_FILE = "config/qsystem.properties";
-
-    public static LinkedHashMap<Integer, String> get_PRIORITYS_WORD() {
-        PRIORITYS_WORD.put(PRIORITY_LOW, FServicePriority.getLocaleMessage("client.priority.low"));
-        PRIORITYS_WORD.put(PRIORITY_NORMAL, FServicePriority.getLocaleMessage("client.priority.standard"));
-        PRIORITYS_WORD.put(PRIORITY_HI, FServicePriority.getLocaleMessage("client.priority.hi"));
-        PRIORITYS_WORD.put(PRIORITY_VIP, FServicePriority.getLocaleMessage("client.priority.vip"));
-        return PRIORITYS_WORD;
-    }
     // значения приоритета обрабатываемых услуг для юзера
     // public static final int SERVICE_EXCLUDE = -1;
     public static final int SERVICE_REMAINS = 0;
@@ -106,124 +96,106 @@ public final class Uses {
     public static final int SERVICE_VIP = 2;
     //public static final int[] SERVICE_PRIORITYS = {SERVICE_EXCLUDE, SERVICE_REMAINS, SERVICE_NORMAL, SERVICE_VIP};
     public static final LinkedHashMap<Integer, String> COEFF_WORD = new LinkedHashMap<>();
-
-    public static LinkedHashMap<Integer, String> get_COEFF_WORD() {
-        COEFF_WORD.put(SERVICE_REMAINS, FServicePriority.getLocaleMessage("service.priority.low"));
-        COEFF_WORD.put(SERVICE_NORMAL, FServicePriority.getLocaleMessage("service.priority.basic"));
-        int n = 0;
-        if (QConfig.cfg().isAdminApp()) {
-            n = ServerProps.getInstance().getProps().getExtPriorNumber();
-        }
-        if (QConfig.cfg().isClient()) {
-            n = FClient.extPriorClient;
-        }
-        for (int i = 2; i <= n + 1; i++) {
-            COEFF_WORD.put(i, Integer.toString(i));
-        }
-        COEFF_WORD.put(SERVICE_VIP + n, FServicePriority.getLocaleMessage("service.priority.vip"));
-
-        return COEFF_WORD;
-    }
     // Naming tags and attributes in XML statistics protocols
-     public static final String TAG_REP_STATISTIC = "Statistics";//"Статистика";
-     public static final String TAG_REP_PARAM_COUNT = "Denominator";//"Знаменатель";
-     public static final String TAG_REP_PARAM_AVG = "Average";//"Среднее";
-     public static final String TAG_REP_RECORD = "Recording";//"Запись";
-     public static final String TAG_REP_SERVICE_WORKED = "Serviced on a Service";//"ОбслуженоПоУслуге";
-     public static final String TAG_REP_SERVICE_WAIT = "Waiting for Service";//"ОжидаютПоУслуге";
-     public static final String TAG_REP_SERVICE_AVG_WORK = "Servicing Services";//"СрВрОбслуживанияПоУслуге";
-     public static final String TAG_REP_SERVICE_AVG_WAIT = "WAITING FOR SERVICE";//"СрВрОжиданияПоУслуге";
-     public static final String TAG_REP_SERVICE_KILLED = "Declined on the Service";//"ОтклоненныхПоУслуге";
-     public static final String TAG_REP_USER_WORKED = "Served by User";//"ОбслуженоПользователем";
-     public static final String TAG_REP_USER_AVG_WORK = "User Service";//"СрВрОбслуживанияПользователем";
-     public static final String TAG_REP_USER_KILLED = "Declined by User";//"ОтклоненныхПользователем";
-     public static final String TAG_REP_WORKED = "Served";//"Обслуженных";
-     public static final String TAG_REP_AVG_TIME_WORK = "Maintenance";//"СрВрОбслуживания";
-     public static final String TAG_REP_KILLED = "Disapproved";//"Отклоненных";
+    public static final String TAG_REP_STATISTIC = "Statistics";//"Статистика";
+    public static final String TAG_REP_PARAM_COUNT = "Denominator";//"Знаменатель";
+    public static final String TAG_REP_PARAM_AVG = "Average";//"Среднее";
+    public static final String TAG_REP_RECORD = "Recording";//"Запись";
+    public static final String TAG_REP_SERVICE_WORKED = "Serviced on a Service";//"ОбслуженоПоУслуге";
+    public static final String TAG_REP_SERVICE_WAIT = "Waiting for Service";//"ОжидаютПоУслуге";
+    public static final String TAG_REP_SERVICE_AVG_WORK = "Servicing Services";//"СрВрОбслуживанияПоУслуге";
+    public static final String TAG_REP_SERVICE_AVG_WAIT = "WAITING FOR SERVICE";//"СрВрОжиданияПоУслуге";
+    public static final String TAG_REP_SERVICE_KILLED = "Declined on the Service";//"ОтклоненныхПоУслуге";
+    public static final String TAG_REP_USER_WORKED = "Served by User";//"ОбслуженоПользователем";
+    public static final String TAG_REP_USER_AVG_WORK = "User Service";//"СрВрОбслуживанияПользователем";
+    public static final String TAG_REP_USER_KILLED = "Declined by User";//"ОтклоненныхПользователем";
+    public static final String TAG_REP_WORKED = "Served";//"Обслуженных";
+    public static final String TAG_REP_AVG_TIME_WORK = "Maintenance";//"СрВрОбслуживания";
+    public static final String TAG_REP_KILLED = "Disapproved";//"Отклоненных";
     // Tags and attribute names of the setup file
-     public static final String TAG_PROP_SERVICES = "The services";//"Услуги";
-     public static final String TAG_PROP_SERVICE = "Service";//"Услуга";
-     public static final String TAG_PROP_NAME = "Name";//"Наименование";
-     public static final String TAG_PROP_DESCRIPTION = "Description";//"Описание";
-     public static final String TAG_PROP_PREFIX = "Prefix";//"Префикс";
-     public static final String TAG_PROP_ADVANCE_LIMIT = "Limit";//"Лимит";
-     public static final String TAG_PROP_ADVANCE_PERIOD_LIMIT = "Limit Prior Records In Days";//"ЛимитПредвЗаписиВДнях";
-     public static final String TAG_PROP_USERS = "Members List";//"Пользователи";
-     public static final String TAG_PROP_USER = "User";//"Пользователь";
-     public static final String TAG_PROP_PASSWORD = "Password";//"Пароль";
-     public static final String TAG_PROP_OWN_SERVS = "Services Provided";//"ОказываемыеУслуги";
-     public static final String TAG_PROP_OWN_SRV = "The Service";//"ОказываемаяУслуга";
-     public static final String TAG_PROP_KOEF = "Coefficient of Participation";//"КоэффициентУчастия";
-     public static final String TAG_PROP_CONNECTION = "Net";//"Сеть";
-     public static final String TAG_PROP_SERV_PORT = "Port Server";//"ПортСервера";
-     public static final String TAG_PROP_WEB_SERV_PORT = "Port Web Server";//"ПортВебСервера";
-     public static final String TAG_PROP_CLIENT_PORT = "Port Customer";//"ПортКлиента";
-     public static final String TAG_PROP_SERV_ADDRESS = "Server Address";//"АдресСервера";
-     public static final String TAG_PROP_CLIENT_ADDRESS = "Customer Address";//"АдресКлиента";
-     public static final String TAG_PROP_STATUS = "Status";//"Статус";
-     public static final String TAG_PROP_START_TIME = "Start Time";//"ВремяНачалаРаботы";
-     public static final String TAG_PROP_FINISH_TIME = "Completion Time";//"ВремяЗавершенияРаботы";
-     public static final String TAG_PROP_VERSION = "Configuration Warehouse Version";//"ВерсияХранилищаКонфигурации";
-     public static final String TAG_PROP_INPUT_REQUIRED = "Requirement for Client Data";//"ТребованиеКлиентскихДанных";
-     public static final String TAG_PROP_INPUT_CAPTION = "Data Entry Form Header";//"ЗаголовокФормыВводаКлДанных";
-     public static final String TAG_PROP_RESULT_REQUIRED = "Requirement of Work Results";//"ТребованиеРезультатаРаботы";
+    public static final String TAG_PROP_SERVICES = "The services";//"Услуги";
+    public static final String TAG_PROP_SERVICE = "Service";//"Услуга";
+    public static final String TAG_PROP_NAME = "Name";//"Наименование";
+    public static final String TAG_PROP_DESCRIPTION = "Description";//"Описание";
+    public static final String TAG_PROP_PREFIX = "Prefix";//"Префикс";
+    public static final String TAG_PROP_ADVANCE_LIMIT = "Limit";//"Лимит";
+    public static final String TAG_PROP_ADVANCE_PERIOD_LIMIT = "Limit Prior Records In Days";//"ЛимитПредвЗаписиВДнях";
+    public static final String TAG_PROP_USERS = "Members List";//"Пользователи";
+    public static final String TAG_PROP_USER = "User";//"Пользователь";
+    public static final String TAG_PROP_PASSWORD = "Password";//"Пароль";
+    public static final String TAG_PROP_OWN_SERVS = "Services Provided";//"ОказываемыеУслуги";
+    public static final String TAG_PROP_OWN_SRV = "The Service";//"ОказываемаяУслуга";
+    public static final String TAG_PROP_KOEF = "Coefficient of Participation";//"КоэффициентУчастия";
+    public static final String TAG_PROP_CONNECTION = "Net";//"Сеть";
+    public static final String TAG_PROP_SERV_PORT = "Port Server";//"ПортСервера";
+    public static final String TAG_PROP_WEB_SERV_PORT = "Port Web Server";//"ПортВебСервера";
+    public static final String TAG_PROP_CLIENT_PORT = "Port Customer";//"ПортКлиента";
+    public static final String TAG_PROP_SERV_ADDRESS = "Server Address";//"АдресСервера";
+    public static final String TAG_PROP_CLIENT_ADDRESS = "Customer Address";//"АдресКлиента";
+    public static final String TAG_PROP_STATUS = "Status";//"Статус";
+    public static final String TAG_PROP_START_TIME = "Start Time";//"ВремяНачалаРаботы";
+    public static final String TAG_PROP_FINISH_TIME = "Completion Time";//"ВремяЗавершенияРаботы";
+    public static final String TAG_PROP_VERSION = "Configuration Warehouse Version";//"ВерсияХранилищаКонфигурации";
+    public static final String TAG_PROP_INPUT_REQUIRED = "Requirement for Client Data";//"ТребованиеКлиентскихДанных";
+    public static final String TAG_PROP_INPUT_CAPTION = "Data Entry Form Header";//"ЗаголовокФормыВводаКлДанных";
+    public static final String TAG_PROP_RESULT_REQUIRED = "Requirement of Work Results";//"ТребованиеРезультатаРаботы";
     // Tags and attribute names of the configuration files of the main scoreboard
-     public static final String TAG_BOARD_PROPS = "Options"; //"Параметры";
-     public static final String TAG_BOARD_PROP = "Parameter"; //"Параметер";
-     public static final String TAG_BOARD_NAME = "Name"; //"Наименование";
-     public static final String TAG_BOARD_VALUE = "Value"; //"Значение";
-     public static final String TAG_BOARD_TYPE = "Type"; //"Тип";
-     public static final String TAG_BOARD_READ_ONLY = "ReadOnly";
+    public static final String TAG_BOARD_PROPS = "Options"; //"Параметры";
+    public static final String TAG_BOARD_PROP = "Parameter"; //"Параметер";
+    public static final String TAG_BOARD_NAME = "Name"; //"Наименование";
+    public static final String TAG_BOARD_VALUE = "Value"; //"Значение";
+    public static final String TAG_BOARD_TYPE = "Type"; //"Тип";
+    public static final String TAG_BOARD_READ_ONLY = "ReadOnly";
     // имена параметров для табло
-     // Parameter names for the scoreboard
-     public static final String TAG_BOARD_FRACTAL = "Fractal";//"Fractal";
-     public static final String TAG_BOARD_MONITOR = "Additional monitor number for the scoreboard";//"Номер дополнительного монитора для табло";
-     public static final String TAG_BOARD_LINES_COUNT = "Number of lines on the scoreboard";//"Количество строк на табло";
-     public static final String TAG_BOARD_COLS_COUNT = "Number of columns on the scoreboard";//"Количество столбцов на табло";
-     public static final String TAG_BOARD_DELAY_VISIBLE = "Minimum display time on the scoreboard";//"Минимальное время индикации на табло";
-     public static final String TAG_BOARD_FON_IMG = "Background image";//"Фоновое изображение";
-     public static final String TAG_BOARD_FONT_SIZE = "Font size";//"Размер шрифта";
-     public static final String TAG_BOARD_FONT_COLOR = "Font Color";//"Цвет шрифта";
-     public static final String TAG_BOARD_PANEL_SIZE = "The size";//"Размер";
-     public static final String TAG_BOARD_RUNNING_TEXT = "Running text";//"Бегущий текст";
-     public static final String TAG_BOARD_VIDEO_FILE = "Video file";//"Видеофайл";
-     public static final String TAG_BOARD_VISIBLE_PANEL = "Visible";//"visible";
-     public static final String TAG_BOARD_SPEED_TEXT = "Speed ​​of the running text";//"Скорость бегущего текста";
-     public static final String TAG_BOARD_GRID_NEXT_COLS = "Columns table footprint";//"Колонки табл след";
-     public static final String TAG_BOARD_GRID_NEXT_ROWS = "Rows of footprints";//"Строки табл след";
-     public static final String TAG_BOARD_SIMPLE_DATE = "Simple date";//"Простая дата";
-     public static final String TAG_BOARD_GRID_NEXT = "The following table";//"Таблица следующих";
-     public static final String TAG_BOARD_FON_COLOR = "Background color";//"Цвет фона";
-     public static final String TAG_BOARD_FONT_SIZE_CAPTION = "Header font size";//"Размер шрифта заголовка";
-     public static final String TAG_BOARD_FONT_NAME = "Font name";//"Font name";
-     public static final String TAG_BOARD_FONT_SIZE_LINE = "The font size of the lines";//"Размер шрифта строк";
-     public static final String TAG_BOARD_FONT_COLOR_CAPTION = "Header font color";//"Цвет шрифта заголовка";
-     public static final String TAG_BOARD_FONT_COLOR_LEFT = "The font color of the left column";//"Цвет шрифта левого столбца";
-     public static final String TAG_BOARD_FONT_COLOR_RIGHT = "The font color of the right column";//"Цвет шрифта правого столбца";
-     public static final String TAG_BOARD_FONT_COLOR_LINE = "Color of the line of the score line";//"Цвет надписи строки табло";
-     public static final String TAG_BOARD_LINE_BORDER = "Rim Edging";//"Окантовка строк";
-     public static final String TAG_BOARD_LINE_DELIMITER = "Column separator";//"Разделитель столбцов";
-     public static final String TAG_BOARD_LEFT_PIC = "Left column pic";//"Left column pic";
-     public static final String TAG_BOARD_RIGHT_PIC = "Right column pic";//"Right column pic";
-     public static final String TAG_BOARD_EXT_PIC = "Ext column pic";//"Ext column pic";
-     public static final String TAG_BOARD_LEFT_CAPTION = "Header of the left column";//"Заголовок левого столбца";
-     public static final String TAG_BOARD_RIGHT_CAPTION = "Title of the right column";//"Заголовок правого столбца";
-     public static final String TAG_BOARD_EXT_CAPTION = "Additional column header";//"Заголовок дополнительного столбца";
-     public static final String TAG_BOARD_EXT_POSITION = "The order of the additional column";//"Порядок дополнительного столбца";
-     public static final String TAG_BOARD_GRID_NEXT_CAPTION = "The title of the following table";//"Заголовок таблицы следующих";
-     public static final String TAG_BOARD_GRID_NEXT_FRAME_BORDER = "The table of the following";//"Рамка таблицы следующих";
-     public static final String TAG_BOARD_LINE_COLOR = "Border color of the score line";//"Цвет рамки строки табло";
-     public static final String TAG_BOARD_LINE_CAPTION = "The inscription of the score line";//"Надпись строки табло";
-     public static final String TAG_BOARD_CALL_PANEL = "The panel called";//"Панель вызванного";
-     public static final String TAG_BOARD_CALL_PANEL_BACKGROUND = "Picture of the panel called";//"Картинка панели вызванного";
-     public static final String TAG_BOARD_CALL_PANEL_X = "Panel called-X";//"Панель вызванного-X";
-     public static final String TAG_BOARD_CALL_PANEL_Y = "Panel called-Y";//"Панель вызванного-Y";
-     public static final String TAG_BOARD_CALL_PANEL_WIDTH = "Panel called-width";//"Панель вызванного-ширина";
-     public static final String TAG_BOARD_CALL_PANEL_HEIGHT = "Panel called-height";//"Панель вызванного-высота";
-     public static final String TAG_BOARD_CALL_PANEL_DELAY = "Call panel-show time";//"Панель вызванного-время показа сек";
-     public static final String TAG_BOARD_CALL_PANEL_TEMPLATE = "The panel of the called-text html + ###";//"Панель вызванного-текст html+###";
-     // имена тегов-разделов для табло
-     // Names of tag-sections for the scoreboard
+    // Parameter names for the scoreboard
+    public static final String TAG_BOARD_FRACTAL = "Fractal";//"Fractal";
+    public static final String TAG_BOARD_MONITOR = "Additional monitor number for the scoreboard";//"Номер дополнительного монитора для табло";
+    public static final String TAG_BOARD_LINES_COUNT = "Number of lines on the scoreboard";//"Количество строк на табло";
+    public static final String TAG_BOARD_COLS_COUNT = "Number of columns on the scoreboard";//"Количество столбцов на табло";
+    public static final String TAG_BOARD_DELAY_VISIBLE = "Minimum display time on the scoreboard";//"Минимальное время индикации на табло";
+    public static final String TAG_BOARD_FON_IMG = "Background image";//"Фоновое изображение";
+    public static final String TAG_BOARD_FONT_SIZE = "Font size";//"Размер шрифта";
+    public static final String TAG_BOARD_FONT_COLOR = "Font Color";//"Цвет шрифта";
+    public static final String TAG_BOARD_PANEL_SIZE = "The size";//"Размер";
+    public static final String TAG_BOARD_RUNNING_TEXT = "Running text";//"Бегущий текст";
+    public static final String TAG_BOARD_VIDEO_FILE = "Video file";//"Видеофайл";
+    public static final String TAG_BOARD_VISIBLE_PANEL = "Visible";//"visible";
+    public static final String TAG_BOARD_SPEED_TEXT = "Speed ​​of the running text";//"Скорость бегущего текста";
+    public static final String TAG_BOARD_GRID_NEXT_COLS = "Columns table footprint";//"Колонки табл след";
+    public static final String TAG_BOARD_GRID_NEXT_ROWS = "Rows of footprints";//"Строки табл след";
+    public static final String TAG_BOARD_SIMPLE_DATE = "Simple date";//"Простая дата";
+    public static final String TAG_BOARD_GRID_NEXT = "The following table";//"Таблица следующих";
+    public static final String TAG_BOARD_FON_COLOR = "Background color";//"Цвет фона";
+    public static final String TAG_BOARD_FONT_SIZE_CAPTION = "Header font size";//"Размер шрифта заголовка";
+    public static final String TAG_BOARD_FONT_NAME = "Font name";//"Font name";
+    public static final String TAG_BOARD_FONT_SIZE_LINE = "The font size of the lines";//"Размер шрифта строк";
+    public static final String TAG_BOARD_FONT_COLOR_CAPTION = "Header font color";//"Цвет шрифта заголовка";
+    public static final String TAG_BOARD_FONT_COLOR_LEFT = "The font color of the left column";//"Цвет шрифта левого столбца";
+    public static final String TAG_BOARD_FONT_COLOR_RIGHT = "The font color of the right column";//"Цвет шрифта правого столбца";
+    public static final String TAG_BOARD_FONT_COLOR_LINE = "Color of the line of the score line";//"Цвет надписи строки табло";
+    public static final String TAG_BOARD_LINE_BORDER = "Rim Edging";//"Окантовка строк";
+    public static final String TAG_BOARD_LINE_DELIMITER = "Column separator";//"Разделитель столбцов";
+    public static final String TAG_BOARD_LEFT_PIC = "Left column pic";//"Left column pic";
+    public static final String TAG_BOARD_RIGHT_PIC = "Right column pic";//"Right column pic";
+    public static final String TAG_BOARD_EXT_PIC = "Ext column pic";//"Ext column pic";
+    public static final String TAG_BOARD_LEFT_CAPTION = "Header of the left column";//"Заголовок левого столбца";
+    public static final String TAG_BOARD_RIGHT_CAPTION = "Title of the right column";//"Заголовок правого столбца";
+    public static final String TAG_BOARD_EXT_CAPTION = "Additional column header";//"Заголовок дополнительного столбца";
+    public static final String TAG_BOARD_EXT_POSITION = "The order of the additional column";//"Порядок дополнительного столбца";
+    public static final String TAG_BOARD_GRID_NEXT_CAPTION = "The title of the following table";//"Заголовок таблицы следующих";
+    public static final String TAG_BOARD_GRID_NEXT_FRAME_BORDER = "The table of the following";//"Рамка таблицы следующих";
+    public static final String TAG_BOARD_LINE_COLOR = "Border color of the score line";//"Цвет рамки строки табло";
+    public static final String TAG_BOARD_LINE_CAPTION = "The inscription of the score line";//"Надпись строки табло";
+    public static final String TAG_BOARD_CALL_PANEL = "The panel called";//"Панель вызванного";
+    public static final String TAG_BOARD_CALL_PANEL_BACKGROUND = "Picture of the panel called";//"Картинка панели вызванного";
+    public static final String TAG_BOARD_CALL_PANEL_X = "Panel called-X";//"Панель вызванного-X";
+    public static final String TAG_BOARD_CALL_PANEL_Y = "Panel called-Y";//"Панель вызванного-Y";
+    public static final String TAG_BOARD_CALL_PANEL_WIDTH = "Panel called-width";//"Панель вызванного-ширина";
+    public static final String TAG_BOARD_CALL_PANEL_HEIGHT = "Panel called-height";//"Панель вызванного-высота";
+    public static final String TAG_BOARD_CALL_PANEL_DELAY = "Call panel-show time";//"Панель вызванного-время показа сек";
+    public static final String TAG_BOARD_CALL_PANEL_TEMPLATE = "The panel of the called-text html + ###";//"Панель вызванного-текст html+###";
+    // имена тегов-разделов для табло
+    // Names of tag-sections for the scoreboard
     //имена тегов-разделов для табло
     public static final String TAG_BOARD = "Board";
     public static final String TAG_BOARD_MAIN = "Main";
@@ -299,7 +271,6 @@ public final class Uses {
     public static final String TASK_INVITE_SELECTED_CUSTOMER = "Invite selected customer";
     public static final String TASK_CHANGE_SERVICE = "Change the service of the customer";
     public static final String TASK_CUSTOMER_RETURN_QUEUE = "Return the same customer to queue";
-    
     // Формат отчетов
     public static final String REPORT_FORMAT_HTML = "html";
     public static final String REPORT_FORMAT_RTF = "rtf";
@@ -346,7 +317,6 @@ public final class Uses {
         "Листопада",
         "Грудня"
     };
-
     public final static String[] AZERBAIJAN_MONAT = {"Yanvar",
         "Fevral",
         "Mart",
@@ -359,14 +329,6 @@ public final class Uses {
         "Oktyabr",
         "Noyabr",
         "Dekabr"};
-
-    public static String getRusDate(Date date, String format) {
-        return new SimpleDateFormat(format, Locales.getInstance().getRussSymbolDateFormat()).format(date);
-    }
-
-    public static String getUkrDate(Date date, String format) {
-        return new SimpleDateFormat(format, Locales.getInstance().getUkrSymbolDateFormat()).format(date);
-    }
     /**
      * Формат даты
      */
@@ -416,7 +378,8 @@ public final class Uses {
      */
     public static final String TEMP_STATATISTIC_FILE = "temp_statistic.xml";
     /**
-     * Задержка перед возвратом в корень меню при вопросе "Желаете встать в очередь?" когда в очереди более трех человек.
+     * Задержка перед возвратом в корень меню при вопросе "Желаете встать в очередь?" когда в
+     * очереди более трех человек.
      */
     public static final int DELAY_BACK_TO_ROOT = 10000;
     /**
@@ -424,27 +387,113 @@ public final class Uses {
      */
     public static final int DELAY_CHECK_TO_LOCK = 55000;
     /**
-     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не обрабатывается ни одним пользователем
+     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не
+     * обрабатывается ни одним пользователем
      */
     public static final int LOCK_INT = 1000000000;
     /**
-     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не оказывается учитывая расписание
+     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не
+     * оказывается учитывая расписание
      */
     public static final int LOCK_FREE_INT = 1000000011;
     /**
-     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не оказывается учитывая ограничение посещений в день и лимит
-     * достигнут
+     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не
+     * оказывается учитывая ограничение посещений в день и лимит достигнут
      */
     public static final int LOCK_PER_DAY_INT = 1000000022;
     /**
      * Вопрос о живости
      */
     public static final String HOW_DO_YOU_DO = "do you live?";
-
-    public static TimeZone userTimeZone;
-    
     /**
-     * Рекурентный формирователь для public static ArrayList elements(Element root, String tagName).
+     * mointors
+     */
+    public static final HashMap<Integer, Rectangle> DISPLAYS = new HashMap<>();
+    private static final LinkedHashMap<Integer, String> PRIORITYS_WORD = new LinkedHashMap<>();
+    private static final HashMap<String, Image> HASH_IMG = new HashMap<>();
+    public static TimeZone userTimeZone;
+    public static GraphicsDevice firstMonitor = null;
+    static ServerSocket stopStartSecond;
+    private static boolean sh = false;
+    private static ResourceMap localeMap = null;
+
+    static {
+        /**
+         * Инициализация
+         */
+        GraphicsDevice[] screenDevices = null;
+        try {
+            screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        } catch (HeadlessException th) {
+            System.out.println("No screen Devices");
+        }
+        if (screenDevices != null && screenDevices.length > 0) {
+            firstMonitor = screenDevices[0];
+            int i = 1;
+            for (GraphicsDevice graphicsDevice : screenDevices) {
+                System.out.println(
+                    "monitor " + i + "; graphicsDevice = " + graphicsDevice.getIDstring() + " "
+                        + graphicsDevice.toString()
+                        + "; height, width = " + graphicsDevice.getDefaultConfiguration()
+                        .getBounds().height
+                        + "x" + graphicsDevice.getDefaultConfiguration().getBounds().width
+                        + "; Coloreness = " + graphicsDevice.getDisplayMode().getBitDepth()
+                        + "; RefreshRate = " + graphicsDevice.getDisplayMode().getRefreshRate()
+                        + "; Origin(x, y) = " + graphicsDevice.getDefaultConfiguration()
+                        .getBounds().x
+                        + "-" + graphicsDevice.getDefaultConfiguration().getBounds().y);
+                DISPLAYS.put(i++, graphicsDevice.getDefaultConfiguration().getBounds());
+                if (graphicsDevice.getDefaultConfiguration().getBounds().x == 0
+                    && graphicsDevice.getDefaultConfiguration().getBounds().y == 0) {
+                    firstMonitor = graphicsDevice;
+                }
+            }
+        }
+        COEFF_WORD.put(SERVICE_REMAINS, FServicePriority.getLocaleMessage("service.priority.low"));
+        COEFF_WORD.put(SERVICE_NORMAL, FServicePriority.getLocaleMessage("service.priority.basic"));
+        COEFF_WORD.put(SERVICE_VIP, FServicePriority.getLocaleMessage("service.priority.vip"));
+    }
+
+    public static LinkedHashMap<Integer, String> get_PRIORITYS_WORD() {
+        PRIORITYS_WORD.put(PRIORITY_LOW, FServicePriority.getLocaleMessage("client.priority.low"));
+        PRIORITYS_WORD
+            .put(PRIORITY_NORMAL, FServicePriority.getLocaleMessage("client.priority.standard"));
+        PRIORITYS_WORD.put(PRIORITY_HI, FServicePriority.getLocaleMessage("client.priority.hi"));
+        PRIORITYS_WORD.put(PRIORITY_VIP, FServicePriority.getLocaleMessage("client.priority.vip"));
+        return PRIORITYS_WORD;
+    }
+
+    public static LinkedHashMap<Integer, String> get_COEFF_WORD() {
+        COEFF_WORD.put(SERVICE_REMAINS, FServicePriority.getLocaleMessage("service.priority.low"));
+        COEFF_WORD.put(SERVICE_NORMAL, FServicePriority.getLocaleMessage("service.priority.basic"));
+        int n = 0;
+        if (QConfig.cfg().isAdminApp()) {
+            n = ServerProps.getInstance().getProps().getExtPriorNumber();
+        }
+        if (QConfig.cfg().isClient()) {
+            n = FClient.extPriorClient;
+        }
+        for (int i = 2; i <= n + 1; i++) {
+            COEFF_WORD.put(i, Integer.toString(i));
+        }
+        COEFF_WORD.put(SERVICE_VIP + n, FServicePriority.getLocaleMessage("service.priority.vip"));
+
+        return COEFF_WORD;
+    }
+
+    public static String getRusDate(Date date, String format) {
+        return new SimpleDateFormat(format, Locales.getInstance().getRussSymbolDateFormat())
+            .format(date);
+    }
+
+    public static String getUkrDate(Date date, String format) {
+        return new SimpleDateFormat(format, Locales.getInstance().getUkrSymbolDateFormat())
+            .format(date);
+    }
+
+    /**
+     * Рекурентный формирователь для public static ArrayList elements(Element root, String
+     * tagName).
      *
      * @param list массив элементов
      * @param el корневой элемент ветви
@@ -496,7 +545,8 @@ public final class Uses {
      * @param attrValue значение атрибута
      * @return массив элементов
      */
-    public static ArrayList<Element> elementsByAttr(Element root, String attrName, String attrValue) {
+    public static ArrayList<Element> elementsByAttr(Element root, String attrName,
+        String attrValue) {
         ArrayList<Element> list = new ArrayList<>();
         //list.addAll(root.elements(tagName));
         getList(list, root, attrName, attrValue);
@@ -553,11 +603,14 @@ public final class Uses {
      * Послать сообщение по UDP
      *
      * @param message текст посылаемого сообщения
-     * @param address адрес получателя. Если адрес "255.255.255.255", то рассылка будет широковещательной.
+     * @param address адрес получателя. Если адрес "255.255.255.255", то рассылка будет
+     * широковещательной.
      * @param port порт получателя
      */
     public static void sendUDPMessage(String message, InetAddress address, int port) {
-        QLog.l().logger().trace("Отправка UDP сообшение \"" + message + "\" по адресу \"" + address.getHostAddress() + "\" на порт \"" + port + "\"");
+        QLog.l().logger().trace(
+            "Отправка UDP сообшение \"" + message + "\" по адресу \"" + address.getHostAddress()
+                + "\" на порт \"" + port + "\"");
         final DatagramSocket socket;
         final byte mess_b[] = message.getBytes();
         final DatagramPacket packet = new DatagramPacket(mess_b, mess_b.length, address, port);
@@ -595,7 +648,6 @@ public final class Uses {
      * @param o - класс, нужен для получения ресурса
      * @param resourceName путь к ресурсу в jar-файле
      * @return массив байт, содержащий ресурс
-     * @throws IOException
      */
     public static byte[] readResource(Object o, String resourceName) throws IOException {
         // Выдаем ресурс  "/ru/apertum/qsystem/reports/web/name.jpg"
@@ -606,10 +658,10 @@ public final class Uses {
     /**
      * грузит картинку из файла или ресурсов. Если Параметр пустой, то возвращает null.
      *
-     * @param o Объект для загрузки ресурса из jar, чаще всего класс в котором понадобилась эта картинка.
+     * @param o Объект для загрузки ресурса из jar, чаще всего класс в котором понадобилась эта
+     * картинка.
      * @param resourceName путь к ресурсу или файлу картинки. Может быть пустым.
      * @param defaultResourceName Если нифайла ни ресурса не найдется, то загрузится этот ресурс
-     * @return
      */
     public static Image loadImage(Object o, String resourceName, String defaultResourceName) {
         if ("".equals(resourceName)) {
@@ -633,10 +685,13 @@ public final class Uses {
                         return new BufferedImage(2000, 2000, BufferedImage.TYPE_INT_RGB);
                     }
                     if (o.getClass().getResourceAsStream(defaultResourceName) == null) {
-                        QLog.l().logger().error("При загрузки ресурса не нашлось ни файла, ни ресурса, НИ ДЕФОЛТНОГО РЕСУРСА \"" + defaultResourceName + "\"");
+                        QLog.l().logger().error(
+                            "При загрузки ресурса не нашлось ни файла, ни ресурса, НИ ДЕФОЛТНОГО РЕСУРСА \""
+                                + defaultResourceName + "\"");
                         return new BufferedImage(2000, 2000, BufferedImage.TYPE_INT_RGB);
                     }
-                    inStream = new DataInputStream(o.getClass().getResourceAsStream(defaultResourceName));
+                    inStream = new DataInputStream(
+                        o.getClass().getResourceAsStream(defaultResourceName));
                 } else {
                     inStream = new DataInputStream(is);
                 }
@@ -655,14 +710,13 @@ public final class Uses {
             return img;
         }
     }
-    private static final HashMap<String, Image> HASH_IMG = new HashMap<>();
 
     /**
-     * Для чтения байт из потока. не применять для потока связанного с сокетом. readSocketInputStream(InputStream stream)
+     * Для чтения байт из потока. не применять для потока связанного с сокетом.
+     * readSocketInputStream(InputStream stream)
      *
      * @param stream из него читаем
      * @return byte[] результат
-     * @throws java.io.IOException
      */
     public static byte[] readInputStream(InputStream stream) throws IOException {
         final byte[] result;
@@ -675,8 +729,6 @@ public final class Uses {
     /**
      * Округление до нескольких знаков после запятой.
      *
-     * @param value
-     * @param scale
      * @return Готовое обрезанное дробное число.
      */
     public static double roundAs(double value, int scale) {
@@ -692,7 +744,8 @@ public final class Uses {
      * @param extension Фильтр по расширению файлов, например "xml".
      * @return Полное имя файла или null если не выбрали.
      */
-    public static String getFileName(Component parent, String title, String description, String extension) {
+    public static String getFileName(Component parent, String title, String description,
+        String extension) {
         final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setLocale(Locales.getInstance().getLangCurrent());
         fileChooser.resetChoosableFileFilters();
@@ -732,45 +785,8 @@ public final class Uses {
      * @param component это окно и будем растягивать
      */
     public static void setFullSize(Component component) {
-        component.setBounds(0, 0, firstMonitor.getDefaultConfiguration().getBounds().width, firstMonitor.getDefaultConfiguration().getBounds().height);
-    }
-    
-    /**
-     * mointors
-     */
-    public static final HashMap<Integer, Rectangle> DISPLAYS = new HashMap<>();
-    public static GraphicsDevice firstMonitor = null;
-
-    static {
-        /**
-         * Инициализация
-         */
-        GraphicsDevice[] screenDevices = null;
-        try {
-            screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        } catch (HeadlessException th) {
-            System.out.println("No screen Devices");
-        }
-        if (screenDevices != null && screenDevices.length > 0) {
-            firstMonitor = screenDevices[0];
-            int i = 1;
-            for (GraphicsDevice graphicsDevice : screenDevices) {
-                System.out.println("monitor " + i + "; graphicsDevice = " + graphicsDevice.getIDstring() + " " + graphicsDevice.toString()
-                        + "; height, width = " + graphicsDevice.getDefaultConfiguration().getBounds().height + "x" + graphicsDevice.getDefaultConfiguration().getBounds().width
-                        + "; Coloreness = " + graphicsDevice.getDisplayMode().getBitDepth()
-                        + "; RefreshRate = " + graphicsDevice.getDisplayMode().getRefreshRate()
-                        + "; Origin(x, y) = " + graphicsDevice.getDefaultConfiguration().getBounds().x
-                        + "-" + graphicsDevice.getDefaultConfiguration().getBounds().y);
-                DISPLAYS.put(i++, graphicsDevice.getDefaultConfiguration().getBounds());
-                if (graphicsDevice.getDefaultConfiguration().getBounds().x == 0
-                        && graphicsDevice.getDefaultConfiguration().getBounds().y == 0) {
-                    firstMonitor = graphicsDevice;
-                }
-            }
-        }
-        COEFF_WORD.put(SERVICE_REMAINS, FServicePriority.getLocaleMessage("service.priority.low"));
-        COEFF_WORD.put(SERVICE_NORMAL, FServicePriority.getLocaleMessage("service.priority.basic"));
-        COEFF_WORD.put(SERVICE_VIP, FServicePriority.getLocaleMessage("service.priority.vip"));
+        component.setBounds(0, 0, firstMonitor.getDefaultConfiguration().getBounds().width,
+            firstMonitor.getDefaultConfiguration().getBounds().height);
     }
 
     /**
@@ -781,7 +797,8 @@ public final class Uses {
     public static void loadPlugins(String folder) {
         // Загрузка плагинов из папки plugins
         QLog.l().logger().info("Загрузка плагинов из папки plugins.");
-        final File[] list = new File(folder).listFiles((File dir, String name) -> name.toLowerCase().endsWith(".jar"));
+        final File[] list = new File(folder)
+            .listFiles((File dir, String name) -> name.toLowerCase().endsWith(".jar"));
         if (list != null && list.length != 0) {
             final URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
             final Class sysclass = URLClassLoader.class;
@@ -801,74 +818,6 @@ public final class Uses {
     }
 
     /**
-     * Класс заставки
-     */
-    private static class SplashScreen extends JFrame {
-
-        final BorderLayout borderLayout1 = new BorderLayout();
-        final JLabel imageLabel = new JLabel();
-        final JLabel imageLabel2 = new JLabel();
-        final JLayeredPane lp = new JDesktopPane();
-        final ImageIcon imageIcon;
-        final ImageIcon imageIcon2;
-
-        public SplashScreen() {
-            imageIcon = new ImageIcon(SplashScreen.class.getResource("/ru/apertum/qsystem/client/forms/resources/fon_login_bl.jpg"));
-            imageIcon2 = new ImageIcon(SplashScreen.class.getResource("/ru/apertum/qsystem/client/forms/resources/loading.gif"));
-            init();
-        }
-
-        private void init() {
-            try {
-                setIconImage(ImageIO.read(SplashScreen.class.getResource("/ru/apertum/qsystem/client/forms/resources/client.png")));
-            } catch (IOException ex) {
-                System.err.println(ex);
-            }
-            setTitle("Запуск QSystem");
-            setSize(imageIcon.getIconWidth(), imageIcon.getIconHeight());
-            imageLabel.setIcon(imageIcon);
-            imageLabel2.setIcon(imageIcon2);
-            lp.setBounds(0, 0, 400, 400);
-            lp.setOpaque(false);
-            add(lp);
-            this.getContentPane().add(imageLabel, BorderLayout.CENTER);
-            imageLabel2.setBounds(175, 165, 300, 30);
-            lp.add(imageLabel2, null);
-            timer.start();
-        }
-        final Timer timer = new Timer(100, new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (sh == false) {
-                    stopTimer();
-                    setVisible(false);
-                }
-            }
-
-            private void stopTimer() {
-                timer.stop();
-            }
-        });
-    }
-
-    private static class SplashRun implements Runnable {
-
-        @Override
-        public void run() {
-            final SplashScreen screen = new SplashScreen();
-            //screen.setSize(480, 360);
-            screen.setUndecorated(true);
-            screen.setResizable(false);
-            setLocation(screen);
-            screen.pack();
-            screen.setVisible(true);
-            screen.setAlwaysOnTop(true);
-        }
-    }
-    private static boolean sh = false;
-
-    /**
      * Создание и показ сплэш-заставки с блокировкой запуска второй копии
      */
     public static void startSplashClient() {
@@ -882,7 +831,6 @@ public final class Uses {
         }
         startSplash();
     }
-    static ServerSocket stopStartSecond;
 
     /**
      * Создание и показ сплэш-заставки с блокировкой запуска второй копии
@@ -921,7 +869,8 @@ public final class Uses {
         if (f.exists()) {
             return f.toURI().toString().replace("file:/", "file:///");
         }
-        final Pattern pattern = Pattern.compile("<\\s*img\\s*src\\s*=\\s*['\"].*?['\"]\\s*>");//<img src='file:///E:\WORK\apertum-qsystem\config\board\q.jpg'>
+        final Pattern pattern = Pattern.compile(
+            "<\\s*img\\s*src\\s*=\\s*['\"].*?['\"]\\s*>");//<img src='file:///E:\WORK\apertum-qsystem\config\board\q.jpg'>
         final Matcher matcher = pattern.matcher(html);
         String res = html;
         while (matcher.find()) {
@@ -935,7 +884,8 @@ public final class Uses {
             }
             f = new File(ff);
             if (f.isFile()) {
-                res = res.replace(tci + img + tci, tci + f.toURI().toString().replace("file:/", "file:///") + tci);
+                res = res.replace(tci + img + tci,
+                    tci + f.toURI().toString().replace("file:/", "file:///") + tci);
             } else {
                 QLog.l().logger().error("Не найден файл \"" + img + "\" для HTML.");
             }
@@ -965,12 +915,83 @@ public final class Uses {
         System.out.println(prepareAbsolutPathForImg("file:///www/timed.html"));
         System.out.println(prepareAbsolutPathForImg("www/timed.html"));
     }
-    private static ResourceMap localeMap = null;
 
     public static String getLocaleMessage(String key) {
         if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(Uses.class);
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(Uses.class);
         }
         return localeMap.getString(key);
+    }
+
+    /**
+     * Класс заставки
+     */
+    private static class SplashScreen extends JFrame {
+
+        final BorderLayout borderLayout1 = new BorderLayout();
+        final JLabel imageLabel = new JLabel();
+        final JLabel imageLabel2 = new JLabel();
+        final JLayeredPane lp = new JDesktopPane();
+        final ImageIcon imageIcon;
+        final ImageIcon imageIcon2;
+        final Timer timer = new Timer(100, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (sh == false) {
+                    stopTimer();
+                    setVisible(false);
+                }
+            }
+
+            private void stopTimer() {
+                timer.stop();
+            }
+        });
+
+        public SplashScreen() {
+            imageIcon = new ImageIcon(SplashScreen.class
+                .getResource("/ru/apertum/qsystem/client/forms/resources/fon_login_bl.jpg"));
+            imageIcon2 = new ImageIcon(
+                SplashScreen.class
+                    .getResource("/ru/apertum/qsystem/client/forms/resources/loading.gif"));
+            init();
+        }
+
+        private void init() {
+            try {
+                setIconImage(ImageIO.read(SplashScreen.class
+                    .getResource("/ru/apertum/qsystem/client/forms/resources/client.png")));
+            } catch (IOException ex) {
+                System.err.println(ex);
+            }
+            setTitle("Запуск QSystem");
+            setSize(imageIcon.getIconWidth(), imageIcon.getIconHeight());
+            imageLabel.setIcon(imageIcon);
+            imageLabel2.setIcon(imageIcon2);
+            lp.setBounds(0, 0, 400, 400);
+            lp.setOpaque(false);
+            add(lp);
+            this.getContentPane().add(imageLabel, BorderLayout.CENTER);
+            imageLabel2.setBounds(175, 165, 300, 30);
+            lp.add(imageLabel2, null);
+            timer.start();
+        }
+    }
+
+    private static class SplashRun implements Runnable {
+
+        @Override
+        public void run() {
+            final SplashScreen screen = new SplashScreen();
+            //screen.setSize(480, 360);
+            screen.setUndecorated(true);
+            screen.setResizable(false);
+            setLocation(screen);
+            screen.pack();
+            screen.setVisible(true);
+            screen.setAlwaysOnTop(true);
+        }
     }
 }

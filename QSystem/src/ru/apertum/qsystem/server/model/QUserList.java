@@ -24,12 +24,19 @@ import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.server.Spring;
 
 /**
- * Список пользователей системы Класс, управляющий пользователями системы.
- * List of System Users A class that manages the users of the system.
+ * Список пользователей системы Класс, управляющий пользователями системы. List of System Users A
+ * class that manages the users of the system.
  *
  * @author Evgeniy Egorov
  */
 public class QUserList extends ATListModel<QUser> {
+
+    private QUserList() {
+        super();
+        getItems().stream().forEach((qUser) -> {
+            qUser.setServicesCnt(qUser.getPlanServiceList().getSize());
+        });
+    }
 
     public static QUserList getInstance() {
         return QUserListHolder.INSTANCE;
@@ -38,26 +45,14 @@ public class QUserList extends ATListModel<QUser> {
     @Override
     protected LinkedList<QUser> load() {
         final LinkedList<QUser> users = new LinkedList<>(
-                Spring.getInstance().getHt().findByCriteria(
-                        DetachedCriteria.forClass(QUser.class)
-                                .add(Property.forName("deleted").isNull())
-                                .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
+            Spring.getInstance().getHt().findByCriteria(
+                DetachedCriteria.forClass(QUser.class)
+                    .add(Property.forName("deleted").isNull())
+                    .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
         users.stream().forEach((qUser) -> {
             qUser.setServicesCnt(qUser.getPlanServiceList().getSize());
         });
         return users;
-    }
-
-    private static class QUserListHolder {
-
-        private static final QUserList INSTANCE = new QUserList();
-    }
-
-    private QUserList() {
-        super();
-        getItems().stream().forEach((qUser) -> {
-            qUser.setServicesCnt(qUser.getPlanServiceList().getSize());
-        });
     }
 
     @Override
@@ -70,9 +65,14 @@ public class QUserList extends ATListModel<QUser> {
         /*
          for (QUser qUser : getItems()) {
          qUser.savePlan();
-         } 
+         }
          */
         // плансервисам нул воткнуть при уладении в юзера
         Spring.getInstance().getHt().saveOrUpdateAll(getItems());
+    }
+
+    private static class QUserListHolder {
+
+        private static final QUserList INSTANCE = new QUserList();
     }
 }

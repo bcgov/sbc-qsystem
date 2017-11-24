@@ -28,7 +28,6 @@ import javax.persistence.Table;
 import ru.apertum.qsystem.server.model.IidGetter;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 @Entity
@@ -41,6 +40,14 @@ public class QResult implements IidGetter, Serializable {
     @Expose
     @SerializedName("id")
     private Long id;
+    /**
+     * Текст результата работы клиента с пользователем The result text of the client's work with the
+     * user
+     */
+    @Column(name = "name")
+    @Expose
+    @SerializedName("name")
+    private String name;
 
     @Override
     public Long getId() {
@@ -50,14 +57,6 @@ public class QResult implements IidGetter, Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    /**
-     * Текст результата работы клиента с пользователем
-     * The result text of the client's work with the user
-     */
-    @Column(name = "name")
-    @Expose
-    @SerializedName("name")
-    private String name;
 
     @Override
     public String getName() {

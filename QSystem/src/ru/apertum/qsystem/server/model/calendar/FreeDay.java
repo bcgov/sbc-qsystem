@@ -29,11 +29,29 @@ import javax.persistence.Temporal;
 
 /**
  * Класс даты календаря в которую неоказывается услуга
+ *
  * @author Evgeniy Egorov
  */
 @Entity
 @Table(name = "calendar_out_days")
 public class FreeDay implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @Column(name = "out_day")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date date;
+    @Column(name = "calendar_id")
+    private Long calendarId;
+
+    public FreeDay() {
+    }
+
+    public FreeDay(Date date, Long calendarId) {
+        this.date = date;
+        this.calendarId = calendarId;
+    }
 
     @Override
     public String toString() {
@@ -53,19 +71,9 @@ public class FreeDay implements Serializable {
     public int hashCode() {
         final GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(date);
-        return (int) (gc.get(GregorianCalendar.YEAR) * 1000 + gc.get(GregorianCalendar.DAY_OF_YEAR) + getCalendarId() * 100000000);
+        return (int) (gc.get(GregorianCalendar.YEAR) * 1000 + gc.get(GregorianCalendar.DAY_OF_YEAR)
+            + getCalendarId() * 100000000);
     }
-
-    public FreeDay() {
-    }
-
-    public FreeDay(Date date, Long calendarId) {
-        this.date = date;
-        this.calendarId = calendarId;
-    }
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     public Long getId() {
         return id;
@@ -74,9 +82,6 @@ public class FreeDay implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    @Column(name = "out_day")
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date date;
 
     public Date getDate() {
         return date;
@@ -85,8 +90,6 @@ public class FreeDay implements Serializable {
     public void setDate(Date date) {
         this.date = date;
     }
-    @Column(name = "calendar_id")
-    private Long calendarId;
 
     public Long getCalendarId() {
         return calendarId;
@@ -101,6 +104,7 @@ public class FreeDay implements Serializable {
         gc.setTime(date);
         final GregorianCalendar gc2 = new GregorianCalendar();
         gc2.setTime(getDate());
-        return (gc.get(GregorianCalendar.DAY_OF_YEAR) == gc2.get(GregorianCalendar.DAY_OF_YEAR) && gc.get(GregorianCalendar.YEAR) == gc2.get(GregorianCalendar.YEAR));
+        return (gc.get(GregorianCalendar.DAY_OF_YEAR) == gc2.get(GregorianCalendar.DAY_OF_YEAR)
+            && gc.get(GregorianCalendar.YEAR) == gc2.get(GregorianCalendar.YEAR));
     }
 }

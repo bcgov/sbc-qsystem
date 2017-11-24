@@ -20,19 +20,21 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class JsonRPC20OK extends AJsonRPC20 {
-    
-    public JsonRPC20OK() {
-    }
-    
+
     @Expose
     @SerializedName("result")
     private int result = 1;
 
-    public void setResult(int result) {
+    public JsonRPC20OK() {
+    }
+
+    /**
+     * @param result Результат успешного выполнения отличный от 1
+     */
+    public JsonRPC20OK(int result) {
         this.result = result;
     }
 
@@ -40,12 +42,8 @@ public class JsonRPC20OK extends AJsonRPC20 {
         return result;
     }
 
-    /**
-     * 
-     * @param result Результат успешного выполнения отличный от 1 
-     */
-    public JsonRPC20OK(int result) {
+    public void setResult(int result) {
         this.result = result;
     }
-    
+
 }

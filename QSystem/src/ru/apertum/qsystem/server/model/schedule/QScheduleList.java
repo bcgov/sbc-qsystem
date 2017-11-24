@@ -24,10 +24,11 @@ import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.ATListModel;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QScheduleList extends ATListModel<QSchedule> implements ComboBoxModel {
+
+    private QSchedule selected;
 
     private QScheduleList() {
         super();
@@ -37,26 +38,25 @@ public class QScheduleList extends ATListModel<QSchedule> implements ComboBoxMod
         return QScheduleListHolder.INSTANCE;
     }
 
-    private static class QScheduleListHolder {
-
-        private static final QScheduleList INSTANCE = new QScheduleList();
-    }
-
     @Override
     protected LinkedList<QSchedule> load() {
         return new LinkedList<>(Spring.getInstance().getHt().
-                findByCriteria(DetachedCriteria.forClass(QSchedule.class).
-                        setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)));
+            findByCriteria(DetachedCriteria.forClass(QSchedule.class).
+                setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)));
     }
-    private QSchedule selected;
+
+    @Override
+    public Object getSelectedItem() {
+        return selected;
+    }
 
     @Override
     public void setSelectedItem(Object anItem) {
         selected = (QSchedule) anItem;
     }
 
-    @Override
-    public Object getSelectedItem() {
-        return selected;
+    private static class QScheduleListHolder {
+
+        private static final QScheduleList INSTANCE = new QScheduleList();
     }
 }

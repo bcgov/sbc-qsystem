@@ -18,14 +18,11 @@ package ru.apertum.qsystem.common.model;
 
 import java.util.Arrays;
 import ru.apertum.qsystem.common.Uses;
+
 /**
- * @author Evgeniy Egorov
- * Реализация преоритета очередников.
- * приоритет - целое число.
- * чем больше число, тем выше приоритет.
- * ограничения на возможный приоритет находятся в Uses.
- * по умолчанию приоритет Uses.PRIORITY_NORMAL;
- *
+ * @author Evgeniy Egorov Реализация преоритета очередников. приоритет - целое число. чем больше
+ * число, тем выше приоритет. ограничения на возможный приоритет находятся в Uses. по умолчанию
+ * приоритет Uses.PRIORITY_NORMAL;
  */
 public final class Priority implements IPriority {
 
@@ -44,8 +41,8 @@ public final class Priority implements IPriority {
     public void set(int priority) {
         if (Arrays.binarySearch(Uses.PRIORITYS, priority) == -1) {
             throw new IllegalArgumentException("Не возможно установить значение приоритета." +
-                    " Значение " + priority +
-                    " не принадлежит допустимым значениям: " + Arrays.toString(Uses.PRIORITYS));
+                " Значение " + priority +
+                " не принадлежит допустимым значениям: " + Arrays.toString(Uses.PRIORITYS));
         }
         this.priority = priority;
     }
@@ -56,12 +53,10 @@ public final class Priority implements IPriority {
     }
 
     /**
-     * сравнение двух приоритетов.
-     * приоритет - целое число, чем больше число тем выше приоритет
-     * @param priority
-     * @return 0 - приоритеты равны
-     *         1 - выше, чем приоритет в параметре 
-     *         -1 - ниже, чем приоритет в параметре
+     * сравнение двух приоритетов. приоритет - целое число, чем больше число тем выше приоритет
+     *
+     * @return 0 - приоритеты равны 1 - выше, чем приоритет в параметре -1 - ниже, чем приоритет в
+     * параметре
      */
     @Override
     public int compareTo(IPriority priority) {

@@ -23,9 +23,9 @@ import ru.apertum.qsystem.server.controller.AIndicatorBoard;
 import ru.apertum.qsystem.server.model.QOffice;
 
 /**
- * Класс для системы внешних табло Monitorium
- * Через этот класс сервер будет взаимодействовать с системой Moniturium.
- * Т.е.выдавать в эту систему всю необходимую информацию по движению бизнеспроцесса.
+ * Класс для системы внешних табло Monitorium Через этот класс сервер будет взаимодействовать с
+ * системой Moniturium. Т.е.выдавать в эту систему всю необходимую информацию по движению
+ * бизнеспроцесса.
  *
  * @author Evgeniy Egorov
  */
@@ -81,22 +81,26 @@ public class QMonitoriumBoard extends AIndicatorBoard {
 
     @Override
     public String getDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public long getUID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     protected Integer getLinesCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Object getBoardForm() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+            "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

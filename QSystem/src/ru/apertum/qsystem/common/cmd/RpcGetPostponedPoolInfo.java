@@ -22,10 +22,13 @@ import java.util.LinkedList;
 import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetPostponedPoolInfo extends JsonRPC20 {
+
+    @Expose
+    @SerializedName("result")
+    private LinkedList<QCustomer> result;
 
     public RpcGetPostponedPoolInfo() {
     }
@@ -34,15 +37,11 @@ public class RpcGetPostponedPoolInfo extends JsonRPC20 {
         this.result = result;
     }
 
-    @Expose
-    @SerializedName("result")
-    private LinkedList<QCustomer> result;
+    public LinkedList<QCustomer> getResult() {
+        return result;
+    }
 
     public void setResult(LinkedList<QCustomer> result) {
         this.result = result;
-    }
-
-    public LinkedList<QCustomer> getResult() {
-        return result;
     }
 }

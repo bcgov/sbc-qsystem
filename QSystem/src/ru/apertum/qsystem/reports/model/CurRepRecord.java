@@ -18,60 +18,11 @@ package ru.apertum.qsystem.reports.model;
 
 /**
  * Запись в отчете по текущему состоянию.
+ *
  * @author Evgeniy Egorov
  */
 public class CurRepRecord {
 
-    public CurRepRecord() {
-    }
-
-    /**
-     * В срезе юзеров
-     * @param user имя пользователя
-     * @param service название услуге
-     * @param user_worked параметр юзера
-     * @param user_killed параметр юзера
-     * @param user_average_work параметр юзера
-     * @param worked параметр услуги, в группе по юзеру
-     * @param killed параметр услуги, в группе по юзеру
-     * @param avg_time_work параметр услуги, в группе по юзеру
-     */
-    public CurRepRecord(String user, String service, int user_worked, int user_killed, long user_average_work, int worked, int killed, long avg_time_work) {
-        this.user = user;
-        this.service = service;
-        this.user_worked = user_worked;
-        this.user_killed = user_killed;
-        this.user_average_work = user_average_work;
-        this.worked = worked;
-        this.killed = killed;
-        this.avg_time_work = avg_time_work;
-    }
-
-    /**
-     * В разрезе услуг
-     * @param user имя юзера
-     * @param service название услуги
-     * @param service_worked параметр услуги
-     * @param service_killed параметр услуги
-     * @param service_average_work параметр услуги
-     * @param service_wait параметр услуги
-     * @param service_average_wait параметр услуги
-     * @param worked параметр юзера, в группе по услуге
-     * @param killed параметр юзера, в группе по услуге
-     * @param avg_time_work параметр юзера, в группе по услуге
-     */
-    public CurRepRecord(String user, String service, int service_worked, int service_killed, long service_average_work, int service_wait, long service_average_wait, int worked, int killed, long avg_time_work) {
-        this.user = user;
-        this.service = service;
-        this.service_worked = service_worked;
-        this.service_killed = service_killed;
-        this.service_average_work = service_average_work;
-        this.service_wait = service_wait;
-        this.service_average_wait = service_average_wait;
-        this.worked = worked;
-        this.killed = killed;
-        this.avg_time_work = avg_time_work;
-    }
     private String user;
     private String service;
     //
@@ -90,6 +41,62 @@ public class CurRepRecord {
     private int worked;
     private int killed;
     private long avg_time_work;
+
+    public CurRepRecord() {
+    }
+
+    /**
+     * В срезе юзеров
+     *
+     * @param user имя пользователя
+     * @param service название услуге
+     * @param user_worked параметр юзера
+     * @param user_killed параметр юзера
+     * @param user_average_work параметр юзера
+     * @param worked параметр услуги, в группе по юзеру
+     * @param killed параметр услуги, в группе по юзеру
+     * @param avg_time_work параметр услуги, в группе по юзеру
+     */
+    public CurRepRecord(String user, String service, int user_worked, int user_killed,
+        long user_average_work, int worked, int killed, long avg_time_work) {
+        this.user = user;
+        this.service = service;
+        this.user_worked = user_worked;
+        this.user_killed = user_killed;
+        this.user_average_work = user_average_work;
+        this.worked = worked;
+        this.killed = killed;
+        this.avg_time_work = avg_time_work;
+    }
+
+    /**
+     * В разрезе услуг
+     *
+     * @param user имя юзера
+     * @param service название услуги
+     * @param service_worked параметр услуги
+     * @param service_killed параметр услуги
+     * @param service_average_work параметр услуги
+     * @param service_wait параметр услуги
+     * @param service_average_wait параметр услуги
+     * @param worked параметр юзера, в группе по услуге
+     * @param killed параметр юзера, в группе по услуге
+     * @param avg_time_work параметр юзера, в группе по услуге
+     */
+    public CurRepRecord(String user, String service, int service_worked, int service_killed,
+        long service_average_work, int service_wait, long service_average_wait, int worked,
+        int killed, long avg_time_work) {
+        this.user = user;
+        this.service = service;
+        this.service_worked = service_worked;
+        this.service_killed = service_killed;
+        this.service_average_work = service_average_work;
+        this.service_wait = service_wait;
+        this.service_average_wait = service_average_wait;
+        this.worked = worked;
+        this.killed = killed;
+        this.avg_time_work = avg_time_work;
+    }
 
     public long getAvg_time_work() {
         return avg_time_work;
