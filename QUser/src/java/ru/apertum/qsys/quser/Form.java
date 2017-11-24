@@ -235,7 +235,7 @@ public class Form{
         this.user = user;
     }
 
-public LinkedList<QService> getPreviousList(){
+    public LinkedList<QService> getPreviousList(){
         return this.PreviousList;
     }
 
@@ -1149,7 +1149,7 @@ public LinkedList<QService> getPreviousList(){
     }
 
     private List<QService> filterServicesByUser(List<QService> services) {
-        LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
+         LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
 
         if (this.user != null && this.user.getUser() != null) {
             List<QPlanService> officePlanServices = user.getUser().getPlanServices();
@@ -1227,9 +1227,6 @@ public LinkedList<QService> getPreviousList(){
                     .stream()
                     .filter((QService service) -> service.getParentId()!=null && (service.getParent().getName().toLowerCase().contains(event.getValue().toLowerCase()))  && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
-//                    QLog.l().logQUser().debug("IN CHANGING The getvalue() returns : \n" + event.getValue().toLowerCase());
-//                    QLog.l().logQUser().debug("IN CHANGING The getvalue() returns : \n" + requiredServices);
-
         } else {
             QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
             requiredServices = allServices
@@ -1285,14 +1282,21 @@ public LinkedList<QService> getPreviousList(){
     }
     
     public List<QService> getCategories() {
-        LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
-
-         List<QService> requiredServices = allServices
+        List<Long> userServiceParentIds = getAllListServices()
                 .stream()
-                .filter(service -> service.getParentId()!=null && service.getParentId().equals(1L))
+                .map(QService::getParentId)
                 .collect(Collectors.toList());
 
-         return filterServicesByUser(requiredServices);
+        LinkedList<QService> allServices =  QServiceTree.getInstance().getNodes();
+
+        List<QService> categories = allServices
+                .stream()
+                .filter((QService service) -> service.getParentId()!= null
+                        && service.getParentId().equals(1L)
+                        && userServiceParentIds.contains(service.getId()))
+                .collect(Collectors.toList());
+
+         return categories;
     }
     
     @Command
