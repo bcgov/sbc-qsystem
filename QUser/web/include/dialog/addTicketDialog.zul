@@ -11,7 +11,6 @@
             action="show: slideDown;hide: slideUp">
         <caption label="QSystem" image="/resources/img/logo32.png" />
         <div style="margin:10px 10px 10px 10px;">
-            <label value="@load(fmodel.getOfficeType())"/>
         	<zk if="${fmodel.getCFMSType()}">
 
 	            <vlayout>
