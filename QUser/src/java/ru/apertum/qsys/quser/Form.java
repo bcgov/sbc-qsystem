@@ -770,7 +770,7 @@ public class Form {
     public void addNextService() {
         //Save the customer to the DB before adding a service, so the service_quantity persists
         customer.save();
-        
+
         addWindowButtons[0] = false;
         addWindowButtons[1] = false;
         addWindowButtons[2] = true;
