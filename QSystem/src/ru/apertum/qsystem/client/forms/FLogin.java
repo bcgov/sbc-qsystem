@@ -16,6 +16,22 @@
  */
 package ru.apertum.qsystem.client.forms;
 
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Scanner;
+import javax.imageio.ImageIO;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
@@ -31,23 +47,17 @@ import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.QUserList;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Scanner;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class FLogin extends javax.swing.JDialog {
 
+    /**
+     * Уровни логирования
+     */
+    public static final int LEVEL_USER = 1;
+    public static final int LEVEL_REPORT = 2;
+    public static final int LEVEL_ADMIN = 3;
     /**
      * Результат
      */
@@ -57,6 +67,17 @@ public class FLogin extends javax.swing.JDialog {
      */
     private static int count = 0;
     private static int was = 0;
+    private static ResourceMap localeMap = null;
+    /**
+     * Надпись о доступе
+     */
+    private static final String LABEL_USER = " " + getLocaleMessage("messages.access.work");
+    private static final String LABEL_REPORT = " " + getLocaleMessage("messages.access.report");
+    private static final String LABEL_ADMIN = " " + getLocaleMessage("messages.access.admin");
+    /**
+     * Используемая ссылка на диалоговое окно.
+     */
+    private static FLogin loginForm;
     /**
      * Параметры соединения.
      */
@@ -64,15 +85,157 @@ public class FLogin extends javax.swing.JDialog {
     private QUserList userList;
     private JFrame parent;
     /**
-     * Уровни логирования
-     */
-    public static final int LEVEL_USER = 1;
-    public static final int LEVEL_REPORT = 2;
-    public static final int LEVEL_ADMIN = 3;
-    /**
      * текущий уровень доступа для диалога
      */
     private int level = LEVEL_USER;
+    private QUser fastUser = null;
+    private IGetUser userGetter;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonEnter;
+    private javax.swing.JButton buttonExit;
+    private javax.swing.JComboBox comboBoxUser;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JLabel labelLabel;
+    private javax.swing.JLabel labelLavel;
+    private javax.swing.JLabel labelName;
+    private javax.swing.JLabel labelServer;
+    private javax.swing.JPasswordField passwordField;
+    private ru.apertum.qsystem.client.model.QPanel qPanel1;
+
+    /**
+     * Creates new form FLogin
+     */
+    public FLogin(INetProperty netProperty, JFrame parent, boolean modal, int level) {
+        super(parent, modal);
+        initComponents();
+        init(null, netProperty, parent, modal, level);
+    }
+
+    /**
+     * Creates new form FLogin
+     */
+    public FLogin(QUserList userList, JFrame parent, boolean modal, int level) {
+        super(parent, modal);
+        initComponents();
+        init(userList, null, parent, modal, level);
+    }
+
+    private static String getLocaleMessage(String key) {
+        if (localeMap == null) {
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(FLogin.class);
+        }
+        return localeMap.getString(key);
+    }
+
+    /**
+     * Logging without a previously created user list. This list is determined by sending a job to
+     * the server.
+     *
+     * @param netProperty connection properties
+     * @param owner regarding this control modality and positioning
+     * @param modal mode of modality
+     * @param count the number of failed attempts, if 0 then infinitely
+     * @param level Access level, see LEVEL_USER, LEVEL_REPORT, LEVEL_ADMIN
+     * @return logged in user.
+     */
+    public static QUser logining(INetProperty netProperty, JFrame owner, boolean modal, int count,
+        int level) {
+        QLog.l().logger().info("Login to the system.");
+        if (loginForm == null) {
+            loginForm = new FLogin(netProperty, owner, modal, level);
+        } else if (loginForm.netProperty != netProperty || loginForm.parent != owner
+            || loginForm.getLevel() != level) {
+            loginForm = new FLogin(netProperty, owner, modal, level);
+        }
+        FLogin.count = count;
+        if (owner == null) {
+            // Отцентирируем
+            final Toolkit kit = Toolkit.getDefaultToolkit();
+            loginForm.setLocationRelativeTo(null);
+            //loginForm.setLocation((Math.round(kit.getScreenSize().width - loginForm.getWidth()) / 2),
+            //        (Math.round(kit.getScreenSize().height - loginForm.getHeight()) / 2));
+        }
+        Uses.closeSplash();
+        if (!ok) {
+            loginForm.setVisible(true);
+        }
+        if (!ok) {
+            System.exit(0);
+        }
+        final QUser user = loginForm.fastUser != null ? loginForm.fastUser
+            : (QUser) loginForm.comboBoxUser.getSelectedItem();
+        QLog.l().logger().info(
+            "Login to the system is completed. User \"" + user + "\", access level \"" + level
+                + "\".");
+        final File f = new File("temp/lusr");
+        try {
+            try (FileOutputStream fos = new FileOutputStream(f)) {
+                fos.write(user.getId().toString().getBytes());
+                fos.flush();
+            }
+        } catch (IOException ex) {
+        }
+        return user;
+    }
+
+    /**
+     * Logging with a ready-made list of possible users for logging.
+     *
+     * @param userList a list of users
+     * @param owner Regarding this, modality and positioning
+     * @param modal Mode of modality
+     * @param count The number of failed attempts, if 0 is infinite
+     * @param level Access level, see LEVEL_USER, LEVEL_REPORT, LEVEL_ADMIN
+     * @return Logged user.
+     */
+    public static QUser logining(QUserList userList, JFrame owner, boolean modal, int count,
+        int level) {
+        QLog.l().logger().info("Login to the system.");
+        if (loginForm == null) {
+            loginForm = new FLogin(userList, owner, modal, level);
+        } else if (loginForm.userList != userList || loginForm.parent != owner
+            || loginForm.getLevel() != level) {
+            loginForm = new FLogin(userList, owner, modal, level);
+        }
+        FLogin.count = count;
+        if (owner == null) {
+            // Отцентирируем
+            final Toolkit kit = Toolkit.getDefaultToolkit();
+            loginForm.setLocationRelativeTo(null);
+            //loginForm.setLocation((Math.round(kit.getScreenSize().width - loginForm.getWidth()) / 2),
+            //        (Math.round(kit.getScreenSize().height - loginForm.getHeight()) / 2));
+        }
+        Uses.closeSplash();
+        if (!ok) {
+            loginForm.setVisible(true);
+        }
+        if (!ok) {
+            System.exit(0);
+        }
+        final QUser user = loginForm.fastUser != null ? loginForm.fastUser
+            : (QUser) loginForm.comboBoxUser.getSelectedItem();
+        QLog.l().logger().info(
+            "Login to the system is completed. User \"" + user + "\", access level \"" + level
+                + "\".");
+        final File f = new File("temp/lusr");
+        try {
+            try (FileOutputStream fos = new FileOutputStream(f)) {
+                fos.write(user.getId().toString().getBytes());
+                fos.flush();
+            }
+        } catch (IOException ex) {
+        }
+        return user;
+    }
 
     final public int getLevel() {
         return level;
@@ -90,7 +253,9 @@ public class FLogin extends javax.swing.JDialog {
                 labelLavel.setText(LABEL_REPORT);
                 break;
             case LEVEL_ADMIN:
-                final AnnotationSessionFactoryBean as = (AnnotationSessionFactoryBean) Spring.getInstance().getFactory().getBean("conf");
+                final AnnotationSessionFactoryBean as = (AnnotationSessionFactoryBean) Spring
+                    .getInstance()
+                    .getFactory().getBean("conf");
                 if (as.getServers().size() > 1) {
                     labelServer.setText("<html>" + as.getName() + "<br>" + as.getUrl());
                 }
@@ -100,67 +265,16 @@ public class FLogin extends javax.swing.JDialog {
                 labelLavel.setText(LABEL_USER);
         }
     }
-    private static ResourceMap localeMap = null;
-
-    private static String getLocaleMessage(String key) {
-        if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(FLogin.class);
-        }
-        return localeMap.getString(key);
-    }
-    /**
-     * Надпись о доступе
-     */
-    private static final String LABEL_USER = " " + getLocaleMessage("messages.access.work");
-    private static final String LABEL_REPORT = " " + getLocaleMessage("messages.access.report");
-    private static final String LABEL_ADMIN = " " + getLocaleMessage("messages.access.admin");
-    /**
-     * Используемая ссылка на диалоговое окно.
-     */
-    private static FLogin loginForm;
-
-    /**
-     * Creates new form FLogin
-     *
-     * @param netProperty
-     * @param parent
-     * @param modal
-     * @param level
-     */
-    public FLogin(INetProperty netProperty, JFrame parent, boolean modal, int level) {
-        super(parent, modal);
-        initComponents();
-        init(null, netProperty, parent, modal, level);
-    }
-
-    /**
-     * Creates new form FLogin
-     *
-     * @param userList
-     * @param parent
-     * @param modal
-     * @param level
-     */
-    public FLogin(QUserList userList, JFrame parent, boolean modal, int level) {
-        super(parent, modal);
-        initComponents();
-        init(userList, null, parent, modal, level);
-    }
-
-    private QUser fastUser = null;
 
     /**
      * Тут надо четко понимать, что либо userList не NULL, либо netProperty не NULL
-     *
-     * @param userList
-     * @param netProperty
-     * @param parent
-     * @param modal
-     * @param level
      */
-    private void init(QUserList userList, INetProperty netProperty, JFrame parent, boolean modal, int level) {
+    private void init(QUserList userList, INetProperty netProperty, JFrame parent, boolean modal,
+        int level) {
         try {
-            setIconImage(ImageIO.read(FLogin.class.getResource("/ru/apertum/qsystem/client/forms/resources/client.png")));
+            setIconImage(ImageIO
+                .read(FLogin.class
+                    .getResource("/ru/apertum/qsystem/client/forms/resources/client.png")));
         } catch (IOException ex) {
             System.err.println(ex);
         }
@@ -172,7 +286,8 @@ public class FLogin extends javax.swing.JDialog {
         this.userGetter = new GetUserFromServer();
         setLevel(level);
 
-        final LinkedList<QUser> users = netProperty != null ? NetCommander.getUsers(netProperty) : userList.getItems();
+        final LinkedList<QUser> users =
+            netProperty != null ? NetCommander.getUsers(netProperty) : userList.getItems();
 
         ArrayList<QUser> users_ = new ArrayList<>();
         for (QUser user : users) {
@@ -219,7 +334,8 @@ public class FLogin extends javax.swing.JDialog {
         final File f = new File("temp/lusr");
         if (f.exists()) {
             String str = "";
-            try (FileInputStream fis = new FileInputStream(f); Scanner s = new Scanner(new InputStreamReader(fis, "UTF-8"))) {
+            try (FileInputStream fis = new FileInputStream(f); Scanner s = new Scanner(
+                new InputStreamReader(fis, "UTF-8"))) {
                 while (s.hasNextLine()) {
                     final String line = s.nextLine().trim();
                     str += line;
@@ -236,7 +352,9 @@ public class FLogin extends javax.swing.JDialog {
             }
         }
         //привязка помощи к форме.
-        final Helper helper = Helper.getHelp(level == LEVEL_ADMIN ? "ru/apertum/qsystem/client/help/admin.hs" : "ru/apertum/qsystem/client/help/client.hs");
+        final Helper helper = Helper.getHelp(
+            level == LEVEL_ADMIN ? "ru/apertum/qsystem/client/help/admin.hs"
+                : "ru/apertum/qsystem/client/help/client.hs");
         helper.enableHelpKey(qPanel1, "loginning");
         addWindowListener(new WindowAdapter() {
 
@@ -248,133 +366,20 @@ public class FLogin extends javax.swing.JDialog {
         });
     }
 
-    /**
-     * Logging without a previously created user list. This list is determined by sending a job to the server.
-     *
-      * @param netProperty connection properties
-      * @param owner regarding this control modality and positioning
-      * @param modal mode of modality
-      * @param count the number of failed attempts, if 0 then infinitely
-      * @param level Access level, see LEVEL_USER, LEVEL_REPORT, LEVEL_ADMIN
-      * @return logged in user.
-     */
-    public static QUser logining(INetProperty netProperty, JFrame owner, boolean modal, int count, int level) {
-        QLog.l().logger().info("Login to the system.");
-        if (loginForm == null) {
-            loginForm = new FLogin(netProperty, owner, modal, level);
-        } else if (loginForm.netProperty != netProperty || loginForm.parent != owner || loginForm.getLevel() != level) {
-            loginForm = new FLogin(netProperty, owner, modal, level);
-        }
-        FLogin.count = count;
-        if (owner == null) {
-            // Отцентирируем
-            final Toolkit kit = Toolkit.getDefaultToolkit();
-            loginForm.setLocationRelativeTo(null);
-            //loginForm.setLocation((Math.round(kit.getScreenSize().width - loginForm.getWidth()) / 2),
-            //        (Math.round(kit.getScreenSize().height - loginForm.getHeight()) / 2));
-        }
-        Uses.closeSplash();
-        if (!ok) {
-            loginForm.setVisible(true);
-        }
-        if (!ok) {
-            System.exit(0);
-        }
-        final QUser user = loginForm.fastUser != null ? loginForm.fastUser : (QUser) loginForm.comboBoxUser.getSelectedItem(); 
-        QLog.l().logger().info("Login to the system is completed. User \"" + user + "\", access level \"" + level + "\".");
-        final File f = new File("temp/lusr");
-        try {
-            try (FileOutputStream fos = new FileOutputStream(f)) {
-                fos.write(user.getId().toString().getBytes());
-                fos.flush();
-            }
-        } catch (IOException ex) {
-        }
-        return user;
-    }
-
-    /**
-     * Logging with a ready-made list of possible users for logging.
-     *
-     * @param userList a list of users
-      * @param owner Regarding this, modality and positioning
-      * @param modal Mode of modality
-      * @param count The number of failed attempts, if 0 is infinite
-      * @param level Access level, see LEVEL_USER, LEVEL_REPORT, LEVEL_ADMIN
-      * @return Logged user.
-     */
-    public static QUser logining(QUserList userList, JFrame owner, boolean modal, int count, int level) {
-        QLog.l().logger().info("Login to the system.");
-        if (loginForm == null) {
-            loginForm = new FLogin(userList, owner, modal, level);
-        } else if (loginForm.userList != userList || loginForm.parent != owner || loginForm.getLevel() != level) {
-            loginForm = new FLogin(userList, owner, modal, level);
-        }
-        FLogin.count = count;
-        if (owner == null) {
-            // Отцентирируем
-            final Toolkit kit = Toolkit.getDefaultToolkit();
-            loginForm.setLocationRelativeTo(null);
-            //loginForm.setLocation((Math.round(kit.getScreenSize().width - loginForm.getWidth()) / 2),
-            //        (Math.round(kit.getScreenSize().height - loginForm.getHeight()) / 2));
-        }
-        Uses.closeSplash();
-        if (!ok) {
-            loginForm.setVisible(true);
-        }
-        if (!ok) {
-            System.exit(0);
-        }
-        final QUser user = loginForm.fastUser != null ? loginForm.fastUser : (QUser) loginForm.comboBoxUser.getSelectedItem();
-        QLog.l().logger().info("Login to the system is completed. User \"" + user + "\", access level \"" + level + "\".");
-        final File f = new File("temp/lusr");
-        try {
-            try (FileOutputStream fos = new FileOutputStream(f)) {
-                fos.write(user.getId().toString().getBytes());
-                fos.flush();
-            }
-        } catch (IOException ex) {
-        }
-        return user;
-    }
-
-    /**
-     * Получить выбранного юзера по его имени для разных случаев.
-     */
-    private interface IGetUser {
-
-        public QUser getUser();
-    }
-    private IGetUser userGetter;
-
-    private class GetUserFromServer implements IGetUser {
-
-        @Override
-        public QUser getUser() {
-            return fastUser != null ? fastUser : (QUser) comboBoxUser.getSelectedItem();
-        }
-    }
-
-    private class GetUserFromList implements IGetUser {
-
-        @Override
-        public QUser getUser() {
-            return fastUser != null ? fastUser : (QUser) comboBoxUser.getSelectedItem();
-        }
-    }
-
     private boolean checkLogin() {
         final QUser user = userGetter.getUser();
         switch (getLevel()) {
             case LEVEL_ADMIN:
                 if (!user.getAdminAccess()) {
-                    JOptionPane.showMessageDialog(this, getLocaleMessage("messages.noAccess.mess"), getLocaleMessage("messages.noAccess.caption"), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, getLocaleMessage("messages.noAccess.mess"),
+                        getLocaleMessage("messages.noAccess.caption"), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 break;
             case LEVEL_REPORT:
                 if (!user.getReportAccess()) {
-                    JOptionPane.showMessageDialog(this, getLocaleMessage("messages.noAccess.mess"), getLocaleMessage("messages.noAccess.caption"), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, getLocaleMessage("messages.noAccess.mess"),
+                        getLocaleMessage("messages.noAccess.caption"), JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 break;
@@ -387,7 +392,8 @@ public class FLogin extends javax.swing.JDialog {
 
         final String userPass = user.getPassword();
         if (!userPass.equals(new String(passwordField.getPassword()))) {
-            JOptionPane.showMessageDialog(this, getLocaleMessage("messages.noAccessUser.mess"), getLocaleMessage("messages.noAccess.caption"), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, getLocaleMessage("messages.noAccessUser.mess"),
+                getLocaleMessage("messages.noAccess.caption"), JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -420,8 +426,8 @@ public class FLogin extends javax.swing.JDialog {
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -485,7 +491,9 @@ public class FLogin extends javax.swing.JDialog {
             }
         });
 
-        comboBoxUser.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboBoxUser.setModel(
+            new javax.swing.DefaultComboBoxModel(
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
         comboBoxUser.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 comboBoxUserKeyPressed(evt);
@@ -503,7 +511,9 @@ public class FLogin extends javax.swing.JDialog {
 
         jLabel2.setText("Password");
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ru/apertum/qsystem/client/forms/resources/key02.png"))); // NOI18N
+        jLabel3.setIcon(new javax.swing.ImageIcon(
+            getClass()
+                .getResource("/ru/apertum/qsystem/client/forms/resources/key02.png"))); // NOI18N
 
         labelName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         labelName.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -517,11 +527,11 @@ public class FLogin extends javax.swing.JDialog {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1, Short.MAX_VALUE)
+                .addGap(0, 1, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 108, Short.MAX_VALUE)
+                .addGap(0, 108, Short.MAX_VALUE)
         );
 
         jPanel3.setBorder(new javax.swing.border.MatteBorder(null));
@@ -531,11 +541,11 @@ public class FLogin extends javax.swing.JDialog {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 23, Short.MAX_VALUE)
+                .addGap(0, 23, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
         );
 
         jPanel4.setBorder(new javax.swing.border.MatteBorder(null));
@@ -546,11 +556,11 @@ public class FLogin extends javax.swing.JDialog {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 20, Short.MAX_VALUE)
+                .addGap(0, 20, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 21, Short.MAX_VALUE)
+                .addGap(0, 21, Short.MAX_VALUE)
         );
 
         jPanel5.setBorder(new javax.swing.border.MatteBorder(null));
@@ -561,11 +571,11 @@ public class FLogin extends javax.swing.JDialog {
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 48, Short.MAX_VALUE)
+                .addGap(0, 48, Short.MAX_VALUE)
         );
 
         jPanel6.setBorder(new javax.swing.border.MatteBorder(null));
@@ -575,11 +585,11 @@ public class FLogin extends javax.swing.JDialog {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 28, Short.MAX_VALUE)
+                .addGap(0, 28, Short.MAX_VALUE)
         );
 
         jPanel7.setBorder(new javax.swing.border.MatteBorder(null));
@@ -589,139 +599,229 @@ public class FLogin extends javax.swing.JDialog {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 88, Short.MAX_VALUE)
+                .addGap(0, 88, Short.MAX_VALUE)
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
+                .addGap(0, 35, Short.MAX_VALUE)
         );
 
-        labelLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ru/apertum/qsystem/client/forms/resources/label.png"))); // NOI18N
+        labelLabel.setIcon(new javax.swing.ImageIcon(
+            getClass()
+                .getResource("/ru/apertum/qsystem/client/forms/resources/label.png"))); // NOI18N
 
         javax.swing.GroupLayout qPanel1Layout = new javax.swing.GroupLayout(qPanel1);
         qPanel1.setLayout(qPanel1Layout);
         qPanel1Layout.setHorizontalGroup(
             qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(qPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(labelName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(qPanel1Layout.createSequentialGroup()
-                .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(qPanel1Layout.createSequentialGroup()
-                        .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, qPanel1Layout.createSequentialGroup()
-                                .addContainerGap(96, Short.MAX_VALUE)
-                                .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, qPanel1Layout.createSequentialGroup()
-                                        .addComponent(buttonEnter, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(buttonExit, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, qPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
-                                            .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, qPanel1Layout.createSequentialGroup()
-                                                .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                    .addComponent(jLabel1)
-                                                    .addComponent(jLabel2))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addComponent(passwordField, javax.swing.GroupLayout.Alignment.TRAILING)
-                                                    .addComponent(comboBoxUser, javax.swing.GroupLayout.Alignment.TRAILING, 0, 185, Short.MAX_VALUE)))))))
+                .addGroup(qPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(labelLabel)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(labelName, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 3,
+                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(qPanel1Layout.createSequentialGroup()
+                    .addGroup(
+                        qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(qPanel1Layout.createSequentialGroup()
-                                .addComponent(labelLavel)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(qPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(labelServer)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(qPanel1Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                        qPanel1Layout.createSequentialGroup()
+                                            .addContainerGap(96, Short.MAX_VALUE)
+                                            .addGroup(qPanel1Layout.createParallelGroup(
+                                                javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(
+                                                    javax.swing.GroupLayout.Alignment.TRAILING,
+                                                    qPanel1Layout.createSequentialGroup()
+                                                        .addComponent(buttonEnter,
+                                                            javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                            100,
+                                                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addPreferredGap(
+                                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(jPanel4,
+                                                            javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                            22,
+                                                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addPreferredGap(
+                                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(buttonExit,
+                                                            javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                            100,
+                                                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addPreferredGap(
+                                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(jPanel7,
+                                                            javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                            javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(
+                                                    javax.swing.GroupLayout.Alignment.TRAILING,
+                                                    qPanel1Layout.createSequentialGroup()
+                                                        .addComponent(jLabel3)
+                                                        .addPreferredGap(
+                                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addGroup(qPanel1Layout.createParallelGroup(
+                                                            javax.swing.GroupLayout.Alignment.LEADING,
+                                                            false)
+                                                            .addComponent(jPanel5,
+                                                                javax.swing.GroupLayout.Alignment.TRAILING,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                235, Short.MAX_VALUE)
+                                                            .addComponent(jPanel6,
+                                                                javax.swing.GroupLayout.Alignment.TRAILING,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                                Short.MAX_VALUE)
+                                                            .addGroup(
+                                                                javax.swing.GroupLayout.Alignment.TRAILING,
+                                                                qPanel1Layout
+                                                                    .createSequentialGroup()
+                                                                    .addGroup(qPanel1Layout
+                                                                        .createParallelGroup(
+                                                                            javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                        .addComponent(jLabel1)
+                                                                        .addComponent(jLabel2))
+                                                                    .addPreferredGap(
+                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                    .addGroup(qPanel1Layout
+                                                                        .createParallelGroup(
+                                                                            javax.swing.GroupLayout.Alignment.LEADING,
+                                                                            false)
+                                                                        .addComponent(passwordField,
+                                                                            javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                        .addComponent(comboBoxUser,
+                                                                            javax.swing.GroupLayout.Alignment.TRAILING,
+                                                                            0, 185,
+                                                                            Short.MAX_VALUE)))))))
+                                    .addGroup(qPanel1Layout.createSequentialGroup()
+                                        .addComponent(labelLavel)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addPreferredGap(
+                                    javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(qPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(labelServer)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         qPanel1Layout.setVerticalGroup(
             qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(qPanel1Layout.createSequentialGroup()
-                .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelName)
-                    .addGroup(qPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(labelLabel)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(qPanel1Layout.createSequentialGroup()
-                        .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(qPanel1Layout.createSequentialGroup()
+                    .addGroup(
+                        qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 110,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelName)
                             .addGroup(qPanel1Layout.createSequentialGroup()
-                                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap()
+                                .addComponent(labelLabel)))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(qPanel1Layout.createSequentialGroup()
+                                .addGroup(qPanel1Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(qPanel1Layout.createSequentialGroup()
+                                        .addComponent(jPanel6,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE,
+                                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(
+                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(qPanel1Layout.createParallelGroup(
+                                            javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(comboBoxUser,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel1))
+                                        .addPreferredGap(
+                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(qPanel1Layout.createParallelGroup(
+                                            javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(passwordField,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel2))
+                                        .addGap(11, 11, 11)
+                                        .addComponent(jPanel5,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE,
+                                            50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel3))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(comboBoxUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel1))
+                                .addGroup(qPanel1Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(buttonExit)
+                                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        23,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(buttonEnter))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                    36,
+                                    Short.MAX_VALUE)
+                                .addComponent(labelServer)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2))
-                                .addGap(11, 11, 11)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buttonExit)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buttonEnter))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-                        .addComponent(labelServer)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(labelLavel))))
+                                .addComponent(labelLavel))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(qPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(qPanel1, javax.swing.GroupLayout.Alignment.TRAILING,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buttonEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEnterActionPerformed
+    private void buttonEnterActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEnterActionPerformed
         pressOK();
     }//GEN-LAST:event_buttonEnterActionPerformed
 
-    private void buttonExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExitActionPerformed
+    private void buttonExitActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExitActionPerformed
         pressCancel();
     }//GEN-LAST:event_buttonExitActionPerformed
 
-    private void comboBoxUserKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_comboBoxUserKeyPressed
+    private void comboBoxUserKeyPressed(
+        java.awt.event.KeyEvent evt) {//GEN-FIRST:event_comboBoxUserKeyPressed
         keyPress(evt);
     }//GEN-LAST:event_comboBoxUserKeyPressed
 
-    private void passwordFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordFieldKeyPressed
+    private void passwordFieldKeyPressed(
+        java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordFieldKeyPressed
         keyPress(evt);
     }//GEN-LAST:event_passwordFieldKeyPressed
 
-    private void buttonEnterKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buttonEnterKeyPressed
+    private void buttonEnterKeyPressed(
+        java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buttonEnterKeyPressed
         keyPress(evt);
     }//GEN-LAST:event_buttonEnterKeyPressed
 
-    private void buttonExitKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buttonExitKeyPressed
+    private void buttonExitKeyPressed(
+        java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buttonExitKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             pressCancel();
         }
@@ -730,25 +830,28 @@ public class FLogin extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_buttonExitKeyPressed
 
+    /**
+     * Получить выбранного юзера по его имени для разных случаев.
+     */
+    private interface IGetUser {
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonEnter;
-    private javax.swing.JButton buttonExit;
-    private javax.swing.JComboBox comboBoxUser;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JLabel labelLabel;
-    private javax.swing.JLabel labelLavel;
-    private javax.swing.JLabel labelName;
-    private javax.swing.JLabel labelServer;
-    private javax.swing.JPasswordField passwordField;
-    private ru.apertum.qsystem.client.model.QPanel qPanel1;
+        public QUser getUser();
+    }
+
+    private class GetUserFromServer implements IGetUser {
+
+        @Override
+        public QUser getUser() {
+            return fastUser != null ? fastUser : (QUser) comboBoxUser.getSelectedItem();
+        }
+    }
+
+    private class GetUserFromList implements IGetUser {
+
+        @Override
+        public QUser getUser() {
+            return fastUser != null ? fastUser : (QUser) comboBoxUser.getSelectedItem();
+        }
+    }
     // End of variables declaration//GEN-END:variables
 }

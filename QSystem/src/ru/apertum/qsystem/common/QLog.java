@@ -16,6 +16,7 @@
  */
 package ru.apertum.qsystem.common;
 
+import java.util.Enumeration;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
@@ -23,33 +24,22 @@ import org.apache.log4j.Logger;
 import ru.apertum.qsystem.About;
 import ru.apertum.qsystem.server.ServerProps;
 
-import java.util.Enumeration;
-
 /**
- * Собственно, логер лог4Ж Это синглтон. Тут в место getInstance() для короткого написания используется l()
+ * Собственно, логер лог4Ж Это синглтон. Тут в место getInstance() для короткого написания
+ * используется l()
  *
  * @author Evgeniy Egorov
  */
 public class QLog {
 
+    public static int loggerType = 0; // 0-сервер,1-клиент,2-приемная,3-админка,4-киоск
     private Logger logger = Logger.getLogger("server.file");//**.file.info.trace
-
-    public Logger logger() {
-        return logger;
-    }
     /**
      * Пользуемся этой константой для работы с логом для отчетов
      */
     private Logger logRep = Logger.getLogger("reports.file");
-    private Logger logQUser = QConfig.cfg().isServer() ? Logger.getLogger("quser.file") : Logger.getLogger("reports.file.info.trace");
-
-    public Logger logRep() {
-        return logRep;
-    }
-
-    public Logger logQUser() {
-        return logQUser;
-    }
+    private Logger logQUser = QConfig.cfg().isServer() ? Logger.getLogger("quser.file")
+        : Logger.getLogger("reports.file.info.trace");
 
     private QLog() {
         //бежим по параметрам, смотрим, выполняем что надо
@@ -142,7 +132,7 @@ public class QLog {
             }
         }
 
-        // ключ, отвечающий за паузу на старте. 
+        // ключ, отвечающий за паузу на старте.
         if (QConfig.cfg().getDelay() > 0) {
             try {
                 Thread.sleep(QConfig.cfg().getDelay() * 1000);
@@ -165,13 +155,9 @@ public class QLog {
     public static QLog l() {
         return LogerHolder.INSTANCE;
     }
-    public static int loggerType = 0; // 0-сервер,1-клиент,2-приемная,3-админка,4-киоск
 
     /**
-     *
-     * @param args
      * @param type 0-сервер,1-клиент,2-приемная,3-админка,4-киоск,5-сервер хардварных кнопок
-     * @return
      */
     public static QLog initial(String[] args, int type) {
         loggerType = type;
@@ -182,15 +168,29 @@ public class QLog {
         QLog.l().logger.info("START LOGER. Logger: " + QLog.l().logger().getName());
         if (QConfig.cfg().isServer()) {
             QLog.l().logger.info("Version DB=" + ServerProps.getInstance().getProps().getVersion());
-            QLog.l().logRep.info("START LOGGER for reports. Logger: " + QLog.l().logRep().getName());
+            QLog.l().logRep
+                .info("START LOGGER for reports. Logger: " + QLog.l().logRep().getName());
         }
-        QLog.l().logger.info("Mode: " + (QConfig.cfg().isDebug() ? "KEY_DEBUG" : (QConfig.cfg().isDemo() ? "KEY_DEMO" : "FULL")));
+        QLog.l().logger.info("Mode: " + (QConfig.cfg().isDebug() ? "KEY_DEBUG"
+            : (QConfig.cfg().isDemo() ? "KEY_DEMO" : "FULL")));
         QLog.l().logger.info("Plugins: " + (QConfig.cfg().isNoPlugins() ? "NO" : "YES"));
         if (QConfig.cfg().isUbtnStart()) {
             QLog.l().logger.info("Auto start: YES");
         }
 
         return log;
+    }
+
+    public Logger logger() {
+        return logger;
+    }
+
+    public Logger logRep() {
+        return logRep;
+    }
+
+    public Logger logQUser() {
+        return logQUser;
     }
 
     private static class LogerHolder {

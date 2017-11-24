@@ -29,27 +29,30 @@ public interface ITask extends IExtra {
 
     /**
      * Выполнение команды :: Executing the command
+     *
      * @param cmdParams входные параметры :: input parameters
      * @param ipAdress источник команды :: Team source
      * @param IP источник команды :: Team Source
-     * @return результат выполнения команды, соблюдать протокол jsonRPC2.0 :: Result of the command, follow the protocol jsonRPC2.0
+     * @return результат выполнения команды, соблюдать протокол jsonRPC2.0 :: Result of the command,
+     * follow the protocol jsonRPC2.0
      */
     public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP);
 
     /**
      * Выполнение команды :: Executing the command
+     *
      * @param cmdParams входные параметры :: input parameters
      * @param ipAdress источник команды :: Team source
      * @param IP источник команды :: Team Source
      * @param customer Customer for whicch we need to start the service
-     * @return результат выполнения команды, соблюдать протокол jsonRPC2.0 :: Result of the command, follow the protocol jsonRPC2.0
+     * @return результат выполнения команды, соблюдать протокол jsonRPC2.0 :: Result of the command,
+     * follow the protocol jsonRPC2.0
      */
     public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer customer);
-    
+
     /**
-     * Уникальное имя команды, по которому ищется исполнитель
-     * The unique name of the team that the artist is looking for
-     * @return
+     * Уникальное имя команды, по которому ищется исполнитель The unique name of the team that the
+     * artist is looking for
      */
     public String getName();
 }

@@ -25,10 +25,11 @@ import ru.evgenic.rxtx.serialPort.ISerialPort;
 
 /**
  * Абстрактный класс для обеспечения взаимодействия гирлянды табло с СОМ-портом
+ *
  * @author Evgeniy Egorov
  */
 public abstract class AIndicatorBoardRS extends AIndicatorBoard {
-    
+
     /**
      * COM порт через который будем работать с герляндой.
      */
@@ -40,6 +41,7 @@ public abstract class AIndicatorBoardRS extends AIndicatorBoard {
 
     /**
      * Так через Spring мы установим объект работы с COM портом.
+     *
      * @param serialPort этот рапаметр определяется в Spring
      */
     public void setComPort(ISerialPort serialPort) {

@@ -16,20 +16,22 @@
  */
 package ru.apertum.qsystem.server.model;
 
+import java.util.LinkedList;
+import javax.swing.AbstractListModel;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.controller.ServerEvents;
 
-import javax.swing.*;
-import java.util.LinkedList;
-
 /**
- *
- * @param <T>
  * @author Evgeniy Egorov
  */
-public abstract class ATListModel<T extends IidGetter> extends AbstractListModel/*DefaultListModel*/ {
+public abstract class ATListModel<T extends IidGetter> extends
+    AbstractListModel/*DefaultListModel*/ {
+
+    protected final LinkedList<T> deleted = new LinkedList<>();
+    private LinkedList<T> items;
+    private Filtering filter = null;
 
     protected ATListModel() {
         createList();
@@ -37,7 +39,6 @@ public abstract class ATListModel<T extends IidGetter> extends AbstractListModel
             createList();
         });
     }
-    private LinkedList<T> items;
 
     protected abstract LinkedList<T> load();
 
@@ -66,7 +67,6 @@ public abstract class ATListModel<T extends IidGetter> extends AbstractListModel
     public boolean hasByName(String name) {
         return items.stream().anyMatch((item) -> (name != null && name.equals(item.getName())));
     }
-    protected final LinkedList<T> deleted = new LinkedList<>();
 
     public boolean removeElement(T obj) {
         deleted.add(obj);
@@ -92,12 +92,6 @@ public abstract class ATListModel<T extends IidGetter> extends AbstractListModel
             fireIntervalRemoved(this, 0, index1);
         }
     }
-
-    public interface Filtering {
-
-        public boolean filter(Object item);
-    }
-    private Filtering filter = null;
 
     public void setFilter(Filtering filter) {
         this.filter = filter;
@@ -127,7 +121,8 @@ public abstract class ATListModel<T extends IidGetter> extends AbstractListModel
             return items.size();
         } else {
             int i = 0;
-            i = items.stream().filter((t) -> (filter.filter(t))).map((_item) -> 1).reduce(i, Integer::sum);
+            i = items.stream().filter((t) -> (filter.filter(t))).map((_item) -> 1)
+                .reduce(i, Integer::sum);
             return i;
         }
 
@@ -137,5 +132,10 @@ public abstract class ATListModel<T extends IidGetter> extends AbstractListModel
         Spring.getInstance().getHt().deleteAll(deleted);
         deleted.clear();
         Spring.getInstance().getHt().saveOrUpdateAll(items);
+    }
+
+    public interface Filtering {
+
+        public boolean filter(Object item);
     }
 }

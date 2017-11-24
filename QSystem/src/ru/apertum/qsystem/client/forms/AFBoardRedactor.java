@@ -16,6 +16,9 @@
  */
 package ru.apertum.qsystem.client.forms;
 
+import java.io.IOException;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.jdesktop.application.Action;
@@ -26,31 +29,29 @@ import ru.apertum.qsystem.common.NetCommander;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.model.INetProperty;
 
-import javax.swing.*;
-import java.io.IOException;
-
 /**
- * Created on 16 Апрель 2009 г., 20:25
- * Абстрактный предок редакторов параметров для табло.
- * Хранит XML-конфигурацию табло и умеет её сохранить.
- * Имеет главное меню с основными пунктами сохранения и закрытия редактора.
- * Для обновления состояния редактора необходимо реализовать метод refresh();
+ * Created on 16 Апрель 2009 г., 20:25 Абстрактный предок редакторов параметров для табло. Хранит
+ * XML-конфигурацию табло и умеет её сохранить. Имеет главное меню с основными пунктами сохранения и
+ * закрытия редактора. Для обновления состояния редактора необходимо реализовать метод refresh();
+ *
  * @author Evgeniy Egorov
  */
 abstract public class AFBoardRedactor extends javax.swing.JDialog {
 
+    private static ResourceMap localeMap = null;
     protected INetProperty netProperty;
-    private Element params;
     protected JFrame parent;
     protected boolean modal;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    protected javax.swing.JMenu jMenu1;
+    protected javax.swing.JMenuItem jMenuItem1;
+    protected javax.swing.JMenuItem jMenuItem2;
+    protected javax.swing.JMenuBar mainMenu;
+    private Element params;
+    private javax.swing.JSeparator jSeparator1;
 
-    public Element getParams() {
-        return params;
-    }
-
-    /** Creates new form AFBoardRedactor
-     * @param parent
-     * @param modal
+    /**
+     * Creates new form AFBoardRedactor
      */
     public AFBoardRedactor(JFrame parent, boolean modal) {
         super(parent, modal);
@@ -60,32 +61,22 @@ abstract public class AFBoardRedactor extends javax.swing.JDialog {
         setLocation();
     }
 
-    private void setLocation() {
-        Uses.setLocation(this);
-    }
-    private static ResourceMap localeMap = null;
-
     private static String getLocaleMessage(String key) {
         if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(AFBoardRedactor.class);
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(AFBoardRedactor.class);
         }
         return localeMap.getString(key);
     }
 
-    /**
-     * Это метод сохранения результатов редактирования параметров табло в форме редактора.
-     * измененная XML-конфигурация табло
-     * @throws IOException
-     */
-    public void saveResult() throws IOException {
-        NetCommander.saveBoardConfig(netProperty, params);
-        JOptionPane.showMessageDialog(this, getLocaleMessage("dialog.message.caption"), getLocaleMessage("dialog.message.title"), JOptionPane.INFORMATION_MESSAGE);
+    public Element getParams() {
+        return params;
     }
 
     /**
      * Метод передачи данных в редактор для изменения
+     *
      * @param netProperty параметры сети для получения с сервера конфигурации
-     * @throws DocumentException
      */
     public void setParams(INetProperty netProperty) throws DocumentException {
         this.netProperty = netProperty;
@@ -96,12 +87,27 @@ abstract public class AFBoardRedactor extends javax.swing.JDialog {
 
     /**
      * Метод передачи данных в редактор для ихменения
+     *
      * @param params сами параметры в формате XML
      */
     public void setParams(Element params) {
         this.params = params;
         refresh();
         onChangeParams();
+    }
+
+    private void setLocation() {
+        Uses.setLocation(this);
+    }
+
+    /**
+     * Это метод сохранения результатов редактирования параметров табло в форме редактора.
+     * измененная XML-конфигурация табло
+     */
+    public void saveResult() throws IOException {
+        NetCommander.saveBoardConfig(netProperty, params);
+        JOptionPane.showMessageDialog(this, getLocaleMessage("dialog.message.caption"),
+            getLocaleMessage("dialog.message.title"), JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -129,11 +135,15 @@ abstract public class AFBoardRedactor extends javax.swing.JDialog {
 
         mainMenu.setName("mainMenu"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(AFBoardRedactor.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(AFBoardRedactor.class);
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getActionMap(AFBoardRedactor.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getActionMap(AFBoardRedactor.class, this);
         jMenuItem1.setAction(actionMap.get("saveBoardConfig")); // NOI18N
         jMenuItem1.setName("jMenuItem1"); // NOI18N
         jMenu1.add(jMenuItem1);
@@ -153,11 +163,11 @@ abstract public class AFBoardRedactor extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+                .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 279, Short.MAX_VALUE)
+                .addGap(0, 279, Short.MAX_VALUE)
         );
 
         pack();
@@ -172,11 +182,5 @@ abstract public class AFBoardRedactor extends javax.swing.JDialog {
     public void hideRedactor() {
         setVisible(false);
     }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JMenu jMenu1;
-    protected javax.swing.JMenuItem jMenuItem1;
-    protected javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JSeparator jSeparator1;
-    protected javax.swing.JMenuBar mainMenu;
     // End of variables declaration//GEN-END:variables
 }

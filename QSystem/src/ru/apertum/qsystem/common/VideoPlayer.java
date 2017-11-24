@@ -16,6 +16,19 @@
  */
 package ru.apertum.qsystem.common;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
@@ -24,31 +37,76 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
+import javax.swing.JPanel;
 import ru.apertum.qsystem.common.exceptions.ClientException;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.*;
-import java.util.Timer;
-
 /**
- * Может проигрывать фидеофайлы *.mpg, *.jpg. Для этого используется установленная предварительно на компьютере среда JMF. По умолчанию показ ролика бесконечно
- * в цикле.
+ * Может проигрывать фидеофайлы *.mpg, *.jpg. Для этого используется установленная предварительно на
+ * компьютере среда JMF. По умолчанию показ ролика бесконечно в цикле.
  *
  * @author Evgeniy Egorov
  */
 public class VideoPlayer extends JPanel {
 
+    private final static HashMap<String, MediaPlayer> VIDS = new HashMap<>();
+    private static JFXPanel javafxPanel;
+    private static long dropMp = System.currentTimeMillis();
+    private final LinkedList<String> videoFiles = new LinkedList<>();
     private MediaView medView = null;
+    private String videoResourcePath;
+    private final Runnable changer = new Runnable() {
+
+        @Override
+        public void run() {
+            boolean mute = getMediaView().getMediaPlayer().isMute();
+            getMediaView().getMediaPlayer().stop();
+            getMediaView().setMediaPlayer(null);
+            try {
+                getMediaView().setMediaPlayer(getMediaPlayer(getNextVideoFile()));
+            } catch (FileNotFoundException ex) {
+                QLog.l().logger().error("No content.", ex);
+                return;
+            }
+            getMediaView().getMediaPlayer().setCycleCount(1);
+            getMediaView().getMediaPlayer().setMute(mute);
+            getMediaView().getMediaPlayer().setOnEndOfMedia(changer);
+            javafxPanel.getComponentListeners()[0].componentResized(null);
+            final Timer t = new Timer(true);
+            t.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    try {
+                        getMediaView().getMediaPlayer().play();
+                        javafxPanel.getComponentListeners()[0].componentResized(null);
+                    } catch (Exception npe) {
+                        QLog.l().logger().error(
+                            "Кодак не поддерживается. Codak not supported. Видео должно быть в формате H.264.",
+                            npe);
+                    }
+                }
+            }, 500);
+        }
+    };
 
     public VideoPlayer() {
         init();
+    }
+
+    private synchronized static MediaPlayer getMediaPlayer(String videoFilePath) {
+        // продолжает падать видео через несколько часов после старта на нескольких объектах
+        // проделаем такое раз в два часа
+        // поможет? а кто его знает, я не в курсе, спросите в Оракле.
+        if (System.currentTimeMillis() - dropMp > 2 * 60 * 60 * 1000) {
+            VIDS.values().forEach(mp -> mp.dispose());
+            VIDS.clear();
+            dropMp = System.currentTimeMillis();
+        }
+        if (VIDS.get(videoFilePath) == null) {
+            VIDS.put(videoFilePath,
+                new MediaPlayer(new Media(new File(videoFilePath).toURI().toString())));
+        }
+        return VIDS.get(videoFilePath);
     }
 
     private void init() {
@@ -78,17 +136,30 @@ public class VideoPlayer extends JPanel {
 
                     @Override
                     public void componentResized(ComponentEvent e) {
-                        if (view.getMediaPlayer() != null && view.getMediaPlayer().getMedia() != null) {
+                        if (view.getMediaPlayer() != null
+                            && view.getMediaPlayer().getMedia() != null) {
                             Platform.runLater(() -> {
-                                double sx = (double) javafxPanel.getWidth() / (double) view.getMediaPlayer().getMedia().widthProperty().getValue();
+                                double sx =
+                                    (double) javafxPanel.getWidth() / (double) view.getMediaPlayer()
+                                        .getMedia()
+                                        .widthProperty().getValue();
                                 double dxy = sx;
-                                if (view.getMediaPlayer().getMedia().heightProperty().getValue() * sx > javafxPanel.getHeight()) {
-                                    dxy = (double) javafxPanel.getHeight() / (double) view.getMediaPlayer().getMedia().heightProperty().getValue();
+                                if (view.getMediaPlayer().getMedia().heightProperty().getValue()
+                                    * sx > javafxPanel
+                                    .getHeight()) {
+                                    dxy = (double) javafxPanel.getHeight() / (double) view
+                                        .getMediaPlayer().getMedia()
+                                        .heightProperty().getValue();
                                 }
                                 view.setScaleX(dxy);
                                 view.setScaleY(dxy);
-                                view.setX((javafxPanel.getWidth() - view.getMediaPlayer().getMedia().widthProperty().getValue()) / 2);
-                                view.setY((javafxPanel.getHeight() - view.getMediaPlayer().getMedia().heightProperty().getValue()) / 2);
+                                view.setX((javafxPanel.getWidth() - view.getMediaPlayer().getMedia()
+                                    .widthProperty()
+                                    .getValue()) / 2);
+                                view.setY(
+                                    (javafxPanel.getHeight() - view.getMediaPlayer().getMedia()
+                                        .heightProperty()
+                                        .getValue()) / 2);
                             });
                         }
                     }
@@ -110,7 +181,6 @@ public class VideoPlayer extends JPanel {
         });
 
     }
-    private static JFXPanel javafxPanel;
 
     /**
      * Доступ к медиаплееру для детельной настройки параметров.
@@ -131,8 +201,6 @@ public class VideoPlayer extends JPanel {
         }
         return medView;
     }
-    private final LinkedList<String> videoFiles = new LinkedList<>();
-    private String videoResourcePath;
 
     private String getNextVideoFile() throws FileNotFoundException {
         if (videoFiles.isEmpty()) {
@@ -142,7 +210,10 @@ public class VideoPlayer extends JPanel {
                     final String[] vfs = new File(videoResourcePath).list();
                     videoFiles.clear();
                     for (String string : vfs) {
-                        videoFiles.addLast(videoResourcePath + (videoResourcePath.substring(videoResourcePath.length() - 1).equals("/") ? "" : "/") + string);
+                        videoFiles.addLast(videoResourcePath + (
+                            videoResourcePath.substring(videoResourcePath.length() - 1).equals("/")
+                                ? "" : "/")
+                            + string);
                     }
                 } else {
                     // ролик одним файлом
@@ -152,7 +223,9 @@ public class VideoPlayer extends JPanel {
             } else {
                 videoFiles.clear();
                 // список роликов в текстовом файле построчно
-                try (FileInputStream fis = new FileInputStream(videoResourcePath); Scanner s = new Scanner(fis)) {
+                try (FileInputStream fis = new FileInputStream(
+                    videoResourcePath); Scanner s = new Scanner(
+                    fis)) {
                     while (s.hasNextLine()) {
                         final String line = s.nextLine().trim();
                         if (!line.startsWith("#") && new File(line).isFile()) {
@@ -179,25 +252,6 @@ public class VideoPlayer extends JPanel {
         return true;
     }
 
-    private final static HashMap<String, MediaPlayer> VIDS = new HashMap<>();
-
-    private synchronized static MediaPlayer getMediaPlayer(String videoFilePath) {
-        // продолжает падать видео через несколько часов после старта на нескольких объектах
-        // проделаем такое раз в два часа
-        // поможет? а кто его знает, я не в курсе, спросите в Оракле.
-        if (System.currentTimeMillis() - dropMp > 2 * 60 * 60 * 1000) {
-            VIDS.values().forEach(mp -> mp.dispose());
-            VIDS.clear();
-            dropMp = System.currentTimeMillis();
-        }
-        if (VIDS.get(videoFilePath) == null) {
-            VIDS.put(videoFilePath, new MediaPlayer(new Media(new File(videoFilePath).toURI().toString())));
-        }
-        return VIDS.get(videoFilePath);
-    }
-
-    private static long dropMp = System.currentTimeMillis();
-
     /**
      * Сначала установи ресурс
      *
@@ -208,39 +262,6 @@ public class VideoPlayer extends JPanel {
             javafxPanel.getComponentListeners()[0].componentResized(null);
         }
     }
-
-    private final Runnable changer = new Runnable() {
-
-        @Override
-        public void run() {
-            boolean mute = getMediaView().getMediaPlayer().isMute();
-            getMediaView().getMediaPlayer().stop();
-            getMediaView().setMediaPlayer(null);
-            try {
-                getMediaView().setMediaPlayer(getMediaPlayer(getNextVideoFile()));
-            } catch (FileNotFoundException ex) {
-                QLog.l().logger().error("No content.", ex);
-                return;
-            }
-            getMediaView().getMediaPlayer().setCycleCount(1);
-            getMediaView().getMediaPlayer().setMute(mute);
-            getMediaView().getMediaPlayer().setOnEndOfMedia(changer);
-            javafxPanel.getComponentListeners()[0].componentResized(null);
-            final Timer t = new Timer(true);
-            t.schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-                    try {
-                        getMediaView().getMediaPlayer().play();
-                        javafxPanel.getComponentListeners()[0].componentResized(null);
-                    } catch (Exception npe) {
-                        QLog.l().logger().error("Кодак не поддерживается. Codak not supported. Видео должно быть в формате H.264.", npe);
-                    }
-                }
-            }, 500);
-        }
-    };
 
     public void start() {
 
@@ -265,7 +286,9 @@ public class VideoPlayer extends JPanel {
                         getMediaView().getMediaPlayer().play();
                         javafxPanel.getComponentListeners()[0].componentResized(null);
                     } catch (Exception npe) {
-                        QLog.l().logger().error("Кодак не поддерживается. Codak not supported. Видео должно быть в формате H.264.", npe);
+                        QLog.l().logger().error(
+                            "Кодак не поддерживается. Codak not supported. Видео должно быть в формате H.264.",
+                            npe);
                     }
                 }
             }, 1500);

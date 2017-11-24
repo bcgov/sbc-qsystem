@@ -18,20 +18,30 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.Date;
 import java.util.LinkedList;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetGridOfWeek extends JsonRPC20 {
+
+    @Expose
+    @SerializedName("result")
+    private GridAndParams result;
 
     public RpcGetGridOfWeek() {
     }
 
     public RpcGetGridOfWeek(GridAndParams result) {
+        this.result = result;
+    }
+
+    public GridAndParams getResult() {
+        return result;
+    }
+
+    public void setResult(GridAndParams result) {
         this.result = result;
     }
 
@@ -43,37 +53,9 @@ public class RpcGetGridOfWeek extends JsonRPC20 {
         @Expose
         @SerializedName("error")
         private String spError;
-
-        public GridAndParams(String spError) {
-            this.spError = spError;
-        }
-
-        public String getSpError() {
-            return spError;
-        }
-
-        public void setSpError(String spError) {
-            this.spError = spError;
-        }
-
-        public GridAndParams() {
-        }
-
         @Expose
         @SerializedName("times")
         private LinkedList<Date> times = new LinkedList<>();
-
-        public void addTime(Date time) {
-            if (times == null) {
-                times = new LinkedList<>();
-            }
-            times.add(time);
-        }
-
-        public LinkedList<Date> getTimes() {
-            return times;
-        }
-
         @Expose
         @SerializedName("start")
         private Date startTime;
@@ -89,6 +71,32 @@ public class RpcGetGridOfWeek extends JsonRPC20 {
         @Expose
         @SerializedName("limit_time")
         private int advanceTimePeriod;
+
+        public GridAndParams(String spError) {
+            this.spError = spError;
+        }
+
+        public GridAndParams() {
+        }
+
+        public String getSpError() {
+            return spError;
+        }
+
+        public void setSpError(String spError) {
+            this.spError = spError;
+        }
+
+        public void addTime(Date time) {
+            if (times == null) {
+                times = new LinkedList<>();
+            }
+            times.add(time);
+        }
+
+        public LinkedList<Date> getTimes() {
+            return times;
+        }
 
         public int getAdvanceTimePeriod() {
             return advanceTimePeriod;
@@ -129,16 +137,5 @@ public class RpcGetGridOfWeek extends JsonRPC20 {
         public void setStartTime(Date startTime) {
             this.startTime = startTime;
         }
-    }
-    @Expose
-    @SerializedName("result")
-    private GridAndParams result;
-
-    public void setResult(GridAndParams result) {
-        this.result = result;
-    }
-
-    public GridAndParams getResult() {
-        return result;
     }
 }

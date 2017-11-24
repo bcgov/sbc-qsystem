@@ -16,9 +16,13 @@
  */
 package ru.apertum.qsystem.utils;
 
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,16 +33,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class XsltTester {
@@ -49,7 +47,8 @@ public class XsltTester {
     public static void main(String[] args) {
         if (args.length != 3) {
             System.err.println("Where are three parameters required: xml xsl txt");
-            System.err.println("URL for file ex: file:///E:/temp/Xslt/data/official_exchange_rates.xsl");
+            System.err
+                .println("URL for file ex: file:///E:/temp/Xslt/data/official_exchange_rates.xsl");
             System.exit(1);
         }
 
@@ -63,7 +62,8 @@ public class XsltTester {
                 System.out.print("Start index: " + matcher.start());
                 System.out.print(" End index: " + matcher.end() + " ");
                 System.out.println(matcher.group());
-                SimpleDateFormat sdf = new SimpleDateFormat(matcher.group().substring(2, (matcher.group().length() - 2)));
+                SimpleDateFormat sdf = new SimpleDateFormat(
+                    matcher.group().substring(2, (matcher.group().length() - 2)));
                 url = url.replace(matcher.group(), sdf.format(new Date()));
             }
             System.out.println(url);

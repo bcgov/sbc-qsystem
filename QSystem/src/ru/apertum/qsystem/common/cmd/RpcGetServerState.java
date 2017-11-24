@@ -18,17 +18,19 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.util.Date;
+import java.util.LinkedList;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.model.QService;
 
-import java.util.Date;
-import java.util.LinkedList;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetServerState extends JsonRPC20 {
+
+    @Expose
+    @SerializedName("result")
+    private LinkedList<ServiceInfo> result;
 
     public RpcGetServerState() {
     }
@@ -37,18 +39,36 @@ public class RpcGetServerState extends JsonRPC20 {
         this.result = result;
     }
 
+    public LinkedList<ServiceInfo> getResult() {
+        return result;
+    }
+
+    public void setResult(LinkedList<ServiceInfo> result) {
+        this.result = result;
+    }
+
     public static class ServiceInfo {
 
-        @Override
-        public String toString() {
-            return serviceName;
-        }
+        @Expose
+        @SerializedName("service_name")
+        private String serviceName;
+        @Expose
+        @SerializedName("waiting")
+        private int countWait;
+        @Expose
+        @SerializedName("first")
+        private String firstNumber;
+        @Expose
+        @SerializedName("id")
+        private Long id;
+        @Expose
+        @SerializedName("wait_max")
+        private Integer waitMax;
 
         public ServiceInfo() {
         }
 
         /**
-         *
          * @param service услуга по которой данная статистика
          * @param countWait количество ожидающих в этой услуге
          * @param firstNumber номер первого
@@ -67,9 +87,11 @@ public class RpcGetServerState extends JsonRPC20 {
             }
             waitMax = (int) (max / 1000 / 60);
         }
-        @Expose
-        @SerializedName("service_name")
-        private String serviceName;
+
+        @Override
+        public String toString() {
+            return serviceName;
+        }
 
         public int getCountWait() {
             return countWait;
@@ -94,15 +116,6 @@ public class RpcGetServerState extends JsonRPC20 {
         public void setServiceName(String serviceName) {
             this.serviceName = serviceName;
         }
-        @Expose
-        @SerializedName("waiting")
-        private int countWait;
-        @Expose
-        @SerializedName("first")
-        private String firstNumber;
-        @Expose
-        @SerializedName("id")
-        private Long id;
 
         public Long getId() {
             return id;
@@ -111,9 +124,6 @@ public class RpcGetServerState extends JsonRPC20 {
         public void setId(Long id) {
             this.id = id;
         }
-        @Expose
-        @SerializedName("wait_max")
-        private Integer waitMax;
 
         public Integer getWaitMax() {
             return waitMax;
@@ -122,16 +132,5 @@ public class RpcGetServerState extends JsonRPC20 {
         public void setWaitMax(Integer waitMax) {
             this.waitMax = waitMax;
         }
-    }
-    @Expose
-    @SerializedName("result")
-    private LinkedList<ServiceInfo> result;
-
-    public void setResult(LinkedList<ServiceInfo> result) {
-        this.result = result;
-    }
-
-    public LinkedList<ServiceInfo> getResult() {
-        return result;
     }
 }

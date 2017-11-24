@@ -21,6 +21,7 @@ import org.jdesktop.application.SingleFrameApplication;
 
 /**
  * Класс приложения. Требуется для работы с ресурсами.
+ *
  * @author Evgeniy Egorov
  */
 public class QSystem extends SingleFrameApplication {

@@ -16,13 +16,22 @@
  */
 package ru.apertum.qsystem.server.model.schedule;
 
+import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.server.model.IidGetter;
 import ru.apertum.qsystem.server.model.calendar.QCalendar;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Класс для специального календаря, который на период в расписании расписания.
@@ -33,12 +42,26 @@ import java.util.Date;
 @Table(name = "spec_schedule")
 public class QSpecSchedule implements IidGetter, Serializable {
 
-    public QSpecSchedule() {
-    }
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "schedule_id")
+    private QSchedule schedule;
+    //MOSCOW1
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "calendar_id")
+    private QCalendar calendar;
+    @Column(name = "date_from")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date from;
+    @Column(name = "date_to")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date to;
+
+    public QSpecSchedule() {
+    }
 
     @Override
     public Long getId() {
@@ -56,12 +79,10 @@ public class QSpecSchedule implements IidGetter, Serializable {
 
     @Override
     public String toString() {
-        return Uses.FORMAT_DD_MM_YYYY.format(getFrom()) + " - " + Uses.FORMAT_DD_MM_YYYY.format(getTo()) + "   " + getSchedule();
+        return Uses.FORMAT_DD_MM_YYYY.format(getFrom()) + " - " + Uses.FORMAT_DD_MM_YYYY
+            .format(getTo())
+            + "   " + getSchedule();
     }
-
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinColumn(name = "schedule_id")
-    private QSchedule schedule;
 
     public QSchedule getSchedule() {
         return schedule;
@@ -71,11 +92,6 @@ public class QSpecSchedule implements IidGetter, Serializable {
         this.schedule = schedule;
     }
 
-    //MOSCOW1
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "calendar_id")
-    private QCalendar calendar;
-
     public QCalendar getCalendar() {
         return calendar;
     }
@@ -84,10 +100,6 @@ public class QSpecSchedule implements IidGetter, Serializable {
         this.calendar = calendar;
     }
 
-    @Column(name = "date_from")
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date from;
-
     public Date getFrom() {
         return from;
     }
@@ -95,10 +107,6 @@ public class QSpecSchedule implements IidGetter, Serializable {
     public void setFrom(Date from) {
         this.from = from;
     }
-
-    @Column(name = "date_to")
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date to;
 
     public Date getTo() {
         return to;

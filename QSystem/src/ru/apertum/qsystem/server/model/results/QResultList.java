@@ -16,17 +16,17 @@
  */
 package ru.apertum.qsystem.server.model.results;
 
+import java.util.LinkedList;
+import javax.swing.ComboBoxModel;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.ATListModel;
 
-import javax.swing.*;
-import java.util.LinkedList;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QResultList extends ATListModel<QResult> implements ComboBoxModel {
+
+    private QResult selected;
 
     private QResultList() {
         super();
@@ -36,24 +36,23 @@ public class QResultList extends ATListModel<QResult> implements ComboBoxModel {
         return QResultListHolder.INSTANCE;
     }
 
-    private static class QResultListHolder {
-
-        private static final QResultList INSTANCE = new QResultList();
-    }
-
     @Override
     protected LinkedList<QResult> load() {
         return new LinkedList<>(Spring.getInstance().getHt().loadAll(QResult.class));
     }
-    private QResult selected;
+
+    @Override
+    public Object getSelectedItem() {
+        return selected;
+    }
 
     @Override
     public void setSelectedItem(Object anItem) {
         selected = (QResult) anItem;
     }
 
-    @Override
-    public Object getSelectedItem() {
-        return selected;
+    private static class QResultListHolder {
+
+        private static final QResultList INSTANCE = new QResultList();
     }
 }

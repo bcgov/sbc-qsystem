@@ -16,10 +16,9 @@
  */
 package ru.apertum.qsystem.server;
 
+import java.util.HashMap;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.model.QUser;
-
-import java.util.HashMap;
 
 /**
  * Сессии пользователей. Т.е. те, кто уже в сервере сидит.
@@ -28,11 +27,12 @@ import java.util.HashMap;
  */
 public class QSession {
 
+    private static final long LIVE_TIME = 65000;//65 sec.
+    private final HashMap<String, Object> data = new HashMap<>();
     private String ipAdress;
     private byte[] IP;
     private QUser user;
     private long time = 0;
-    private static final long LIVE_TIME = 65000;//65 sec.
 
     public QSession(QUser user, String ipAdress, byte[] IP) {
         this.user = user;
@@ -82,8 +82,6 @@ public class QSession {
     public void update() {
         setTime(System.currentTimeMillis());
     }
-
-    private final HashMap<String, Object> data = new HashMap<>();
 
     public Object getAttribute(String name) {
         return data.get(name);

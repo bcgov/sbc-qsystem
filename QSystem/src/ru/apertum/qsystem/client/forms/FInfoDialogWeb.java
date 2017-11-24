@@ -16,6 +16,14 @@
  */
 package ru.apertum.qsystem.client.forms;
 
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.image.MemoryImageSource;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
@@ -29,6 +37,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import javax.swing.border.BevelBorder;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
@@ -39,23 +48,38 @@ import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.model.ATalkingClock;
 
-import javax.swing.border.BevelBorder;
-import java.awt.*;
-import java.awt.image.MemoryImageSource;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class FInfoDialogWeb extends javax.swing.JDialog {
 
+    private static Browser bro;
+    private static Long result = null;
+    private static int delay = 10000;
+    private static FInfoDialogWeb infoDialog;
+    private static ResourceMap localeMap = null;
     private final JFXPanel javafxPanel;
+    /**
+     * Таймер, по которому будем выходить в корень меню.
+     */
+    public ATalkingClock clockBack = new ATalkingClock(delay, 1) {
+
+        @Override
+        public void run() {
+            setVisible(false);
+        }
+    };
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnClose;
+    private javax.swing.JButton btnForward;
+    private javax.swing.JButton btnHome;
+    private ru.apertum.qsystem.client.model.QPanel panel;
+    private ru.apertum.qsystem.client.model.QPanel qPanel1;
+    private ru.apertum.qsystem.client.model.QPanel qPanel2;
 
     /**
      * Creates new form FInfoDialogWeb
-     *
-     * @param parent
-     * @param modal
      */
     public FInfoDialogWeb(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -82,16 +106,11 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
             btnHome.setFont(WelcomeParams.getInstance().btnFont);
         }
     }
-    private static Browser bro;
-    private static Long result = null;
-    private static int delay = 10000;
-    private static FInfoDialogWeb infoDialog;
-
-    private static ResourceMap localeMap = null;
 
     private static String getLocaleMessage(String key) {
         if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(FInfoDialog.class);
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(FInfoDialog.class);
         }
         return localeMap.getString(key);
     }
@@ -103,10 +122,11 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
      * @param modal модальный диалог или нет
      * @param fullscreen растягивать форму на весь экран и прятать мышку или нет
      * @param delay задержка перед скрытием диалога. если 0, то нет автозакрытия диалога
-     * @param url
-     * @return XML-описание результата предварительной записи, по сути это номерок. если null, то отказались от предварительной записи
+     * @return XML-описание результата предварительной записи, по сути это номерок. если null, то
+     * отказались от предварительной записи
      */
-    public static Long showInfoDialogWeb(Frame parent, boolean modal, boolean fullscreen, int delay, String url) {
+    public static Long showInfoDialogWeb(Frame parent, boolean modal, boolean fullscreen, int delay,
+        String url) {
         FInfoDialogWeb.delay = delay;
         QLog.l().logger().info("Чтение WEB информации");
 
@@ -131,8 +151,10 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
             Uses.setFullSize(infoDialog);
             if (QConfig.cfg().isHideCursor()) {
                 int[] pixels = new int[16 * 16];
-                Image image = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, pixels, 0, 16));
-                Cursor transparentCursor = Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), "invisibleCursor");
+                Image image = Toolkit.getDefaultToolkit()
+                    .createImage(new MemoryImageSource(16, 16, pixels, 0, 16));
+                Cursor transparentCursor = Toolkit.getDefaultToolkit()
+                    .createCustomCursor(image, new Point(0, 0), "invisibleCursor");
                 infoDialog.setCursor(transparentCursor);
             }
 
@@ -153,8 +175,8 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -177,11 +199,15 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
         qPanel2.setName("qPanel2"); // NOI18N
         qPanel2.setOpaque(false);
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FInfoDialogWeb.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(FInfoDialogWeb.class);
         btnClose.setFont(resourceMap.getFont("btnClose.font")); // NOI18N
         btnClose.setIcon(resourceMap.getIcon("btnClose.icon")); // NOI18N
         btnClose.setText(resourceMap.getString("btnClose.text")); // NOI18N
-        btnClose.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
+        btnClose.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED),
+            javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
         btnClose.setName("btnClose"); // NOI18N
         btnClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -193,7 +219,9 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
         btnForward.setIcon(resourceMap.getIcon("btnForward.icon")); // NOI18N
         btnForward.setText(resourceMap.getString("btnForward.text")); // NOI18N
         btnForward.setToolTipText(resourceMap.getString("btnForward.toolTipText")); // NOI18N
-        btnForward.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
+        btnForward.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED),
+            javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
         btnForward.setName("btnForward"); // NOI18N
         btnForward.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -204,7 +232,9 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
         btnBack.setFont(resourceMap.getFont("btnBack.font")); // NOI18N
         btnBack.setIcon(resourceMap.getIcon("btnBack.icon")); // NOI18N
         btnBack.setText(resourceMap.getString("btnBack.text")); // NOI18N
-        btnBack.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
+        btnBack.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED),
+            javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
         btnBack.setName("btnBack"); // NOI18N
         btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -215,7 +245,9 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
         btnHome.setFont(resourceMap.getFont("btnHome.font")); // NOI18N
         btnHome.setIcon(resourceMap.getIcon("btnHome.icon")); // NOI18N
         btnHome.setText(resourceMap.getString("btnHome.text")); // NOI18N
-        btnHome.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
+        btnHome.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED),
+            javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
         btnHome.setName("btnHome"); // NOI18N
         btnHome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -227,28 +259,41 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
         qPanel2.setLayout(qPanel2Layout);
         qPanel2Layout.setHorizontalGroup(
             qPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(qPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 233, Short.MAX_VALUE)
-                .addComponent(btnHome, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnForward, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGroup(qPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 295,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 233,
+                        Short.MAX_VALUE)
+                    .addComponent(btnHome, javax.swing.GroupLayout.PREFERRED_SIZE, 147,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 147,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addComponent(btnForward, javax.swing.GroupLayout.PREFERRED_SIZE, 147,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
         );
         qPanel2Layout.setVerticalGroup(
             qPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, qPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(qPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(qPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnForward, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnHome, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    qPanel2Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(qPanel2Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(qPanel2Layout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnForward, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                    70,
+                                    javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 70,
+                                    javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnHome, javax.swing.GroupLayout.PREFERRED_SIZE, 70,
+                                    javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 70,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())
         );
 
         panel.setBorder(new javax.swing.border.MatteBorder(null));
@@ -258,46 +303,56 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 576, Short.MAX_VALUE)
+                .addGap(0, 576, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout qPanel1Layout = new javax.swing.GroupLayout(qPanel1);
         qPanel1.setLayout(qPanel1Layout);
         qPanel1Layout.setHorizontalGroup(
             qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(qPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(qPanel2, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         qPanel1Layout.setVerticalGroup(
             qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, qPanel1Layout.createSequentialGroup()
-                .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 0, 0)
-                .addComponent(qPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    qPanel1Layout.createSequentialGroup()
+                        .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, 0)
+                        .addComponent(qPanel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
+    private void btnCloseActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
         result = null;
         Platform.runLater(() -> {
-            bro.webEngine.loadContent("<html><table width=100% height=100% align='center'><tr><td width=100% height=100% align='center'>"
+            bro.webEngine.loadContent(
+                "<html><table width=100% height=100% align='center'><tr><td width=100% height=100% align='center'>"
                     + "<p style=\"font-size:80px;color:blue\">Opening...</p>"
                     + "</td></tr></table></html>");
         });
@@ -307,37 +362,20 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
         setVisible(false);
     }//GEN-LAST:event_btnCloseActionPerformed
 
-    private void btnForwardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnForwardActionPerformed
+    private void btnForwardActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnForwardActionPerformed
         bro.goForward();
     }//GEN-LAST:event_btnForwardActionPerformed
 
-    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+    private void btnBackActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         bro.goBack();
     }//GEN-LAST:event_btnBackActionPerformed
 
-    private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
+    private void btnHomeActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
         bro.reload();
     }//GEN-LAST:event_btnHomeActionPerformed
-
-    /**
-     * Таймер, по которому будем выходить в корень меню.
-     */
-    public ATalkingClock clockBack = new ATalkingClock(delay, 1) {
-
-        @Override
-        public void run() {
-            setVisible(false);
-        }
-    };
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBack;
-    private javax.swing.JButton btnClose;
-    private javax.swing.JButton btnForward;
-    private javax.swing.JButton btnHome;
-    private ru.apertum.qsystem.client.model.QPanel panel;
-    private ru.apertum.qsystem.client.model.QPanel qPanel1;
-    private ru.apertum.qsystem.client.model.QPanel qPanel2;
     // End of variables declaration//GEN-END:variables
 
     private void changeTextToLocale() {
@@ -347,12 +385,15 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
 
         final private WebView browser = new WebView();
         final private WebEngine webEngine = browser.getEngine();
+        private String url = null;
 
         public Browser() {
 
             try {
                 //browser.getEngine().setUserStyleSheetLocation(new File("E:/a.css").toURI().toURL().toString());
-                browser.getEngine().setUserStyleSheetLocation(this.getClass().getResource("/ru/apertum/qsystem/fx/css/scroll.css").toString());
+                browser.getEngine().setUserStyleSheetLocation(
+                    this.getClass().getResource("/ru/apertum/qsystem/fx/css/scroll.css")
+                        .toString());
             } catch (Exception ex) {
                 System.err.println(ex);
             }
@@ -378,7 +419,6 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
             this.url = url;
             webEngine.load(url);
         }
-        private String url = null;
 
         public void reload() {
             if (url != null) {
@@ -418,7 +458,9 @@ public class FInfoDialogWeb extends javax.swing.JDialog {
                     history.go(1);
                 });
             }
-            return entryList.get(currentIndex < entryList.size() - 1 ? currentIndex + 1 : currentIndex).getUrl();
+            return entryList
+                .get(currentIndex < entryList.size() - 1 ? currentIndex + 1 : currentIndex)
+                .getUrl();
         }
     }
 }

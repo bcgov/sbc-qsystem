@@ -19,11 +19,11 @@ package ru.apertum.qsystem.common.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.LinkedList;
 
 /**
  * Параметры центра табло с отображением вызовов
+ *
  * @author Evgeniy Egorov
  */
 public class QCenterParams {

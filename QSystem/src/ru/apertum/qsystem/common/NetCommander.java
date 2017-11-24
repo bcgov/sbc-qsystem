@@ -16,17 +16,61 @@
  */
 package ru.apertum.qsystem.common;
 
+import static org.apache.http.HttpHeaders.USER_AGENT;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.eclipse.jetty.http.HttpHeader;
 import ru.apertum.qsystem.client.Locales;
-import ru.apertum.qsystem.common.cmd.*;
+import ru.apertum.qsystem.common.cmd.CmdParams;
+import ru.apertum.qsystem.common.cmd.JsonRPC20;
+import ru.apertum.qsystem.common.cmd.JsonRPC20Error;
+import ru.apertum.qsystem.common.cmd.JsonRPC20OK;
+import ru.apertum.qsystem.common.cmd.RpcBanList;
+import ru.apertum.qsystem.common.cmd.RpcGetAdvanceCustomer;
+import ru.apertum.qsystem.common.cmd.RpcGetAllServices;
+import ru.apertum.qsystem.common.cmd.RpcGetAuthorizCustomer;
+import ru.apertum.qsystem.common.cmd.RpcGetBool;
+import ru.apertum.qsystem.common.cmd.RpcGetGridOfDay;
+import ru.apertum.qsystem.common.cmd.RpcGetGridOfWeek;
+import ru.apertum.qsystem.common.cmd.RpcGetInfoTree;
+import ru.apertum.qsystem.common.cmd.RpcGetInt;
+import ru.apertum.qsystem.common.cmd.RpcGetPostponedPoolInfo;
+import ru.apertum.qsystem.common.cmd.RpcGetProperties;
+import ru.apertum.qsystem.common.cmd.RpcGetRespTree;
+import ru.apertum.qsystem.common.cmd.RpcGetResultsList;
+import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation;
+import ru.apertum.qsystem.common.cmd.RpcGetServerState;
 import ru.apertum.qsystem.common.cmd.RpcGetServerState.ServiceInfo;
+import ru.apertum.qsystem.common.cmd.RpcGetServiceState;
 import ru.apertum.qsystem.common.cmd.RpcGetServiceState.ServiceState;
+import ru.apertum.qsystem.common.cmd.RpcGetSrt;
+import ru.apertum.qsystem.common.cmd.RpcGetStandards;
+import ru.apertum.qsystem.common.cmd.RpcGetTicketHistory;
 import ru.apertum.qsystem.common.cmd.RpcGetTicketHistory.TicketHistory;
+import ru.apertum.qsystem.common.cmd.RpcGetUsersList;
+import ru.apertum.qsystem.common.cmd.RpcInviteCustomer;
+import ru.apertum.qsystem.common.cmd.RpcStandInService;
 import ru.apertum.qsystem.common.exceptions.ClientException;
 import ru.apertum.qsystem.common.exceptions.QException;
 import ru.apertum.qsystem.common.exceptions.ServerException;
@@ -34,19 +78,18 @@ import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.http.CommandHandler;
-import ru.apertum.qsystem.server.model.*;
+import ru.apertum.qsystem.server.model.QAdvanceCustomer;
+import ru.apertum.qsystem.server.model.QAuthorizationCustomer;
+import ru.apertum.qsystem.server.model.QProperty;
+import ru.apertum.qsystem.server.model.QStandards;
+import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.infosystem.QInfoItem;
 import ru.apertum.qsystem.server.model.response.QRespItem;
 import ru.apertum.qsystem.server.model.results.QResult;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import static org.apache.http.HttpHeaders.USER_AGENT;
-
 /**
- * Contains static methods for sending and receiving jobs to the server. Any method returns an XML server response node.
+ * Contains static methods for sending and receiving jobs to the server. Any method returns an XML
+ * server response node.
  *
  * @author Evgeniy Egorov
  */
@@ -55,21 +98,20 @@ public class NetCommander {
     private static final JsonRPC20 JSON_RPC = new JsonRPC20();
 
     /**
-     *  The main work is to send and receive the result.
+     * The main work is to send and receive the result.
      *
      * @param netProperty Server connection settings
-     * @param commandName
-     * @param params
      * @return XML-ответ
-     * @throws ru.apertum.qsystem.common.exceptions.QException
      */
-    synchronized public static String send(INetProperty netProperty, String commandName, CmdParams params) throws QException {
+    synchronized public static String send(INetProperty netProperty, String commandName,
+        CmdParams params) throws QException {
         JSON_RPC.setMethod(commandName);
         JSON_RPC.setParams(params);
         return sendRpc(netProperty, JSON_RPC);
     }
 
-    synchronized public static String sendRpc(INetProperty netProperty, JsonRPC20 jsonRpc) throws QException {
+    synchronized public static String sendRpc(INetProperty netProperty, JsonRPC20 jsonRpc)
+        throws QException {
         final String message;
         Gson gson = GsonPool.getInstance().borrowGson();
         try {
@@ -79,13 +121,20 @@ public class NetCommander {
         }
         final String data;
         try {
-            if (QConfig.cfg().getHttpRequestType() != null && !(jsonRpc.getMethod().startsWith("#") || "empty".equalsIgnoreCase(jsonRpc.getMethod()))) {
-                data = QConfig.cfg().getHttpRequestType() ? sendPost(netProperty, message, jsonRpc) : sendGet(netProperty, jsonRpc);
+            if (QConfig.cfg().getHttpRequestType() != null && !(jsonRpc.getMethod().startsWith("#")
+                || "empty".equalsIgnoreCase(jsonRpc.getMethod()))) {
+                data = QConfig.cfg().getHttpRequestType() ? sendPost(netProperty, message, jsonRpc)
+                    : sendGet(netProperty, jsonRpc);
             } else {
-                QLog.l().logger().trace("Task \"" + jsonRpc.getMethod() + "\" on " + netProperty.getAddress().getHostAddress() + ":" + netProperty.getPort() + "#\n" + message);
+                QLog.l().logger().trace(
+                    "Task \"" + jsonRpc.getMethod() + "\" on " + netProperty.getAddress()
+                        .getHostAddress()
+                        + ":" + netProperty.getPort() + "#\n" + message);
                 final Socket socket = new Socket();
                 try {
-                    socket.connect(new InetSocketAddress(netProperty.getAddress(), netProperty.getPort()), 15000);
+                    socket.connect(
+                        new InetSocketAddress(netProperty.getAddress(), netProperty.getPort()),
+                        15000);
                 } catch (IOException ex) {
                     Uses.closeSplash();
                     throw new QException(Locales.locMes("no_connect_to_server"), ex);
@@ -122,7 +171,10 @@ public class NetCommander {
                 throw new QException(Locales.locMes("error_on_server_no_get_response"));
             }
             if (rpc.getError() != null) {
-                throw new QException(Locales.locMes("tack_failed") + " " + rpc.getError().getCode() + ":" + rpc.getError().getMessage());
+                throw new QException(
+                    Locales.locMes("tack_failed") + " " + rpc.getError().getCode() + ":" + rpc
+                        .getError()
+                        .getMessage());
             }
         } catch (JsonSyntaxException ex) {
             throw new QException(Locales.locMes("bad_response") + "\n" + ex.toString());
@@ -133,9 +185,12 @@ public class NetCommander {
     }
 
     // HTTP POST request
-    private static String sendPost(INetProperty netProperty, String outputData, JsonRPC20 jsonRpc) throws Exception {
+    private static String sendPost(INetProperty netProperty, String outputData, JsonRPC20 jsonRpc)
+        throws Exception {
         String url = QConfig.cfg().getWebServiceURL() + CommandHandler.CMD_URL_PATTERN;
-        QLog.l().logger().trace("HTTP POST request \"" + jsonRpc.getMethod() + "\" on " + url + "\n" + outputData);
+        QLog.l().logger()
+            .trace(
+                "HTTP POST request \"" + jsonRpc.getMethod() + "\" on " + url + "\n" + outputData);
         final URL obj = new URL(url);
         final HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -147,7 +202,8 @@ public class NetCommander {
         // Send post request
         con.setDoOutput(true);
 
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF8"))) {
+        try (BufferedWriter out = new BufferedWriter(
+            new OutputStreamWriter(con.getOutputStream(), "UTF8"))) {
             out.append(outputData);
             out.flush();
         }
@@ -158,7 +214,8 @@ public class NetCommander {
         }
 
         final StringBuffer response;
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"))) {
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(con.getInputStream(), "UTF-8"))) {
             String inputLine;
             response = new StringBuffer();
             while ((inputLine = in.readLine()) != null) {
@@ -177,9 +234,10 @@ public class NetCommander {
     private static String sendGet(INetProperty netProperty, JsonRPC20 jsonRpc) throws Exception {
         final String p = jsonRpc.getParams() == null ? "" : jsonRpc.getParams().toString();
         String url = QConfig.cfg().getWebServiceURL() + CommandHandler.CMD_URL_PATTERN + "?"
-                + CmdParams.CMD + "=" + URLEncoder.encode(jsonRpc.getMethod(), "utf-8") + "&"
-                + p;
-        QLog.l().logger().trace("HTTP GET request \"" + jsonRpc.getMethod() + "\" on " + url + "\n" + p);
+            + CmdParams.CMD + "=" + URLEncoder.encode(jsonRpc.getMethod(), "utf-8") + "&"
+            + p;
+        QLog.l().logger()
+            .trace("HTTP GET request \"" + jsonRpc.getMethod() + "\" on " + url + "\n" + p);
         final URL obj = new URL(url);
         final HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         //add reuqest header
@@ -191,7 +249,8 @@ public class NetCommander {
             throw new QException(Locales.locMes("no_connect_to_server"));
         }
         final StringBuffer response;
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"))) {
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(con.getInputStream(), "UTF-8"))) {
             String inputLine;
             response = new StringBuffer();
             while ((inputLine = in.readLine()) != null) {
@@ -243,10 +302,11 @@ public class NetCommander {
      * @param serviceId Service in which we try to stand up.
      * @param password Password of the one who is trying to complete the task.
      * @param priority a priority.
-     * @param inputData
      * @return Created a customizer.
      */
-    public static QCustomer standInService(INetProperty netProperty, long serviceId, String password, int priority, String inputData) {
+    public static QCustomer standInService(INetProperty netProperty, long serviceId,
+        String password,
+        int priority, String inputData) {
         QLog.l().logger().info("To get in line.");
         // Load answer
         final CmdParams params = new CmdParams();
@@ -276,16 +336,19 @@ public class NetCommander {
      * Queuing
      *
      * @param netProperty netProperty parameters for connecting to the server.
-      * @param servicesId services we are trying to get into. It requires clarification what kind of 3D array it is. These are five lists. The first is freely sequential
-      * Services. The other four are sequentially dependent services, i.e. While one does not end on the other does not go over. What is a list item. It is too
-      * list. The first element is the same complex service (ID). And the rest are dependencies, i.e. If there are services not yet provided but designated, which in
-      * Dependencies, then they must be provided.
-      * @param password is the password of the one who is trying to complete the task.
-      * @param priority is the priority.
-     * @param inputData
+     * @param servicesId services we are trying to get into. It requires clarification what kind of
+     * 3D array it is. These are five lists. The first is freely sequential Services. The other four
+     * are sequentially dependent services, i.e. While one does not end on the other does not go
+     * over. What is a list item. It is too list. The first element is the same complex service
+     * (ID). And the rest are dependencies, i.e. If there are services not yet provided but
+     * designated, which in Dependencies, then they must be provided.
+     * @param password is the password of the one who is trying to complete the task.
+     * @param priority is the priority.
      * @return Created the customizer.
      */
-    public static QCustomer standInSetOfServices(INetProperty netProperty, LinkedList<LinkedList<LinkedList<Long>>> servicesId, String password, int priority, String inputData) {
+    public static QCustomer standInSetOfServices(INetProperty netProperty,
+        LinkedList<LinkedList<LinkedList<Long>>> servicesId, String password, int priority,
+        String inputData) {
         QLog.l().logger().info("Встать в очередь комплексно.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -316,9 +379,9 @@ public class NetCommander {
      *
      * @param netProperty netProperty параметры соединения с сервером.
      * @param serviceId услуга, которую пытаемся править
-     * @param reason
      */
-    public static void changeTempAvailableService(INetProperty netProperty, long serviceId, String reason) {
+    public static void changeTempAvailableService(INetProperty netProperty, long serviceId,
+        String reason) {
         QLog.l().logger().info("Сделать услугу временно неактивной/активной.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -334,12 +397,12 @@ public class NetCommander {
     /**
      * Узнать сколько народу стоит к услуге и т.д.
      *
-    * @param netProperty Parameters of connection with the server.
-      * @param serviceId id Services about which we receive information
-      * @return Number of precedents.
-     * @throws QException
+     * @param netProperty Parameters of connection with the server.
+     * @param serviceId id Services about which we receive information
+     * @return Number of precedents.
      */
-    public static ServiceState aboutService(INetProperty netProperty, long serviceId) throws QException {
+    public static ServiceState aboutService(INetProperty netProperty, long serviceId)
+        throws QException {
         QLog.l().logger().info("Встать в очередь.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -368,9 +431,9 @@ public class NetCommander {
      * @param netProperty параметры соединения с сервером.
      * @param serviceId id услуги о которой получаем информацию
      * @return количество предшествующих.
-     * @throws QException
      */
-    public static ServiceState getServiceConsistency(INetProperty netProperty, long serviceId) throws QException {
+    public static ServiceState getServiceConsistency(INetProperty netProperty, long serviceId)
+        throws QException {
         QLog.l().logger().info("Встать в очередь.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -400,9 +463,9 @@ public class NetCommander {
      * @param serviceId id услуги о которой получаем информацию
      * @param inputData введенная ботва
      * @return 1 - превышен, 0 - можно встать. 2 - забанен
-     * @throws QException
      */
-    public static int aboutServicePersonLimitOver(INetProperty netProperty, long serviceId, String inputData) throws QException {
+    public static int aboutServicePersonLimitOver(INetProperty netProperty, long serviceId,
+        String inputData) throws QException {
         QLog.l().logger().info("Узнать можно ли вставать в услугу с такими введенными данными.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -463,10 +526,11 @@ public class NetCommander {
      *
      * @param netProperty параметры соединения с сервером
      * @param userId id пользователя для которого идет опрос
-     * @return список обрабатываемых услуг с количеством кастомеров в них стоящих и обрабатываемый кастомер если был
-     * @throws ru.apertum.qsystem.common.exceptions.QException
+     * @return список обрабатываемых услуг с количеством кастомеров в них стоящих и обрабатываемый
+     * кастомер если был
      */
-    public static RpcGetSelfSituation.SelfSituation getSelfServices(INetProperty netProperty, long userId) throws QException {
+    public static RpcGetSelfSituation.SelfSituation getSelfServices(INetProperty netProperty,
+        long userId) throws QException {
         return getSelfServices(netProperty, userId, null);
     }
 
@@ -476,10 +540,11 @@ public class NetCommander {
      * @param netProperty параметры соединения с сервером
      * @param userId id пользователя для которого идет опрос
      * @param forced получить ситуацию даже если она не обновлялась за последнее время
-     * @return список обрабатываемых услуг с количеством кастомеров в них стоящих и обрабатываемый кастомер если был
-     * @throws ru.apertum.qsystem.common.exceptions.QException
+     * @return список обрабатываемых услуг с количеством кастомеров в них стоящих и обрабатываемый
+     * кастомер если был
      */
-    public static RpcGetSelfSituation.SelfSituation getSelfServices(INetProperty netProperty, long userId, Boolean forced) throws QException {
+    public static RpcGetSelfSituation.SelfSituation getSelfServices(INetProperty netProperty,
+        long userId, Boolean forced) throws QException {
         QLog.l().logger().info("Получение описания очередей для юзера.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -510,6 +575,7 @@ public class NetCommander {
      * передается в строке параметров при старке клиентской проги и засовывается сюда, вот такая мегаинициализация.
      */
     //static public String pointId = null; -> QConfig.cfg().getPointN();
+
     /**
      * Проверка на то что такой юзер уже залогинен в систему
      *
@@ -546,7 +612,6 @@ public class NetCommander {
      * Получение слeдующего юзера из очередей, обрабатываемых юзером.
      *
      * @param netProperty параметры соединения с сервером
-     * @param userId
      * @return ответ-кастомер следующий по очереди
      */
     public static QCustomer inviteNextCustomer(INetProperty netProperty, long userId) {
@@ -576,8 +641,8 @@ public class NetCommander {
      * Удаление вызванного юзером кастомера.
      *
      * @param netProperty параметры соединения с сервером
-     * @param userId
-     * @param customerId переключиться на этого при параллельном приеме, NULL если переключаться не надо
+     * @param customerId переключиться на этого при параллельном приеме, NULL если переключаться не
+     * надо
      */
     public static void killNextCustomer(INetProperty netProperty, long userId, Long customerId) {
         QLog.l().logger().info("Удаление вызванного юзером кастомера.");
@@ -596,13 +661,12 @@ public class NetCommander {
      * Перемещение вызванного юзером кастомера в пул отложенных.
      *
      * @param netProperty параметры соединения с сервером
-     * @param userId
-     * @param customerId переключиться на этого при параллельном приеме, NULL если переключаться не надо
+     * @param customerId переключиться на этого при параллельном приеме, NULL если переключаться не
+     * надо
      * @param status просто строка. берется из возможных состояний завершения работы
-     * @param postponedPeriod
-     * @param isMine
      */
-    public static void customerToPostpone(INetProperty netProperty, long userId, Long customerId, String status, int postponedPeriod, boolean isMine) {
+    public static void customerToPostpone(INetProperty netProperty, long userId, Long customerId,
+        String status, int postponedPeriod, boolean isMine) {
         QLog.l().logger().info("Перемещение вызванного юзером кастомера в пул отложенных.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -625,7 +689,9 @@ public class NetCommander {
      * @param postponCustomerId меняем этому кастомеру
      * @param status просто строка. берется из возможных состояний завершения работы
      */
-    public static void postponeCustomerChangeStatus(INetProperty netProperty, long postponCustomerId, String status) {
+    public static void postponeCustomerChangeStatus(INetProperty netProperty,
+        long postponCustomerId,
+        String status) {
         QLog.l().logger().info("Перемещение вызванного юзером кастомера в пул отложенных.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -642,7 +708,6 @@ public class NetCommander {
      * Начать работу с вызванным кастомером.
      *
      * @param netProperty параметры соединения с сервером
-     * @param userId
      */
     public static void getStartCustomer(INetProperty netProperty, long userId) {
         QLog.l().logger().info("Начать работу с вызванным кастомером.");
@@ -660,13 +725,13 @@ public class NetCommander {
      * Закончить работу с вызванным кастомером.
      *
      * @param netProperty параметры соединения с сервером
-     * @param userId
-     * @param customerId переключиться на этого при параллельном приеме, NULL если переключаться не надо
-     * @param resultId
+     * @param customerId переключиться на этого при параллельном приеме, NULL если переключаться не
+     * надо
      * @param comments это если закончили работать с редиректенным и его нужно вернуть
-     * @return
      */
-    public static QCustomer getFinishCustomer(INetProperty netProperty, long userId, Long customerId, Long resultId, String comments) {
+    public static QCustomer getFinishCustomer(INetProperty netProperty, long userId,
+        Long customerId,
+        Long resultId, String comments) {
         QLog.l().logger().info("Закончить работу с вызванным кастомером.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -696,14 +761,12 @@ public class NetCommander {
      * Переадресовать клиента в другую очередь.
      *
      * @param netProperty параметры соединения с сервером
-     * @param userId
-     * @param customerId переключиться на этого при параллельном приеме, NULL если переключаться не надо
-     * @param serviceId
-     * @param requestBack
-     * @param resultId
+     * @param customerId переключиться на этого при параллельном приеме, NULL если переключаться не
+     * надо
      * @param comments комментарии при редиректе
      */
-    public static void redirectCustomer(INetProperty netProperty, long userId, Long customerId, long serviceId, boolean requestBack, String comments, Long resultId) {
+    public static void redirectCustomer(INetProperty netProperty, long userId, Long customerId,
+        long serviceId, boolean requestBack, String comments, Long resultId) {
         QLog.l().logger().info("Переадресовать клиента в другую очередь.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -724,7 +787,6 @@ public class NetCommander {
      * Подтверждение живости клиентом для сервера.
      *
      * @param netProperty параметры соединения с сервером
-     * @param userId
      * @return XML-ответ
      * @deprecated заборонено. гы-гы. теперь жить будем по новому, даздравствует Новороссия!
      */
@@ -782,7 +844,8 @@ public class NetCommander {
      * @param dropTicketsCounter сбросить счетчик выданных талонов или нет
      * @return некий ответ от пункта регистрации, вроде прям как строка для вывода
      */
-    public static String getWelcomeState(INetProperty netProperty, String message, boolean dropTicketsCounter) {
+    public static String getWelcomeState(INetProperty netProperty, String message,
+        boolean dropTicketsCounter) {
         QLog.l().logger().info("Получение описания состояния пункта регистрации.");
         // загрузим ответ
         String res = null;
@@ -806,15 +869,14 @@ public class NetCommander {
     }
 
     /**
-     * Добавить сервис в список обслуживаемых юзером использую параметры. Используется при добавлении на горячую.
+     * Добавить сервис в список обслуживаемых юзером использую параметры. Используется при
+     * добавлении на горячую.
      *
      * @param netProperty параметры соединения с пунктом регистрации
-     * @param serviceId
-     * @param userId
-     * @param coeff
      * @return содержить строковое сообщение о результате.
      */
-    public static String setServiseFire(INetProperty netProperty, long serviceId, long userId, int coeff) {
+    public static String setServiseFire(INetProperty netProperty, long serviceId, long userId,
+        int coeff) {
         QLog.l().logger().info("Привязка услуги пользователю на горячую.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -840,11 +902,10 @@ public class NetCommander {
     }
 
     /**
-     * Удалить сервис из списока обслуживаемых юзером использую параметры. Используется при добавлении на горячую.
+     * Удалить сервис из списока обслуживаемых юзером использую параметры. Используется при
+     * добавлении на горячую.
      *
      * @param netProperty параметры соединения с пунктом регистрации
-     * @param serviceId
-     * @param userId
      * @return содержить строковое сообщение о результате.
      */
     public static String deleteServiseFire(INetProperty netProperty, long serviceId, long userId) {
@@ -872,7 +933,8 @@ public class NetCommander {
     }
 
     /**
-     * Получение конфигурации главного табло - ЖК или плазмы. Это XML-файл лежащий в папку приложения mainboard.xml
+     * Получение конфигурации главного табло - ЖК или плазмы. Это XML-файл лежащий в папку
+     * приложения mainboard.xml
      *
      * @param netProperty параметры соединения с сервером
      * @return корень XML-файла mainboard.xml
@@ -900,10 +962,10 @@ public class NetCommander {
     }
 
     /**
-     * Сохранение конфигурации главного табло - ЖК или плазмы. Это XML-файл лежащий в папку приложения mainboard.xml
+     * Сохранение конфигурации главного табло - ЖК или плазмы. Это XML-файл лежащий в папку
+     * приложения mainboard.xml
      *
      * @param netProperty параметры соединения с сервером
-     * @param boardConfig
      */
     public static void saveBoardConfig(INetProperty netProperty, Element boardConfig) {
         QLog.l().logger().info("Сохранение конфигурации главного табло - ЖК или плазмы.");
@@ -918,7 +980,8 @@ public class NetCommander {
     }
 
     /**
-     * Получение дневной таблици с данными для предварительной записи включающими информацию по занятым временам и свободным.
+     * Получение дневной таблици с данными для предварительной записи включающими информацию по
+     * занятым временам и свободным.
      *
      * @param netProperty netProperty параметры соединения с сервером.
      * @param serviceId услуга, в которую пытаемся встать.
@@ -926,7 +989,8 @@ public class NetCommander {
      * @param advancedCustomer ID авторизованного кастомера
      * @return класс с параметрами и списком времен
      */
-    public static RpcGetGridOfDay.GridDayAndParams getPreGridOfDay(INetProperty netProperty, long serviceId, Date date, long advancedCustomer) {
+    public static RpcGetGridOfDay.GridDayAndParams getPreGridOfDay(INetProperty netProperty,
+        long serviceId, Date date, long advancedCustomer) {
         QLog.l().logger().info("Получить таблицу дня");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -960,7 +1024,8 @@ public class NetCommander {
      * @param advancedCustomer ID авторизованного кастомера
      * @return класс с параметрами и списком времен
      */
-    public static RpcGetGridOfWeek.GridAndParams getGridOfWeek(INetProperty netProperty, long serviceId, Date date, long advancedCustomer) {
+    public static RpcGetGridOfWeek.GridAndParams getGridOfWeek(INetProperty netProperty,
+        long serviceId, Date date, long advancedCustomer) {
         QLog.l().logger().info("Получить таблицу");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -990,13 +1055,15 @@ public class NetCommander {
      *
      * @param netProperty netProperty параметры соединения с сервером.
      * @param serviceId услуга, в которую пытаемся встать.
-     * @param date
      * @param advancedCustomer ID авторизованного кастомер. -1 если нет авторизации
-     * @param inputData введеные по требованию услуги данные клиентом, может быть null если не вводили
-     * @param comments комментарий по предварительно ставящемуся клиенту если ставят из админки или приемной
+     * @param inputData введеные по требованию услуги данные клиентом, может быть null если не
+     * вводили
+     * @param comments комментарий по предварительно ставящемуся клиенту если ставят из админки или
+     * приемной
      * @return предварительный кастомер
      */
-    public static QAdvanceCustomer standInServiceAdvance(INetProperty netProperty, long serviceId, Date date, long advancedCustomer, String inputData, String comments) {
+    public static QAdvanceCustomer standInServiceAdvance(INetProperty netProperty, long serviceId,
+        Date date, long advancedCustomer, String inputData, String comments) {
         QLog.l().logger().info("Записать предварительно в очередь.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -1133,11 +1200,11 @@ public class NetCommander {
      * @param netProperty параметры соединения с сервером.
      * @param serviceID услуга, может быть null
      * @param userID оператор, может быть null
-     * @param customerID
      * @param clientData номер талона, не null
      * @param resp выбранн отзыв
      */
-    public static void setResponseAnswer(INetProperty netProperty, QRespItem resp, Long userID, Long serviceID, Long customerID, String clientData) {
+    public static void setResponseAnswer(INetProperty netProperty, QRespItem resp, Long userID,
+        Long serviceID, Long customerID, String clientData) {
         QLog.l().logger().info("Отправка выбранного отзыва.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -1188,10 +1255,10 @@ public class NetCommander {
      * Получение описания залогинившегося юзера.
      *
      * @param netProperty параметры соединения с сервером
-     * @param id
      * @return XML-ответ
      */
-    public static QAuthorizationCustomer getClientAuthorization(INetProperty netProperty, String id) {
+    public static QAuthorizationCustomer getClientAuthorization(INetProperty netProperty,
+        String id) {
         QLog.l().logger().info("Получение описания авторизованного пользователя.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -1221,7 +1288,8 @@ public class NetCommander {
      * @return свисок возможных завершений работы
      */
     public static LinkedList<QResult> getResultsList(INetProperty netProperty) {
-        QLog.l().logger().info("Команда на получение списка возможных результатов работы с клиентом.");
+        QLog.l().logger()
+            .info("Команда на получение списка возможных результатов работы с клиентом.");
         final String res;
         try {
             // загрузим ответ RpcGetResultsList
@@ -1245,11 +1313,10 @@ public class NetCommander {
      * Изменение приоритета кастомеру
      *
      * @param netProperty параметры соединения с сервером
-     * @param prioritet
-     * @param customer
      * @return Текстовый ответ о результате
      */
-    public static String setCustomerPriority(INetProperty netProperty, int prioritet, String customer) {
+    public static String setCustomerPriority(INetProperty netProperty, int prioritet,
+        String customer) {
         QLog.l().logger().info("Команда на повышение приоритета кастомеру.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -1277,10 +1344,10 @@ public class NetCommander {
      * Пробить номер клиента. Стоит в очереди или отложен или вообще не найден.
      *
      * @param netProperty параметры соединения с сервером
-     * @param customerNumber
      * @return Текстовый ответ о результате
      */
-    public static TicketHistory checkCustomerNumber(INetProperty netProperty, String customerNumber) {
+    public static TicketHistory checkCustomerNumber(INetProperty netProperty,
+        String customerNumber) {
         QLog.l().logger().info("Команда проверки номера кастомера.");
         // загрузим ответ
         final CmdParams params = new CmdParams();
@@ -1306,7 +1373,6 @@ public class NetCommander {
     /**
      * Получить список отложенных кастомеров
      *
-     * @param netProperty
      * @return список отложенных кастомеров
      */
     public static LinkedList<QCustomer> getPostponedPoolInfo(INetProperty netProperty) {
@@ -1333,7 +1399,6 @@ public class NetCommander {
     /**
      * Получить список забаненных введенных данных
      *
-     * @param netProperty
      * @return список отложенных кастомеров
      */
     public static LinkedList<String> getBanedList(INetProperty netProperty) {
@@ -1360,9 +1425,9 @@ public class NetCommander {
     /**
      * Вызов отложенного кастомера
      *
-     * @param netProperty
      * @param userId id юзера который вызывает
-     * @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
+     * @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером
+     * давно работаем
      */
     public static void invitePostponeCustomer(INetProperty netProperty, long userId, Long id) {
         QLog.l().logger().info("Команда на вызов кастомера из пула отложенных.");
@@ -1379,8 +1444,6 @@ public class NetCommander {
 
     /**
      * Рестарт главного табло
-     *
-     * @param serverNetProperty
      */
     public static void restartMainTablo(INetProperty serverNetProperty) {
         QLog.l().logger().info("Команда на рестарт главного табло.");
@@ -1395,9 +1458,7 @@ public class NetCommander {
     /**
      * Изменение приоритетов услуг оператором
      *
-     * @param netProperty
      * @param userId id юзера который вызывает
-     * @param smartData
      */
     public static void changeFlexPriority(INetProperty netProperty, long userId, String smartData) {
         QLog.l().logger().info("Изменение приоритетов услуг оператором.");
@@ -1417,7 +1478,6 @@ public class NetCommander {
      *
      * @param netProperty параметры соединения с сервером
      * @param text новая строка
-     * @param nameSection
      */
     public static void setRunningText(INetProperty netProperty, String text, String nameSection) {
         QLog.l().logger().info("Получение описания авторизованного пользователя.");
@@ -1435,7 +1495,6 @@ public class NetCommander {
     /**
      * Получить норрмативы
      *
-     * @param netProperty
      * @return класс нормативов
      */
     public static QStandards getStandards(INetProperty netProperty) {
@@ -1462,10 +1521,7 @@ public class NetCommander {
     /**
      * Изменение приоритетов услуг оператором
      *
-     * @param netProperty
      * @param userId id юзера который вызывает
-     * @param lock
-     * @return
      */
     public static boolean setBussy(INetProperty netProperty, long userId, boolean lock) {
         QLog.l().logger().info("Изменение приоритетов услуг оператором.");
@@ -1494,10 +1550,10 @@ public class NetCommander {
     /**
      * Получить параметры из ДБ из сервера
      *
-     * @param netProperty
      * @return мапа с секциями
      */
-    public static LinkedHashMap<String, ServerProps.Section> getProperties(INetProperty netProperty) {
+    public static LinkedHashMap<String, ServerProps.Section> getProperties(
+        INetProperty netProperty) {
         QLog.l().logger().info("Получить параметры.");
         final CmdParams params = new CmdParams();
         // загрузим ответ
@@ -1522,11 +1578,11 @@ public class NetCommander {
     /**
      * Изменить и сохранить параметеры в ДБ на сервере
      *
-     * @param netProperty
-     * @param properties
      * @return Список свежих свойств
      */
-    public static LinkedHashMap<String, ServerProps.Section> saveProperties(INetProperty netProperty, List<QProperty> properties) {
+    public static LinkedHashMap<String, ServerProps.Section> saveProperties(
+        INetProperty netProperty,
+        List<QProperty> properties) {
         QLog.l().logger().info("Изменить и сохранить параметеры в ДБ на сервере.");
         final CmdParams params = new CmdParams();
         params.properties = properties;
@@ -1552,11 +1608,11 @@ public class NetCommander {
     /**
      * Если таких параметров нет, то создать их в ДБ на сервере
      *
-     * @param netProperty
-     * @param properties
      * @return Список свежих свойств
      */
-    public static LinkedHashMap<String, ServerProps.Section> initProperties(INetProperty netProperty, List<QProperty> properties) {
+    public static LinkedHashMap<String, ServerProps.Section> initProperties(
+        INetProperty netProperty,
+        List<QProperty> properties) {
         QLog.l().logger().info("Если таких параметров нет, то создать их в ДБ на сервере.");
         final CmdParams params = new CmdParams();
         params.properties = properties;

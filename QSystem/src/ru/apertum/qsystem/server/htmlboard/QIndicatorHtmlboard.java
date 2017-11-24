@@ -16,6 +16,19 @@
  */
 package ru.apertum.qsystem.server.htmlboard;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -30,13 +43,11 @@ import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.QServer;
 import ru.apertum.qsystem.server.controller.IIndicatorBoard;
-import ru.apertum.qsystem.server.model.*;
-
-import javax.imageio.ImageIO;
-import java.io.*;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import ru.apertum.qsystem.server.model.QPlanService;
+import ru.apertum.qsystem.server.model.QService;
+import ru.apertum.qsystem.server.model.QServiceTree;
+import ru.apertum.qsystem.server.model.QUser;
+import ru.apertum.qsystem.server.model.QUserList;
 
 /**
  * Вывод информации на мониторы. Класс-менеджер вывода информации на общее табло в виде монитора.
@@ -45,8 +56,28 @@ import java.util.regex.Pattern;
  */
 public class QIndicatorHtmlboard implements IIndicatorBoard {
 
+    static public final String CONTENT_FILE_PATH = "config//html_main_board//content.html";
+    /**
+     * Используемая ссылка на диалоговое окно. Singleton
+     */
+    private static FParamsEditor boardConfig;
     protected FHtmlBoard indicatorBoard = null;
     protected String configFile;
+    private String template;
+
+    public QIndicatorHtmlboard() {
+        setConfigFile(CONTENT_FILE_PATH);
+        QLog.l().logger().info(
+            "Создание HTML табло для телевизоров или мониторов. Шаблон табло в \"" + getConfigFile()
+                + "\"");
+    }
+
+    public QIndicatorHtmlboard(String fileProps) {
+        setConfigFile(fileProps);
+        QLog.l().logger().info(
+            "Создание HTML табло для телевизоров или мониторов. Шаблон табло в \"" + getConfigFile()
+                + "\"");
+    }
 
     final public String getConfigFile() {
         return configFile;
@@ -59,9 +90,6 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
         }
         this.configFile = configFile;
     }
-
-    private String template;
-    static public final String CONTENT_FILE_PATH = "config//html_main_board//content.html";
 
     /**
      * Замена якорей на реальные значения
@@ -78,11 +106,12 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
         // Построем всех ближайших
         final LinkedList<String> nexts = new LinkedList<>(); // Это все ближайшие по порядку
         final PriorityQueue<QCustomer> customers = new PriorityQueue<>();
-        QServiceTree.getInstance().getNodes().stream().filter((service) -> (service.isLeaf())).forEach((service) -> {
-            service.getClients().stream().forEach((qCustomer) -> {
-                customers.add(qCustomer);
+        QServiceTree.getInstance().getNodes().stream().filter((service) -> (service.isLeaf()))
+            .forEach((service) -> {
+                service.getClients().stream().forEach((qCustomer) -> {
+                    customers.add(qCustomer);
+                });
             });
-        });
         QCustomer qCust = customers.poll();
         while (qCust != null) {
             nexts.add(qCust.getFullNumber());
@@ -120,7 +149,8 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
             s = s.replaceAll("\\{" + posOnBoard + "\\|N\\}", bCust.getFullNumber());
             s = s.replaceAll("\\{" + posOnBoard + "\\|point\\}", bCust.getUser().getPoint());
             s = s.replaceAll("\\{" + posOnBoard + "\\|ext\\}", bCust.getUser().getPointExt());
-            if (bCust.getState().equals(CustomerState.STATE_INVITED) || bCust.getState().equals(CustomerState.STATE_INVITED_SECONDARY)) {
+            if (bCust.getState().equals(CustomerState.STATE_INVITED) || bCust.getState()
+                .equals(CustomerState.STATE_INVITED_SECONDARY)) {
                 s = s.replaceAll("\\{" + posOnBoard + "\\|blink\\}", "blinkR_" + posOnBoard);
             }
             posOnBoard++;
@@ -137,7 +167,8 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
             final String id = HtmlBoardProps.getInstance().getId(user.getPoint());
             if (user.getCustomer() != null) {
                 System.out.println(user.getCustomer().getState());
-                if (user.getCustomer().getState() == CustomerState.STATE_INVITED || user.getCustomer().getState() == CustomerState.STATE_INVITED_SECONDARY) {
+                if (user.getCustomer().getState() == CustomerState.STATE_INVITED
+                    || user.getCustomer().getState() == CustomerState.STATE_INVITED_SECONDARY) {
                     invList.add(id);
                     String string = "\\[" + id + "\\|blink\\]";
                     s = s.replaceAll(string, "blink_" + i++);
@@ -169,7 +200,9 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
         }
         for (String string : allMatches) {
             final String id = string.substring(1, string.indexOf("|"));
-            int pos = Integer.parseInt(string.substring(string.indexOf("|") + 1, string.length() - 1)) - (invList.contains(id) ? 1 : 0);
+            int pos =
+                Integer.parseInt(string.substring(string.indexOf("|") + 1, string.length() - 1)) - (
+                    invList.contains(id) ? 1 : 0);
             final String adr = HtmlBoardProps.getInstance().getAddr(id);
             QUser usr = null;
             for (QUser user : QUserList.getInstance().getItems()) {
@@ -182,7 +215,8 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
                 }
             }
             if (usr == null) {
-                s = s.replaceAll(string.replace("[", "\\[").replace("]", "\\]").replace("|", "\\|"), "");
+                s = s.replaceAll(string.replace("[", "\\[").replace("]", "\\]").replace("|", "\\|"),
+                    "");
             } else {
                 final QService ss = new QService();
                 for (QPlanService pser : usr.getPlanServices()) {
@@ -202,7 +236,8 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
                     qeue.add(custs.poll());
                 }
                 // замена
-                s = s.replaceAll(string.replace("[", "\\[").replace("]", "\\]").replace("|", "\\|"), ss.getClients().size() >= pos ? qeue.get(pos - 1).getFullNumber() : "");
+                s = s.replaceAll(string.replace("[", "\\[").replace("]", "\\]").replace("|", "\\|"),
+                    ss.getClients().size() >= pos ? qeue.get(pos - 1).getFullNumber() : "");
             }
         }
         System.out.println("===========================================================");
@@ -213,13 +248,13 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
 
     /**
      * Создадим форму, спозиционируем, сконфигурируем и покажем
-     *
      */
     protected void initIndicatorBoard() {
         final File conff = new File(getConfigFile());
         if (conff.exists()) {
             template = "";
-            try (FileInputStream fis = new FileInputStream(conff); Scanner s = new Scanner(new InputStreamReader(fis, "UTF-8"))) {
+            try (FileInputStream fis = new FileInputStream(conff); Scanner s = new Scanner(
+                new InputStreamReader(fis, "UTF-8"))) {
                 while (s.hasNextLine()) {
                     final String line = s.nextLine().trim();
                     template += line;
@@ -230,7 +265,8 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
             }
 
         } else {
-            throw new ServerException("Не найден " + getConfigFile(), new FileNotFoundException(getConfigFile()));
+            throw new ServerException("Не найден " + getConfigFile(),
+                new FileNotFoundException(getConfigFile()));
         }
 
         if (indicatorBoard == null) {
@@ -240,7 +276,9 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
                 return;
             }
             try {
-                indicatorBoard.setIconImage(ImageIO.read(QServer.class.getResource("/ru/apertum/qsystem/client/forms/resources/recent.png")));
+                indicatorBoard.setIconImage(ImageIO.read(
+                    QServer.class
+                        .getResource("/ru/apertum/qsystem/client/forms/resources/recent.png")));
             } catch (IOException ex) {
                 System.err.println(ex);
             }
@@ -257,31 +295,33 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
         }
     }
 
-    public QIndicatorHtmlboard() {
-        setConfigFile(CONTENT_FILE_PATH);
-        QLog.l().logger().info("Создание HTML табло для телевизоров или мониторов. Шаблон табло в \"" + getConfigFile() + "\"");
-    }
-
-    public QIndicatorHtmlboard(String fileProps) {
-        setConfigFile(fileProps);
-        QLog.l().logger().info("Создание HTML табло для телевизоров или мониторов. Шаблон табло в \"" + getConfigFile() + "\"");
-    }
-
     @Override
     public Element getConfig() {
         String tr = "<Параметры>\n"
-                + "   <Параметер Наименование=\"top.size\" Тип=\"1\" Значение=\"" + HtmlBoardProps.getInstance().topSize + "\"/>\n"
-                + "   <Параметер Наименование=\"top.url\" Тип=\"3\" Значение=\"" + HtmlBoardProps.getInstance().topUrl + "\"/>\n"
-                + "   <Параметер Наименование=\"left.size\" Тип=\"1\" Значение=\"" + HtmlBoardProps.getInstance().leftSize + "\"/>\n"
-                + "   <Параметер Наименование=\"left.url\" Тип=\"3\" Значение=\"" + HtmlBoardProps.getInstance().leftUrl + "\"/>\n"
-                + "   <Параметер Наименование=\"right.size\" Тип=\"1\" Значение=\"" + HtmlBoardProps.getInstance().rightSize + "\"/>\n"
-                + "   <Параметер Наименование=\"right.url\" Тип=\"3\" Значение=\"" + HtmlBoardProps.getInstance().rightUrl + "\"/>\n"
-                + "   <Параметер Наименование=\"bottom.size\" Тип=\"1\" Значение=\"" + HtmlBoardProps.getInstance().bottomSize + "\"/>\n"
-                + "   <Параметер Наименование=\"bottom.url\" Тип=\"3\" Значение=\"" + HtmlBoardProps.getInstance().bottomUrl + "\"/>\n"
-                + "   <Параметер Наименование=\"need_reload\" Тип=\"4\" Значение=\"" + (HtmlBoardProps.getInstance().needReload ? "1" : "0") + "\"/>\n";
+            + "   <Параметер Наименование=\"top.size\" Тип=\"1\" Значение=\"" + HtmlBoardProps
+            .getInstance().topSize + "\"/>\n"
+            + "   <Параметер Наименование=\"top.url\" Тип=\"3\" Значение=\"" + HtmlBoardProps
+            .getInstance().topUrl + "\"/>\n"
+            + "   <Параметер Наименование=\"left.size\" Тип=\"1\" Значение=\"" + HtmlBoardProps
+            .getInstance().leftSize + "\"/>\n"
+            + "   <Параметер Наименование=\"left.url\" Тип=\"3\" Значение=\"" + HtmlBoardProps
+            .getInstance().leftUrl + "\"/>\n"
+            + "   <Параметер Наименование=\"right.size\" Тип=\"1\" Значение=\"" + HtmlBoardProps
+            .getInstance().rightSize + "\"/>\n"
+            + "   <Параметер Наименование=\"right.url\" Тип=\"3\" Значение=\"" + HtmlBoardProps
+            .getInstance().rightUrl + "\"/>\n"
+            + "   <Параметер Наименование=\"bottom.size\" Тип=\"1\" Значение=\"" + HtmlBoardProps
+            .getInstance().bottomSize + "\"/>\n"
+            + "   <Параметер Наименование=\"bottom.url\" Тип=\"3\" Значение=\"" + HtmlBoardProps
+            .getInstance().bottomUrl + "\"/>\n"
+            + "   <Параметер Наименование=\"need_reload\" Тип=\"4\" Значение=\"" + (
+            HtmlBoardProps.getInstance().needReload ? "1" : "0") + "\"/>\n";
 
         for (String key : HtmlBoardProps.getInstance().getAddrs().keySet()) {
-            tr = tr + "   <Параметер Наименование=\"" + key + "\" Тип=\"3\" Значение=\"" + HtmlBoardProps.getInstance().getAddrs().get(key) + "\" " + Uses.TAG_BOARD_READ_ONLY + "=\"true\"/>\n";
+            tr = tr + "   <Параметер Наименование=\"" + key + "\" Тип=\"3\" Значение=\""
+                + HtmlBoardProps
+                .getInstance().getAddrs().get(key) + "\" " + Uses.TAG_BOARD_READ_ONLY
+                + "=\"true\"/>\n";
         }
 
         tr = tr + "</Параметры>";
@@ -302,31 +342,36 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
         elist.forEach(elem -> {
             switch (elem.attributeValue("Наименование")) {
                 case "top.size":
-                    HtmlBoardProps.getInstance().topSize = Integer.parseInt(elem.attributeValue("Значение"));
+                    HtmlBoardProps.getInstance().topSize = Integer
+                        .parseInt(elem.attributeValue("Значение"));
                     break;
                 case "top.url":
                     HtmlBoardProps.getInstance().topUrl = elem.attributeValue("Значение");
                     break;
                 case "left.size":
-                    HtmlBoardProps.getInstance().leftSize = Integer.parseInt(elem.attributeValue("Значение"));
+                    HtmlBoardProps.getInstance().leftSize = Integer
+                        .parseInt(elem.attributeValue("Значение"));
                     break;
                 case "left.url":
                     HtmlBoardProps.getInstance().leftUrl = elem.attributeValue("Значение");
                     break;
                 case "right.size":
-                    HtmlBoardProps.getInstance().rightSize = Integer.parseInt(elem.attributeValue("Значение"));
+                    HtmlBoardProps.getInstance().rightSize = Integer
+                        .parseInt(elem.attributeValue("Значение"));
                     break;
                 case "right.url":
                     HtmlBoardProps.getInstance().rightUrl = elem.attributeValue("Значение");
                     break;
                 case "bottom.size":
-                    HtmlBoardProps.getInstance().bottomSize = Integer.parseInt(elem.attributeValue("Значение"));
+                    HtmlBoardProps.getInstance().bottomSize = Integer
+                        .parseInt(elem.attributeValue("Значение"));
                     break;
                 case "bottom.url":
                     HtmlBoardProps.getInstance().bottomUrl = elem.attributeValue("Значение");
                     break;
                 case "need_reload":
-                    HtmlBoardProps.getInstance().needReload = "1".equals(element.attributeValue("Значение"));
+                    HtmlBoardProps.getInstance().needReload = "1"
+                        .equals(element.attributeValue("Значение"));
                     break;
             }
             HtmlBoardProps.getInstance().saveProps();
@@ -341,10 +386,6 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
         }
         return boardConfig;
     }
-    /**
-     * Используемая ссылка на диалоговое окно. Singleton
-     */
-    private static FParamsEditor boardConfig;
 
     @Override
     public void showBoard() {
@@ -395,9 +436,6 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
 
     /**
      * Переопределено что бы вызвать появление таблички с номером вызванного поверх главного табло
-     *
-     * @param user
-     * @param customer
      */
     @Override
     public synchronized void inviteCustomer(QUser user, QCustomer customer) {
@@ -406,7 +444,8 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
             if (HtmlBoardProps.getInstance().isNeedReload()) {
                 indicatorBoard.loadContent(prepareContent(template));
             }
-            indicatorBoard.getBfx().executeJavascript("inviteCustomer(" + makeParam(user, customer) + ")");
+            indicatorBoard.getBfx()
+                .executeJavascript("inviteCustomer(" + makeParam(user, customer) + ")");
         }
     }
 
@@ -417,7 +456,8 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
             if (HtmlBoardProps.getInstance().isNeedReload()) {
                 indicatorBoard.loadContent(prepareContent(template));
             }
-            indicatorBoard.getBfx().executeJavascript("workCustomer(" + makeParam(user, user.getCustomer()) + ")");
+            indicatorBoard.getBfx()
+                .executeJavascript("workCustomer(" + makeParam(user, user.getCustomer()) + ")");
         }
     }
 
@@ -428,23 +468,27 @@ public class QIndicatorHtmlboard implements IIndicatorBoard {
             if (HtmlBoardProps.getInstance().isNeedReload()) {
                 indicatorBoard.loadContent(prepareContent(template));
             }
-            indicatorBoard.getBfx().executeJavascript("killCustomer(" + makeParam(user, user.getCustomer() == null ? user.getShadow().getOldCustomer() : user.getCustomer()) + ")");
+            indicatorBoard.getBfx().executeJavascript("killCustomer(" + makeParam(user,
+                user.getCustomer() == null ? user.getShadow().getOldCustomer() : user.getCustomer())
+                + ")");
         }
     }
 
     /**
-     * {"user":{"name":"Ivanov", "point":"222", "ext":"<b>ext field</b>"}, "servece":{"name":"Spravka", prefix:"A", "description":"Long horn"},
-     * "customer":{prefix:"A", "number":"159", "data":"null"}}
-     *
-     * @param user
-     * @param customer
-     * @return
+     * {"user":{"name":"Ivanov", "point":"222", "ext":"<b>ext field</b>"},
+     * "servece":{"name":"Spravka", prefix:"A", "description":"Long horn"}, "customer":{prefix:"A",
+     * "number":"159", "data":"null"}}
      */
     private String makeParam(QUser user, QCustomer customer) {
         //{"user":{"name":"Ivanov", "point":"222", "ext":"<b>ext field</b>"}, "servece":{"name":"Spravka", prefix:"A", "description":"Long horn"}, "customer":{prefix:"A", "number":"159", "data":"null"}} ); //To change body of generated methods, choose Tools | Templates.
-        return "{\"user\":{\"name\":\"" + user.getName() + "\", \"point\":\"" + user.getPoint() + "\", \"ext\":\"" + user.getPointExt() + "\"}, "
-                + "\"servece\":{\"name\":\"" + customer.getService().getName() + "\", prefix:\"" + customer.getService().getPrefix() + "\", \"description\":\"" + customer.getService().getDescription() + "\"},"
-                + " \"customer\":{prefix:\"" + customer.getPrefix() + "\", \"number\":\"" + customer.getNumber() + "\", \"data\":\"" + customer.getInput_data() + "\"}}";
+        return "{\"user\":{\"name\":\"" + user.getName() + "\", \"point\":\"" + user.getPoint()
+            + "\", \"ext\":\"" + user.getPointExt() + "\"}, "
+            + "\"servece\":{\"name\":\"" + customer.getService().getName() + "\", prefix:\""
+            + customer
+            .getService().getPrefix() + "\", \"description\":\"" + customer.getService()
+            .getDescription() + "\"},"
+            + " \"customer\":{prefix:\"" + customer.getPrefix() + "\", \"number\":\"" + customer
+            .getNumber() + "\", \"data\":\"" + customer.getInput_data() + "\"}}";
     }
 
 }

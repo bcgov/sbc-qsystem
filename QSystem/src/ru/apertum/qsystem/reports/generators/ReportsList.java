@@ -16,6 +16,11 @@
  */
 package ru.apertum.qsystem.reports.generators;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.sql.Connection;
+import java.util.HashMap;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.client.forms.FAbout;
@@ -28,14 +33,7 @@ import ru.apertum.qsystem.reports.model.AGenerator;
 import ru.apertum.qsystem.reports.model.QReportsList;
 import ru.apertum.qsystem.reports.net.NetUtil;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.sql.Connection;
-import java.util.HashMap;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class ReportsList extends AGenerator {
@@ -61,7 +59,8 @@ public class ReportsList extends AGenerator {
         // разбирем параметры
         final HashMap<String, String> cookie = NetUtil.getCookie(entityContent, "&");
         if (cookie.containsKey("username") && cookie.containsKey("password")) {
-            if (QReportsList.getInstance().isTrueUser(cookie.get("username"), cookie.get("password"))) {
+            if (QReportsList.getInstance()
+                .isTrueUser(cookie.get("username"), cookie.get("password"))) {
                 res = "/ru/apertum/qsystem/reports/web/reportList.html";
                 usr = cookie.get("username");
                 pwd = cookie.get("password");
@@ -71,16 +70,25 @@ public class ReportsList extends AGenerator {
         byte[] result = null;
         try {
             result = RepResBundle.getInstance().prepareString(
-                    new String(Uses.readInputStream(inStream), "UTF-8")).
-                    replaceFirst(Uses.ANCHOR_PROJECT_NAME_FOR_REPORT, Uses.getLocaleMessage("project.name" + FAbout.getCMRC_SUFF())).
-                    getBytes("UTF-8");
+                new String(Uses.readInputStream(inStream), "UTF-8")).
+                replaceFirst(Uses.ANCHOR_PROJECT_NAME_FOR_REPORT,
+                    Uses.getLocaleMessage("project.name" + FAbout.getCMRC_SUFF())).
+                getBytes("UTF-8");
             if ("/ru/apertum/qsystem/reports/web/reportList.html".equals(res)) {
                 // добавим список аналитических отчетов
-                result = new String(result, "UTF-8").replaceFirst(Uses.ANCHOR_REPORT_LIST, QReportsList.getInstance().getHtmlRepList()).getBytes("UTF-8");
+                result = new String(result, "UTF-8")
+                    .replaceFirst(Uses.ANCHOR_REPORT_LIST,
+                        QReportsList.getInstance().getHtmlRepList())
+                    .getBytes("UTF-8");
                 // Добавим кукисы сессии
                 //<META HTTP-EQUIV="Set-Cookie" CONTENT="NAME=value; EXPIRES=date; DOMAIN=domain_name; PATH=path; SECURE">
-                final String coocie = "<META HTTP-EQUIV=\"Set-Cookie\" CONTENT=\"username=" + URLEncoder.encode(usr, "utf-8") + "\">\n<META HTTP-EQUIV=\"Set-Cookie\" CONTENT=\"password=" + URLEncoder.encode(pwd, "utf-8") + "\">";
-                result = new String(result, "UTF-8").replaceFirst(Uses.ANCHOR_COOCIES, coocie).getBytes("UTF-8");
+                final String coocie =
+                    "<META HTTP-EQUIV=\"Set-Cookie\" CONTENT=\"username=" + URLEncoder
+                        .encode(usr, "utf-8")
+                        + "\">\n<META HTTP-EQUIV=\"Set-Cookie\" CONTENT=\"password=" + URLEncoder
+                        .encode(pwd, "utf-8") + "\">";
+                result = new String(result, "UTF-8").replaceFirst(Uses.ANCHOR_COOCIES, coocie)
+                    .getBytes("UTF-8");
             }
         } catch (IOException ex) {
             throw new ReportException("Ошибка чтения ресурса для диалогового выбора отчета. " + ex);

@@ -16,16 +16,14 @@
  */
 package ru.apertum.qsystem.reports.common;
 
-import ru.apertum.qsystem.client.Locales;
-import ru.apertum.qsystem.common.QLog;
-
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import ru.apertum.qsystem.client.Locales;
+import ru.apertum.qsystem.common.QLog;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RepResBundle {
@@ -33,31 +31,27 @@ public class RepResBundle {
     final private ResourceBundle bundle;
 
     private RepResBundle() {
-        bundle = ResourceBundle.getBundle("ru/apertum/qsystem/reports/templates/i3-label-rep", Locales.getInstance().getLangCurrent());
+        bundle = ResourceBundle.getBundle("ru/apertum/qsystem/reports/templates/i3-label-rep",
+            Locales.getInstance().getLangCurrent());
     }
 
     public static RepResBundle getInstance() {
         return RepResBundleHolder.INSTANCE;
     }
 
-    private static class RepResBundleHolder {
-
-        private static final RepResBundle INSTANCE = new RepResBundle();
-    }
-
     public String getString(String key) {
         return bundle.getString(key);
     }
-    
+
     public boolean present(String key) {
         return bundle.containsKey(key);
     }
-    
+
     public String getStringNulled(String key) {
         if (bundle.containsKey(key)) {
             return bundle.getString(key);
         } else {
-            QLog.l().logRep().warn("No lang bundle \"" + key+"\".");
+            QLog.l().logRep().warn("No lang bundle \"" + key + "\".");
             return null;
         }
     }
@@ -66,7 +60,7 @@ public class RepResBundle {
         if (bundle.containsKey(key)) {
             return bundle.getString(key);
         } else {
-            QLog.l().logRep().warn("No lang bundle. \"" + key+"\".");
+            QLog.l().logRep().warn("No lang bundle. \"" + key + "\".");
             return key;
         }
     }
@@ -83,5 +77,10 @@ public class RepResBundle {
         }
 
         return source;
+    }
+
+    private static class RepResBundleHolder {
+
+        private static final RepResBundle INSTANCE = new RepResBundle();
     }
 }

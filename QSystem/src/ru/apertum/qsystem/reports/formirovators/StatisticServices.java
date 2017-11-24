@@ -16,13 +16,6 @@
  */
 package ru.apertum.qsystem.reports.formirovators;
 
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.http.HttpRequest;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.exceptions.ReportException;
-import ru.apertum.qsystem.reports.common.Response;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,45 +23,44 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.HttpRequest;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.exceptions.ReportException;
+import ru.apertum.qsystem.reports.common.Response;
 
 /**
  * Статистический отчет в разрезе услуг за период.
+ *
  * @author Evgeniy Egorov
  */
 public class StatisticServices extends AFormirovator {
 
-    /**
-     * Метод формирования параметров для отчета.
-     * В отчет нужно передать некие параметры. Они упаковываются в Мар.
-     * Если параметры не нужны, то сформировать пустой Мар.
-     * @param driverClassName
-     * @param url
-     * @param username
-     * @param password
-     * @param request
-     * @return
-     */
-    @Override
-    public Map getParameters(String driverClassName, String url, String username, String password, HttpRequest request) {
-        return paramMap;
-    }
     /**
      * Для параметров
      */
     final private HashMap<String, Date> paramMap = new HashMap<>();
 
     /**
-     * Метод получения коннекта к базе если отчет строится через коннект.
-     * Если отчет строится не через коннект, а формироватором, то выдать null.
-     * @param driverClassName
-     * @param url
-     * @param username
-     * @param password
-     * @param request
+     * Метод формирования параметров для отчета. В отчет нужно передать некие параметры. Они
+     * упаковываются в Мар. Если параметры не нужны, то сформировать пустой Мар.
+     */
+    @Override
+    public Map getParameters(String driverClassName, String url, String username, String password,
+        HttpRequest request) {
+        return paramMap;
+    }
+
+    /**
+     * Метод получения коннекта к базе если отчет строится через коннект. Если отчет строится не
+     * через коннект, а формироватором, то выдать null.
+     *
      * @return коннект соединения к базе или null.
      */
     @Override
-    public Connection getConnection(String driverClassName, String url, String username, String password, HttpRequest request) {
+    public Connection getConnection(String driverClassName, String url, String username,
+        String password, HttpRequest request) {
         final Connection connection;
         try {
             Class.forName(driverClassName);
@@ -80,12 +72,15 @@ public class StatisticServices extends AFormirovator {
     }
 
     @Override
-    public Response getDialog(String driverClassName, String url, String username, String password, HttpRequest request, String errorMessage) {
-        return getDialog("/ru/apertum/qsystem/reports/web/get_period_for_statistic_services.html", request, errorMessage);
+    public Response getDialog(String driverClassName, String url, String username, String password,
+        HttpRequest request, String errorMessage) {
+        return getDialog("/ru/apertum/qsystem/reports/web/get_period_for_statistic_services.html",
+            request, errorMessage);
     }
 
     @Override
-    public String validate(String driverClassName, String url, String username, String password, HttpRequest request, HashMap<String, String> params) {
+    public String validate(String driverClassName, String url, String username, String password,
+        HttpRequest request, HashMap<String, String> params) {
         //sd=20.01.2009&ed=28.01.2009
         // проверка на корректность введенных параметров
         QLog.l().logger().trace("Принятые параметры \"" + params.toString() + "\".");

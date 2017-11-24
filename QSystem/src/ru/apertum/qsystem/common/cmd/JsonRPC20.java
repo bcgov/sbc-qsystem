@@ -20,10 +20,13 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class JsonRPC20 extends AJsonRPC20 {
+
+    @Expose
+    @SerializedName("params")
+    private CmdParams params;
 
     public JsonRPC20() {
     }
@@ -32,15 +35,12 @@ public class JsonRPC20 extends AJsonRPC20 {
         this.method = method;
         this.params = params;
     }
-    @Expose
-    @SerializedName("params")
-    private CmdParams params;
-
-    public void setParams(CmdParams params) {
-        this.params = params;
-    }
 
     public CmdParams getParams() {
         return params;
+    }
+
+    public void setParams(CmdParams params) {
+        this.params = params;
     }
 }

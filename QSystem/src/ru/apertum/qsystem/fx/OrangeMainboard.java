@@ -16,6 +16,7 @@
  */
 package ru.apertum.qsystem.fx;
 
+import java.io.File;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl;
@@ -23,8 +24,6 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ServerException;
-
-import java.io.File;
 
 /*
 import javafx.animation.Animation;
@@ -47,7 +46,6 @@ import javafx.util.Duration;
  */
 
 /**
- *
  * @author Евгений
  */
 public class OrangeMainboard extends ABoardFX {
@@ -56,12 +54,16 @@ public class OrangeMainboard extends ABoardFX {
     public void showBoard() {
         File paramFile = new File("config/mainboardfx.properties");
         try {
-            final FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-                    .configure(new FileBasedBuilderParametersImpl().setFile(paramFile).setEncoding("utf8"));
+            final FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
+                PropertiesConfiguration.class)
+                .configure(
+                    new FileBasedBuilderParametersImpl().setFile(paramFile).setEncoding("utf8"));
             cfg = builder.getConfiguration();
         } catch (ConfigurationException ex) {
-            QLog.l().logger().error("Не загружен файл конфигурации " + paramFile.getAbsolutePath(), ex);
-            throw new ServerException("Не загружен файл конфигурации " + paramFile.getAbsolutePath());
+            QLog.l().logger()
+                .error("Не загружен файл конфигурации " + paramFile.getAbsolutePath(), ex);
+            throw new ServerException(
+                "Не загружен файл конфигурации " + paramFile.getAbsolutePath());
         }
 
         super.showBoard();

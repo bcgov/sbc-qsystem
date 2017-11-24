@@ -17,7 +17,6 @@
 package ru.apertum.qsystem.extra;
 
 /**
- *
  * @author egorov
  */
 public interface IDataExchange extends IExtra {

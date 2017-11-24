@@ -19,11 +19,9 @@ package ru.apertum.qsystem.common.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.awt.*;
+import java.awt.Color;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QSegmentParams {

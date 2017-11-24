@@ -16,17 +16,21 @@
  */
 package ru.apertum.qsystem.server.model.calendar;
 
-import ru.apertum.qsystem.client.forms.FAdmin;
-
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridLayout;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.border.BevelBorder;
+import javax.swing.table.TableCellRenderer;
+import ru.apertum.qsystem.client.forms.FAdmin;
 
 /**
  * Ячейка сетки календаря
+ *
  * @author Evgeniy Egorov
  */
 public class TableCell extends JLabel implements TableCellRenderer {
@@ -38,7 +42,8 @@ public class TableCell extends JLabel implements TableCellRenderer {
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+        boolean hasFocus, int row, int column) {
         if (column == 0) {
             // setBackground(Color.lightGray);
             switch (row) {
@@ -89,9 +94,16 @@ public class TableCell extends JLabel implements TableCellRenderer {
             // залочим несуществующие даты, таблица все же прямоугольная
             if (checkDate(row, column)) {
                 if (isSelected && table.hasFocus()) {
-                    setBackground(((CalendarTableModel) table.getModel()).addDay(getDate(row, column), /*!hasFocus*/ !(table.getSelectedColumnCount() == 1 && table.getSelectedRowCount() == 1)) ? Color.lightGray : getWorkColor(row));
+                    setBackground(((CalendarTableModel) table.getModel())
+                        .addDay(getDate(row, column), /*!hasFocus*/
+                            !(table.getSelectedColumnCount() == 1
+                                && table.getSelectedRowCount() == 1))
+                        ? Color.lightGray : getWorkColor(row));
                 } else {
-                    setBackground(((CalendarTableModel) table.getModel()).isFreeDate(getDate(row, column)) != null ? Color.lightGray : getWorkColor(row));
+                    setBackground(
+                        ((CalendarTableModel) table.getModel()).isFreeDate(getDate(row, column))
+                            != null
+                            ? Color.lightGray : getWorkColor(row));
                 }
             } else {
                 setBackground(Color.black);

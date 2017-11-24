@@ -16,6 +16,12 @@
  */
 package ru.apertum.qsystem.server.model.postponed;
 
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import javax.swing.DefaultListModel;
+import javax.swing.Timer;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
@@ -30,44 +36,11 @@ import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.controller.Executer;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QPostponedList extends DefaultListModel {
 
-    public QPostponedList loadPostponedList(LinkedList<QCustomer> customers) {
-        QLog.l().logQUser().debug("loadPostponedList");
-        clear();
-        final LinkedList<QCustomer> dbCustomers_postponed = new LinkedList<QCustomer>(
-                Spring.getInstance().getHt().findByCriteria(
-                        DetachedCriteria.forClass(QCustomer.class)
-                                .add(Property.forName("stateIn").eq(11))
-                                .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
-
-        for (QCustomer cust : dbCustomers_postponed) {
-            QLog.l().logQUser().debug("addCustomer: " + cust);
-            addElement(cust);
-        }
-
-        final LinkedList<QCustomer> dbCustomers_redirect = new LinkedList<QCustomer>(
-                Spring.getInstance().getHt().findByCriteria(
-                        DetachedCriteria.forClass(QCustomer.class)
-                                .add(Property.forName("stateIn").eq(12))
-                                .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
-
-        for (QCustomer cust : dbCustomers_redirect) {
-            QLog.l().logQUser().debug("addCustomer: " + cust);
-            addElement(cust);
-        }
-        return this;
-    }
     /**
      * Таймер по которому будем выгонять временных отложенных
      */
@@ -82,8 +55,15 @@ public class QPostponedList extends DefaultListModel {
                     try {
                         final ArrayList<QCustomer> forDel = new ArrayList<>();
                         for (QCustomer customer : getPostponedCustomers()) {
-                            if (customer.getPostponPeriod() > 0 && customer.getFinishPontpone() < System.currentTimeMillis()) {
-                                QLog.l().logger().debug("Перемещение по таймеру из отложенных кастомера №" + customer.getPrefix() + customer.getNumber() + " в услугу \"" + customer.getService().getName() + "\"");
+                            if (customer.getPostponPeriod() > 0
+                                && customer.getFinishPontpone() < System
+                                .currentTimeMillis()) {
+                                QLog.l().logger().debug(
+                                    "Перемещение по таймеру из отложенных кастомера №" + customer
+                                        .getPrefix()
+                                        + customer.getNumber() + " в услугу \"" + customer
+                                        .getService().getName()
+                                        + "\"");
                                 // время сидения вышло, пора отправляться в очередь.
                                 forDel.add(customer);
                                 // в очередь, сукины дети
@@ -97,7 +77,8 @@ public class QPostponedList extends DefaultListModel {
                                 // Состояние у него "Стою, жду".
                                 customer.setState(CustomerState.STATE_WAIT_AFTER_POSTPONED);
                                 // разослать оповещение
-                                Uses.sendUDPBroadcast(customer.getService().getId().toString(), ServerProps.getInstance().getProps().getClientPort());
+                                Uses.sendUDPBroadcast(customer.getService().getId().toString(),
+                                    ServerProps.getInstance().getProps().getClientPort());
                             }
                         }
                         forDel.stream().forEach((qCustomer) -> {
@@ -109,7 +90,8 @@ public class QPostponedList extends DefaultListModel {
                         Executer.CLIENT_TASK_LOCK.unlock();
                     }
                 } catch (Exception ex) {
-                    throw new ServerException("Ошибка при перемещении в очередь отложенного из пула по таймеру " + ex);
+                    throw new ServerException(
+                        "Ошибка при перемещении в очередь отложенного из пула по таймеру " + ex);
                 } finally {
                     Executer.POSTPONED_TASK_LOCK.unlock();
                 }
@@ -122,9 +104,31 @@ public class QPostponedList extends DefaultListModel {
         return QPostponedListHolder.INSTANCE;
     }
 
-    private static class QPostponedListHolder {
+    public QPostponedList loadPostponedList(LinkedList<QCustomer> customers) {
+        QLog.l().logQUser().debug("loadPostponedList");
+        clear();
+        final LinkedList<QCustomer> dbCustomers_postponed = new LinkedList<QCustomer>(
+            Spring.getInstance().getHt().findByCriteria(
+                DetachedCriteria.forClass(QCustomer.class)
+                    .add(Property.forName("stateIn").eq(11))
+                    .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
 
-        private static final QPostponedList INSTANCE = new QPostponedList();
+        for (QCustomer cust : dbCustomers_postponed) {
+            QLog.l().logQUser().debug("addCustomer: " + cust);
+            addElement(cust);
+        }
+
+        final LinkedList<QCustomer> dbCustomers_redirect = new LinkedList<QCustomer>(
+            Spring.getInstance().getHt().findByCriteria(
+                DetachedCriteria.forClass(QCustomer.class)
+                    .add(Property.forName("stateIn").eq(12))
+                    .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
+
+        for (QCustomer cust : dbCustomers_redirect) {
+            QLog.l().logQUser().debug("addCustomer: " + cust);
+            addElement(cust);
+        }
+        return this;
     }
 
     public LinkedList<QCustomer> getPostponedCustomers() {
@@ -135,8 +139,6 @@ public class QPostponedList extends DefaultListModel {
 
     /**
      * Может вернуть NULL если не нашлось
-     * @param id
-     * @return
      */
     public QCustomer getById(long id) {
         for (Object object : toArray()) {
@@ -146,5 +148,10 @@ public class QPostponedList extends DefaultListModel {
             }
         }
         return null;
+    }
+
+    private static class QPostponedListHolder {
+
+        private static final QPostponedList INSTANCE = new QPostponedList();
     }
 }

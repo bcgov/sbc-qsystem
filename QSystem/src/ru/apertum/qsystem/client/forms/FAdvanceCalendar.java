@@ -16,6 +16,23 @@
  */
 package ru.apertum.qsystem.client.forms;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.image.MemoryImageSource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -36,42 +53,16 @@ import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.server.model.QAdvanceCustomer;
 import ru.apertum.qsystem.server.model.QService;
 
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
-import java.awt.image.MemoryImageSource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 /**
- * Created on 27.08.2009, 10:15:34 Сетка-календарь для предварительной записи. Имеет метод для осуществления всех действий. Вся логика инкапсулирована в этом
- * классе.
+ * Created on 27.08.2009, 10:15:34 Сетка-календарь для предварительной записи. Имеет метод для
+ * осуществления всех действий. Вся логика инкапсулирована в этом классе.
  *
  * @author Evgeniy Egorov
  */
 public class FAdvanceCalendar extends javax.swing.JDialog {
 
     private static ResourceMap localeMap = null;
-
-    private static String getLocaleMessage(String key) {
-        if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(FAdvanceCalendar.class);
-        }
-        return localeMap.getString(key);
-    }
     private static FAdvanceCalendar advanceCalendar;
-
-    /**
-     * Creates new form FAdvanceCalendar
-     *
-     * @param parent
-     * @param modal
-     */
-    public FAdvanceCalendar(Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
-    }
     private static INetProperty netProperty;
     private static QService service;
     private static String siteMark;
@@ -80,9 +71,68 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
     private static long advancedCustomer = -1;
     private static String inputData = null;
     private static String comments = "";
+    /**
+     * Таймер, по которому будем выходить в корень меню.
+     */
+    public ATalkingClock clockBack = new ATalkingClock(delay, 1) {
+
+        @Override
+        public void run() {
+            setVisible(false);
+        }
+    };
+    private Date firstWeekDay;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonClose;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel labelFriday;
+    private javax.swing.JLabel labelMonday;
+    private javax.swing.JLabel labelSaturday;
+    private javax.swing.JLabel labelSunday;
+    private javax.swing.JLabel labelThursday;
+    private javax.swing.JLabel labelTuesday;
+    private javax.swing.JLabel labelWednesday;
+    private javax.swing.JPanel panelBottom;
+    private javax.swing.JPanel panelButtons;
+    private javax.swing.JPanel panelFri;
+    private javax.swing.JPanel panelHeader;
+    private javax.swing.JPanel panelMon;
+    private javax.swing.JPanel panelNavigation;
+    private javax.swing.JPanel panelSun;
+    private javax.swing.JPanel panelSut;
+    private javax.swing.JPanel panelThu;
+    private javax.swing.JPanel panelTus;
+    private javax.swing.JPanel panelWed;
+    private ru.apertum.qsystem.client.model.QPanel qPanel1;
+    private ru.apertum.qsystem.client.model.QPanel qPanel2;
+    private ru.apertum.qsystem.client.model.QPanel qPanel3;
+    private ru.apertum.qsystem.client.model.QPanel qPanel4;
+    private ru.apertum.qsystem.client.model.QPanel qPanel5;
+    private ru.apertum.qsystem.client.model.QPanel qPanel6;
+    private ru.apertum.qsystem.client.model.QPanel qPanel7;
+    private ru.apertum.qsystem.client.model.QPanel qPanel8;
 
     /**
-     * Статический метод который показывает модально диалог выбора времени для предварительной записи клиентов.
+     * Creates new form FAdvanceCalendar
+     */
+    public FAdvanceCalendar(Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+    }
+
+    private static String getLocaleMessage(String key) {
+        if (localeMap == null) {
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(FAdvanceCalendar.class);
+        }
+        return localeMap.getString(key);
+    }
+
+    /**
+     * Статический метод который показывает модально диалог выбора времени для предварительной
+     * записи клиентов.
      *
      * @param parent фрейм относительно которого будет модальность
      * @param modal модальный диалог или нет
@@ -90,13 +140,18 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
      * @param service услугa, в которую происходит предварительная запись
      * @param fullscreen растягивать форму на весь экран и прятать мышку или нет
      * @param delay задержка перед скрытием диалога. если 0, то нет автозакрытия диалога
-     * @param advCustomer ID клиента предварительно идентифицированного, например в регистратуре по медполису. -1 если нет авторизации
-     * @param inputData введеные клиентом данные перед регистрацией, если это требуется в услуге. null если не вводили.
-     * @param comments комментарии по предварительно записанному клиенту если ставили из админкивведеные клиентом данные перед регистрацией, если это требуется
-     * в услуге. null если не вводили. * @return если null, то отказались от предварительной записи
-     * @return
+     * @param advCustomer ID клиента предварительно идентифицированного, например в регистратуре по
+     * медполису. -1 если нет авторизации
+     * @param inputData введеные клиентом данные перед регистрацией, если это требуется в услуге.
+     * null если не вводили.
+     * @param comments комментарии по предварительно записанному клиенту если ставили из
+     * админкивведеные клиентом данные перед регистрацией, если это требуется в услуге. null если не
+     * вводили. * @return если null, то отказались от предварительной записи
      */
-    public static QAdvanceCustomer showCalendar(Frame parent, boolean modal, INetProperty netProperty, QService service, boolean fullscreen, int delay, long advCustomer, String inputData, String comments) {
+    public static QAdvanceCustomer showCalendar(Frame parent, boolean modal,
+        INetProperty netProperty,
+        QService service, boolean fullscreen, int delay, long advCustomer, String inputData,
+        String comments) {
         FAdvanceCalendar.delay = delay;
         FAdvanceCalendar.advancedCustomer = advCustomer;
         FAdvanceCalendar.inputData = inputData;
@@ -116,8 +171,10 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
                 Uses.setFullSize(advanceCalendar);
                 if (QConfig.cfg().isHideCursor()) {
                     int[] pixels = new int[16 * 16];
-                    Image image = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, pixels, 0, 16));
-                    Cursor transparentCursor = Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), "invisibleCursor");
+                    Image image = Toolkit.getDefaultToolkit()
+                        .createImage(new MemoryImageSource(16, 16, pixels, 0, 16));
+                    Cursor transparentCursor = Toolkit.getDefaultToolkit()
+                        .createCustomCursor(image, new Point(0, 0), "invisibleCursor");
                     advanceCalendar.setCursor(transparentCursor);
                 }
                 advanceCalendar.setVisible(true);
@@ -129,16 +186,6 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         }
         return result;
     }
-    /**
-     * Таймер, по которому будем выходить в корень меню.
-     */
-    public ATalkingClock clockBack = new ATalkingClock(delay, 1) {
-
-        @Override
-        public void run() {
-            setVisible(false);
-        }
-    };
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -185,15 +232,16 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelNavigation.setName("panelNavigation"); // NOI18N
         panelNavigation.setOpaque(false);
 
-        javax.swing.GroupLayout panelNavigationLayout = new javax.swing.GroupLayout(panelNavigation);
+        javax.swing.GroupLayout panelNavigationLayout = new javax.swing.GroupLayout(
+            panelNavigation);
         panelNavigation.setLayout(panelNavigationLayout);
         panelNavigationLayout.setHorizontalGroup(
             panelNavigationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1255, Short.MAX_VALUE)
+                .addGap(0, 1255, Short.MAX_VALUE)
         );
         panelNavigationLayout.setVerticalGroup(
             panelNavigationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 15, Short.MAX_VALUE)
+                .addGap(0, 15, Short.MAX_VALUE)
         );
 
         panelHeader.setBorder(new javax.swing.border.MatteBorder(null));
@@ -201,8 +249,11 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelHeader.setOpaque(false);
         panelHeader.setLayout(new java.awt.GridLayout(1, 0));
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FAdvanceCalendar.class);
-        qPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2, resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(FAdvanceCalendar.class);
+        qPanel2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2,
+            resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
         qPanel2.setEndColor(resourceMap.getColor("qPanel2.endColor")); // NOI18N
         qPanel2.setEndPoint(new java.awt.Point(0, 100));
         qPanel2.setGradient(true);
@@ -219,18 +270,22 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         qPanel2.setLayout(qPanel2Layout);
         qPanel2Layout.setHorizontalGroup(
             qPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelMonday, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(labelMonday, javax.swing.GroupLayout.DEFAULT_SIZE, 176,
+                    Short.MAX_VALUE)
         );
         qPanel2Layout.setVerticalGroup(
             qPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelMonday, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(labelMonday, javax.swing.GroupLayout.DEFAULT_SIZE, 90,
+                    Short.MAX_VALUE)
         );
 
-        labelMonday.getAccessibleContext().setAccessibleName(resourceMap.getString("labelMonday.AccessibleContext.accessibleName")); // NOI18N
+        labelMonday.getAccessibleContext().setAccessibleName(
+            resourceMap.getString("labelMonday.AccessibleContext.accessibleName")); // NOI18N
 
         panelHeader.add(qPanel2);
 
-        qPanel3.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2, resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
+        qPanel3.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2,
+            resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
         qPanel3.setEndColor(resourceMap.getColor("qPanel3.endColor")); // NOI18N
         qPanel3.setEndPoint(new java.awt.Point(0, 100));
         qPanel3.setGradient(true);
@@ -247,18 +302,22 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         qPanel3.setLayout(qPanel3Layout);
         qPanel3Layout.setHorizontalGroup(
             qPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelTuesday, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(labelTuesday, javax.swing.GroupLayout.DEFAULT_SIZE, 176,
+                    Short.MAX_VALUE)
         );
         qPanel3Layout.setVerticalGroup(
             qPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelTuesday, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(labelTuesday, javax.swing.GroupLayout.DEFAULT_SIZE, 90,
+                    Short.MAX_VALUE)
         );
 
-        labelTuesday.getAccessibleContext().setAccessibleName(resourceMap.getString("labelTuesday.AccessibleContext.accessibleName")); // NOI18N
+        labelTuesday.getAccessibleContext().setAccessibleName(
+            resourceMap.getString("labelTuesday.AccessibleContext.accessibleName")); // NOI18N
 
         panelHeader.add(qPanel3);
 
-        qPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2, resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
+        qPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2,
+            resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
         qPanel4.setEnabled(false);
         qPanel4.setEndColor(resourceMap.getColor("qPanel4.endColor")); // NOI18N
         qPanel4.setEndPoint(new java.awt.Point(0, 100));
@@ -276,18 +335,22 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         qPanel4.setLayout(qPanel4Layout);
         qPanel4Layout.setHorizontalGroup(
             qPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelWednesday, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(labelWednesday, javax.swing.GroupLayout.DEFAULT_SIZE, 176,
+                    Short.MAX_VALUE)
         );
         qPanel4Layout.setVerticalGroup(
             qPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelWednesday, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(labelWednesday, javax.swing.GroupLayout.DEFAULT_SIZE, 90,
+                    Short.MAX_VALUE)
         );
 
-        labelWednesday.getAccessibleContext().setAccessibleName(resourceMap.getString("labelWednesday.AccessibleContext.accessibleName")); // NOI18N
+        labelWednesday.getAccessibleContext().setAccessibleName(
+            resourceMap.getString("labelWednesday.AccessibleContext.accessibleName")); // NOI18N
 
         panelHeader.add(qPanel4);
 
-        qPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2, resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
+        qPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2,
+            resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
         qPanel5.setEnabled(false);
         qPanel5.setEndColor(resourceMap.getColor("qPanel5.endColor")); // NOI18N
         qPanel5.setEndPoint(new java.awt.Point(0, 100));
@@ -305,18 +368,22 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         qPanel5.setLayout(qPanel5Layout);
         qPanel5Layout.setHorizontalGroup(
             qPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelThursday, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(labelThursday, javax.swing.GroupLayout.DEFAULT_SIZE, 176,
+                    Short.MAX_VALUE)
         );
         qPanel5Layout.setVerticalGroup(
             qPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelThursday, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(labelThursday, javax.swing.GroupLayout.DEFAULT_SIZE, 90,
+                    Short.MAX_VALUE)
         );
 
-        labelThursday.getAccessibleContext().setAccessibleName(resourceMap.getString("labelThursday.AccessibleContext.accessibleName")); // NOI18N
+        labelThursday.getAccessibleContext().setAccessibleName(
+            resourceMap.getString("labelThursday.AccessibleContext.accessibleName")); // NOI18N
 
         panelHeader.add(qPanel5);
 
-        qPanel6.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2, resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
+        qPanel6.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2,
+            resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
         qPanel6.setEnabled(false);
         qPanel6.setEndColor(resourceMap.getColor("qPanel6.endColor")); // NOI18N
         qPanel6.setEndPoint(new java.awt.Point(0, 100));
@@ -334,18 +401,22 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         qPanel6.setLayout(qPanel6Layout);
         qPanel6Layout.setHorizontalGroup(
             qPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelFriday, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(labelFriday, javax.swing.GroupLayout.DEFAULT_SIZE, 176,
+                    Short.MAX_VALUE)
         );
         qPanel6Layout.setVerticalGroup(
             qPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelFriday, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(labelFriday, javax.swing.GroupLayout.DEFAULT_SIZE, 90,
+                    Short.MAX_VALUE)
         );
 
-        labelFriday.getAccessibleContext().setAccessibleName(resourceMap.getString("labelFriday.AccessibleContext.accessibleName")); // NOI18N
+        labelFriday.getAccessibleContext().setAccessibleName(
+            resourceMap.getString("labelFriday.AccessibleContext.accessibleName")); // NOI18N
 
         panelHeader.add(qPanel6);
 
-        qPanel7.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2, resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
+        qPanel7.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2,
+            resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
         qPanel7.setEndColor(resourceMap.getColor("qPanel7.endColor")); // NOI18N
         qPanel7.setEndPoint(new java.awt.Point(0, 100));
         qPanel7.setGradient(true);
@@ -362,18 +433,22 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         qPanel7.setLayout(qPanel7Layout);
         qPanel7Layout.setHorizontalGroup(
             qPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelSaturday, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(labelSaturday, javax.swing.GroupLayout.DEFAULT_SIZE, 176,
+                    Short.MAX_VALUE)
         );
         qPanel7Layout.setVerticalGroup(
             qPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelSaturday, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(labelSaturday, javax.swing.GroupLayout.DEFAULT_SIZE, 90,
+                    Short.MAX_VALUE)
         );
 
-        labelSaturday.getAccessibleContext().setAccessibleName(resourceMap.getString("labelSaturday.AccessibleContext.accessibleName")); // NOI18N
+        labelSaturday.getAccessibleContext().setAccessibleName(
+            resourceMap.getString("labelSaturday.AccessibleContext.accessibleName")); // NOI18N
 
         panelHeader.add(qPanel7);
 
-        qPanel8.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2, resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
+        qPanel8.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 2,
+            resourceMap.getColor("qPanel2.border.matteColor"))); // NOI18N
         qPanel8.setEndColor(resourceMap.getColor("qPanel7.endColor")); // NOI18N
         qPanel8.setEndPoint(new java.awt.Point(0, 100));
         qPanel8.setGradient(true);
@@ -390,14 +465,17 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         qPanel8.setLayout(qPanel8Layout);
         qPanel8Layout.setHorizontalGroup(
             qPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelSunday, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(labelSunday, javax.swing.GroupLayout.DEFAULT_SIZE, 176,
+                    Short.MAX_VALUE)
         );
         qPanel8Layout.setVerticalGroup(
             qPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(labelSunday, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(labelSunday, javax.swing.GroupLayout.DEFAULT_SIZE, 90,
+                    Short.MAX_VALUE)
         );
 
-        labelSunday.getAccessibleContext().setAccessibleName(resourceMap.getString("labelSunday.AccessibleContext.accessibleName")); // NOI18N
+        labelSunday.getAccessibleContext().setAccessibleName(
+            resourceMap.getString("labelSunday.AccessibleContext.accessibleName")); // NOI18N
 
         panelHeader.add(qPanel8);
 
@@ -414,11 +492,11 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelMon.setLayout(panelMonLayout);
         panelMonLayout.setHorizontalGroup(
             panelMonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 177, Short.MAX_VALUE)
+                .addGap(0, 177, Short.MAX_VALUE)
         );
         panelMonLayout.setVerticalGroup(
             panelMonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 592, Short.MAX_VALUE)
+                .addGap(0, 592, Short.MAX_VALUE)
         );
 
         panelButtons.add(panelMon);
@@ -431,11 +509,11 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelTus.setLayout(panelTusLayout);
         panelTusLayout.setHorizontalGroup(
             panelTusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 177, Short.MAX_VALUE)
+                .addGap(0, 177, Short.MAX_VALUE)
         );
         panelTusLayout.setVerticalGroup(
             panelTusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 592, Short.MAX_VALUE)
+                .addGap(0, 592, Short.MAX_VALUE)
         );
 
         panelButtons.add(panelTus);
@@ -448,11 +526,11 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelWed.setLayout(panelWedLayout);
         panelWedLayout.setHorizontalGroup(
             panelWedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 177, Short.MAX_VALUE)
+                .addGap(0, 177, Short.MAX_VALUE)
         );
         panelWedLayout.setVerticalGroup(
             panelWedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 592, Short.MAX_VALUE)
+                .addGap(0, 592, Short.MAX_VALUE)
         );
 
         panelButtons.add(panelWed);
@@ -465,11 +543,11 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelThu.setLayout(panelThuLayout);
         panelThuLayout.setHorizontalGroup(
             panelThuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 177, Short.MAX_VALUE)
+                .addGap(0, 177, Short.MAX_VALUE)
         );
         panelThuLayout.setVerticalGroup(
             panelThuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 592, Short.MAX_VALUE)
+                .addGap(0, 592, Short.MAX_VALUE)
         );
 
         panelButtons.add(panelThu);
@@ -482,11 +560,11 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelFri.setLayout(panelFriLayout);
         panelFriLayout.setHorizontalGroup(
             panelFriLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 177, Short.MAX_VALUE)
+                .addGap(0, 177, Short.MAX_VALUE)
         );
         panelFriLayout.setVerticalGroup(
             panelFriLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 592, Short.MAX_VALUE)
+                .addGap(0, 592, Short.MAX_VALUE)
         );
 
         panelButtons.add(panelFri);
@@ -499,11 +577,11 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelSut.setLayout(panelSutLayout);
         panelSutLayout.setHorizontalGroup(
             panelSutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 177, Short.MAX_VALUE)
+                .addGap(0, 177, Short.MAX_VALUE)
         );
         panelSutLayout.setVerticalGroup(
             panelSutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 592, Short.MAX_VALUE)
+                .addGap(0, 592, Short.MAX_VALUE)
         );
 
         panelButtons.add(panelSut);
@@ -516,11 +594,11 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelSun.setLayout(panelSunLayout);
         panelSunLayout.setHorizontalGroup(
             panelSunLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 177, Short.MAX_VALUE)
+                .addGap(0, 177, Short.MAX_VALUE)
         );
         panelSunLayout.setVerticalGroup(
             panelSunLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 592, Short.MAX_VALUE)
+                .addGap(0, 592, Short.MAX_VALUE)
         );
 
         panelButtons.add(panelSun);
@@ -529,12 +607,16 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelBottom.setName("panelBottom"); // NOI18N
         panelBottom.setOpaque(false);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getActionMap(FAdvanceCalendar.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getActionMap(FAdvanceCalendar.class, this);
         buttonClose.setAction(actionMap.get("closeAdvaseForm")); // NOI18N
         buttonClose.setFont(resourceMap.getFont("buttonClose.font")); // NOI18N
         buttonClose.setIcon(resourceMap.getIcon("buttonClose.icon")); // NOI18N
         buttonClose.setText(resourceMap.getString("buttonClose.text")); // NOI18N
-        buttonClose.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(0), javax.swing.BorderFactory.createBevelBorder(0)));
+        buttonClose.setBorder(javax.swing.BorderFactory
+            .createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(0),
+                javax.swing.BorderFactory.createBevelBorder(0)));
         buttonClose.setFocusPainted(false);
         buttonClose.setName("buttonClose"); // NOI18N
 
@@ -543,7 +625,9 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         jButton1.setIcon(resourceMap.getIcon("jButton1.icon")); // NOI18N
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton1.setActionCommand(resourceMap.getString("jButton1.actionCommand")); // NOI18N
-        jButton1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(0), javax.swing.BorderFactory.createBevelBorder(0)));
+        jButton1.setBorder(javax.swing.BorderFactory
+            .createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(0),
+                javax.swing.BorderFactory.createBevelBorder(0)));
         jButton1.setFocusPainted(false);
         jButton1.setName("jButton1"); // NOI18N
 
@@ -552,7 +636,9 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         jButton2.setIcon(resourceMap.getIcon("jButton2.icon")); // NOI18N
         jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
         jButton2.setActionCommand(resourceMap.getString("jButton2.actionCommand")); // NOI18N
-        jButton2.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(0), javax.swing.BorderFactory.createBevelBorder(0)));
+        jButton2.setBorder(javax.swing.BorderFactory
+            .createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(0),
+                javax.swing.BorderFactory.createBevelBorder(0)));
         jButton2.setFocusPainted(false);
         jButton2.setName("jButton2"); // NOI18N
 
@@ -560,7 +646,9 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         jButton3.setFont(resourceMap.getFont("jButton3.font")); // NOI18N
         jButton3.setIcon(resourceMap.getIcon("jButton3.icon")); // NOI18N
         jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
-        jButton3.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(0), javax.swing.BorderFactory.createBevelBorder(0)));
+        jButton3.setBorder(javax.swing.BorderFactory
+            .createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(0),
+                javax.swing.BorderFactory.createBevelBorder(0)));
         jButton3.setFocusPainted(false);
         jButton3.setName("jButton3"); // NOI18N
 
@@ -568,67 +656,95 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         panelBottom.setLayout(panelBottomLayout);
         panelBottomLayout.setHorizontalGroup(
             panelBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelBottomLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(buttonClose, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    panelBottomLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(buttonClose, javax.swing.GroupLayout.PREFERRED_SIZE, 322,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101,
+                            Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 316,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 165,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 295,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
         );
         panelBottomLayout.setVerticalGroup(
             panelBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelBottomLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(buttonClose, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addGroup(panelBottomLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        panelBottomLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(buttonClose, javax.swing.GroupLayout.Alignment.TRAILING,
+                                javax.swing.GroupLayout.PREFERRED_SIZE, 50, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelBottomLayout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 50,
+                                    Short.MAX_VALUE)
+                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 50,
+                                    Short.MAX_VALUE)
+                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 50,
+                                    Short.MAX_VALUE)))
+                    .addContainerGap())
         );
 
         javax.swing.GroupLayout qPanel1Layout = new javax.swing.GroupLayout(qPanel1);
         qPanel1.setLayout(qPanel1Layout);
         qPanel1Layout.setHorizontalGroup(
             qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelBottom, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(panelHeader, javax.swing.GroupLayout.DEFAULT_SIZE, 1257, Short.MAX_VALUE)
-            .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, 1257, Short.MAX_VALUE)
-            .addComponent(panelNavigation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelBottom, javax.swing.GroupLayout.Alignment.TRAILING,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    Short.MAX_VALUE)
+                .addComponent(panelHeader, javax.swing.GroupLayout.DEFAULT_SIZE, 1257,
+                    Short.MAX_VALUE)
+                .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, 1257,
+                    Short.MAX_VALUE)
+                .addComponent(panelNavigation, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         qPanel1Layout.setVerticalGroup(
             qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(qPanel1Layout.createSequentialGroup()
-                .addComponent(panelNavigation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelBottom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(qPanel1Layout.createSequentialGroup()
+                    .addComponent(panelNavigation, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(panelHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 94,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, 0)
+                    .addComponent(panelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, 596,
+                        Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(panelBottom, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void changeTextToLocale() {
-        final org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FAdvanceCalendar.class);
+        final org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(FAdvanceCalendar.class);
         buttonClose.setText(resourceMap.getString("buttonClose.text")); // NOI18N
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
@@ -669,7 +785,6 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         gc.set(GregorianCalendar.DAY_OF_YEAR, gc.get(GregorianCalendar.DAY_OF_YEAR) + 7);
         showWeek(gc.getTime());
     }
-    private Date firstWeekDay;
 
     /**
      * Показать недельную сетку для выбора предварительной записи
@@ -687,10 +802,13 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         /**
          * Получим грид доступности часов для записи
          */
-        final GridAndParams res = NetCommander.getGridOfWeek(netProperty, service.getId(), this.firstWeekDay, advancedCustomer);
+        final GridAndParams res = NetCommander
+            .getGridOfWeek(netProperty, service.getId(), this.firstWeekDay, advancedCustomer);
         if (res.getSpError() != null) {
             QLog.l().logger().error(res.getSpError());
-            JOptionPane.showConfirmDialog(this, res.getSpError(), getLocaleMessage("dialog.message.title"), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane
+                .showConfirmDialog(this, res.getSpError(), getLocaleMessage("dialog.message.title"),
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
         showWeek(res, gc);
@@ -711,7 +829,8 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
             }
             clockBack.start();
         }
-        QLog.l().logger().debug("Предварительная запись с " + res.getStartTime() + " до " + res.getFinishTime());
+        QLog.l().logger()
+            .debug("Предварительная запись с " + res.getStartTime() + " до " + res.getFinishTime());
         panelButtons.setVisible(false);
 
         printDayWeek(panelMon, res, 1);
@@ -755,10 +874,15 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
             // проверим не отлистал ли пользователь слишком далеко, куда уже нельзя
             boolean f = true;
             int per = 0;
-            if (gc_client.get(GregorianCalendar.DAY_OF_YEAR) - gc_now.get(GregorianCalendar.DAY_OF_YEAR) > 0) {
-                per = gc_client.get(GregorianCalendar.DAY_OF_YEAR) - gc_now.get(GregorianCalendar.DAY_OF_YEAR);
+            if (gc_client.get(GregorianCalendar.DAY_OF_YEAR) - gc_now
+                .get(GregorianCalendar.DAY_OF_YEAR)
+                > 0) {
+                per = gc_client.get(GregorianCalendar.DAY_OF_YEAR) - gc_now
+                    .get(GregorianCalendar.DAY_OF_YEAR);
             } else {
-                per = gc_client.get(GregorianCalendar.DAY_OF_YEAR) + (gc_now.isLeapYear(gc_now.get(GregorianCalendar.YEAR)) ? 365 : 366 - gc_now.get(GregorianCalendar.DAY_OF_YEAR));
+                per = gc_client.get(GregorianCalendar.DAY_OF_YEAR) + (
+                    gc_now.isLeapYear(gc_now.get(GregorianCalendar.YEAR)) ? 365
+                        : 366 - gc_now.get(GregorianCalendar.DAY_OF_YEAR));
             }
             if (per > res.getAdvanceLimitPeriod() && res.getAdvanceLimitPeriod() != 0) {
                 f = false;
@@ -773,7 +897,10 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
                             clockBack.stop();
                         }
                         // ставим предварительного кастомера
-                        result = NetCommander.standInServiceAdvance(netProperty, service.getId(), date, advancedCustomer, inputData, comments);
+                        result = NetCommander
+                            .standInServiceAdvance(netProperty, service.getId(), date,
+                                advancedCustomer,
+                                inputData, comments);
                         // закрываем диалог выбора предварительного выбора времени
                         setVisible(false);
                     }
@@ -782,7 +909,10 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         }
         if (panel.getComponentCount() == 0) {
             panel.setLayout(new GridLayout(1, 1));
-            panel.add(new JLabel(new ImageIcon(Uses.loadImage(this, "/ru/apertum/qsystem/client/forms/resources/noActive.png", null)), JLabel.CENTER));
+            panel.add(new JLabel(new ImageIcon(
+                Uses.loadImage(this, "/ru/apertum/qsystem/client/forms/resources/noActive.png",
+                    null)),
+                JLabel.CENTER));
         }
     }
 
@@ -790,13 +920,20 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         ((JPanel) (label.getParent())).setBorder(new LineBorder(Color.DARK_GRAY, 5));
         gc.set(GregorianCalendar.DAY_OF_WEEK, day);
         final GregorianCalendar now = new GregorianCalendar();
-        SimpleDateFormat format_dd_MMMM_yyyy = new SimpleDateFormat("dd MMMM yyyy", Locales.getInstance().getLangCurrent());
+        SimpleDateFormat format_dd_MMMM_yyyy = new SimpleDateFormat("dd MMMM yyyy",
+            Locales.getInstance().getLangCurrent());
         if (now.get(GregorianCalendar.DAY_OF_MONTH) == gc.get(GregorianCalendar.DAY_OF_MONTH)
-                && now.get(GregorianCalendar.DAY_OF_WEEK) == gc.get(GregorianCalendar.DAY_OF_WEEK)
-                && now.get(GregorianCalendar.DAY_OF_YEAR) == gc.get(GregorianCalendar.DAY_OF_YEAR)) {
-            label.setText("<html><p align=center><span style='font-size:22.0pt;color:red'>" + getNameWeekDay(gc.getTime()) + "<br/></span><span style='font-size:22.0pt;color:red'>" + format_dd_MMMM_yyyy.format(gc.getTime()));
+            && now.get(GregorianCalendar.DAY_OF_WEEK) == gc.get(GregorianCalendar.DAY_OF_WEEK)
+            && now.get(GregorianCalendar.DAY_OF_YEAR) == gc.get(GregorianCalendar.DAY_OF_YEAR)) {
+            label.setText(
+                "<html><p align=center><span style='font-size:22.0pt;color:red'>" + getNameWeekDay(
+                    gc.getTime()) + "<br/></span><span style='font-size:22.0pt;color:red'>"
+                    + format_dd_MMMM_yyyy.format(gc.getTime()));
         } else {
-            label.setText("<html><p align=center><span style='font-size:22.0pt;color:blue'>" + getNameWeekDay(gc.getTime()) + "<br/></span><span style='font-size:18.0pt;color:black'>" + format_dd_MMMM_yyyy.format(gc.getTime()));
+            label.setText(
+                "<html><p align=center><span style='font-size:22.0pt;color:blue'>" + getNameWeekDay(
+                    gc.getTime()) + "<br/></span><span style='font-size:18.0pt;color:black'>"
+                    + format_dd_MMMM_yyyy.format(gc.getTime()));
         }
     }
 
@@ -831,36 +968,5 @@ public class FAdvanceCalendar extends javax.swing.JDialog {
         }
         return s;
     }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonClose;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JLabel labelFriday;
-    private javax.swing.JLabel labelMonday;
-    private javax.swing.JLabel labelSaturday;
-    private javax.swing.JLabel labelSunday;
-    private javax.swing.JLabel labelThursday;
-    private javax.swing.JLabel labelTuesday;
-    private javax.swing.JLabel labelWednesday;
-    private javax.swing.JPanel panelBottom;
-    private javax.swing.JPanel panelButtons;
-    private javax.swing.JPanel panelFri;
-    private javax.swing.JPanel panelHeader;
-    private javax.swing.JPanel panelMon;
-    private javax.swing.JPanel panelNavigation;
-    private javax.swing.JPanel panelSun;
-    private javax.swing.JPanel panelSut;
-    private javax.swing.JPanel panelThu;
-    private javax.swing.JPanel panelTus;
-    private javax.swing.JPanel panelWed;
-    private ru.apertum.qsystem.client.model.QPanel qPanel1;
-    private ru.apertum.qsystem.client.model.QPanel qPanel2;
-    private ru.apertum.qsystem.client.model.QPanel qPanel3;
-    private ru.apertum.qsystem.client.model.QPanel qPanel4;
-    private ru.apertum.qsystem.client.model.QPanel qPanel5;
-    private ru.apertum.qsystem.client.model.QPanel qPanel6;
-    private ru.apertum.qsystem.client.model.QPanel qPanel7;
-    private ru.apertum.qsystem.client.model.QPanel qPanel8;
     // End of variables declaration//GEN-END:variables
 }

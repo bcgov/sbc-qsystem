@@ -1,43 +1,42 @@
 package ru.apertum.qsystem.smartboard;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import javax.swing.AbstractListModel;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QOfficeList;
 
-import javax.swing.*;
-import java.util.*;
-
 /**
- * Keeps a list of all PrintRecords objects for each office. Uses the standard
- * QSystem method of the private Holder object to keep the list in the cache
+ * Keeps a list of all PrintRecords objects for each office. Uses the standard QSystem method of the
+ * private Holder object to keep the list in the cache
  *
  * @author Sean Rumsby
  */
 public class PrintRecordsList extends AbstractListModel implements List {
 
-    public static PrintRecordsList getInstance() {
-        return PrintRecordsList.PrintRecordsListHolder.INSTANCE;
-    }
-
-    private static class PrintRecordsListHolder {
-        private static final PrintRecordsList INSTANCE = new PrintRecordsList();
-    }
-
     private final List<PrintRecords> printRecords = new LinkedList<>();
-
-    public List<PrintRecords> getPrintRecords() {
-        return printRecords;
-    }
 
     public PrintRecordsList() {
         QOfficeList officeList = QOfficeList.getInstance();
 
-        for (QOffice office: officeList.getItems()) {
+        for (QOffice office : officeList.getItems()) {
             QLog.l().logQUser().debug("Adding printRecords for office" + office);
             PrintRecords pr = new PrintRecords(office);
 
             this.printRecords.add(pr);
         }
+    }
+
+    public static PrintRecordsList getInstance() {
+        return PrintRecordsList.PrintRecordsListHolder.INSTANCE;
+    }
+
+    public List<PrintRecords> getPrintRecords() {
+        return printRecords;
     }
 
     @Override
@@ -176,5 +175,10 @@ public class PrintRecordsList extends AbstractListModel implements List {
     @Override
     public PrintRecords[] toArray(Object[] a) {
         return (PrintRecords[]) printRecords.toArray(a);
+    }
+
+    private static class PrintRecordsListHolder {
+
+        private static final PrintRecordsList INSTANCE = new PrintRecordsList();
     }
 }

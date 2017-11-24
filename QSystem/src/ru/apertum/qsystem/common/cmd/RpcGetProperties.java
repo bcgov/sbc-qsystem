@@ -18,23 +18,22 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.util.LinkedHashMap;
 import ru.apertum.qsystem.server.ServerProps;
 
-import java.util.LinkedHashMap;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetProperties extends JsonRPC20 {
 
-    public RpcGetProperties() {
-    }
     @Expose
     @SerializedName("result")
     private LinkedHashMap<String, ServerProps.Section> result;
 
-    public void setResult(LinkedHashMap<String, ServerProps.Section> result) {
+    public RpcGetProperties() {
+    }
+
+    public RpcGetProperties(LinkedHashMap<String, ServerProps.Section> result) {
         this.result = result;
     }
 
@@ -42,7 +41,7 @@ public class RpcGetProperties extends JsonRPC20 {
         return result;
     }
 
-    public RpcGetProperties(LinkedHashMap<String, ServerProps.Section> result) {
+    public void setResult(LinkedHashMap<String, ServerProps.Section> result) {
         this.result = result;
     }
 }

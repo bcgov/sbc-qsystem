@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class MergTrans {
@@ -45,7 +44,8 @@ public class MergTrans {
         System.out.println();
         System.out.println(paramsFileName);
         System.out.println();
-        try (FileInputStream fis = new FileInputStream(paramsFileName); Scanner s = new Scanner(fis)) {
+        try (FileInputStream fis = new FileInputStream(paramsFileName); Scanner s = new Scanner(
+            fis)) {
             while (s.hasNextLine()) {
                 final String line = s.nextLine().trim();
                 if (!line.startsWith("#") && !line.isEmpty() && line.contains("=")) {
@@ -65,7 +65,8 @@ public class MergTrans {
         System.out.println();
         System.out.println(dataFileName);
         System.out.println();
-        try (FileInputStream fis = new FileInputStream(dataFileName); Scanner s = new Scanner(fis)) {
+        try (FileInputStream fis = new FileInputStream(dataFileName); Scanner s = new Scanner(
+            fis)) {
             while (s.hasNextLine()) {
                 final String line = s.nextLine().trim();
                 if (!line.startsWith("#") && !line.isEmpty()) {

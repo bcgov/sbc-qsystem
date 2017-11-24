@@ -4,10 +4,9 @@
  */
 package ru.apertum.qsystem.ub485.core;
 
+import java.util.ServiceLoader;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.extra.IButtonDeviceFuctory;
-
-import java.util.ServiceLoader;
 
 /**
  * Класс содержит код для распараллеливаия обработки пришедшего пакета
@@ -18,16 +17,16 @@ public class ActionTransmit implements Runnable {
 
     private byte[] bytes;
 
+    public ActionTransmit() {
+        this.bytes = new byte[0];
+    }
+
     public byte[] getBytes() {
         return bytes;
     }
 
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
-    }
-
-    public ActionTransmit() {
-        this.bytes = new byte[0];
     }
 
     @Override
@@ -42,9 +41,13 @@ public class ActionTransmit implements Runnable {
 
         if (devFuctory != null || (bytes.length == 4 && bytes[0] == 0x01 && bytes[3] == 0x07)) {
             // должно быть 4 байта, иначе коллизия
-            final IButtonDeviceFuctory.IButtonDevice dev = devFuctory == null ? AddrProp.getInstance().getAddrByRSAddr(bytes[1]) : devFuctory.getButtonDevice(bytes, UBForm.users);
+            final IButtonDeviceFuctory.IButtonDevice dev =
+                devFuctory == null ? AddrProp.getInstance().getAddrByRSAddr(bytes[1])
+                    : devFuctory.getButtonDevice(bytes, UBForm.users);
             if (dev == null) {
-                throw new RuntimeException("Anknown address from user device. " + (devFuctory == null ? "Hohlov device." : (devFuctory.toString() + " key=" + new String(bytes))));
+                throw new RuntimeException(
+                    "Anknown address from user device. " + (devFuctory == null ? "Hohlov device."
+                        : (devFuctory.toString() + " key=" + new String(bytes))));
             }
             dev.doAction(bytes);
         } else {

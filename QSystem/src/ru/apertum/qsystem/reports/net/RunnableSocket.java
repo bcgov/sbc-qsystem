@@ -16,6 +16,8 @@
  */
 package ru.apertum.qsystem.reports.net;
 
+import java.io.IOException;
+import java.net.Socket;
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpException;
 import org.apache.http.impl.DefaultHttpServerConnection;
@@ -24,11 +26,9 @@ import org.apache.http.protocol.HttpContext;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ReportException;
 
-import java.io.IOException;
-import java.net.Socket;
-
 /**
  * Класс приема данных для Apache-HTTP Core
+ *
  * @author Evgeniy Egorov
  */
 public class RunnableSocket implements Runnable {
@@ -38,15 +38,15 @@ public class RunnableSocket implements Runnable {
      */
     private Socket socket;
 
+    public RunnableSocket() {
+    }
+
     public Socket getSocket() {
         return socket;
     }
 
     public void setSocket(Socket socket) {
         this.socket = socket;
-    }
-
-    public RunnableSocket() {
     }
 
     @Override
@@ -69,14 +69,16 @@ public class RunnableSocket implements Runnable {
         } catch (IOException ex) {
             QLog.l().logRep().error("I/O error: " + ex.getMessage(), ex);
         } catch (HttpException ex) {
-            QLog.l().logRep().error("Unrecoverable HTTP protocol violation: " + ex.getMessage(), ex);
+            QLog.l().logRep()
+                .error("Unrecoverable HTTP protocol violation: " + ex.getMessage(), ex);
         } catch (Exception ex) {
             QLog.l().logRep().error("Something with HTTP server.", ex);
         } finally {
             try {
                 conn.shutdown();
             } catch (IOException ex) {
-                QLog.l().logRep().error("Default Http Server Connection have error then shutdown.", ex);
+                QLog.l().logRep()
+                    .error("Default Http Server Connection have error then shutdown.", ex);
             } catch (Exception ex) {
                 QLog.l().logRep().error("Something with runnableSocket.", ex);
             }

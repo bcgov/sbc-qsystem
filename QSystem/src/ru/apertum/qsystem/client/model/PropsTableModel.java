@@ -16,14 +16,12 @@
  */
 package ru.apertum.qsystem.client.model;
 
+import javax.swing.table.AbstractTableModel;
 import ru.apertum.qsystem.client.forms.FAdmin;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.model.QProperty;
 
-import javax.swing.table.AbstractTableModel;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class PropsTableModel extends AbstractTableModel {
@@ -70,7 +68,8 @@ public class PropsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        final String key = section.getProperties().keySet().toArray(new String[section.getProperties().size()])[rowIndex];
+        final String key = section.getProperties().keySet()
+            .toArray(new String[section.getProperties().size()])[rowIndex];
         switch (columnIndex) {
             case 0:
                 return key;
@@ -85,7 +84,8 @@ public class PropsTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        final String key = section.getProperties().keySet().toArray(new String[section.getProperties().size()])[rowIndex];
+        final String key = section.getProperties().keySet()
+            .toArray(new String[section.getProperties().size()])[rowIndex];
         switch (columnIndex) {
             case 1:
                 section.getProperty(key).setValue((String) aValue);

@@ -21,19 +21,18 @@ import com.google.gson.annotations.SerializedName;
 import ru.apertum.qsystem.server.model.infosystem.QInfoItem;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetInfoTree extends JsonRPC20 {
 
-    public RpcGetInfoTree() {
-    }
-    
     @Expose
     @SerializedName("result")
     private QInfoItem result;
 
-    public void setResult(QInfoItem result) {
+    public RpcGetInfoTree() {
+    }
+
+    public RpcGetInfoTree(QInfoItem result) {
         this.result = result;
     }
 
@@ -41,7 +40,7 @@ public class RpcGetInfoTree extends JsonRPC20 {
         return result;
     }
 
-    public RpcGetInfoTree(QInfoItem result) {
+    public void setResult(QInfoItem result) {
         this.result = result;
     }
 

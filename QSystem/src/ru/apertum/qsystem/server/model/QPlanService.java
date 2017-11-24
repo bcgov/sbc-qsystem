@@ -18,38 +18,78 @@ package ru.apertum.qsystem.server.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.server.ServerProps;
 
-import javax.persistence.*;
-import java.io.Serializable;
-
 /**
- * Это класс для загрузки набора сервисов обслуживаемых юзером. Ничего хитрого, связь многие-ко-многим + коэффициент участия. Так сделано потому что у сервисов
- * нет привязки к юзерам, эта привязка вроде как односторонняя и еще имеется поле "коэффициент участия", которое будет игнориться при связи "многие-ко-многим".
- * Текстовое название услуги подтягиваеццо отдельно.
+ * Это класс для загрузки набора сервисов обслуживаемых юзером. Ничего хитрого, связь
+ * многие-ко-многим + коэффициент участия. Так сделано потому что у сервисов нет привязки к юзерам,
+ * эта привязка вроде как односторонняя и еще имеется поле "коэффициент участия", которое будет
+ * игнориться при связи "многие-ко-многим". Текстовое название услуги подтягиваеццо отдельно.
  *
- * This is the class for downloading a set of services served by the user. Nothing tricky, many-to-many communication + participation rate. This is done because the services
- * There is no binding to users, this binding is kind of one-sided and there is also a field "coefficient of participation", which will be ignored for many-to-many communication.
- * The textual name of the service is pull-up separately.
+ * This is the class for downloading a set of services served by the user. Nothing tricky,
+ * many-to-many communication + participation rate. This is done because the services  * There is no
+ * binding to users, this binding is kind of one-sided and there is also a field "coefficient of
+ * participation", which will be ignored for many-to-many communication.  * The textual name of the
+ * service is pull-up separately.
+ *
  * @author Evgeniy Egorov
  */
 @Entity
 @Table(name = "services_users")
 public class QPlanService implements Serializable {
 
+    /**
+     * Коэфф. степени участия. По умолчанию основной. низкий/основной/VIP
+     */
+    @Expose
+    @SerializedName("coeff")
+    protected Integer coefficient = 1;
+    //@Id
+    @Expose
+    @SerializedName("id")
+    private Long id;
+    @Expose
+    @SerializedName("flex")
+    private Boolean flexible_coef = false;
+    /**
+     * Соответствие услуги.
+     */
+    @Expose
+    @SerializedName("service")
+    private QService service;
+    /**
+     * Соответствие пользователя.
+     */
+    private QUser user;
+    //******************************************************************************************************************
+    //*******            Статистика             *******************************************
+    //******************************************************************************************************************
+    private int worked = 0;
+    private long avg_work = 0;// в минутах
+    private int killed = 0;
+    private long avg_wait = 0;// в минутах
+    private int waiters = 0;
+
     public QPlanService() {
     }
 
     public QPlanService(QService service, QUser user, Integer coefficient) {
         this.coefficient = coefficient;
-        this.service = service; 
+        this.service = service;
         this.user = user;
     }
-    //@Id
-    @Expose
-    @SerializedName("id")
-    private Long id;
 
     @Id
     @Column(name = "id")
@@ -61,12 +101,6 @@ public class QPlanService implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    /**
-     * Коэфф. степени участия. По умолчанию основной. низкий/основной/VIP
-     */
-    @Expose
-    @SerializedName("coeff")
-    protected Integer coefficient = 1;
 
     @Column(name = "coefficient", insertable = true, updatable = true)
     public Integer getCoefficient() {
@@ -76,15 +110,14 @@ public class QPlanService implements Serializable {
     public void setCoefficient(Integer coefficient) {
         // выставим корректные параметры приоритета обслуживаемой услуге
         // по умолчанию "норма"
-        if (coefficient >= Uses.SERVICE_REMAINS && coefficient <= Uses.get_COEFF_WORD().size() + ServerProps.getInstance().getProps().getExtPriorNumber()) {
+        if (coefficient >= Uses.SERVICE_REMAINS
+            && coefficient <= Uses.get_COEFF_WORD().size() + ServerProps.getInstance().getProps()
+            .getExtPriorNumber()) {
             this.coefficient = coefficient;
         } else {
             this.coefficient = 1;
         }
     }
-    @Expose
-    @SerializedName("flex")
-    private Boolean flexible_coef = false;
 
     @Column(name = "flexible_coef", insertable = true, updatable = true)
     public Boolean getFlexible_coef() {
@@ -95,13 +128,6 @@ public class QPlanService implements Serializable {
         this.flexible_coef = flexible_coef;
     }
 
-    /**
-     * Соответствие услуги.
-     */
-    @Expose
-    @SerializedName("service")
-    private QService service;
-
     @OneToOne(targetEntity = QService.class)
     public QService getService() {
         return service;
@@ -110,10 +136,6 @@ public class QPlanService implements Serializable {
     public void setService(QService service) {
         this.service = service;
     }
-    /**
-     * Соответствие пользователя.
-     */
-    private QUser user;
 
     //@OneToOne(targetEntity = QUser.class)
     @ManyToOne()
@@ -128,15 +150,9 @@ public class QPlanService implements Serializable {
 
     @Override
     public String toString() {
-        return (getFlexible_coef() ? "* " : "") + "[" + Uses.get_COEFF_WORD().get(getCoefficient()) + "]" + service.getPrefix() + " " + service.getName();
+        return (getFlexible_coef() ? "* " : "") + "[" + Uses.get_COEFF_WORD().get(getCoefficient())
+            + "]" + service.getPrefix() + " " + service.getName();
     }
-    //******************************************************************************************************************
-    //*******            Статистика             *******************************************
-    //******************************************************************************************************************
-    private int worked = 0;
-    private long avg_work = 0;// в минутах
-    private int killed = 0;
-    private long avg_wait = 0;// в минутах
 
     /**
      * В минутах
@@ -147,7 +163,6 @@ public class QPlanService implements Serializable {
     public long getAvg_wait() {
         return avg_wait;
     }
-    private int waiters = 0;
 
     public void setAvg_wait(long avg_wait) {
         if (avg_wait == 0) {
@@ -193,8 +208,8 @@ public class QPlanService implements Serializable {
     }
 
     /**
-     *
-     * @param work_time время работы с кастомером, с которым работали. в милисекундах ::Time of work with the custom tool with which they worked. In milliseconds
+     * @param work_time время работы с кастомером, с которым работали. в милисекундах ::Time of work
+     * with the custom tool with which they worked. In milliseconds
      */
     public synchronized void inkWorked(long work_time) {
         this.worked++;
@@ -203,7 +218,6 @@ public class QPlanService implements Serializable {
     }
 
     /**
-     *
      * @param wait_time время ожидания кастомером, с которым начали работать. в милисекундах
      */
     public synchronized void upWait(long wait_time) {

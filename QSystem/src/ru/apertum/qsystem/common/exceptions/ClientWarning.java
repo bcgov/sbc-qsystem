@@ -16,14 +16,13 @@
  */
 package ru.apertum.qsystem.common.exceptions;
 
+import javax.swing.JOptionPane;
 import ru.apertum.qsystem.common.QLog;
 
-import javax.swing.*;
-
 /**
- * Этот класс исключения использовать для програмной генерации исклюсений.
- * Записывает StackTrace и  само исключение в лог.
- * При возникновении ошибки показывается диалоговое окно с текстом ошибки.
+ * Этот класс исключения использовать для програмной генерации исклюсений. Записывает StackTrace и
+ * само исключение в лог. При возникновении ошибки показывается диалоговое окно с текстом ошибки.
+ *
  * @author Evgeniy Egorov
  * @see ServerException
  */
@@ -31,6 +30,7 @@ public class ClientWarning {
 
     public static void showWarning(String textWarning) {
         QLog.l().logger().warn(textWarning);
-        JOptionPane.showMessageDialog(null, textWarning, "QSystem warning", JOptionPane.WARNING_MESSAGE);
+        JOptionPane
+            .showMessageDialog(null, textWarning, "QSystem warning", JOptionPane.WARNING_MESSAGE);
     }
 }

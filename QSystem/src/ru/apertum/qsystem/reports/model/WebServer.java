@@ -16,42 +16,27 @@
  */
 package ru.apertum.qsystem.reports.model;
 
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.exceptions.ReportException;
-import ru.apertum.qsystem.reports.net.RunnableSocket;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.exceptions.ReportException;
+import ru.apertum.qsystem.reports.net.RunnableSocket;
 
 /**
- * Отчетный сервер, выступающий в роли вэбсервера, обрабатывающего запросы на выдачу отчетов
- * Класс потоков, обрабатывающих запросы HTTP, для выдачи отчетов
+ * Отчетный сервер, выступающий в роли вэбсервера, обрабатывающего запросы на выдачу отчетов Класс
+ * потоков, обрабатывающих запросы HTTP, для выдачи отчетов
+ *
  * @author Evgeniy Egorov
  */
 public class WebServer {
 
-    public static WebServer getInstance() {
-        return WebServerHolder.INSTANCE;
-    }
-
-    private static class WebServerHolder {
-
-        private static final WebServer INSTANCE = new WebServer();
-    }
-
-    private WebServer() {
-    }
     /**
      * состояние вэбсервера
      */
     volatile private boolean isActive = false;
-    /**
-     *  Сокет, принявший сообщение или запрос
-     */
-    ///private final Socket socket;
     /**
      * Поток вебсервера.
      */
@@ -61,8 +46,20 @@ public class WebServer {
      */
     private ServerSocket reportSocket = null;
 
+    private WebServer() {
+    }
+
+    /**
+     * Сокет, принявший сообщение или запрос
+     */
+    ///private final Socket socket;
+    public static WebServer getInstance() {
+        return WebServerHolder.INSTANCE;
+    }
+
     /**
      * запуск вэбсервера
+     *
      * @param port На каком порту
      */
     synchronized public void startWebServer(int port) {
@@ -140,5 +137,10 @@ public class WebServer {
             Thread.sleep(600);
         } catch (InterruptedException ex) {
         }
+    }
+
+    private static class WebServerHolder {
+
+        private static final WebServer INSTANCE = new WebServer();
     }
 }

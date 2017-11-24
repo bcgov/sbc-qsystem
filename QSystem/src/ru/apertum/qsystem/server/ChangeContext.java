@@ -18,18 +18,21 @@ package ru.apertum.qsystem.server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Scanner;
 import org.dom4j.DocumentException;
 import ru.apertum.qsystem.common.GsonPool;
 import ru.apertum.qsystem.hibernate.SqlServers;
 import ru.apertum.qsystem.hibernate.SqlServers.SqlServer;
 
-import java.io.*;
-import java.util.LinkedList;
-import java.util.Scanner;
-
 /**
- * Утилита изменения Spring-контекста в инсталлированном приложении Класс изменения Spring-контекста в инсталлированном приложении. Консольный классик простого
- * редактирования XML-файла
+ * Утилита изменения Spring-контекста в инсталлированном приложении Класс изменения Spring-контекста
+ * в инсталлированном приложении. Консольный классик простого редактирования XML-файла
  *
  * @author Evgeniy Egorov
  */
@@ -42,7 +45,8 @@ public class ChangeContext {
         final LinkedList<SqlServer> servs;
         if (conff.exists()) {
             String str = "";
-            try (FileInputStream fis = new FileInputStream(conff); Scanner s = new Scanner(new InputStreamReader(fis, "UTF-8"))) {
+            try (FileInputStream fis = new FileInputStream(conff); Scanner s = new Scanner(
+                new InputStreamReader(fis, "UTF-8"))) {
                 while (s.hasNextLine()) {
                     final String line = s.nextLine().trim();
                     str += line;
@@ -92,7 +96,9 @@ public class ChangeContext {
                 str = read();
 
                 if ("+".equals(str)) {
-                    servs.add(new SqlServer("serverDB_" + servs.size(), "root", "root", "jdbc:mysql://127.0.0.1/qsystem?autoReconnect=true&amp;characterEncoding=UTF-8", false, false));
+                    servs.add(new SqlServer("serverDB_" + servs.size(), "root", "root",
+                        "jdbc:mysql://127.0.0.1/qsystem?autoReconnect=true&amp;characterEncoding=UTF-8",
+                        false, false));
                 }
                 if ("-".equals(str)) {
                     System.out.println("");
@@ -103,7 +109,9 @@ public class ChangeContext {
                     }
                     System.out.print("Removing server:");
                     str = read();
-                    if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?") && Integer.parseInt(str) >= 1 && Integer.parseInt(str) <= servs.size()) {
+                    if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?")
+                        && Integer.parseInt(str) >= 1
+                        && Integer.parseInt(str) <= servs.size()) {
                         servs.remove(Integer.parseInt(str) - 1);
                     }
                     str = "-";
@@ -118,7 +126,9 @@ public class ChangeContext {
                     }
                     System.out.print("Main server:");
                     str = read();
-                    if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?") && Integer.parseInt(str) >= 1 && Integer.parseInt(str) <= servs.size()) {
+                    if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?")
+                        && Integer.parseInt(str) >= 1
+                        && Integer.parseInt(str) <= servs.size()) {
                         servs.stream().forEach((ser) -> {
                             ser.setMain(Boolean.FALSE);
                         });
@@ -135,7 +145,9 @@ public class ChangeContext {
                     }
                     System.out.print("Current server:");
                     str = read();
-                    if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?") && Integer.parseInt(str) >= 1 && Integer.parseInt(str) <= servs.size()) {
+                    if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?")
+                        && Integer.parseInt(str) >= 1
+                        && Integer.parseInt(str) <= servs.size()) {
                         servs.stream().forEach((ser) -> {
                             ser.setCurrent(Boolean.FALSE);
                         });
@@ -143,11 +155,14 @@ public class ChangeContext {
                     }
                     str = "c";
                 }
-                if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?") && Integer.parseInt(str) >= 1 && Integer.parseInt(str) <= servs.size()) {
+                if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?") && Integer.parseInt(str) >= 1
+                    && Integer.parseInt(str) <= servs.size()) {
                     final SqlServer ser = servs.get(Integer.parseInt(str) - 1);
                     String a = null;
-                    if (ser.getUrl().contains("//") && ser.getUrl().indexOf("/", ser.getUrl().indexOf("//")) > -1) {
-                        a = ser.getUrl().substring(ser.getUrl().indexOf("//") + 2, ser.getUrl().indexOf("/", ser.getUrl().indexOf("//") + 2));
+                    if (ser.getUrl().contains("//")
+                        && ser.getUrl().indexOf("/", ser.getUrl().indexOf("//")) > -1) {
+                        a = ser.getUrl().substring(ser.getUrl().indexOf("//") + 2,
+                            ser.getUrl().indexOf("/", ser.getUrl().indexOf("//") + 2));
                     }
                     System.out.println("");
                     System.out.println("");
@@ -161,7 +176,9 @@ public class ChangeContext {
                     }
                     System.out.print("Parameter for edit:");
                     str = read();
-                    if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?") && Integer.parseInt(str) >= 1 && Integer.parseInt(str) <= 4) {
+                    if (!"".equals(str) && str.matches("-?\\d+(\\.\\d+)?")
+                        && Integer.parseInt(str) >= 1
+                        && Integer.parseInt(str) <= 4) {
                         switch (Integer.parseInt(str)) {
                             case 1:
                                 System.out.println("User");
@@ -186,7 +203,7 @@ public class ChangeContext {
                                 System.out.println("Old value: " + ser.getDriver());
                                 System.out.print("New value: ");
                                 ser.setDriver(read());
-                                break;    
+                                break;
                             case 5:
                                 if (a != null) {
                                     System.out.println("Adress");
@@ -206,7 +223,9 @@ public class ChangeContext {
                 if ("+".equals(str)) {
                     System.out.print("Enter a name of the new DB server:");
                     str = read();
-                    servs.add(new SqlServer(str, "root", "root", "jdbc:mysql://127.0.0.1/qsystem?autoReconnect=true&amp;characterEncoding=UTF-8", false, false));
+                    servs.add(new SqlServer(str, "root", "root",
+                        "jdbc:mysql://127.0.0.1/qsystem?autoReconnect=true&amp;characterEncoding=UTF-8",
+                        false, false));
                 }
             }
         }

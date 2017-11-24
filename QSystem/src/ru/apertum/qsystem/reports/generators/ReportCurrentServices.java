@@ -16,6 +16,9 @@
  */
 package ru.apertum.qsystem.reports.generators;
 
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.http.HttpRequest;
@@ -26,12 +29,7 @@ import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.QUserList;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.LinkedList;
-
 /**
- *
  * @author Evgeniy Egorov
  */
 public class ReportCurrentServices extends AGenerator {
@@ -43,28 +41,38 @@ public class ReportCurrentServices extends AGenerator {
     @Override
     protected JRDataSource getDataSource(HttpRequest request) {
         final LinkedList<CurRepRecord> dataSource = new LinkedList<>();
-        QServiceTree.getInstance().getNodes().stream().filter((service) -> (service.isLeaf())).forEach((service) -> {
-            int service_worked = 0;
-            int service_killed = 0;
-            long service_avg_time_work = 0;
-            long service_avg_time_wait = 0;
-            for (QUser user : QUserList.getInstance().getItems()) {
-                if (user.hasService(service)) {
-                    service_worked += user.getPlanService(service).getWorked();
-                    service_killed += user.getPlanService(service).getKilled();
-                    service_avg_time_work += (user.getPlanService(service).getAvg_work() * user.getPlanService(service).getWorked());
-                    service_avg_time_wait += (user.getPlanService(service).getAvg_wait() * user.getPlanService(service).getWorked());
+        QServiceTree.getInstance().getNodes().stream().filter((service) -> (service.isLeaf()))
+            .forEach((service) -> {
+                int service_worked = 0;
+                int service_killed = 0;
+                long service_avg_time_work = 0;
+                long service_avg_time_wait = 0;
+                for (QUser user : QUserList.getInstance().getItems()) {
+                    if (user.hasService(service)) {
+                        service_worked += user.getPlanService(service).getWorked();
+                        service_killed += user.getPlanService(service).getKilled();
+                        service_avg_time_work += (user.getPlanService(service).getAvg_work() * user
+                            .getPlanService(service).getWorked());
+                        service_avg_time_wait += (user.getPlanService(service).getAvg_wait() * user
+                            .getPlanService(service).getWorked());
+                    }
                 }
-            }
-            service_avg_time_work = service_worked == 0 ? 0 : service_avg_time_work / service_worked;
-            service_avg_time_wait = service_worked == 0 ? 0 : service_avg_time_wait / service_worked;
-            for (QUser user : QUserList.getInstance().getItems()) {
-                if (user.hasService(service)) {
-                    dataSource.add(new CurRepRecord(user.getName(), service.getName(), service_worked, service_killed, service_avg_time_work, service.getCountCustomers(), service_avg_time_wait,
-                            user.getPlanService(service).getWorked(), user.getPlanService(service).getKilled(), user.getPlanService(service).getAvg_work()));
+                service_avg_time_work =
+                    service_worked == 0 ? 0 : service_avg_time_work / service_worked;
+                service_avg_time_wait =
+                    service_worked == 0 ? 0 : service_avg_time_wait / service_worked;
+                for (QUser user : QUserList.getInstance().getItems()) {
+                    if (user.hasService(service)) {
+                        dataSource
+                            .add(new CurRepRecord(user.getName(), service.getName(), service_worked,
+                                service_killed, service_avg_time_work, service.getCountCustomers(),
+                                service_avg_time_wait,
+                                user.getPlanService(service).getWorked(),
+                                user.getPlanService(service).getKilled(),
+                                user.getPlanService(service).getAvg_work()));
+                    }
                 }
-            }
-        });
+            });
         return new JRBeanCollectionDataSource(dataSource);
     }
 

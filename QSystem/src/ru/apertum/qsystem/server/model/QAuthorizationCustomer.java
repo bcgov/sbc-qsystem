@@ -18,13 +18,18 @@ package ru.apertum.qsystem.server.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
- * Класс предварительно записанного кастомера. Должен уметь работать с БД, генерировать XML. И прочая логика.
+ * Класс предварительно записанного кастомера. Должен уметь работать с БД, генерировать XML. И
+ * прочая логика.
  *
  * @author Evgeniy Egorov
  */
@@ -32,19 +37,45 @@ import java.util.Date;
 @Table(name = "clients_authorization")
 public class QAuthorizationCustomer implements Serializable {
 
-    public QAuthorizationCustomer() {
-    }
-    // это добавлено для предвариловки с вводом клиентских данных
-
-    public QAuthorizationCustomer(String name) {
-        this.name = name;
-    }
     @Id
     @Column(name = "id")
     //@GeneratedValue(strategy = GenerationType.AUTO)
     @Expose
     @SerializedName("id")
     private Long id;
+    // это добавлено для предвариловки с вводом клиентских данных
+    @Column(name = "auth_id")
+    @Expose
+    @SerializedName("auth_id")
+    private String authId;
+    @Column(name = "name")
+    @Expose
+    @SerializedName("name")
+    private String name;
+    @Column(name = "surname")
+    @Expose
+    @SerializedName("surname")
+    private String surname;
+    @Column(name = "otchestvo")
+    @Expose
+    @SerializedName("otchestvo")
+    private String otchestvo;
+    @Column(name = "birthday")
+    @Expose
+    @SerializedName("birthday")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date birthday;
+    @Column(name = "comments")
+    @Expose
+    @SerializedName("comments")
+    private String comments;
+
+    public QAuthorizationCustomer() {
+    }
+
+    public QAuthorizationCustomer(String name) {
+        this.name = name;
+    }
 
     public Long getId() {
         return id;
@@ -54,11 +85,6 @@ public class QAuthorizationCustomer implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "auth_id")
-    @Expose
-    @SerializedName("auth_id")
-    private String authId;
-
     public String getAuthId() {
         return authId;
     }
@@ -67,11 +93,6 @@ public class QAuthorizationCustomer implements Serializable {
         this.authId = authId;
     }
 
-    @Column(name = "name")
-    @Expose
-    @SerializedName("name")
-    private String name;
-
     public String getName() {
         return name;
     }
@@ -79,10 +100,6 @@ public class QAuthorizationCustomer implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    @Column(name = "surname")
-    @Expose
-    @SerializedName("surname")
-    private String surname;
 
     public String getSurname() {
         return surname;
@@ -91,10 +108,6 @@ public class QAuthorizationCustomer implements Serializable {
     public void setSurname(String surname) {
         this.surname = surname;
     }
-    @Column(name = "otchestvo")
-    @Expose
-    @SerializedName("otchestvo")
-    private String otchestvo;
 
     public String getOtchestvo() {
         return otchestvo;
@@ -103,11 +116,6 @@ public class QAuthorizationCustomer implements Serializable {
     public void setOtchestvo(String otchestvo) {
         this.otchestvo = otchestvo;
     }
-    @Column(name = "birthday")
-    @Expose
-    @SerializedName("birthday")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date birthday;
 
     public Date getBirthday() {
         return birthday;
@@ -116,11 +124,6 @@ public class QAuthorizationCustomer implements Serializable {
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
-
-    @Column(name = "comments")
-    @Expose
-    @SerializedName("comments")
-    private String comments;
 
     public String getComments() {
         return comments;

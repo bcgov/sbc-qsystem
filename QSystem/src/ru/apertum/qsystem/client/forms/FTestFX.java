@@ -22,6 +22,9 @@
  */
 package ru.apertum.qsystem.client.forms;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.util.Set;
 import javafx.animation.PathTransition;
 import javafx.animation.PathTransition.OrientationType;
 import javafx.animation.Timeline;
@@ -43,20 +46,21 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
-
 import javax.swing.border.BevelBorder;
-import java.awt.*;
-import java.util.Set;
 
 //import javafx.animation.TranslateTransitionBuilder;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class FTestFX extends javax.swing.JFrame {
 
     final static String tt = "This is a text sample В 1962 году американцы запустили первый космический аппарат для изучения Венеры Маринер-1, потерпевший аварию через несколько минут после старта. Сначала на аппарате отказала антенна, которая получала сигнал от наводящей системы с Земли, после чего управление взял на себя бортовой компьютер. Он тоже не смог исправить отклонение от курса, так как загруженная в него программа содержала единственную ошибку — при переносе инструкций в код для перфокарт в одном из уравнений была пропущена чёрточка над буквой, отсутствие которой коренным образом поменяло математический смысл уравнения. Журналисты вскоре окрестили эту чёрточку «самым дорогим дефисом в истории» (в пересчёте на сегодняшний день стоимость утерянного аппарата составляет 135 000 000 $).";
+    private static JFXPanel javafxPanel;
+    private static JFXPanel javafxPanelR;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel panel;
+    private ru.apertum.qsystem.client.model.QPanel qPanel1;
 
     /**
      * Creates new form FTestFX
@@ -74,8 +78,47 @@ public class FTestFX extends javax.swing.JFrame {
          bfx.load("http://yandex.ru");
          */
     }
-    private static JFXPanel javafxPanel;
-    private static JFXPanel javafxPanelR;
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
+                .getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(FTestFX.class.getName())
+                .log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(FTestFX.class.getName())
+                .log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(FTestFX.class.getName())
+                .log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(FTestFX.class.getName())
+                .log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+                new FTestFX().setVisible(true);
+            }
+        });
+    }
 
     private void setFX() {
 
@@ -104,16 +147,16 @@ public class FTestFX extends javax.swing.JFrame {
                 final Path path = new Path();
                 path.getElements().add(new MoveTo(970, 70));
                 //path.getElements().add(new CubicCurveTo(430, 0, 430, 120, 250, 120));
-               // path.getElements().add(new CubicCurveTo(50, 120, 50, 240, 430, 240));
+                // path.getElements().add(new CubicCurveTo(50, 120, 50, 240, 430, 240));
                 path.getElements().add(new LineTo(0, 70));
-             //   path.setOpacity(0.0);
+                //   path.setOpacity(0.0);
                 return path;
             }
 
             private PathTransition generatePathTransition(
-                    final Shape shape, final Path path,
-                    final Duration duration, final Duration delay,
-                    final OrientationType orientation) {
+                final Shape shape, final Path path,
+                final Duration duration, final Duration delay,
+                final OrientationType orientation) {
                 final PathTransition pathTransition = new PathTransition();
                 pathTransition.setDuration(duration);
                 pathTransition.setDelay(delay);
@@ -140,10 +183,10 @@ public class FTestFX extends javax.swing.JFrame {
                 //Scene scene = new Scene(root);
                 //final Text txt = new Text("asgr g sdfgh dsgh dfgh dfgh dfhg");
                 final Text txt = null;
-                        //TextBuilder.create().text("RMOUG").x(20).y(120).fill(Color.DARKGRAY)
-                       // .font(Font.font(java.awt.Font.SERIF, 155))
-                       // .effect(new Glow(0.25)).build();
-                
+                //TextBuilder.create().text("RMOUG").x(20).y(120).fill(Color.DARKGRAY)
+                // .font(Font.font(java.awt.Font.SERIF, 155))
+                // .effect(new Glow(0.25)).build();
+
                 root2.getChildren().add(txt);
                 Scene scene2 = new Scene(root2, 750, 500, Color.web("#666970"));
 
@@ -154,10 +197,10 @@ public class FTestFX extends javax.swing.JFrame {
                 root2.getChildren().add(path);
 
                 final PathTransition rmougTransition
-                        = generatePathTransition(
-                                txt, path, Duration.seconds(8.0), Duration.seconds(0.5),
-                                OrientationType.NONE);
-                
+                    = generatePathTransition(
+                    txt, path, Duration.seconds(8.0), Duration.seconds(0.5),
+                    OrientationType.NONE);
+
                 rmougTransition.play();
             }
 
@@ -196,8 +239,8 @@ public class FTestFX extends javax.swing.JFrame {
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -209,7 +252,9 @@ public class FTestFX extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("Form"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FTestFX.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(FTestFX.class);
         panel.setBackground(resourceMap.getColor("panel.background")); // NOI18N
         panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         panel.setName("panel"); // NOI18N
@@ -218,14 +263,16 @@ public class FTestFX extends javax.swing.JFrame {
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
+                .addGap(0, 1000, Short.MAX_VALUE)
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 259, Short.MAX_VALUE)
+                .addGap(0, 259, Short.MAX_VALUE)
         );
 
-        qPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        qPanel1
+            .setBorder(
+                new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         qPanel1.setBackgroundImgage(resourceMap.getString("qPanel1.backgroundImgage")); // NOI18N
         qPanel1.setName("qPanel1"); // NOI18N
 
@@ -233,74 +280,44 @@ public class FTestFX extends javax.swing.JFrame {
         qPanel1.setLayout(qPanel1Layout);
         qPanel1Layout.setHorizontalGroup(
             qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 996, Short.MAX_VALUE)
+                .addGap(0, 996, Short.MAX_VALUE)
         );
         qPanel1Layout.setVerticalGroup(
             qPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
+                .addGap(0, 472, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(qPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(qPanel1, javax.swing.GroupLayout.Alignment.TRAILING,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            Short.MAX_VALUE)
+                        .addComponent(panel, javax.swing.GroupLayout.Alignment.TRAILING,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            Short.MAX_VALUE))
+                    .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(qPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FTestFX.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FTestFX.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FTestFX.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FTestFX.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                new FTestFX().setVisible(true);
-            }
-        });
-    }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel panel;
-    private ru.apertum.qsystem.client.model.QPanel qPanel1;
     // End of variables declaration//GEN-END:variables
 
     class Browser extends Region {

@@ -1,5 +1,7 @@
 package ru.apertum.qsys.quser;
 
+import java.util.Date;
+import java.util.Map;
 import org.zkoss.bind.Property;
 import org.zkoss.bind.ValidationContext;
 import org.zkoss.bind.validator.AbstractValidator;
@@ -10,9 +12,6 @@ import ru.apertum.qsystem.server.QSession;
 import ru.apertum.qsystem.server.QSessions;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.QUserList;
-
-import java.util.Date;
-import java.util.Map;
 
 public class UserLoginValidator extends AbstractValidator {
 
@@ -25,8 +24,10 @@ public class UserLoginValidator extends AbstractValidator {
         //all the bean properties
         Map<String, Property> beanProps = ctx.getProperties(ctx.getProperty().getBase());
         validateName(ctx, (String) beanProps.get("name").getValue());
-        validatePassword(ctx, (String) beanProps.get("name").getValue(), (String) beanProps.get("password").getValue());
-        validateMultipleLogin(ctx, (String) beanProps.get("name").getValue(), (String) beanProps.get("password").getValue());
+        validatePassword(ctx, (String) beanProps.get("name").getValue(),
+            (String) beanProps.get("password").getValue());
+        validateMultipleLogin(ctx, (String) beanProps.get("name").getValue(),
+            (String) beanProps.get("password").getValue());
     }
 
     private void validateName(ValidationContext ctx, String name) {
@@ -53,11 +54,11 @@ public class UserLoginValidator extends AbstractValidator {
             //this.addInvalidMessage(ctx, "name", l("user_rady_workng"));
             //If user already login somewher else, make him force logout
             for (QSession session : QSessions.getInstance().getSessions()) {
-            if (name.equals(session.getUser().getName())) {
-                QSessions.getInstance().getSessions().remove(session);
-                return;
+                if (name.equals(session.getUser().getName())) {
+                    QSessions.getInstance().getSessions().remove(session);
+                    return;
+                }
             }
-        }
         } else {
             QUser usr = null;
             for (QUser user : QUserList.getInstance().getItems()) {
@@ -70,10 +71,18 @@ public class UserLoginValidator extends AbstractValidator {
             } else {
                 // Sessions.getCurrent().getRemoteHost() Deprecated. as of release 7.0.0, use Execution.getRemoteHost() instead.
                 // Sessions.getCurrent().getRemoteAddr() Deprecated. as of release 7.0.0, use Execution.getRemoteAddr() instead.
-                QLog.l().logQUser().trace(Sessions.getCurrent().hashCode() + " - User validate RemoteHost=" + Sessions.getCurrent().getRemoteHost() + " RemoteAddr=" + Sessions.getCurrent().getRemoteAddr()
-                        + " LocalAddr=" + Sessions.getCurrent().getLocalAddr() + " LocalName=" + Sessions.getCurrent().getLocalName() + " ServerName=" + Sessions.getCurrent().getServerName());
+                QLog.l().logQUser().trace(
+                    Sessions.getCurrent().hashCode() + " - User validate RemoteHost=" + Sessions
+                        .getCurrent().getRemoteHost() + " RemoteAddr=" + Sessions.getCurrent()
+                        .getRemoteAddr()
+                        + " LocalAddr=" + Sessions.getCurrent().getLocalAddr() + " LocalName="
+                        + Sessions
+                        .getCurrent().getLocalName() + " ServerName=" + Sessions.getCurrent()
+                        .getServerName());
                 //if (!QSessions.getInstance().check(usr.getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes())) {
-                if (!QSessions.getInstance().check(usr.getId(), "" + Sessions.getCurrent().hashCode(), ("" + Sessions.getCurrent().hashCode()).getBytes())) {
+                if (!QSessions.getInstance()
+                    .check(usr.getId(), "" + Sessions.getCurrent().hashCode(),
+                        ("" + Sessions.getCurrent().hashCode()).getBytes())) {
                     this.addInvalidMessage(ctx, "name", l("user_allerady_in"));
                 }
             }

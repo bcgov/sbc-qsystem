@@ -15,31 +15,25 @@ package ru.apertum.qsystem.common;
 
 /**
  * A Base64 Encoder/Decoder.
- * 
-* <p>
- * This class is used to encode and decode data in Base64 format as described in RFC 1521.
- * 
-* <p>
- * Home page: <a href="http://www.source-code.biz">www.source-code.biz</a><br>
- * Author: Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland<br>
- * Multi-licensed: EPL/LGPL/AL/BSD.
- * 
-* <p>
- * Version history:<br>
- * 2003-07-22 Christian d'Heureuse (chdh): Module created.<br>
- * 2005-08-11 chdh: Lincense changed from GPL to LGPL.<br>
- * 2006-11-21 chdh:<br>
- * &nbsp; Method encode(String) renamed to encodeString(String).<br>
- * &nbsp; Method decode(String) renamed to decodeString(String).<br>
- * &nbsp; New method encode(byte[],int) added.<br>
- * &nbsp; New method decode(String) added.<br>
- * 2009-07-16: Additional licenses (EPL/AL) added.<br>
- * 2009-09-16: Additional license (BSD) added.<br>
+ *
+ * <p> This class is used to encode and decode data in Base64 format as described in RFC 1521.
+ *
+ * <p> Home page: <a href="http://www.source-code.biz">www.source-code.biz</a><br> Author: Christian
+ * d'Heureuse, Inventec Informatik AG, Zurich, Switzerland<br> Multi-licensed: EPL/LGPL/AL/BSD.
+ *
+ * <p> Version history:<br> 2003-07-22 Christian d'Heureuse (chdh): Module created.<br> 2005-08-11
+ * chdh: Lincense changed from GPL to LGPL.<br> 2006-11-21 chdh:<br> &nbsp; Method encode(String)
+ * renamed to encodeString(String).<br> &nbsp; Method decode(String) renamed to
+ * decodeString(String).<br> &nbsp; New method encode(byte[],int) added.<br> &nbsp; New method
+ * decode(String) added.<br> 2009-07-16: Additional licenses (EPL/AL) added.<br> 2009-09-16:
+ * Additional license (BSD) added.<br>
  */
 public class Base64Coder {
 
-// Mapping table from 6-bit nibbles to Base64 characters.
+    // Mapping table from 6-bit nibbles to Base64 characters.
     private static final char[] map1 = new char[64];
+    // Mapping table from Base64 characters to 6-bit nibbles.
+    private static final byte[] map2 = new byte[128];
 
     static {
         int i = 0;
@@ -56,9 +50,6 @@ public class Base64Coder {
         map1[i++] = '/';
     }
 
-// Mapping table from Base64 characters to 6-bit nibbles.
-    private static final byte[] map2 = new byte[128];
-
     static {
         for (int i = 0; i < map2.length; i++) {
             map2[i] = -1;
@@ -66,6 +57,10 @@ public class Base64Coder {
         for (int i = 0; i < 64; i++) {
             map2[map1[i]] = (byte) i;
         }
+    }
+
+    // Dummy constructor.
+    private Base64Coder() {
     }
 
     /**
@@ -142,7 +137,8 @@ public class Base64Coder {
     }
 
     /**
-     * Decodes a byte array from Base64 format. No blanks or line breaks are allowed within the Base64 encoded data.
+     * Decodes a byte array from Base64 format. No blanks or line breaks are allowed within the
+     * Base64 encoded data.
      *
      * @param in a character array containing the Base64 encoded data.
      * @return An array containing the decoded data bytes.
@@ -151,7 +147,8 @@ public class Base64Coder {
     public static byte[] decode(char[] in) {
         int iLen = in.length;
         if (iLen % 4 != 0) {
-            throw new IllegalArgumentException("Length of Base64 encoded input string is not a multiple of 4.");
+            throw new IllegalArgumentException(
+                "Length of Base64 encoded input string is not a multiple of 4.");
         }
         while (iLen > 0 && in[iLen - 1] == '=') {
             iLen--;
@@ -187,10 +184,6 @@ public class Base64Coder {
             }
         }
         return out;
-    }
-
-// Dummy constructor.
-    private Base64Coder() {
     }
 
 } // end class Base64Coder
