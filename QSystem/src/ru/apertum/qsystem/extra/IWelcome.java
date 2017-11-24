@@ -16,13 +16,14 @@
  */
 package ru.apertum.qsystem.extra;
 
-import java.awt.Frame;
 import ru.apertum.qsystem.common.cmd.RpcGetAllServices;
 import ru.apertum.qsystem.common.model.IClientNetProperty;
 import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.model.QAdvanceCustomer;
 import ru.apertum.qsystem.server.model.QService;
+
+import java.awt.*;
 
 /**
  *

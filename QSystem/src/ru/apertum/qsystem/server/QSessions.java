@@ -16,11 +16,12 @@
  */
 package ru.apertum.qsystem.server;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.model.QUserList;
+
+import java.util.Arrays;
+import java.util.LinkedList;
 
 /**
  * Тут сессии пользователей. Истекают черех N минут = константа в сессии

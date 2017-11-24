@@ -2,7 +2,7 @@
 <?link rel="stylesheet" type="text/css" href="/css/qsmartboard.css"?>
 <?script type="text/javascript" src="/js/qsmartboard.js"?>
 
-<zk xmlns="http://www.zkoss.org/2005/zul" xmlns:w="http://www.zkoss.org/2005/zk/client">
+<zk xmlns="http://www.zkoss.org/2005/zul">
     
     <borderlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('fmodel') @init('ru.apertum.qsystem.qboard.QBoard')">
         <north border="none" height="@load(fmodel.topSize)" visible="@load(fmodel.topVisible)">

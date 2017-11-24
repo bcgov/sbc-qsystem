@@ -22,12 +22,8 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *

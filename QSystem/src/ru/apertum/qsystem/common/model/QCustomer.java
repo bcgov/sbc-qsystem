@@ -16,40 +16,29 @@
  */
 package ru.apertum.qsystem.common.model;
 
-import java.io.Serializable;
-import java.util.*;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import ru.apertum.qsystem.server.model.QOffice;
-import ru.apertum.qsystem.server.model.QService;
-import ru.apertum.qsystem.server.model.QUser;
-import ru.apertum.qsystem.server.model.results.QResult;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QConfig;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.extra.IChangeCustomerStateEvent;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.IidGetter;
+import ru.apertum.qsystem.server.model.QOffice;
+import ru.apertum.qsystem.server.model.QService;
+import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.response.QRespEvent;
-import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.server.model.results.QResult;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.util.*;
 
 /**
  * @author Evgeniy Egorov Реализация клиета Наипростейший "очередник". Используется для организации простой очереди. Если используется СУБД, то сохранение

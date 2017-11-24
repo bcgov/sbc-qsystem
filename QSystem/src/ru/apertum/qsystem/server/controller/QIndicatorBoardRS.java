@@ -16,14 +16,6 @@
  */
 package ru.apertum.qsystem.server.controller;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import javax.swing.Timer;
 import org.dom4j.Element;
 import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.common.QLog;
@@ -32,6 +24,15 @@ import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.evgenic.rxtx.serialPort.ISerialPort;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Движок для герлянды табло на RS.

@@ -22,11 +22,6 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Frame;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -37,6 +32,11 @@ import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.server.model.schedule.QBreak;
 import ru.apertum.qsystem.server.model.schedule.QBreaks;
 import ru.apertum.qsystem.server.model.schedule.QBreaksList;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  *

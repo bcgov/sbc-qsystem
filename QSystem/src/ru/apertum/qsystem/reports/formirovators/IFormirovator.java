@@ -16,12 +16,13 @@
  */
 package ru.apertum.qsystem.reports.formirovators;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.reports.common.Response;
+
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Формирует источник данных для отчета.

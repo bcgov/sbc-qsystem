@@ -16,16 +16,16 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Frame;
-import java.util.Date;
-import java.util.ResourceBundle;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
 import ru.apertum.qsystem.server.model.schedule.QScheduleList;
 import ru.apertum.qsystem.server.model.schedule.QSpecSchedule;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Date;
+import java.util.ResourceBundle;
 
 /**
  *

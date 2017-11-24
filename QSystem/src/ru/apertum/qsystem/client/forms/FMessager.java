@@ -17,19 +17,20 @@
 
 package ru.apertum.qsystem.client.forms;
 
-import javax.swing.JFrame;
-import javax.swing.ListModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.common.Uses;import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
+
+import javax.swing.*;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  * Created on 16.10.2009, 19:35:45

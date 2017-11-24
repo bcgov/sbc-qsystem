@@ -16,13 +16,26 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import java.awt.AlphaComposite;
+import ru.apertum.qsystem.client.Locales;
 import ru.apertum.qsystem.client.common.WelcomeParams;
+import ru.apertum.qsystem.client.forms.*;
 import ru.apertum.qsystem.common.NetCommander;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import ru.apertum.qsystem.common.QConfig;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.cmd.RpcGetServiceState.ServiceState;
+import ru.apertum.qsystem.common.model.ATalkingClock;
+import ru.apertum.qsystem.common.model.QCustomer;
+import ru.apertum.qsystem.extra.IWelcome;
+import ru.apertum.qsystem.server.model.QAdvanceCustomer;
+import ru.apertum.qsystem.server.model.QAuthorizationCustomer;
+import ru.apertum.qsystem.server.model.QService;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
@@ -33,29 +46,6 @@ import java.util.HashMap;
 import java.util.ServiceLoader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import ru.apertum.qsystem.client.Locales;
-import ru.apertum.qsystem.client.forms.FAdvanceCalendar;
-import ru.apertum.qsystem.client.forms.FConfirmationStart2;
-import ru.apertum.qsystem.client.forms.FInfoDialogWeb;
-import ru.apertum.qsystem.client.forms.FInputDialog;
-import ru.apertum.qsystem.client.forms.FPreInfoDialog;
-import ru.apertum.qsystem.client.forms.FWelcome;
-import ru.apertum.qsystem.common.QConfig;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.cmd.RpcGetServiceState.ServiceState;
-import ru.apertum.qsystem.common.model.ATalkingClock;
-import ru.apertum.qsystem.common.model.QCustomer;
-import ru.apertum.qsystem.extra.IWelcome;
-import ru.apertum.qsystem.server.model.QAdvanceCustomer;
-import ru.apertum.qsystem.server.model.QAuthorizationCustomer;
-import ru.apertum.qsystem.server.model.QService;
 
 /**
  * Сдесь реализован класс кнопки пользователя при выборе услуги. Класс кнопки пользователя при выборе услуги. Кнопка умеет слать задание на сервер для

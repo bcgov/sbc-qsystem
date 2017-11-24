@@ -16,19 +16,6 @@
  */
 package ru.apertum.qsystem.common;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
@@ -37,8 +24,18 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
-import javax.swing.JPanel;
 import ru.apertum.qsystem.common.exceptions.ClientException;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+import java.util.Timer;
 
 /**
  * Может проигрывать фидеофайлы *.mpg, *.jpg. Для этого используется установленная предварительно на компьютере среда JMF. По умолчанию показ ролика бесконечно

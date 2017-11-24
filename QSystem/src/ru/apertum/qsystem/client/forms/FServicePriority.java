@@ -22,13 +22,6 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.util.HashMap;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
@@ -40,6 +33,12 @@ import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation.SelfService;
 import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation.SelfSituation;
 import ru.apertum.qsystem.common.model.INetProperty;
+
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import java.util.HashMap;
 
 /**
  *

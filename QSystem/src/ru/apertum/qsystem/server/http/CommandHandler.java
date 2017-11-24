@@ -17,14 +17,6 @@
 package ru.apertum.qsystem.server.http;
 
 import com.google.gson.Gson;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Properties;
-import java.util.Scanner;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import ru.apertum.qsystem.client.forms.FAbout;
@@ -35,6 +27,15 @@ import ru.apertum.qsystem.common.cmd.JsonRPC20;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.controller.Executer;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Properties;
+import java.util.Scanner;
 
 /**
  *

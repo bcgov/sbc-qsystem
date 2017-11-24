@@ -18,19 +18,17 @@ package ru.apertum.qsystem.server.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.io.Serializable;
-import java.util.*;
-import javax.persistence.*;
-
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import ru.apertum.qsystem.common.CustomerState;
+import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.Spring;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.server.model.calendar.QCalendar;
-import ru.apertum.qsystem.server.model.schedule.QSchedule;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Это пользователь. По большому счету роль и пользователь совпадают в системе. Класс пользователя системы.

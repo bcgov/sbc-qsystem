@@ -17,9 +17,10 @@
 
 package ru.apertum.qsystem.extra;
 
-import java.util.LinkedList;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.model.QService;
+
+import java.util.LinkedList;
 
 /**
  *

@@ -1,14 +1,13 @@
 package ru.apertum.qsys.quser;
 
+import org.zkoss.util.resource.Labels;
+import ru.apertum.qsystem.common.model.QCustomer;
+import ru.apertum.qsystem.server.model.*;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.zkoss.util.resource.Labels;
-import ru.apertum.qsystem.server.model.*;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.model.QCustomer;
 
 public class User {
 

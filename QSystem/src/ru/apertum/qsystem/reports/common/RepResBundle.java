@@ -16,12 +16,13 @@
  */
 package ru.apertum.qsystem.reports.common;
 
+import ru.apertum.qsystem.client.Locales;
+import ru.apertum.qsystem.common.QLog;
+
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import ru.apertum.qsystem.client.Locales;
-import ru.apertum.qsystem.common.QLog;
 
 /**
  *

@@ -16,19 +16,6 @@
  */
 package ru.apertum.qsystem.server.htmlboard;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -43,11 +30,13 @@ import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.QServer;
 import ru.apertum.qsystem.server.controller.IIndicatorBoard;
-import ru.apertum.qsystem.server.model.QPlanService;
-import ru.apertum.qsystem.server.model.QService;
-import ru.apertum.qsystem.server.model.QServiceTree;
-import ru.apertum.qsystem.server.model.QUser;
-import ru.apertum.qsystem.server.model.QUserList;
+import ru.apertum.qsystem.server.model.*;
+
+import javax.imageio.ImageIO;
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Вывод информации на мониторы. Класс-менеджер вывода информации на общее табло в виде монитора.

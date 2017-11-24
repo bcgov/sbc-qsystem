@@ -16,10 +16,11 @@
  */
 package ru.apertum.qsystem.server.model.results;
 
-import java.util.LinkedList;
-import javax.swing.ComboBoxModel;
 import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.ATListModel;
+
+import javax.swing.*;
+import java.util.LinkedList;
 
 /**
  *

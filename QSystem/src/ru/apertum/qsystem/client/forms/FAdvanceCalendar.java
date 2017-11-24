@@ -16,23 +16,6 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.image.MemoryImageSource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -43,15 +26,23 @@ import ru.apertum.qsystem.client.model.IAdviceEvent;
 import ru.apertum.qsystem.client.model.QAvancePanel;
 import ru.apertum.qsystem.client.model.QButton;
 import ru.apertum.qsystem.client.model.QPanel;
-import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.NetCommander;
+import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.cmd.RpcGetGridOfWeek.GridAndParams;
 import ru.apertum.qsystem.common.model.ATalkingClock;
 import ru.apertum.qsystem.common.model.INetProperty;
-import ru.apertum.qsystem.common.NetCommander;
-import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.server.model.QAdvanceCustomer;
 import ru.apertum.qsystem.server.model.QService;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
+import java.awt.image.MemoryImageSource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created on 27.08.2009, 10:15:34 Сетка-календарь для предварительной записи. Имеет метод для осуществления всех действий. Вся логика инкапсулирована в этом

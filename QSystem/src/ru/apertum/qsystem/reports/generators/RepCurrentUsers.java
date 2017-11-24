@@ -16,9 +16,6 @@
  */
 package ru.apertum.qsystem.reports.generators;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.LinkedList;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.http.HttpRequest;
@@ -27,6 +24,10 @@ import ru.apertum.qsystem.reports.model.AGenerator;
 import ru.apertum.qsystem.reports.model.CurRepRecord;
 import ru.apertum.qsystem.server.model.QPlanService;
 import ru.apertum.qsystem.server.model.QUserList;
+
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  *

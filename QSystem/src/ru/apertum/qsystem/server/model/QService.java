@@ -18,35 +18,8 @@ package ru.apertum.qsystem.server.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import javax.persistence.*;
-import java.util.PriorityQueue;
-import java.util.ServiceLoader;
-import java.util.Set;
-import java.util.concurrent.LinkedBlockingDeque;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-
-import org.hibernate.Criteria;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import ru.apertum.qsystem.client.Locales;
 import ru.apertum.qsystem.common.CustomerState;
@@ -61,6 +34,18 @@ import ru.apertum.qsystem.server.model.calendar.QCalendar;
 import ru.apertum.qsystem.server.model.schedule.QBreak;
 import ru.apertum.qsystem.server.model.schedule.QBreaks;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
+
+import javax.persistence.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Модель данных для функционирования очереди включает в себя: - структуру хранения - методы доступа - методы манипулирования - логирование итераций Главный

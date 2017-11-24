@@ -16,6 +16,14 @@ package ru.apertum.qsystem.reports.formirovators;
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import org.apache.http.HttpRequest;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.exceptions.ReportException;
+import ru.apertum.qsystem.reports.common.RepResBundle;
+import ru.apertum.qsystem.reports.common.Response;
+
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,12 +32,6 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.http.HttpRequest;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.exceptions.ReportException;
-import ru.apertum.qsystem.reports.common.RepResBundle;
-import ru.apertum.qsystem.reports.common.Response;
 
 /**
  *

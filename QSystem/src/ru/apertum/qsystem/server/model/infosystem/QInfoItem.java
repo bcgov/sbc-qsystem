@@ -18,20 +18,17 @@ package ru.apertum.qsystem.server.model.infosystem;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import ru.apertum.qsystem.server.model.ITreeIdGetter;
+
+import javax.persistence.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-import ru.apertum.qsystem.server.model.ITreeIdGetter;
 
 /**
  *

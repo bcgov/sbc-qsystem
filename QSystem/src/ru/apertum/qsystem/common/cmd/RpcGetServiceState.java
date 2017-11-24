@@ -18,8 +18,9 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.util.concurrent.LinkedBlockingDeque;
 import ru.apertum.qsystem.common.model.QCustomer;
+
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  *

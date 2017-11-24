@@ -16,28 +16,19 @@
  */
 package ru.apertum.qsystem.reports.net;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Locale;
-
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.MethodNotSupportedException;
+import org.apache.http.*;
 import org.apache.http.entity.EntityTemplate;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import ru.apertum.qsystem.client.forms.FAbout;
-import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.reports.common.RepResBundle;
 import ru.apertum.qsystem.reports.common.Response;
 import ru.apertum.qsystem.reports.model.QReportsList;
+
+import java.io.*;
+import java.util.Locale;
 
 /**
  *

@@ -4,12 +4,13 @@
  */
 package ru.apertum.qsystem.ub485.core;
 
-import java.io.UnsupportedEncodingException;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.NetCommander;
 import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.extra.IButtonDeviceFuctory.IButtonDevice;
 import ru.apertum.qsystem.server.model.QUser;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Default buttons

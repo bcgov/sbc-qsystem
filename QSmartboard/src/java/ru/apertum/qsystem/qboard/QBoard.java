@@ -5,14 +5,10 @@
  */
 package ru.apertum.qsystem.qboard;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.Execution;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
@@ -23,11 +19,14 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.Vbox;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.server.QSessions;
 import ru.apertum.qsystem.server.model.*;
 import ru.apertum.qsystem.smartboard.PrintRecords;
 import ru.apertum.qsystem.smartboard.PrintRecordsList;
-import ru.apertum.qsystem.server.QSessions;
-import org.zkoss.zk.ui.Sessions;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *

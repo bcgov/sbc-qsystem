@@ -16,14 +16,15 @@
  */
 package ru.apertum.qsystem.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
 import ru.apertum.qsystem.common.NetCommander;
 import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.model.QProperty;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Это класс пердоставления параметров, которые хранятся в БД и могут использоваться сервером и админкой напрямую. Это класс запросит по сети параметры.

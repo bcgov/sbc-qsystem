@@ -1,7 +1,5 @@
 package ru.apertum.qsys.quser;
 
-import java.util.Date;
-import java.util.Map;
 import org.zkoss.bind.Property;
 import org.zkoss.bind.ValidationContext;
 import org.zkoss.bind.validator.AbstractValidator;
@@ -12,6 +10,9 @@ import ru.apertum.qsystem.server.QSession;
 import ru.apertum.qsystem.server.QSessions;
 import ru.apertum.qsystem.server.model.QUser;
 import ru.apertum.qsystem.server.model.QUserList;
+
+import java.util.Date;
+import java.util.Map;
 
 public class UserLoginValidator extends AbstractValidator {
 

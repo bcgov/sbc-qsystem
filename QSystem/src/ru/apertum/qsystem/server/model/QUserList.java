@@ -16,12 +16,13 @@
  */
 package ru.apertum.qsystem.server.model;
 
-import java.util.Date;
-import java.util.LinkedList;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.server.Spring;
+
+import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * Список пользователей системы Класс, управляющий пользователями системы.

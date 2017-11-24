@@ -22,69 +22,33 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import java.util.Date;
-import java.util.Set;
-import javafx.animation.AnimationTimer;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.PathTransition;
 import javafx.animation.PathTransition.OrientationType;
 import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
-//import javafx.animation.TranslateTransitionBuilder;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.concurrent.Worker.State;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Control;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.effect.Glow;
-import javafx.scene.effect.Lighting;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.CubicCurveTo;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.util.Callback;
 import javafx.util.Duration;
-import javax.swing.Timer;
+
 import javax.swing.border.BevelBorder;
-import netscape.javascript.JSObject;
-import ru.apertum.qsystem.common.BrowserFX;
+import java.awt.*;
+import java.util.Set;
+
+//import javafx.animation.TranslateTransitionBuilder;
 
 /**
  *

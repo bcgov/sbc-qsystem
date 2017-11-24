@@ -16,21 +16,21 @@
  */
 package ru.apertum.qsystem.client;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Locale;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import ru.apertum.qsystem.client.forms.FBoardConfig;
 import ru.apertum.qsystem.common.QConfig;
-import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ServerException;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Старт редактора конфигурации клиентского табло

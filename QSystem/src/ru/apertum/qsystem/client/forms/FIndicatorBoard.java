@@ -16,17 +16,19 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.AWTException;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import ru.apertum.qsystem.QSystem;
+import ru.apertum.qsystem.client.model.QPanel;
+import ru.apertum.qsystem.common.*;
+import ru.apertum.qsystem.common.model.ATalkingClock;
+
+import javax.swing.*;
+import javax.swing.border.MatteBorder;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.MemoryImageSource;
@@ -41,7 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.ImageIcon;
+
 /*
  import javafx.animation.PathTransition;
  import javafx.animation.Timeline;
@@ -59,23 +61,6 @@ import javax.swing.ImageIcon;
  import javafx.util.Duration;
  import javax.swing.border.BevelBorder;
  */
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.MatteBorder;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.client.model.QPanel;
-import ru.apertum.qsystem.common.BrowserFX;
-import ru.apertum.qsystem.common.QConfig;
-import ru.apertum.qsystem.common.RunningLabel;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.model.ATalkingClock;
 
 /**
  * Created on 22 Сентябрь 2008 г., 14:27

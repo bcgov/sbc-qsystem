@@ -16,14 +16,6 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.image.MemoryImageSource;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
@@ -37,7 +29,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
-import javax.swing.border.BevelBorder;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
@@ -47,6 +38,10 @@ import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.model.ATalkingClock;
+
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.awt.image.MemoryImageSource;
 
 /**
  *

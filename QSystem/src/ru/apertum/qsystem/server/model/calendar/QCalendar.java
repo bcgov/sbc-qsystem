@@ -16,19 +16,6 @@
  */
 package ru.apertum.qsystem.server.model.calendar;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.common.exceptions.ServerException;
@@ -36,6 +23,13 @@ import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.IidGetter;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
 import ru.apertum.qsystem.server.model.schedule.QSpecSchedule;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Класс календаря для расписания.

@@ -16,14 +16,15 @@
  */
 package ru.apertum.qsystem.reports.model;
 
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.exceptions.ReportException;
+import ru.apertum.qsystem.reports.net.RunnableSocket;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.exceptions.ReportException;
-import ru.apertum.qsystem.reports.net.RunnableSocket;
 
 /**
  * Отчетный сервер, выступающий в роли вэбсервера, обрабатывающего запросы на выдачу отчетов

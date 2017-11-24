@@ -16,10 +16,11 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import javax.swing.table.AbstractTableModel;
 import ru.apertum.qsystem.client.forms.FAdmin;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.model.QProperty;
+
+import javax.swing.table.AbstractTableModel;
 
 /**
  *

@@ -16,12 +16,6 @@
  */
 package ru.apertum.qsystem.server.model.calendar;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.List;
-import javax.swing.table.AbstractTableModel;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
 import org.springframework.transaction.TransactionDefinition;
@@ -30,6 +24,9 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ClientException;
 import ru.apertum.qsystem.server.Spring;
+
+import javax.swing.table.AbstractTableModel;
+import java.util.*;
 
 /**
  * Модель для отображения сетки календаля

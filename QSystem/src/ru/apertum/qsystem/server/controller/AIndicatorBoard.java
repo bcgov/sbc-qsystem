@@ -16,10 +16,6 @@
  */
 package ru.apertum.qsystem.server.controller;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.model.ATalkingClock;
@@ -27,6 +23,11 @@ import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.model.QOffice;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QUser;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 /**
  * Базовый класс для классов вывода. Сдесь реализован движок хранения и управления строками и прочий инфой для вывода инфы. При непосредственным выводом на

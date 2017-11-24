@@ -16,9 +16,9 @@
  */
 package ru.apertum.qsystem.common.model;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.Timer;
 
 /**
  * Таймер, однако. Кудаж без него. В наследниках реализовать метод run(). Умеет отмерять единичные интервалы времени.

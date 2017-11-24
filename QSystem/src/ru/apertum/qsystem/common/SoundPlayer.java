@@ -16,20 +16,19 @@
  */
 package ru.apertum.qsystem.common;
 
+import ru.apertum.qsystem.server.ServerProps;
+import ru.apertum.qsystem.server.model.QService;
+
+import javax.sound.sampled.*;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import javax.sound.sampled.*;
-import javax.swing.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.ObjectUtils;
-import ru.apertum.qsystem.server.ServerProps;
-import ru.apertum.qsystem.server.model.QService;
 
 /**
  * Класс проигрывания звуковых ресурсов и файлов. Создает отдельный поток для каждого проигрыша, но игоает синхронизированно. По этому все ресурсы проиграются

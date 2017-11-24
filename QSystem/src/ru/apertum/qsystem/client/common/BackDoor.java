@@ -16,9 +16,10 @@
  */
 package ru.apertum.qsystem.client.common;
 
-import java.awt.event.ActionEvent;
-import javax.swing.Timer;
 import ru.apertum.qsystem.common.QLog;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  *

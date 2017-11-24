@@ -16,22 +16,23 @@
  */
 package ru.apertum.qsystem.reports.generators;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.sql.Connection;
-import java.util.HashMap;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.client.forms.FAbout;
-import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ReportException;
 import ru.apertum.qsystem.reports.common.RepResBundle;
 import ru.apertum.qsystem.reports.common.Response;
 import ru.apertum.qsystem.reports.model.AGenerator;
 import ru.apertum.qsystem.reports.model.QReportsList;
 import ru.apertum.qsystem.reports.net.NetUtil;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.sql.Connection;
+import java.util.HashMap;
 
 /**
  *

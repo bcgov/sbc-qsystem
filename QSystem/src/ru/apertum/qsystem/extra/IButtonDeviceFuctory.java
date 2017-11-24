@@ -16,11 +16,12 @@
  */
 package ru.apertum.qsystem.extra;
 
-import java.util.LinkedList;
-import java.util.List;
-import javax.swing.table.AbstractTableModel;
 import ru.apertum.qsystem.common.cmd.RpcGetServerState;
 import ru.apertum.qsystem.server.model.QUser;
+
+import javax.swing.table.AbstractTableModel;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *

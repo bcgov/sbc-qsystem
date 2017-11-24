@@ -21,15 +21,9 @@ import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpParams;
 import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.protocol.BasicHttpProcessor;
-import org.apache.http.protocol.HttpService;
-import org.apache.http.protocol.ResponseConnControl;
-import org.apache.http.protocol.ResponseContent;
-import org.apache.http.protocol.ResponseDate;
-import org.apache.http.protocol.ResponseServer;
-import org.apache.http.protocol.HttpRequestHandlerRegistry;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.*;
 
 /**
  *

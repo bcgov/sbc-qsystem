@@ -16,16 +16,17 @@
  */
 package ru.apertum.qsystem.client.common;
 
-import java.awt.GridLayout;
-import java.io.IOException;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.web.HTMLEditor;
-import javax.imageio.ImageIO;
 import ru.apertum.qsystem.client.forms.FAdmin;
 import ru.apertum.qsystem.common.Uses;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.IOException;
 
 /**
  *

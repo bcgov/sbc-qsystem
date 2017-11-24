@@ -16,22 +16,17 @@
  */
 package ru.apertum.qsystem.common;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import ru.apertum.qsystem.common.exceptions.ServerException;
+
+import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Manager of configure. It Holds all mechanisms for using properties and providing it for other consumers.

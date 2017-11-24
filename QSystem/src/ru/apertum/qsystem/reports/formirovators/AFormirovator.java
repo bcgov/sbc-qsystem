@@ -16,12 +16,6 @@
  */
 package ru.apertum.qsystem.reports.formirovators;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
 import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.http.HttpRequest;
 import ru.apertum.qsystem.client.forms.FAbout;
@@ -30,6 +24,13 @@ import ru.apertum.qsystem.common.exceptions.ReportException;
 import ru.apertum.qsystem.reports.common.RepResBundle;
 import ru.apertum.qsystem.reports.common.Response;
 import ru.apertum.qsystem.reports.net.NetUtil;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Формирует источник данных для отчета.

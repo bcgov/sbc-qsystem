@@ -16,15 +16,11 @@
  */
 package ru.apertum.qsystem.client.common;
 
-import java.awt.Font;
-import java.awt.print.PrinterJob;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.Properties;
+import ru.apertum.qsystem.common.QConfig;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.exceptions.ClientException;
+
 import javax.print.PrintService;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
@@ -32,10 +28,10 @@ import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
-import ru.apertum.qsystem.common.QConfig;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.exceptions.ClientException;
+import java.awt.*;
+import java.awt.print.PrinterJob;
+import java.io.*;
+import java.util.Properties;
 
 /**
  * Класс загрузки и предоставления настроек пункта регистрации

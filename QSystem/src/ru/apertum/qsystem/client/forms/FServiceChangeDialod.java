@@ -16,26 +16,28 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.tree.TreeNode;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
 import ru.apertum.qsystem.client.common.WysiwygDlg;
 import ru.apertum.qsystem.client.model.JTreeComboBox;
-import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ClientException;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.server.model.*;
 import ru.apertum.qsystem.server.model.calendar.QCalendar;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.tree.TreeNode;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created on 27.08.2009, 11:13:04

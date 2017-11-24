@@ -5,19 +5,15 @@
  */
 package ru.apertum.qsystem.server.htmlboard;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.MemoryImageSource;
-import javax.swing.JFrame;
 import ru.apertum.qsystem.common.BrowserFX;
 import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.MemoryImageSource;
 
 /**
  *

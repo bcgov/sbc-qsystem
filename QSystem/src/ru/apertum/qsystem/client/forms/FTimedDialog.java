@@ -16,8 +16,6 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Font;
-import java.awt.Frame;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
@@ -25,6 +23,8 @@ import ru.apertum.qsystem.client.common.WelcomeParams;
 import ru.apertum.qsystem.client.model.QButton;
 import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.model.ATalkingClock;
+
+import java.awt.*;
 
 /**
  * Created on 15.01.2010, 17:49:14

@@ -22,8 +22,6 @@
  */
 package ru.apertum.qsystem.client.forms;
 
-import java.awt.Frame;
-import javax.swing.JOptionPane;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -33,6 +31,9 @@ import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ClientException;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QServiceLang;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *

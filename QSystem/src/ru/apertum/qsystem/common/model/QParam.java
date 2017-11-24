@@ -19,7 +19,8 @@ package ru.apertum.qsystem.common.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.awt.Color;
+
+import java.awt.*;
 
 /**
  * Параметр для табло

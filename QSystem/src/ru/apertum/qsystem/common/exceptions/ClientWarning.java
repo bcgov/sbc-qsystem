@@ -16,8 +16,9 @@
  */
 package ru.apertum.qsystem.common.exceptions;
 
-import javax.swing.JOptionPane;
 import ru.apertum.qsystem.common.QLog;
+
+import javax.swing.*;
 
 /**
  * Этот класс исключения использовать для програмной генерации исклюсений.

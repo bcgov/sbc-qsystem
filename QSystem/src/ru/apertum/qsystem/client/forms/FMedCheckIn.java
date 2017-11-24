@@ -17,25 +17,22 @@
 package ru.apertum.qsystem.client.forms;
 
 import gnu.io.SerialPortEvent;
-import java.awt.Cursor;
-import java.awt.Frame;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.image.MemoryImageSource;
-import javax.swing.JComponent;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.model.ATalkingClock;
-import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.common.NetCommander;
 import ru.apertum.qsystem.common.QConfig;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.model.ATalkingClock;
+import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.server.model.QAuthorizationCustomer;
 import ru.evgenic.rxtx.serialPort.IReceiveListener;
 import ru.evgenic.rxtx.serialPort.ISerialPort;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.MemoryImageSource;
 
 /**
  * Created on 14.01.2010, 12:52:27

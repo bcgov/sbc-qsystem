@@ -16,11 +16,6 @@
  */
 package ru.apertum.qsystem.fx;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import javax.swing.Timer;
 import org.dom4j.Element;
 import ru.apertum.qsystem.client.forms.AFBoardRedactor;
 import ru.apertum.qsystem.common.model.QCustomer;
@@ -28,6 +23,12 @@ import ru.apertum.qsystem.server.controller.IIndicatorBoard;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  *

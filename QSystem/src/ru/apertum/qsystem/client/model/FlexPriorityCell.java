@@ -16,11 +16,9 @@
  */
 package ru.apertum.qsystem.client.model;
 
-import java.awt.Color;
-import java.awt.Component;
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 
 /**
  *

@@ -18,9 +18,9 @@ package ru.apertum.qsystem.common.cmd;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.LinkedList;
 import java.util.List;
-import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
  *

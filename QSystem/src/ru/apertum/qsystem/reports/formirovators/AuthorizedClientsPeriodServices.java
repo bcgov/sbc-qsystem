@@ -16,21 +16,18 @@
  */
 package ru.apertum.qsystem.reports.formirovators;
 
+import org.apache.http.HttpRequest;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.exceptions.ReportException;
+import ru.apertum.qsystem.reports.common.Response;
+
 import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.http.HttpRequest;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.exceptions.ReportException;
-import ru.apertum.qsystem.reports.common.Response;
 
 /**
  *
