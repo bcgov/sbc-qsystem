@@ -61,7 +61,8 @@ class FlowSpecs extends GebReportingSpec {
 
         println("\n002 - Work process on a single service non-queued engagement")
 
-        def srvc = "Batching - NR"
+        // def srvc = "Batching - NR"
+        def srvc = "Cashout"
 
         given: "already logged in"
             at QUserPage
@@ -116,8 +117,10 @@ class FlowSpecs extends GebReportingSpec {
 
         println("\n003 - Work process on two-service non-queued engagement")
 
-        def srvc1 = "Payment - Rev (MSP)"
-        def srvc2 = "Payment - Rev (PTAX)"
+        // def srvc1 = "Payment - Rev (MSP)"
+        // def srvc2 = "Payment - Rev (PTAX)"
+        def srvc1 = "Par Payment"
+        def srvc2 = "Batching"
 
         given: "already logged in"
             at QUserPage
@@ -156,8 +159,8 @@ class FlowSpecs extends GebReportingSpec {
             ticketModule.inputSearch << srvc2
 
         when: "the CSR searches and chooses a service"
-            waitFor {ticketModule.selectService.size() == 2}
-            ticketModule.selectService[1].click()
+            waitFor {ticketModule.selectService.size() == 1}
+            ticketModule.selectService[0].click()
             ticketModule.btnApply.click()
 
         then: "the service is started"
