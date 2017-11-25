@@ -1483,7 +1483,6 @@ public final class Executer {
             QLog.l().logQUser().debug("redirectCustomerTask");
             super.process(cmdParams, ipAdress, IP);
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
-            //переключение на кастомера при параллельном приеме, должен приехать customerID
             // switch to the custodian with parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
                 final QCustomer parallelCust = user.getParallelCustomers()
@@ -1507,22 +1506,10 @@ public final class Executer {
             // set added by which user
             customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
 
-            //set channels when add new service
-//            customer.setChannels(cmdParams.channels);
-//            customer.setChannelsIndex(cmdParams.channelsIndex);
-
-            // Переставка в другую очередь
-            // Название старой очереди
             final QService oldService = customer.getService();
-            // вот она новая очередь.
             final QService newServiceR = QServiceTree.getInstance().getById(cmdParams.serviceId);
-            final QService newService =
-                newServiceR.getLink() != null ? newServiceR.getLink() : newServiceR;
-            // действия по завершению работы юзера над кастомером
+            final QService newService = newServiceR.getLink() != null ? newServiceR.getLink() : newServiceR;
             customer.setFinishTime(new Date());
-            // кастомер переходит в состояние "перенаправленности", тут еще и в базу скинется, если надо.
-            // но сначала обозначим результат работы юзера с кастомером, если такой результат найдется в списке результатов
-            // может приехать -1 если результат не требовался
             final QResult result;
             if (cmdParams.resultId != -1) {
                 result = QResultList.getInstance().getById(cmdParams.resultId);
@@ -1530,60 +1517,30 @@ public final class Executer {
                 result = null;
             }
             customer.setResult(result);
-            customer.setState(CustomerState.STATE_REDIRECT,
-                cmdParams.serviceId);// есть все еще старая услуга и новую как ID передали
-            // надо кастомера инициализить др. услугой
-            // юзер в другой очереди наверное другой
-            // customer.setUser(user);
-            // теперь стоит к новой услуги.
+            //Set the state to finish to get an accurate DB result in statistic
+            customer.setState(CustomerState.STATE_FINISH, cmdParams.serviceId);
+
+            //Now update the customer to the new state
             customer.setService(newService);
+            customer.setState(CustomerState.STATE_REDIRECT, cmdParams.serviceId);
             customer.setPreviousList(oldService);
-            // если редиректят в прежнюю услугу, то это по факту не ридирект(иначе карусель)
-            // по этому в таком случае кастомера отправляют в конец очереди к этой же услуге.
-            // для этого просто не учитываем смену приоритета и галку возврата.
+
             if (!oldService.getId().equals(cmdParams.serviceId)) {
-                // т.к. переставленный, то надо поменять ему приоритет.
                 customer.setPriority(Uses.PRIORITY_HI);
-                // при редиректе надо убрать у кастомера признак старого юзера, время начала обработки.
-                //это произойдет далее при вызове setCustomer(null).
-                // и добавить, если надо, пункт возврата.
-                // теперь пункт возврата
-                /*
-                if (cmdParams.requestBack) { // требует ли возврата в прежнюю очередь
-                    customer.addServiceForBack(oldService);
-                }
-                */
             }
-            // только что встал типо
             customer.setStandTime(new Date());
-            //С НАЧАЛА ПОДОТРЕМ ПОТОМ ПЕРЕСТАВИМ!!!
-            //с новым приоритетом ставим в новую очередь, приоритет должет
-            //позволить вызваться ему сразу за обрабатываемыми кастомерами
             newService.addCustomer(customer);
-            // user.setCustomer(null);//бобик сдох и медальки не осталось, воскрес вместе со старой медалькой в соседней очереди
 
             try {
-                // сохраняем состояния очередей.
                 customer.save();
-                //QServer.savePool();
-
-                //разослать оповещение о том, что появился посетитель
-                //рассылаем широковещетельно по UDP на определенный порт
-                Uses.sendUDPBroadcast(newService.getId().toString(),
-                    ServerProps.getInstance().getProps().getClientPort());
-                Uses.sendUDPBroadcast(oldService.getId().toString(),
-                    ServerProps.getInstance().getProps().getClientPort());
-                //разослать оповещение о том, что посетитель откланен
-                //рассылаем широковещетельно по UDP на определенный порт. Должно подтереться на основном табло
+                Uses.sendUDPBroadcast(newService.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
+                Uses.sendUDPBroadcast(oldService.getId().toString(), ServerProps.getInstance().getProps().getClientPort());
                 QLog.l().logQUser().debug("redirectCustomerTask MainBoard kill");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
 
-            QLog.l().logQUser().debug("::::::  ::::::  ::::::  ::::::");
-            QLog.l().logQUser().debug("::::::  ::::::  ::::::  ::::::");
-            QLog.l().logQUser().debug("pRIORITY ::::::" + cmdParams.priority);
             return new JsonRPC20OK();
         }
     };
