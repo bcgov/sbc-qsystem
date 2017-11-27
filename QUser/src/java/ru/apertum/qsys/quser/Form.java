@@ -43,6 +43,7 @@ import org.zkoss.zul.Combobox;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.North;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 import ru.apertum.qsystem.common.CustomerState;
@@ -114,8 +115,11 @@ public class Form {
     //**** Логин Login
     //*****************************************************
     public LinkedList<String> prior_St = new LinkedList(Uses.get_COEFF_WORD().values());
-    public String officeType;
+    public String officeType = "non-reception";
     public LinkedList<QUser> userList = new LinkedList<>();
+    //Main service page
+    @Wire("#incClientDashboard #client_north")
+    North clientDashboardNorth;
     //********************************************************************************************************************************************
     //**  Change priority - By Service
     //********************************************************************************************************************************************
@@ -161,8 +165,7 @@ public class Form {
      * текущее состояние кнопок Current state of the buttons
      */
     private String keys_current = KEYS_OFF;
-    private boolean[] btnsDisabled = new boolean[]{true, true, true, true, true, true, true, true,
-        true};
+    private boolean[] btnsDisabled = new boolean[]{true, true, true, true, true, true, true, true, true};
     private boolean[] addWindowButtons = new boolean[]{true, false, false, false};
     /* Add Hide Button if Not Receptionist Model */
     private boolean checkCFMSType = false;
@@ -195,14 +198,9 @@ public class Form {
         return Labels.getLabel(resName);
     }
 
-    @Init
-    public void init() {
-        QLog.l().logQUser().debug("Loding page: init");
-        final Session sess = Sessions.getCurrent();
-
-        final User userL = (User) sess.getAttribute("userForQUser");
-        if (userL != null) {
-            user = userL;
+    public void setKeyRegimForUser(User userK) {
+        if (userK != null) {
+            user = userK;
             if (user.getUser().getCustomer() != null) {
                 customer = user.getUser().getCustomer();
                 switch (user.getUser().getCustomer().getState()) {
@@ -224,12 +222,21 @@ public class Form {
                     default:
                         setKeyRegim(KEYS_MAY_INVITE);
                 }
+            } else {
+                setKeyRegim(KEYS_MAY_INVITE);
             }
         }
     }
 
-//    greed.get(rowIndex).getShadow()
-    //ANDREW
+    @Init
+    public void init() {
+        QLog.l().logQUser().debug("Loding page: init");
+        final Session sess = Sessions.getCurrent();
+
+        final User userL = (User) sess.getAttribute("userForQUser");
+        setKeyRegimForUser(userL);
+        setCFMSAttributes();
+    }
 
     /**
      * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg") This
@@ -239,7 +246,6 @@ public class Form {
     public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
         QLog.l().logQUser().debug("Loding page: afterCompose");
         Selectors.wireComponents(view, this, false);
-
     }
 
     public User getUser() {
@@ -255,18 +261,15 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer",
-        "avaitColumn"})
+    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn"})
     public void login() {
 
-        Uses.userTimeZone = (TimeZone) Sessions.getCurrent()
-            .getAttribute("org.zkoss.web.preferred.timeZone");
+        Uses.userTimeZone = (TimeZone) Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone");
         QLog.l().logQUser().debug("Login : " + user.getName());
         if (user.getName().equals("Administrator")) {
             user.setGABoard(true);
         }
         QLog.l().logQUser().debug("STATUS : " + user.getGABoard());
-//        ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(0);
 
         final Session sess = Sessions.getCurrent();
         sess.setAttribute("userForQUser", user);
@@ -281,29 +284,7 @@ public class Form {
             //*/todo disabled*/ Executer.getInstance().getTasks().get(Uses.TASK_STAND_IN).process(params, "", new byte[4]);
         });
 
-        if (customer != null) {
-            switch (customer.getState()) {
-                case STATE_DEAD:
-                    setKeyRegim(KEYS_INVITED);
-                    break;
-                case STATE_INVITED:
-                    setKeyRegim(KEYS_INVITED);
-                    break;
-                case STATE_INVITED_SECONDARY:
-                    setKeyRegim(KEYS_INVITED);
-                    break;
-                case STATE_WORK:
-                    setKeyRegim(KEYS_STARTED);
-                    break;
-                case STATE_WORK_SECONDARY:
-                    setKeyRegim(KEYS_STARTED);
-                    break;
-                default:
-                    setKeyRegim(KEYS_MAY_INVITE);
-            }
-        } else {
-            setKeyRegim(KEYS_MAY_INVITE);
-        }
+        setKeyRegimForUser(user);
 
         QUser quser = user.getUser();
 
@@ -311,17 +292,23 @@ public class Form {
             officeName = user.getUser().getOffice().getName();
         }
 
-        QLog.l().logQUser().debug("Set attributes on login");
-        setOfficeType();
-        QLog.l().logQUser().debug("Done");
+        setCFMSAttributes();
+
+        clientDashboardNorth.setSize(checkCFMSHeight);
+        clientDashboardNorth.setStyle(checkCFMSHidden);
+        clientDashboardNorth.invalidate();
+
+        if (getCFMSType()) {
+            btn_invite.setVisible(true);
+        } else {
+            btn_invite.setVisible(false);
+        }
     }
 
     @Command
     public void GABoard() {
         GAManagementDialogWindow.setVisible(true);
         GAManagementDialogWindow.doModal();
-//        postponeCustomerDialog
-
     }
 
     @Command
@@ -356,37 +343,45 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = {"btnsDisabled", "login", "user", "customer"})
+    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn"})
     public void logout() {
         QLog.l().logQUser().debug("Logout " + user.getName());
 
+        //Set all of the session parameters back to defaults
         setKeyRegim(KEYS_OFF);
+        checkCFMSType = false;
+        checkCFMSHidden = "display: none;";
+        checkCFMSHeight = "0%";
+        checkCombo = false;
+        customer = null;
+        officeName = "";
+
         final Session sess = Sessions.getCurrent();
         sess.removeAttribute("userForQUser");
         UsersInside.getInstance().getUsersInside().remove(user.getName() + user.getPassword());
         user.setCustomerList(Collections.<QPlanService>emptyList());
         user.setName("");
         user.setPassword("");
-        customer = null;
 
         for (QSession session : QSessions.getInstance().getSessions()) {
             if (user.getUser().getId().equals(session.getUser().getId())) {
                 QSessions.getInstance().getSessions().remove(session);
-                return;
+                break;
             }
         }
-        // тут уже ретурн может быть и есть There may already be a rethurn
-        officeName = "";
 
+        clientDashboardNorth.setStyle(checkCFMSHidden);
+        clientDashboardNorth.setSize(checkCFMSHeight);
+        btn_invite.setVisible(false);
     }
 
     public LinkedList<QUser> getUsersForLogin() {
-//        QLog.l().logQUser().debug("\n\n\n\nQUSERLIST\n\n :\n"   + greed.get(2).getShadow() +  "\n\n\n\n\n");
         return QUserList.getInstance().getItems();
     }
 
     public LinkedList<QUser> getuserList() {
-        return userList = QUserList.getInstance().getItems();
+        userList = QUserList.getInstance().getItems();
+        return userList;
     }
 
     public boolean isLogin() {
@@ -399,7 +394,6 @@ public class Form {
      * Механизм включения/отключения кнопок Button on / off mechanism
      */
     public void setKeyRegim(String regim) {
-
         keys_current = regim;
         btnsDisabled[0] = !(isLogin() && '1' == regim.charAt(0));
         btnsDisabled[1] = !(isLogin() && '1' == regim.charAt(1));
@@ -431,14 +425,16 @@ public class Form {
     public String getOfficeType() {
         return officeType;
     }
-
-    private void setOfficeType() {
-        QLog.l().logQUser().debug("setOfficeType");
-        String receptionType = "non-reception";
+    private void setCFMSAttributes() {
         if (getCFMSType()) {
-            receptionType = "reception";
+            checkCFMSHidden = "display: inline;";
+            checkCFMSHeight = "70%";
+            officeType = "reception";
+        } else {
+            checkCFMSHidden = "display: none;";
+            checkCFMSHeight = "0%";
+            officeType = "non-reception";
         }
-        officeType = receptionType;
     }
 
     public boolean getCFMSType() {
@@ -461,6 +457,14 @@ public class Form {
         return checkCFMSType;
     }
 
+    public String getCFMSHeight() {
+        return checkCFMSHeight;
+    }
+
+    public String getCFMSHidden() {
+        return checkCFMSHidden;
+    }
+
     public boolean CheckCombobox() {
         if (customer == null) {
             checkCombo = true;
@@ -470,44 +474,6 @@ public class Form {
 
     public void CloseChannelEntry() {
         checkCombo = false;
-    }
-
-    public String getCFMSHidden() {
-        if (user == null) {
-            return checkCFMSHidden;
-        }
-        QUser quser = user.getUser();
-
-        if (quser == null) {
-            return checkCFMSHidden;
-        }
-        String qsb = quser.getOffice().getSmartboardType();
-        if (qsb.equalsIgnoreCase("callbyticket")) {
-            checkCFMSHidden = "display: inline;";
-        }
-        if (qsb.equalsIgnoreCase("callbyname")) {
-            checkCFMSHidden = "display: inline;";
-        }
-        return checkCFMSHidden;
-    }
-
-    public String getCFMSHeight() {
-        if (user == null) {
-            return checkCFMSHeight;
-        }
-        QUser quser = user.getUser();
-
-        if (quser == null) {
-            return checkCFMSHeight;
-        }
-        String qsb = quser.getOffice().getSmartboardType();
-        if (qsb.equalsIgnoreCase("callbyticket")) {
-            checkCFMSHeight = "70%";
-        }
-        if (qsb.equalsIgnoreCase("callbyname")) {
-            checkCFMSHeight = "70%";
-        }
-        return checkCFMSHeight;
     }
 
     public QCustomer getCustomer() {
