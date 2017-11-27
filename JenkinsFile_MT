@@ -39,7 +39,7 @@ node('maven') {
 
    stage('verify') {
         if (!params.quickPush) {
-            openshiftVerifyDeployment depCfg: 'qsystem-mt', namespace: 'servicebc-customer-flow-dev', verbose: 'true'
+            openshiftVerifyDeployment depCfg: 'multitenant', namespace: 'servicebc-customer-flow-dev', verbose: 'true'
         }
    }
 
