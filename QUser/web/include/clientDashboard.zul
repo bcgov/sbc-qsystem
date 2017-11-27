@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
-    
     <borderlayout>
-               
-        <north border="none" hflex="true" splittable="true" height="@load(fmodel.getCFMSHeight())" style="@load(fmodel.getCFMSHidden())" autoscroll="true">
-                        <panel title="@load(fmodel.avaitColumn)" border="normal" height="100%">
+        <north id="client_north" border="none" hflex="true" splittable="true" height="@load(fmodel.getCFMSHeight())" style="@load(fmodel.getCFMSHidden())" autoscroll="true">
+            <panel title="@load(fmodel.avaitColumn)" border="normal" height="100%" vflex="max">
                 <panelchildren>
                     <zscript><![CDATA[
                         import java.util.Comparator;
                         import ru.apertum.qsys.quser.WaitingPanelComparator;
                         Comparator cTimeAsc = new WaitingPanelComparator(true, 1);
                         Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
-                        
-
                     ]]></zscript>
                     <listbox id="service_list" model="@load(fmodel.user.customerList)"  selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max" >
                         <listhead>
@@ -25,14 +21,12 @@
                             <!--<listheader label="Priority" width="100px" align="center" sortAscending="${cPriorityAsc}" sortDescending="${cPriorityDsc}"/>-->
                             <listheader label="State" width="120px" align="center" />
                             <listheader label="Comments"/>
-
 <!--                             <listheader label="Time" width="100px" align="center" sortAscending="${cTimeAsc}" sortDescending="${cTimeDsc}"/>                       
                             <listheader label="Ticket" width="100px" align="center" sortAscending="${cTicketAsc}" sortDescending="${cTicketDsc}"/>
                             <listheader label="Served By" width="100px" sort="auto" align="center"/>
                             <listheader label="Service" width="200px" align="center" sortAscending="${cServiceAsc}" sortDescending="${cServiceDsc}"/>
                             <listheader label="State" width="120px" align="center" sortAscending="${cStateAsc}" sortDescending="${cStateDsc}"/>
                             <listheader label="Comments" sort="auto"/> -->
-                         
                         <!-- Comparator cTimeDsc = new WaitingPanelComparator(false, 1);  -->
 <!--                    Comparator cTicketAsc = new WaitingPanelComparator(true, 2);
                         Comparator cTicketDsc = new WaitingPanelComparator(false, 2);
@@ -42,15 +36,11 @@
                         //Comparator cPriorityDsc = new WaitingPanelComparator(false, 4);
                         Comparator cStateAsc = new WaitingPanelComparator(true, 4);
                         Comparator cStateDsc = new WaitingPanelComparator(false, 4);  -->
-                    
-
                         <!--                             <zscript><![CDATA[
                                 import java.util.Comparator;
                                 import ru.apertum.qsys.quser.WaitingPanelComparator;
 
                             ]]></zscript> -->
-
-
                         </listhead>
                         <template name="model" var="customerList">
                             <listitem context="servicesListPopup">
@@ -67,9 +57,7 @@
                     <timer id="timer_service_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
                 </panelchildren>
                 <!-- Это окно для выора приоритета -->
-                
             </panel>
-        
         </north>
         <!--
         <east size="550px" border="none" minsize="100"  hflex="max" splittable="true" >
@@ -92,8 +80,6 @@
             </panel>	
         </east>
         -->
-        
-
         <center border="none" hflex="true" autoscroll="true">
             <panel title="Citizens on hold" border="normal" height="100%">
                 <panelchildren>
@@ -115,7 +101,6 @@
                             </listitem>
                         </template>
                     </listbox>
-                    
 <!--                    <menupopup id="postponeListPopup">
                         <menuitem label="${c:l('change_status')}" onClick="@command('clickListPostponedChangeStatus')" visible="@load(fmodel.login)"/>
                         <menuseparator />
@@ -123,7 +108,6 @@
                     </menupopup>-->
                 </panelchildren>
             </panel>
-                    
         </center>
     </borderlayout>
     <div style="display: none;">
@@ -134,7 +118,5 @@
         <include id="incServeCustomerDialog" src="/include/dialog/serveCustomerDialog.zul"/>
         <include id="incAddTicketDialog" src="/include/dialog/addTicketDialog.zul"/>
         <include id="incGAManagementDialog" src="/include/dialog/GAManagementDialog.zul"/>
-
     </div>
-
 </zk>
