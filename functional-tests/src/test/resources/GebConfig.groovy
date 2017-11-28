@@ -46,7 +46,7 @@ environments {
 // chrome    --> "./gradlew chromeTest"
 
 // Pipeline and remote testing
-baseUrl = "https://sbc-qsystem-dev.pathfinder.gov.bc.ca/multitenant/"
+baseUrl = "https://sbc-qsystem-dev.pathfinder.gov.bc.ca/qsystem/"
 
 // local testing
 // baseUrl = "http://localhost:8080/multitenant/"
