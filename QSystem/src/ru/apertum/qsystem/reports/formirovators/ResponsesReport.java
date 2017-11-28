@@ -25,48 +25,42 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpRequest;
-import ru.apertum.qsystem.common.Uses;import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ReportException;
 import ru.apertum.qsystem.reports.common.Response;
 
 /**
  * Статистический отчет в разрезе персонала за период
+ *
  * @author Igor Savin
  */
 public class ResponsesReport extends AFormirovator {
 
-    /**
-     * Метод формирования параметров для отчета.
-     * В отчет нужно передать некие параметры. Они упаковываются в Мар.
-     * Если параметры не нужны, то сформировать пустой Мар.
-     * @param driverClassName
-     * @param url
-     * @param username
-     * @param password
-     * @param request
-     * @return
-     */
-    @Override
-    public Map getParameters(String driverClassName, String url, String username, String password, HttpRequest request) {
-        return paramMap;
-    }
     /**
      * Для параметров
      */
     final private HashMap<String, Date> paramMap = new HashMap<>();
 
     /**
-     * Метод получения коннекта к базе если отчет строится через коннект.
-     * Если отчет строится не через коннект, а формироватором, то выдать null.
-     * @param driverClassName
-     * @param url
-     * @param username
-     * @param password
-     * @param request
+     * Метод формирования параметров для отчета. В отчет нужно передать некие параметры. Они
+     * упаковываются в Мар. Если параметры не нужны, то сформировать пустой Мар.
+     */
+    @Override
+    public Map getParameters(String driverClassName, String url, String username, String password,
+        HttpRequest request) {
+        return paramMap;
+    }
+
+    /**
+     * Метод получения коннекта к базе если отчет строится через коннект. Если отчет строится не
+     * через коннект, а формироватором, то выдать null.
+     *
      * @return коннект соединения к базе или null.
      */
     @Override
-    public Connection getConnection(String driverClassName, String url, String username, String password, HttpRequest request) {
+    public Connection getConnection(String driverClassName, String url, String username,
+        String password, HttpRequest request) {
         final Connection connection;
         try {
             Class.forName(driverClassName);
@@ -76,92 +70,96 @@ public class ResponsesReport extends AFormirovator {
         }
         return connection;
     }
-/*
-    @Override
-    public byte[] preparation(String driverClassName, String url, String username, String password, HttpRequest request) {
-        // если в запросе не содержаться введенные параметры, то выдыем форму ввода
-        // иначе выдаем null.
-        final String data = NetUtil.getEntityContent(request);
-        QLog.l().logger().trace("Принятые параметры \"" + data + "\".");
-        // флаг введенности параметров
-        boolean flag = false;
-        String mess = "";
-        if ("".equals(data)) {
-            flag = true;
-        } else {
-            //sd=20.01.2009&ed=28.01.2009
-            // проверка на корректность введенных параметров
-            final String[] ss = data.split("&");
-            if (ss.length == 2) {
-                final String[] ss0 = ss[0].split("=");
-                final String[] ss1 = ss[1].split("=");
 
-                Date sd = null;
-                Date fd = null;
-                Date fd1 = null;
-
-                flag = !(ss0.length == 2 && ss1.length == 2);
-                if (!flag) {
-                    try {
-                        sd = Uses.FORMAT_DD_MM_YYYY.parse(ss0[1]);
-                        fd = Uses.FORMAT_DD_MM_YYYY.parse(ss1[1]);
-                        fd1 = DateUtils.addDays(Uses.FORMAT_DD_MM_YYYY.parse(ss1[1]), 1);
-
-                    } catch (ParseException ex) {
-                        mess = "<br>Ошибка ввода параметров! Не все параметры введены корректно(дд.мм.гггг).";
-                        flag = true;
-                    }
-                } else {
-                    mess = "<br>Ошибка ввода параметров! Не все параметры введены корректно(дд.мм.гггг).";
-                }
-                if (!flag) {
-                    if (!sd.after(fd)) {
-                        paramMap.put(ss0[0], sd);
-                        paramMap.put(ss1[0], fd);
-                        paramMap.put("ed1", fd1);
-                    } else {
-                        mess = "<br>Ошибка ввода параметров! Дата начала больше даты завершения.";
-                        flag = true;
-                    }
-                }
-
-            } else {
-                mess = "<br>Ошибка ввода параметров!";
+    /*
+        @Override
+        public byte[] preparation(String driverClassName, String url, String username, String password, HttpRequest request) {
+            // если в запросе не содержаться введенные параметры, то выдыем форму ввода
+            // иначе выдаем null.
+            final String data = NetUtil.getEntityContent(request);
+            QLog.l().logger().trace("Принятые параметры \"" + data + "\".");
+            // флаг введенности параметров
+            boolean flag = false;
+            String mess = "";
+            if ("".equals(data)) {
                 flag = true;
+            } else {
+                //sd=20.01.2009&ed=28.01.2009
+                // проверка на корректность введенных параметров
+                final String[] ss = data.split("&");
+                if (ss.length == 2) {
+                    final String[] ss0 = ss[0].split("=");
+                    final String[] ss1 = ss[1].split("=");
+
+                    Date sd = null;
+                    Date fd = null;
+                    Date fd1 = null;
+
+                    flag = !(ss0.length == 2 && ss1.length == 2);
+                    if (!flag) {
+                        try {
+                            sd = Uses.FORMAT_DD_MM_YYYY.parse(ss0[1]);
+                            fd = Uses.FORMAT_DD_MM_YYYY.parse(ss1[1]);
+                            fd1 = DateUtils.addDays(Uses.FORMAT_DD_MM_YYYY.parse(ss1[1]), 1);
+
+                        } catch (ParseException ex) {
+                            mess = "<br>Ошибка ввода параметров! Не все параметры введены корректно(дд.мм.гггг).";
+                            flag = true;
+                        }
+                    } else {
+                        mess = "<br>Ошибка ввода параметров! Не все параметры введены корректно(дд.мм.гггг).";
+                    }
+                    if (!flag) {
+                        if (!sd.after(fd)) {
+                            paramMap.put(ss0[0], sd);
+                            paramMap.put(ss1[0], fd);
+                            paramMap.put("ed1", fd1);
+                        } else {
+                            mess = "<br>Ошибка ввода параметров! Дата начала больше даты завершения.";
+                            flag = true;
+                        }
+                    }
+
+                } else {
+                    mess = "<br>Ошибка ввода параметров!";
+                    flag = true;
+                }
+            }
+            if (flag) {
+                // вставим необходимую ссылку на отчет в форму ввода
+                // и выдадим ее клиенту на заполнение.
+                // после заполнения вызовется нужный отчет с введенными параметрами и этот метод вернет null,
+                // что продолжет генерить отчет методом getDataSource с нужными параметрами.
+                // А здесь мы просто знаем какой формироватор должен какие формы выдавать пользователю. На то он и формироватор, индивидуальный для каждого отчета.
+                // get_period_for_statistic_services.html
+                final InputStream inStream = getClass().getResourceAsStream("/ru/apertum/qsystem/reports/web/get_period_for_statistic_responses.html");
+                String result = null;
+                try {
+                    result = new String(Uses.readInputStream(inStream), "UTF-8");
+                } catch (IOException ex) {
+                    throw new Uses.ReportException("Ошибка чтения ресурса для диалогового ввода периода. " + ex);
+                }
+                result = result.replaceFirst(Uses.ANCHOR_DATA_FOR_REPORT, request.getRequestLine().getUri()).replaceFirst(Uses.ANCHOR_ERROR_INPUT_DATA, mess);
+                try {
+                    return result.getBytes("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    return result.getBytes();
+                }
+            } else {
+                return null;
             }
         }
-        if (flag) {
-            // вставим необходимую ссылку на отчет в форму ввода
-            // и выдадим ее клиенту на заполнение.
-            // после заполнения вызовется нужный отчет с введенными параметрами и этот метод вернет null,
-            // что продолжет генерить отчет методом getDataSource с нужными параметрами.
-            // А здесь мы просто знаем какой формироватор должен какие формы выдавать пользователю. На то он и формироватор, индивидуальный для каждого отчета.
-            // get_period_for_statistic_services.html
-            final InputStream inStream = getClass().getResourceAsStream("/ru/apertum/qsystem/reports/web/get_period_for_statistic_responses.html");
-            String result = null;
-            try {
-                result = new String(Uses.readInputStream(inStream), "UTF-8");
-            } catch (IOException ex) {
-                throw new Uses.ReportException("Ошибка чтения ресурса для диалогового ввода периода. " + ex);
-            }
-            result = result.replaceFirst(Uses.ANCHOR_DATA_FOR_REPORT, request.getRequestLine().getUri()).replaceFirst(Uses.ANCHOR_ERROR_INPUT_DATA, mess);
-            try {
-                return result.getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                return result.getBytes();
-            }
-        } else {
-            return null;
-        }
-    }
-*/
+    */
     @Override
-    public Response getDialog(String driverClassName, String url, String username, String password, HttpRequest request, String errorMessage) {
-        return getDialog("/ru/apertum/qsystem/reports/web/get_period_for_statistic_responses.html", request, errorMessage);
+    public Response getDialog(String driverClassName, String url, String username, String password,
+        HttpRequest request, String errorMessage) {
+        return getDialog("/ru/apertum/qsystem/reports/web/get_period_for_statistic_responses.html",
+            request, errorMessage);
     }
 
     @Override
-    public String validate(String driverClassName, String url, String username, String password, HttpRequest request, HashMap<String, String> params) {
+    public String validate(String driverClassName, String url, String username, String password,
+        HttpRequest request, HashMap<String, String> params) {
         // проверка на корректность введенных параметров
         QLog.l().logger().trace("Принятые параметры \"" + params.toString() + "\".");
         if (params.size() == 2) {

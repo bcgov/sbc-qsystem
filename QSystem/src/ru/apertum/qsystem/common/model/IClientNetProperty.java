@@ -17,9 +17,8 @@
 package ru.apertum.qsystem.common.model;
 
 /**
- *
- * @author Evgeniy Egorov
- * Получение необходимых данных для организации работы с сетью для клиентского приложения.
+ * @author Evgeniy Egorov Получение необходимых данных для организации работы с сетью для
+ * клиентского приложения.
  */
 public interface IClientNetProperty extends INetProperty {
     /*

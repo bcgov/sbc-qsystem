@@ -27,12 +27,12 @@ import javax.swing.JComponent;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.model.ATalkingClock;
-import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.common.NetCommander;
 import ru.apertum.qsystem.common.QConfig;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
+import ru.apertum.qsystem.common.model.ATalkingClock;
+import ru.apertum.qsystem.common.model.INetProperty;
 import ru.apertum.qsystem.server.model.QAuthorizationCustomer;
 import ru.evgenic.rxtx.serialPort.IReceiveListener;
 import ru.evgenic.rxtx.serialPort.ISerialPort;
@@ -44,52 +44,66 @@ import ru.evgenic.rxtx.serialPort.ISerialPort;
  */
 public class FMedCheckIn extends javax.swing.JDialog {
 
+    /**
+     * через сколько сотрем введенное
+     */
+    private static final int delay = 10000;
+    private static final String DEFAULT_KOD = "";
     private static ResourceMap localeMap = null;
-
-    private static String getLocaleMessage(String key) {
-        if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(FMedCheckIn.class);
-        }
-        return localeMap.getString(key);
-    }
-
     private static FMedCheckIn medCheckIn;
-
-    public static boolean isShowen() {
-        return medCheckIn != null && medCheckIn.isVisible();
-    }
     private static QAuthorizationCustomer result = null;
     private static INetProperty netProperty;
     private ISerialPort port;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonEnter;
+    private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton14;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel panelButtonsNumeric;
+    private ru.apertum.qsystem.client.model.QPanel panelMain;
+    private javax.swing.JTextField textFieldNumber;
+    /**
+     * Таймер, по которому будем стирать введенный номер.
+     */
+    public ATalkingClock clockBack = new ATalkingClock(delay, 1) {
 
-    public void setPort(final ISerialPort port) throws Exception {
-        this.port = port;
-        port.bind(new IReceiveListener() {
-
-            @Override
-            public void actionPerformed(SerialPortEvent event, byte[] data) {
-                textFieldNumber.setText(new String(data));
-                QLog.l().logger().debug("Приняли сообщение в СОМ-порт \"" + result + "\"");
-                buttonEnterActionPerformed(null);
-            }
-
-            @Override
-            public void actionPerformed(SerialPortEvent event) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
-    }
+        @Override
+        public void run() {
+            textFieldNumber.setText("");
+        }
+    };
 
     /**
      * Creates new form FMedCheckIn
-     *
-     * @param parent
-     * @param modal
      */
     public FMedCheckIn(Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        buttonEnter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ru/apertum/qsystem/client/forms/resources/checkmark.png"))); // NOI18N
+        buttonEnter.setIcon(new javax.swing.ImageIcon(getClass()
+            .getResource("/ru/apertum/qsystem/client/forms/resources/checkmark.png"))); // NOI18N
+    }
+
+    private static String getLocaleMessage(String key) {
+        if (localeMap == null) {
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(FMedCheckIn.class);
+        }
+        return localeMap.getString(key);
+    }
+
+    public static boolean isShowen() {
+        return medCheckIn != null && medCheckIn.isVisible();
     }
 
     /**
@@ -99,10 +113,11 @@ public class FMedCheckIn extends javax.swing.JDialog {
      * @param modal модальный диалог или нет
      * @param netProperty свойства работы с сервером
      * @param fullscreen растягивать форму на весь экран и прятать мышку или нет
-     * @param port
-     * @return XML-описание результата предварительной записи. если null, то отказались от предварительной записи
+     * @return XML-описание результата предварительной записи. если null, то отказались от
+     * предварительной записи
      */
-    public static QAuthorizationCustomer showMedCheckIn(Frame parent, boolean modal, INetProperty netProperty, boolean fullscreen, ISerialPort port) {
+    public static QAuthorizationCustomer showMedCheckIn(Frame parent, boolean modal,
+        INetProperty netProperty, boolean fullscreen, ISerialPort port) {
         QLog.l().logger().info("Показать форму идентификации клиента для предварительной записи");
         if (medCheckIn == null) {
             medCheckIn = new FMedCheckIn(parent, modal);
@@ -115,8 +130,10 @@ public class FMedCheckIn extends javax.swing.JDialog {
             Uses.setFullSize(medCheckIn);
             if (QConfig.cfg().isHideCursor()) {
                 int[] pixels = new int[16 * 16];
-                Image image = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, pixels, 0, 16));
-                Cursor transparentCursor = Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), "invisibleCursor");
+                Image image = Toolkit.getDefaultToolkit()
+                    .createImage(new MemoryImageSource(16, 16, pixels, 0, 16));
+                Cursor transparentCursor = Toolkit.getDefaultToolkit()
+                    .createCustomCursor(image, new Point(0, 0), "invisibleCursor");
                 medCheckIn.setCursor(transparentCursor);
             }
         } else {
@@ -147,6 +164,24 @@ public class FMedCheckIn extends javax.swing.JDialog {
         }
     }
 
+    public void setPort(final ISerialPort port) throws Exception {
+        this.port = port;
+        port.bind(new IReceiveListener() {
+
+            @Override
+            public void actionPerformed(SerialPortEvent event, byte[] data) {
+                textFieldNumber.setText(new String(data));
+                QLog.l().logger().debug("Приняли сообщение в СОМ-порт \"" + result + "\"");
+                buttonEnterActionPerformed(null);
+            }
+
+            @Override
+            public void actionPerformed(SerialPortEvent event) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
+    }
+
     private void setFordFocuseEdit(final JComponent e) {
         e.requestFocus();
         e.requestFocusInWindow();
@@ -155,25 +190,10 @@ public class FMedCheckIn extends javax.swing.JDialog {
             e.requestFocus();
         });
     }
-    /**
-     * через сколько сотрем введенное
-     */
-    private static final int delay = 10000;
-    /**
-     * Таймер, по которому будем стирать введенный номер.
-     */
-    public ATalkingClock clockBack = new ATalkingClock(delay, 1) {
-
-        @Override
-        public void run() {
-            textFieldNumber.setText("");
-        }
-    };
-    private static final String DEFAULT_KOD = "";
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -205,8 +225,11 @@ public class FMedCheckIn extends javax.swing.JDialog {
         setUndecorated(true);
 
         panelMain.setBorder(new javax.swing.border.MatteBorder(null));
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FMedCheckIn.class);
-        panelMain.setBackgroundImgage(resourceMap.getString("panelMain.backgroundImgage")); // NOI18N
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(FMedCheckIn.class);
+        panelMain
+            .setBackgroundImgage(resourceMap.getString("panelMain.backgroundImgage")); // NOI18N
         panelMain.setName("panelMain"); // NOI18N
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -232,7 +255,8 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
-        panelButtonsNumeric.setBackground(resourceMap.getColor("panelButtonsNumeric.background")); // NOI18N
+        panelButtonsNumeric
+            .setBackground(resourceMap.getColor("panelButtonsNumeric.background")); // NOI18N
         panelButtonsNumeric.setBorder(new javax.swing.border.MatteBorder(null));
         panelButtonsNumeric.setName("panelButtonsNumeric"); // NOI18N
         panelButtonsNumeric.setLayout(new java.awt.GridLayout(4, 3, 5, 5));
@@ -240,7 +264,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton10.setFont(resourceMap.getFont("jButton10.font")); // NOI18N
         jButton10.setForeground(resourceMap.getColor("jButton10.foreground")); // NOI18N
         jButton10.setText(resourceMap.getString("jButton10.text")); // NOI18N
-        jButton10.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton10.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton10.setName("jButton10"); // NOI18N
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -252,7 +281,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton11.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton11.setForeground(resourceMap.getColor("jButton11.foreground")); // NOI18N
         jButton11.setText(resourceMap.getString("jButton11.text")); // NOI18N
-        jButton11.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton11.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton11.setName("jButton11"); // NOI18N
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -264,7 +298,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton12.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton12.setForeground(resourceMap.getColor("jButton12.foreground")); // NOI18N
         jButton12.setText(resourceMap.getString("jButton12.text")); // NOI18N
-        jButton12.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton12.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton12.setName("jButton12"); // NOI18N
         jButton12.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -276,7 +315,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton7.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton7.setForeground(resourceMap.getColor("jButton7.foreground")); // NOI18N
         jButton7.setText(resourceMap.getString("jButton7.text")); // NOI18N
-        jButton7.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton7.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton7.setName("jButton7"); // NOI18N
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -288,7 +332,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton8.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton8.setForeground(resourceMap.getColor("jButton8.foreground")); // NOI18N
         jButton8.setText(resourceMap.getString("jButton8.text")); // NOI18N
-        jButton8.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton8.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton8.setName("jButton8"); // NOI18N
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -300,7 +349,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton9.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton9.setForeground(resourceMap.getColor("jButton9.foreground")); // NOI18N
         jButton9.setText(resourceMap.getString("jButton9.text")); // NOI18N
-        jButton9.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton9.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton9.setName("jButton9"); // NOI18N
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -312,7 +366,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton4.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton4.setForeground(resourceMap.getColor("jButton4.foreground")); // NOI18N
         jButton4.setText(resourceMap.getString("jButton4.text")); // NOI18N
-        jButton4.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton4.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton4.setName("jButton4"); // NOI18N
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -324,7 +383,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton5.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton5.setForeground(resourceMap.getColor("jButton5.foreground")); // NOI18N
         jButton5.setText(resourceMap.getString("jButton5.text")); // NOI18N
-        jButton5.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton5.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton5.setName("jButton5"); // NOI18N
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -336,7 +400,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton6.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton6.setForeground(resourceMap.getColor("jButton6.foreground")); // NOI18N
         jButton6.setText(resourceMap.getString("jButton6.text")); // NOI18N
-        jButton6.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton6.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton6.setName("jButton6"); // NOI18N
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -348,7 +417,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton3.setFont(resourceMap.getFont("jButton6.font")); // NOI18N
         jButton3.setForeground(resourceMap.getColor("jButton3.foreground")); // NOI18N
         jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
-        jButton3.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton3.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton3.setName("jButton3"); // NOI18N
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -360,7 +434,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton14.setFont(resourceMap.getFont("jButton14.font")); // NOI18N
         jButton14.setForeground(resourceMap.getColor("jButton14.foreground")); // NOI18N
         jButton14.setText(resourceMap.getString("jButton14.text")); // NOI18N
-        jButton14.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton14.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton14.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton14.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton14.setName("jButton14"); // NOI18N
         jButton14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -372,7 +451,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         jButton13.setFont(resourceMap.getFont("jButton13.font")); // NOI18N
         jButton13.setForeground(resourceMap.getColor("jButton13.foreground")); // NOI18N
         jButton13.setIcon(resourceMap.getIcon("jButton13.icon")); // NOI18N
-        jButton13.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        jButton13.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("jButton4.border.outsideBorder.highlightInnerColor"), null,
+                    null),
+            javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         jButton13.setName("jButton13"); // NOI18N
         jButton13.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -385,7 +469,13 @@ public class FMedCheckIn extends javax.swing.JDialog {
         buttonEnter.setForeground(resourceMap.getColor("buttonEnter.foreground")); // NOI18N
         buttonEnter.setIcon(resourceMap.getIcon("buttonEnter.icon")); // NOI18N
         buttonEnter.setText(resourceMap.getString("buttonEnter.text")); // NOI18N
-        buttonEnter.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, null, resourceMap.getColor("buttonEnter.border.outsideBorder.highlightInnerColor"), null, null), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
+        buttonEnter
+            .setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED, null,
+                    resourceMap.getColor("buttonEnter.border.outsideBorder.highlightInnerColor"),
+                    null,
+                    null), javax.swing.BorderFactory
+                .createBevelBorder(javax.swing.border.BevelBorder.RAISED))); // NOI18N
         buttonEnter.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         buttonEnter.setName("buttonEnter"); // NOI18N
         buttonEnter.setVerticalAlignment(javax.swing.SwingConstants.TOP);
@@ -400,55 +490,83 @@ public class FMedCheckIn extends javax.swing.JDialog {
         panelMain.setLayout(panelMainLayout);
         panelMainLayout.setHorizontalGroup(
             panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelMainLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(panelMainLayout.createSequentialGroup()
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1099, Short.MAX_VALUE)
-                            .addContainerGap())
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
-                            .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(textFieldNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(47, 47, 47)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
-                        .addComponent(panelButtonsNumeric, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(buttonEnter, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                .addGroup(panelMainLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        panelMainLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelMainLayout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(panelMainLayout.createSequentialGroup()
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        1099,
+                                        Short.MAX_VALUE)
+                                    .addContainerGap())
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                    panelMainLayout.createSequentialGroup()
+                                        .addGroup(panelMainLayout.createParallelGroup(
+                                            javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel2,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(textFieldNumber,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 550,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(47, 47, 47)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                panelMainLayout.createSequentialGroup()
+                                    .addComponent(panelButtonsNumeric,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE, 288,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(buttonEnter,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addContainerGap())))
         );
         panelMainLayout.setVerticalGroup(
             panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelMainLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(42, 42, 42)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(6, 6, 6)
-                .addComponent(textFieldNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(panelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelButtonsNumeric, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buttonEnter))
-                .addContainerGap(140, Short.MAX_VALUE))
+                .addGroup(panelMainLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 113,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(42, 42, 42)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(6, 6, 6)
+                    .addComponent(textFieldNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 73,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addGroup(
+                        panelMainLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(panelButtonsNumeric,
+                                javax.swing.GroupLayout.PREFERRED_SIZE,
+                                353, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonEnter))
+                    .addContainerGap(140, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelMain, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelMain, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buttonClickNumeric(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClickNumeric
+    private void buttonClickNumeric(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClickNumeric
         if (clockBack.isActive()) {
             clockBack.stop();
         }
@@ -456,10 +574,12 @@ public class FMedCheckIn extends javax.swing.JDialog {
         clockBack.start();
         if ("".equals(evt.getActionCommand())) {
             // удаление
-            if (DEFAULT_KOD.equals(textFieldNumber.getText()) || "".equals(textFieldNumber.getText())) {
+            if (DEFAULT_KOD.equals(textFieldNumber.getText()) || ""
+                .equals(textFieldNumber.getText())) {
                 textFieldNumber.setText("");
             } else {
-                textFieldNumber.setText(textFieldNumber.getText().substring(0, textFieldNumber.getText().length() - 1));
+                textFieldNumber.setText(
+                    textFieldNumber.getText().substring(0, textFieldNumber.getText().length() - 1));
             }
 
         } else {
@@ -472,23 +592,27 @@ public class FMedCheckIn extends javax.swing.JDialog {
         setFordFocuseEdit(textFieldNumber);
     }//GEN-LAST:event_buttonClickNumeric
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+    private void jButton14ActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
         textFieldNumber.setText("");
         setFordFocuseEdit(textFieldNumber);
     }//GEN-LAST:event_jButton14ActionPerformed
 
-    private void buttonEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEnterActionPerformed
+    private void buttonEnterActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEnterActionPerformed
         setFordFocuseEdit(textFieldNumber);
         if ("".equals(textFieldNumber.getText().trim()) || buttonEnter.isVisible() == false) {
             return;
         }
         //Послать запрос на идентификацию клиента и отработать результат
-        final QAuthorizationCustomer res = NetCommander.getClientAuthorization(netProperty, textFieldNumber.getText().trim());
+        final QAuthorizationCustomer res = NetCommander
+            .getClientAuthorization(netProperty, textFieldNumber.getText().trim());
         // Шлем отказ
         final String notFound = "<html><p align=center><span style='font-size:45.0pt;color:purple'>Номер не обнаружен.</span><br><span style='font-size:60.0pt;color:green'>Обратитесь в регистратуру.</span>";
 
         if (res == null) {
-            QLog.l().logger().debug("Не идентифицирован клиент по номеру \"" + textFieldNumber.getText() + "\"");
+            QLog.l().logger()
+                .debug("Не идентифицирован клиент по номеру \"" + textFieldNumber.getText() + "\"");
             FTimedDialog.showTimedDialog(null, true, notFound, 5000);
         } else {
             QLog.l().logger().debug("Клиент опознан, предлагаем выбрать услугу");
@@ -497,34 +621,17 @@ public class FMedCheckIn extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_buttonEnterActionPerformed
 
-    private void textFieldNumberKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldNumberKeyTyped
+    private void textFieldNumberKeyTyped(
+        java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldNumberKeyTyped
         if (textFieldNumber.getText().indexOf('#') != -1) {
             textFieldNumber.setText("");
         }
 
     }//GEN-LAST:event_textFieldNumberKeyTyped
 
-    private void textFieldNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textFieldNumberActionPerformed
+    private void textFieldNumberActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textFieldNumberActionPerformed
         buttonEnterActionPerformed(null);
     }//GEN-LAST:event_textFieldNumberActionPerformed
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonEnter;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton14;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel panelButtonsNumeric;
-    private ru.apertum.qsystem.client.model.QPanel panelMain;
-    private javax.swing.JTextField textFieldNumber;
     // End of variables declaration//GEN-END:variables
 }

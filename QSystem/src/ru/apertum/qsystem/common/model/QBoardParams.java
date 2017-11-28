@@ -22,6 +22,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Параметры для табло
+ *
  * @author Evgeniy Egorov
  */
 public class QBoardParams {

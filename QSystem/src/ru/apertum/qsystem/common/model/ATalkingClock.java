@@ -21,7 +21,8 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 
 /**
- * Таймер, однако. Кудаж без него. В наследниках реализовать метод run(). Умеет отмерять единичные интервалы времени.
+ * Таймер, однако. Кудаж без него. В наследниках реализовать метод run(). Умеет отмерять единичные
+ * интервалы времени.
  *
  * @author Evgeniy Egorov
  */
@@ -31,27 +32,13 @@ public abstract class ATalkingClock {
      * Количество срабатываний таймера
      */
     private int count;
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
     private int cntr = 0;
     /**
      * Интервал в мсек.
      */
     private int interval = 500;
-
-    public int getInterval() {
-        return interval;
-    }
-
-    public final void setInterval(int interval) {
-        this.interval = interval;
-    }
+    private Timer t;
+    private boolean active = false;
     private final ActionListener timeAction = (ActionEvent e) -> {
         run();
         if (count != 0) {
@@ -61,13 +48,6 @@ public abstract class ATalkingClock {
             }
         }
     };
-    private Timer t;
-    private boolean active = false;
-
-    /**
-     * Реализовать в наследниках. Этот метод выполнится по таймеру.
-     */
-    abstract public void run();
 
     /**
      * Конструктор таймера
@@ -80,9 +60,30 @@ public abstract class ATalkingClock {
         this.count = count;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public final void setInterval(int interval) {
+        this.interval = interval;
+    }
+
     /**
-     * Запуск таймера. При старте каждый раз создается новый таймер, не используется старый, т.к. интервал ему можно сменить тока с глюками влюбой момент перед
-     * стартом.
+     * Реализовать в наследниках. Этот метод выполнится по таймеру.
+     */
+    abstract public void run();
+
+    /**
+     * Запуск таймера. При старте каждый раз создается новый таймер, не используется старый, т.к.
+     * интервал ему можно сменить тока с глюками влюбой момент перед стартом.
      */
     public void start() {
         if (isActive()) {

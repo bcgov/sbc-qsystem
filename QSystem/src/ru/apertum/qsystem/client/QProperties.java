@@ -26,8 +26,9 @@ import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.model.QProperty;
 
 /**
- * Это класс пердоставления параметров, которые хранятся в БД и могут использоваться сервером и админкой напрямую. Это класс запросит по сети параметры.
- * Используйте метод load() для получения после инициализации параметров по сети.
+ * Это класс пердоставления параметров, которые хранятся в БД и могут использоваться сервером и
+ * админкой напрямую. Это класс запросит по сети параметры. Используйте метод load() для получения
+ * после инициализации параметров по сети.
  *
  * @author Evgeniy Egorov
  */
@@ -40,11 +41,6 @@ public class QProperties {
 
     public static QProperties get() {
         return QPropertiesHolder.INSTANCE;
-    }
-
-    private static class QPropertiesHolder {
-
-        private static final QProperties INSTANCE = new QProperties();
     }
 
     /**
@@ -149,5 +145,10 @@ public class QProperties {
      */
     public void save(INetProperty netProperty, List<QProperty> propList) {
         properties = NetCommander.saveProperties(netProperty, propList);
+    }
+
+    private static class QPropertiesHolder {
+
+        private static final QProperties INSTANCE = new QProperties();
     }
 }

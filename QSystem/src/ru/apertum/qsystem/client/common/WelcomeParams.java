@@ -44,14 +44,6 @@ import ru.apertum.qsystem.common.exceptions.ClientException;
  */
 public class WelcomeParams {
 
-    public static WelcomeParams getInstance() {
-        return WelcomeParamsHolder.INSTANCE;
-    }
-
-    private static class WelcomeParamsHolder {
-
-        private static final WelcomeParams INSTANCE = new WelcomeParams();
-    }
     /**
      * Константы хранения параметров в файле.
      */
@@ -120,18 +112,12 @@ public class WelcomeParams {
     private static final String INFO_BUTTON_HTMLTEXT = "info_button_htmltext";
     private static final String RESPONSE_BUTTON_HTMLTEXT = "response_button_htmltext";
     private static final String TOP_URL = "top_url";
-
     private static final String BTN_FONT = "serv_button_font";
     private static final String BTN_ADV_FONT = "serv_adv_button_font";
-
     //#RU Примерный объем талонов в рулоне
     //#EN Approximate amount of tickets in a roll
     private static final String PAPER_SIZE_ALARM = "paper_size_alarm";
     private static final String PAPER_ALARM_STEP = "paper_alarm_step";
-
-    private WelcomeParams() {
-        loadSettings();
-    }
     public int point; // указание для какого пункта регистрации услуга, 0-для всех, х-для киоска х.
     public int paperWidht; // ширина талона в пикселах
     public int leftMargin; // отступ слева
@@ -187,7 +173,6 @@ public class WelcomeParams {
     public String confirmationStartImg = ""; // - это картинка для диалога подтверждения стоять в очереди. пустое значение - картинка по умолчанию
     public String patternInfoDialog = ""; // шаблон текста для информационных диалогов Встроенный текст dialog.message
     public String patternPickAdvanceTitle = ""; // шаблон текста для выбора предварительной услуги диалогов Встроенный текст: dialog_text.part1 dialog_text.part2
-
     public Font btnFont = null;
     public Font btnAdvFont = null;
     /**
@@ -205,15 +190,24 @@ public class WelcomeParams {
     public boolean alphabetic_keyboard = true; // - буквенная клавиатура при вводе юзерской инфы
     public String spec_keyboard = ""; // - специальная клавиатура при вводе юзерской инфы
     public int input_font_size = 64; // - размер шрифта при вводе юзерской инфы
-
     public int paper_size_alarm = 700; //  Примерный объем талонов в рулоне
     public int paper_alarm_step = 30; //  Примерный объем талонов в рулоне
+
+    private WelcomeParams() {
+        loadSettings();
+    }
+
+    public static WelcomeParams getInstance() {
+        return WelcomeParamsHolder.INSTANCE;
+    }
 
     /**
      * Загрузим настройки.
      */
     private void loadSettings() {
-        QLog.l().logger().debug("\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u043c \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b \u0438\u0437 \u0444\u0430\u0439\u043b\u0430 \"config" + File.separator + "welcome.property\"");
+        QLog.l().logger().debug(
+            "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u043c \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b \u0438\u0437 \u0444\u0430\u0439\u043b\u0430 \"config"
+                + File.separator + "welcome.property\"");
         final Properties settings = new Properties();
         final FileInputStream in;
         InputStreamReader inR = null;
@@ -221,35 +215,64 @@ public class WelcomeParams {
             in = new FileInputStream("config" + File.separator + "welcome.properties");
             inR = new InputStreamReader(in, "UTF-8");
         } catch (UnsupportedEncodingException ex) {
-            throw new ClientException("\u041f\u0440\u043e\u0431\u043b\u0435\u043c\u044b \u0441 \u043a\u043e\u0434\u0438\u0440\u043e\u0432\u043a\u043e\u0439 \u043f\u0440\u0438 \u0447\u0442\u0435\u043d\u0438\u0438. " + ex);
+            throw new ClientException(
+                "\u041f\u0440\u043e\u0431\u043b\u0435\u043c\u044b \u0441 \u043a\u043e\u0434\u0438\u0440\u043e\u0432\u043a\u043e\u0439 \u043f\u0440\u0438 \u0447\u0442\u0435\u043d\u0438\u0438. "
+                    + ex);
         } catch (FileNotFoundException ex) {
-            throw new ClientException("\u041f\u0440\u043e\u0431\u043b\u0435\u043c\u044b \u0441 \u0444\u0430\u0439\u043b\u043e\u043c \u043f\u0440\u0438 \u0447\u0442\u0435\u043d\u0438\u0438. " + ex);
+            throw new ClientException(
+                "\u041f\u0440\u043e\u0431\u043b\u0435\u043c\u044b \u0441 \u0444\u0430\u0439\u043b\u043e\u043c \u043f\u0440\u0438 \u0447\u0442\u0435\u043d\u0438\u0438. "
+                    + ex);
         }
         try {
             settings.load(inR);
         } catch (IOException ex) {
-            throw new ClientException("\u041f\u0440\u043e\u0431\u043b\u0435\u043c\u044b \u0441 \u0447\u0442\u0435\u043d\u0438\u0435\u043c \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u043e\u0432. " + ex);
+            throw new ClientException(
+                "\u041f\u0440\u043e\u0431\u043b\u0435\u043c\u044b \u0441 \u0447\u0442\u0435\u043d\u0438\u0435\u043c \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u043e\u0432. "
+                    + ex);
         }
-        paper_size_alarm = settings.getProperty(PAPER_SIZE_ALARM, "").trim().isEmpty() ? 700 : Integer.parseInt(settings.getProperty(PAPER_SIZE_ALARM, "700")); // - размер шрифта при вводе юзерской инфы
-        paper_alarm_step = settings.getProperty(PAPER_ALARM_STEP, "").trim().isEmpty() ? 30 : Integer.parseInt(settings.getProperty(PAPER_ALARM_STEP, "30")); // - размер шрифта при вводе юзерской инфы
+        paper_size_alarm =
+            settings.getProperty(PAPER_SIZE_ALARM, "").trim().isEmpty() ? 700 : Integer
+                .parseInt(settings
+                    .getProperty(PAPER_SIZE_ALARM,
+                        "700")); // - размер шрифта при вводе юзерской инфы
+        paper_alarm_step =
+            settings.getProperty(PAPER_ALARM_STEP, "").trim().isEmpty() ? 30 : Integer
+                .parseInt(settings
+                    .getProperty(PAPER_ALARM_STEP,
+                        "30")); // - размер шрифта при вводе юзерской инфы
 
-        point = settings.containsKey(POINT) ? Integer.parseInt(settings.getProperty(POINT)) : 1; // указание для какого пункта регистрации услуга, 0-для всех, х-для киоска х.
-        paperWidht = Integer.parseInt(settings.getProperty(PAPER_WIDHT, "250")); // ширина талона в пикселах
+        point = settings.containsKey(POINT) ? Integer.parseInt(settings.getProperty(POINT))
+            : 1; // указание для какого пункта регистрации услуга, 0-для всех, х-для киоска х.
+        paperWidht = Integer
+            .parseInt(settings.getProperty(PAPER_WIDHT, "250")); // ширина талона в пикселах
         leftMargin = Integer.parseInt(settings.getProperty(LEFT_MARGIN)); // отступ слева
         topMargin = Integer.parseInt(settings.getProperty(TOP_MARGIN)); //  отступ сверху
         lineHeigth = Integer.parseInt(settings.getProperty(LINE_HEIGTH)); // Ширина строки
-        lineLenght = Integer.parseInt(settings.getProperty(LINE_LENGTH)); // Длинна стоки на квитанции
-        scaleVertical = Double.parseDouble(settings.getProperty(SCALE_VERTICAL)); // маштабирование по вертикале
-        scaleHorizontal = Double.parseDouble(settings.getProperty(SCALE_HORIZONTAL)); // машcтабирование по вертикале
-        logo = "1".equals(settings.getProperty(LOGO)) || "true".equals(settings.getProperty(LOGO)); // присутствие логотипа на квитанции
-        input_data_qrcode = "1".equals(settings.getProperty(INPUT_DATA_QR)) || "true".equals(settings.getProperty(INPUT_DATA_QR)); // присутствие qr-штрихкода на квитанции если клиент ввел свои персональные данные
-        barcode = "1".equals(settings.getProperty(BARCODE)) ? 1 : ("2".equals(settings.getProperty(BARCODE)) ? 2 : 0); // присутствие штрихкода на квитанции 1-128B/2-QR
-        logoLeft = Integer.parseInt(settings.getProperty(LOGO_LEFT)); // Отступ печати логотипа слева
+        lineLenght = Integer
+            .parseInt(settings.getProperty(LINE_LENGTH)); // Длинна стоки на квитанции
+        scaleVertical = Double
+            .parseDouble(settings.getProperty(SCALE_VERTICAL)); // маштабирование по вертикале
+        scaleHorizontal = Double
+            .parseDouble(settings.getProperty(SCALE_HORIZONTAL)); // машcтабирование по вертикале
+        logo = "1".equals(settings.getProperty(LOGO)) || "true"
+            .equals(settings.getProperty(LOGO)); // присутствие логотипа на квитанции
+        input_data_qrcode =
+            "1".equals(settings.getProperty(INPUT_DATA_QR)) || "true".equals(settings
+                .getProperty(
+                    INPUT_DATA_QR)); // присутствие qr-штрихкода на квитанции если клиент ввел свои персональные данные
+        barcode = "1".equals(settings.getProperty(BARCODE)) ? 1
+            : ("2".equals(settings.getProperty(BARCODE)) ? 2
+                : 0); // присутствие штрихкода на квитанции 1-128B/2-QR
+        logoLeft = Integer
+            .parseInt(settings.getProperty(LOGO_LEFT)); // Отступ печати логотипа слева
         logoTop = Integer.parseInt(settings.getProperty(LOGO_TOP)); // Отступ печати логотипа сверху
-        delayPrint = Integer.parseInt(settings.getProperty(DELAY_PRINT)); // Задержка заставки при печати в мсек.
-        delayBack = Integer.parseInt(settings.getProperty(DELAY_BACK)); // Задержка заставки при печати в мсек.
+        delayPrint = Integer
+            .parseInt(settings.getProperty(DELAY_PRINT)); // Задержка заставки при печати в мсек.
+        delayBack = Integer
+            .parseInt(settings.getProperty(DELAY_BACK)); // Задержка заставки при печати в мсек.
         logoImg = settings.getProperty(LOGO_IMG);
-        backgroundImg = settings.containsKey(BACKGROUND_IMG) ? settings.getProperty(BACKGROUND_IMG) : "/ru/apertum/qsystem/client/forms/resources/fon_welcome.jpg";
+        backgroundImg = settings.containsKey(BACKGROUND_IMG) ? settings.getProperty(BACKGROUND_IMG)
+            : "/ru/apertum/qsystem/client/forms/resources/fon_welcome.jpg";
         if (!new File(backgroundImg).exists()) {
             backgroundImg = "/ru/apertum/qsystem/client/forms/resources/fon_welcome.jpg";
         }
@@ -262,7 +285,9 @@ public class WelcomeParams {
         ticketFontH2Size = Integer.parseInt(tfs.isEmpty() ? "16" : tfs);
         promoText = settings.getProperty(PROMO_TXT, "");
         bottomText = settings.getProperty(BOTTOM_TXT, "");
-        bottomGap = (settings.containsKey(BOTTOM_GAP) && !settings.getProperty(BOTTOM_GAP, "").isEmpty()) ? Integer.parseInt(settings.getProperty(BOTTOM_GAP, "2")) : 2;
+        bottomGap =
+            (settings.containsKey(BOTTOM_GAP) && !settings.getProperty(BOTTOM_GAP, "").isEmpty())
+                ? Integer.parseInt(settings.getProperty(BOTTOM_GAP, "2")) : 2;
         if (bottomGap > 10) {
             bottomGap = 10;
         }
@@ -270,11 +295,20 @@ public class WelcomeParams {
             bottomGap = 0;
         }
         waitText = settings.getProperty(WAIT_TXT, "");
-        askLimit = Integer.parseInt(settings.getProperty(ASK_LIMIT, "0")); // Критический размер очереди после которого спрашивать клиентов о готовности встать в очередь
-        pageLinesCount = settings.getProperty(PAGE_LINES_COUNT) == null ? 70 : Integer.parseInt(settings.getProperty(PAGE_LINES_COUNT)); // Количество строк на странице
-        linesButtonCount = settings.getProperty(LINES_BUTTON_COUNT) == null ? 5 : Integer.parseInt(settings.getProperty(LINES_BUTTON_COUNT)); // количество рядов кнопок на киоске, если будет привышение, то начнотся листание страниц
-        oneColumnButtonCount = settings.containsKey(ONE_COLUMN_BUTTON_COUNT) ? Integer.parseInt(settings.getProperty(ONE_COLUMN_BUTTON_COUNT)) : 3; // количество рядов кнопок на киоске, если будет привышение, то начнотся листание страниц
-        twoColumnButtonCount = settings.containsKey(TWO_COLUMNS_BUTTON_COUNT) ? Integer.parseInt(settings.getProperty(TWO_COLUMNS_BUTTON_COUNT)) : 10; // количество рядов кнопок на киоске, если будет привышение, то начнотся листание страниц
+        askLimit = Integer.parseInt(settings.getProperty(ASK_LIMIT,
+            "0")); // Критический размер очереди после которого спрашивать клиентов о готовности встать в очередь
+        pageLinesCount = settings.getProperty(PAGE_LINES_COUNT) == null ? 70
+            : Integer
+                .parseInt(settings.getProperty(PAGE_LINES_COUNT)); // Количество строк на странице
+        linesButtonCount = settings.getProperty(LINES_BUTTON_COUNT) == null ? 5 : Integer.parseInt(
+            settings.getProperty(
+                LINES_BUTTON_COUNT)); // количество рядов кнопок на киоске, если будет привышение, то начнотся листание страниц
+        oneColumnButtonCount = settings.containsKey(ONE_COLUMN_BUTTON_COUNT) ? Integer
+            .parseInt(settings.getProperty(ONE_COLUMN_BUTTON_COUNT))
+            : 3; // количество рядов кнопок на киоске, если будет привышение, то начнотся листание страниц
+        twoColumnButtonCount = settings.containsKey(TWO_COLUMNS_BUTTON_COUNT) ? Integer
+            .parseInt(settings.getProperty(TWO_COLUMNS_BUTTON_COUNT))
+            : 10; // количество рядов кнопок на киоске, если будет привышение, то начнотся листание страниц
         buttons_COM = settings.getProperty("buttons_COM");
         buttons_databits = Integer.parseInt(settings.getProperty("buttons_databits"));
         buttons_speed = Integer.parseInt(settings.getProperty("buttons_speed"));
@@ -284,21 +318,41 @@ public class WelcomeParams {
         if (infoURL.length() < 4) {
             infoURL = null;
         }
-        info = (infoURL != null && infoURL.length() > 3) || "1".equals(settings.getProperty(INFO_BUTTON)) || "true".equals(settings.getProperty(INFO_BUTTON)); // кнопка информационной системы на пункте регистрации
+        info =
+            (infoURL != null && infoURL.length() > 3) || "1"
+                .equals(settings.getProperty(INFO_BUTTON))
+                || "true".equals(settings
+                .getProperty(INFO_BUTTON)); // кнопка информационной системы на пункте регистрации
         responseURL = settings.getProperty(RESPONSE_BUTTON, null);
         if (responseURL.length() < 4) {
             responseURL = null;
         }
-        response = (responseURL != null && responseURL.length() > 3) || "1".equals(settings.getProperty(RESPONSE_BUTTON)) || "true".equals(settings.getProperty(RESPONSE_BUTTON)); // - кнопка обратной связи на пункте регистрации
+        response = (responseURL != null && responseURL.length() > 3) || "1"
+            .equals(settings.getProperty(RESPONSE_BUTTON)) || "true".equals(
+            settings.getProperty(RESPONSE_BUTTON)); // - кнопка обратной связи на пункте регистрации
         infoHtml = settings.getProperty(INFO_BUTTON_HTMLTEXT, "");
         responseHtml = settings.getProperty(RESPONSE_BUTTON_HTMLTEXT, "");
-        advance = "1".equals(settings.getProperty(ADVANCE_BUTTON)) || "true".equals(settings.getProperty(ADVANCE_BUTTON)); // - кнопка предварительной записи на пункте регистрации
-        standAdvance = "1".equals(settings.getProperty(STAND_ADVANCE_BUTTON)) || "true".equals(settings.getProperty(STAND_ADVANCE_BUTTON)); // присутствие кнопки предварительной записи на пункте регистрации (0/1)
+        advance = "1".equals(settings.getProperty(ADVANCE_BUTTON)) || "true".equals(settings
+            .getProperty(ADVANCE_BUTTON)); // - кнопка предварительной записи на пункте регистрации
+        standAdvance =
+            "1".equals(settings.getProperty(STAND_ADVANCE_BUTTON)) || "true".equals(settings
+                .getProperty(
+                    STAND_ADVANCE_BUTTON)); // присутствие кнопки предварительной записи на пункте регистрации (0/1)
 
-        numeric_keyboard = !settings.containsKey(NUMERIC_KEYBOARD) || "1".equals(settings.getProperty(NUMERIC_KEYBOARD)) || "true".equals(settings.getProperty(NUMERIC_KEYBOARD)); // - цифровая клавиатура при вводе юзерской инфы
-        alphabetic_keyboard = !settings.containsKey(ALPHABETIC_KEYBOARD) || "1".equals(settings.getProperty(ALPHABETIC_KEYBOARD)) || "true".equals(settings.getProperty(ALPHABETIC_KEYBOARD));// - буквенная клавиатура при вводе юзерской инфы
-        spec_keyboard = settings.containsKey(SPEC_KEYBOARD) ? settings.getProperty(SPEC_KEYBOARD).trim() : "";// - специальная при вводе юзерской инфы
-        input_font_size = settings.containsKey(INPUT_FONT_SIZE) ? Integer.parseInt(settings.getProperty(INPUT_FONT_SIZE)) : 64; // - размер шрифта при вводе юзерской инфы
+        numeric_keyboard = !settings.containsKey(NUMERIC_KEYBOARD) || "1"
+            .equals(settings.getProperty(NUMERIC_KEYBOARD)) || "true".equals(
+            settings
+                .getProperty(NUMERIC_KEYBOARD)); // - цифровая клавиатура при вводе юзерской инфы
+        alphabetic_keyboard = !settings.containsKey(ALPHABETIC_KEYBOARD) || "1"
+            .equals(settings.getProperty(ALPHABETIC_KEYBOARD)) || "true".equals(
+            settings
+                .getProperty(ALPHABETIC_KEYBOARD));// - буквенная клавиатура при вводе юзерской инфы
+        spec_keyboard =
+            settings.containsKey(SPEC_KEYBOARD) ? settings.getProperty(SPEC_KEYBOARD).trim()
+                : "";// - специальная при вводе юзерской инфы
+        input_font_size = settings.containsKey(INPUT_FONT_SIZE) ? Integer
+            .parseInt(settings.getProperty(INPUT_FONT_SIZE))
+            : 64; // - размер шрифта при вводе юзерской инфы
         if (settings.containsKey(BUTTON_TYPE)) {
             switch (settings.getProperty(BUTTON_TYPE)) {
                 case "1":
@@ -453,27 +507,41 @@ public class WelcomeParams {
         buttonGoBackImg = buttonGoBackImg.exists() ? buttonGoBackImg : null;
         buttonToStratImg = new File(settings.getProperty(BUTTON_TOSTART_IMG, ""));
         buttonToStratImg = buttonToStratImg.exists() ? buttonToStratImg : null;
-        buttonImg = "1".equals(settings.getProperty(BUTTON_IMG, "1")) || "true".equals(settings.getProperty(BUTTON_IMG, "true")); // кнопка присутствие картинки на кнопках услуг
-        responseImg = "1".equals(settings.getProperty(RESPONSE_IMG, "1")) || "true".equals(settings.getProperty(RESPONSE_IMG, "true")); // кнопка присутствие картинки на кнопках отзывов
+        buttonImg = "1".equals(settings.getProperty(BUTTON_IMG, "1")) || "true".equals(
+            settings
+                .getProperty(BUTTON_IMG, "true")); // кнопка присутствие картинки на кнопках услуг
+        responseImg = "1".equals(settings.getProperty(RESPONSE_IMG, "1")) || "true".equals(settings
+            .getProperty(RESPONSE_IMG, "true")); // кнопка присутствие картинки на кнопках отзывов
         topImg = settings.getProperty(TOP_IMG, "");
         topURL = settings.getProperty(TOP_URL, "");
         topImgSecondary = settings.getProperty(TOP_IMG_SECONDARY, "");
-        patternGetTicket = settings.getProperty(PATTERN_GET_TICKET, "<HTML><b><p align=center><span style='font-size:60.0pt;color:green'>dialogue_text.take_ticket<br></span><span style='font-size:60.0pt;color:blue'>dialogue_text.your_nom<br></span><span style='font-size:130.0pt;color:blue'>dialogue_text.number</span></p>");
-        patternConfirmationStart = settings.getProperty(PATTERN_CONFIRMATION_START, "<HTML><b><p align=center><span style='font-size:60.0pt;color:green'>dialog.text_before</span><br><span style='font-size:100.0pt;color:red'>dialog.count</span><br><span style='font-size:60.0pt;color:red'>dialog.text_before_people[[endRus]]</span></p></b>");
-        getTicketImg = settings.getProperty(GET_TICKET_IMG, "/ru/apertum/qsystem/client/forms/resources/getTicket.png");
+        patternGetTicket = settings.getProperty(PATTERN_GET_TICKET,
+            "<HTML><b><p align=center><span style='font-size:60.0pt;color:green'>dialogue_text.take_ticket<br></span><span style='font-size:60.0pt;color:blue'>dialogue_text.your_nom<br></span><span style='font-size:130.0pt;color:blue'>dialogue_text.number</span></p>");
+        patternConfirmationStart = settings.getProperty(PATTERN_CONFIRMATION_START,
+            "<HTML><b><p align=center><span style='font-size:60.0pt;color:green'>dialog.text_before</span><br><span style='font-size:100.0pt;color:red'>dialog.count</span><br><span style='font-size:60.0pt;color:red'>dialog.text_before_people[[endRus]]</span></p></b>");
+        getTicketImg = settings
+            .getProperty(GET_TICKET_IMG,
+                "/ru/apertum/qsystem/client/forms/resources/getTicket.png");
         if ("".equals(getTicketImg) || !new File(getTicketImg).exists()) {
-            getTicketImg = Uses.firstMonitor.getDefaultConfiguration().getBounds().height < 910 || QConfig.cfg().isDebug() || QConfig.cfg().isDemo()
+            getTicketImg =
+                Uses.firstMonitor.getDefaultConfiguration().getBounds().height < 910 || QConfig
+                    .cfg()
+                    .isDebug() || QConfig.cfg().isDemo()
                     ? "/ru/apertum/qsystem/client/forms/resources/getTicketSmall.png"
                     : "/ru/apertum/qsystem/client/forms/resources/getTicket.png";
         }
-        confirmationStartImg = settings.getProperty(CONFIRMATION_START_IMG, "/ru/apertum/qsystem/client/forms/resources/vopros.png");
+        confirmationStartImg = settings.getProperty(CONFIRMATION_START_IMG,
+            "/ru/apertum/qsystem/client/forms/resources/vopros.png");
         if ("".equals(confirmationStartImg) || !new File(confirmationStartImg).exists()) {
             confirmationStartImg = "/ru/apertum/qsystem/client/forms/resources/vopros.png";
         }
-        patternInfoDialog = settings.getProperty(PATTERN_INFO_DIALOG, "<HTML><p align=center><b><span style='font-size:60.0pt;color:red'>dialog.message</span></b></p>");
-        patternPickAdvanceTitle = settings.getProperty(PATTERN_PICK_ADVANCE_TITLE, "<html><p align=center><span style='font-size:55.0;color:#DC143C'>dialog_text.part1</span><br><span style='font-size:45.0;color:#DC143C'><i>dialog_text.part2</i>");
+        patternInfoDialog = settings.getProperty(PATTERN_INFO_DIALOG,
+            "<HTML><p align=center><b><span style='font-size:60.0pt;color:red'>dialog.message</span></b></p>");
+        patternPickAdvanceTitle = settings.getProperty(PATTERN_PICK_ADVANCE_TITLE,
+            "<html><p align=center><span style='font-size:55.0;color:#DC143C'>dialog_text.part1</span><br><span style='font-size:45.0;color:#DC143C'><i>dialog_text.part2</i>");
 
-        topSize = Integer.parseInt(settings.getProperty(TOP_SIZE, "-1").isEmpty() ? "-1" : settings.getProperty(TOP_SIZE, "-1"));
+        topSize = Integer.parseInt(settings.getProperty(TOP_SIZE, "-1").isEmpty() ? "-1"
+            : settings.getProperty(TOP_SIZE, "-1"));
         if ("1".equals(settings.getProperty(EXECUTIVE, "0"))) {
             printAttributeSet.add(MediaSizeName.EXECUTIVE);
         }
@@ -487,18 +555,21 @@ public class WelcomeParams {
                 }
             }
         }
-        if (!"".equals(settings.getProperty(PRINTABLE_AREA, "")) && settings.getProperty(PRINTABLE_AREA, "").split(",").length == 4) {
+        if (!"".equals(settings.getProperty(PRINTABLE_AREA, ""))
+            && settings.getProperty(PRINTABLE_AREA, "").split(",").length == 4) {
             final String[] ss = settings.getProperty(PRINTABLE_AREA, "").split(",");
             printAttributeSet.add(new MediaPrintableArea(
-                    Integer.parseInt(ss[0]), // отсуп слева 
-                    Integer.parseInt(ss[1]), // отсуп сверху 
-                    Integer.parseInt(ss[2]), // ширина 
-                    Integer.parseInt(ss[3]), // высота 
-                    MediaPrintableArea.MM));
+                Integer.parseInt(ss[0]), // отсуп слева
+                Integer.parseInt(ss[1]), // отсуп сверху
+                Integer.parseInt(ss[2]), // ширина
+                Integer.parseInt(ss[3]), // высота
+                MediaPrintableArea.MM));
         }
-        if (!"".equals(settings.getProperty(FIND_MEDIA, "")) && settings.getProperty(FIND_MEDIA, "").split(",").length == 2) {
+        if (!"".equals(settings.getProperty(FIND_MEDIA, ""))
+            && settings.getProperty(FIND_MEDIA, "").split(",").length == 2) {
             final String[] ss = settings.getProperty(FIND_MEDIA, "").split(",");
-            final MediaSizeName mediaSizeName = MediaSize.findMedia(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]), MediaPrintableArea.MM);
+            final MediaSizeName mediaSizeName = MediaSize
+                .findMedia(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]), MediaPrintableArea.MM);
             printAttributeSet.add(mediaSizeName);
         }
         switch (settings.getProperty(ORIENTATION_PRINT, "")) {
@@ -613,5 +684,10 @@ public class WelcomeParams {
         if (!ptn.isEmpty() && ptn.split("-").length == 3) {
             btnAdvFont = Font.decode(ptn);
         }
+    }
+
+    private static class WelcomeParamsHolder {
+
+        private static final WelcomeParams INSTANCE = new WelcomeParams();
     }
 }

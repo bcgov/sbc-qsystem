@@ -19,8 +19,9 @@ package ru.apertum.qsystem.server.model;
 import javax.swing.tree.TreeNode;
 
 /**
- * Инрерфейс для событий обхода дерева услуг.
- * Должен возникать для каждой услуги и группы при рекурентном обходею
+ * Инрерфейс для событий обхода дерева услуг. Должен возникать для каждой услуги и группы при
+ * рекурентном обходею
+ *
  * @author Evgeniy Egorov
  */
 @FunctionalInterface
@@ -28,6 +29,7 @@ public interface ISailListener {
 
     /**
      * Вызывается для каждой услуги при рекурсии.
+     *
      * @param service текущий шаг рекурсии.
      */
     public void actionPerformed(TreeNode service);

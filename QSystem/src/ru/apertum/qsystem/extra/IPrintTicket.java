@@ -21,7 +21,8 @@ import ru.apertum.qsystem.server.model.ATreeModel;
 import ru.apertum.qsystem.server.model.QAdvanceCustomer;
 
 /**
- * Интерфейс для плагинов печати талонов. Нужен для добавления плагинов Реализовываем этот интерфейс, оформляем jar как сервисный, кладем в папку plugins.
+ * Интерфейс для плагинов печати талонов. Нужен для добавления плагинов Реализовываем этот
+ * интерфейс, оформляем jar как сервисный, кладем в папку plugins.
  *
  * @author Evgeniy Egorov
  */

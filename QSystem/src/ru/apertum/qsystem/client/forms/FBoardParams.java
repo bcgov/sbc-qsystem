@@ -49,13 +49,6 @@ import ru.apertum.qsystem.common.model.INetProperty;
 public class FBoardParams extends javax.swing.JDialog {
 
     private static ResourceMap localeMap = null;
-
-    private static String getLocaleMessage(String key) {
-        if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(FBoardParams.class);
-        }
-        return localeMap.getString(key);
-    }
     /**
      * Результат
      */
@@ -65,6 +58,41 @@ public class FBoardParams extends javax.swing.JDialog {
      */
     private static FBoardParams boardParams;
     final INetProperty netProps;
+    /**
+     * Ветка XML-параметров
+     */
+    private Element params = null;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonCancel;
+    private javax.swing.JButton buttonColor;
+    private javax.swing.JButton buttonOk;
+    private javax.swing.JButton buttonRefreshRunningText;
+    private javax.swing.JToggleButton buttonRun;
+    private javax.swing.JCheckBox checkBoxDate;
+    private javax.swing.JCheckBox checkBoxGridNext;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private ru.apertum.qsystem.common.RunningLabel runningLabel;
+    private javax.swing.JSpinner spinnerFontSize;
+    private javax.swing.JSpinner spinnerGridNextCols;
+    private javax.swing.JSpinner spinnerGridNextRows;
+    private javax.swing.JSpinner spinnerSpeed;
+    private javax.swing.JTextArea textAreaHtml;
+    private javax.swing.JTextField textFieldFontColor;
+    private javax.swing.JTextField textFieldPict;
+    private javax.swing.JTextField textFieldRunning;
+    private javax.swing.JTextField textFieldVideo;
+    private javax.swing.JTextField tfFRactal;
 
     /**
      * Creates new form FBoardParams
@@ -100,7 +128,8 @@ public class FBoardParams extends javax.swing.JDialog {
 
             @Override
             public void stateChanged(ChangeEvent e) {
-                final Font fnt = new Font(runningLabel.getFont().getName(), runningLabel.getFont().getStyle(), (Integer) spinnerFontSize.getValue());
+                final Font fnt = new Font(runningLabel.getFont().getName(),
+                    runningLabel.getFont().getStyle(), (Integer) spinnerFontSize.getValue());
                 runningLabel.setFont(fnt);
             }
         });
@@ -130,14 +159,21 @@ public class FBoardParams extends javax.swing.JDialog {
         });
     }
 
+    private static String getLocaleMessage(String key) {
+        if (localeMap == null) {
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(FBoardParams.class);
+        }
+        return localeMap.getString(key);
+    }
+
     /**
      * Выбор параметров для части общего табло.
      *
      * @param owner относительно этого контрола модальность и позиционирование
-     * @param params
-     * @param caption
      */
-    public static void changeParams(JFrame owner, Element params, String caption, INetProperty netProps) {
+    public static void changeParams(JFrame owner, Element params, String caption,
+        INetProperty netProps) {
         if (boardParams == null) {
             boardParams = new FBoardParams(owner, true, netProps);
         }
@@ -146,48 +182,67 @@ public class FBoardParams extends javax.swing.JDialog {
         boardParams.setTitle(caption);
         boardParams.setVisible(true);
     }
-    /**
-     * Ветка XML-параметров
-     */
-    private Element params = null;
 
     /**
      * Загрузка параметров из XML ветки
      *
-     * @param params из нее грузим параметры
-     * <Left visible="0" Размер="20">
-     * <Параметер Наименование="Бегущий текст" Тип="3" Значение=""/>
-     * <Параметер Наименование="Скорость бегущего текста" Тип="1" Значение="4"/>
-     * <Параметер Наименование="Размер шрифта" Тип="1" Значение="50"/>
-     * <Параметер Наименование="Цвет шрифта" Тип="1" Значение="222"/>
-     * <Параметер Наименование="Простая дата" Тип="4" Значение="0"/>
-     * <Параметер Наименование="Фоновое изображение" Тип="3" Значение="config/mainboard/1u.PNG"/>
-     * <Параметер Наименование="Видеофайл" Тип="3" Значение="D:/WORK/QSystem/config/mainboard/sezd17.mpg"/>
-     * </Left>
+     * @param params из нее грузим параметры <Left visible="0" Размер="20"> <Параметер
+     * Наименование="Бегущий текст" Тип="3" Значение=""/> <Параметер Наименование="Скорость бегущего
+     * текста" Тип="1" Значение="4"/> <Параметер Наименование="Размер шрифта" Тип="1"
+     * Значение="50"/> <Параметер Наименование="Цвет шрифта" Тип="1" Значение="222"/> <Параметер
+     * Наименование="Простая дата" Тип="4" Значение="0"/> <Параметер Наименование="Фоновое
+     * изображение" Тип="3" Значение="config/mainboard/1u.PNG"/> <Параметер Наименование="Видеофайл"
+     * Тип="3" Значение="D:/WORK/QSystem/config/mainboard/sezd17.mpg"/> </Left>
      */
     private void loadXML(Element params) {
         if (Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FRACTAL).size() > 0) {
-            tfFRactal.setText(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FRACTAL).get(0).attributeValue(Uses.TAG_BOARD_VALUE));
+            tfFRactal.setText(
+                Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FRACTAL).get(0)
+                    .attributeValue(Uses.TAG_BOARD_VALUE));
         } else {
             tfFRactal.setText("Do not touch this!");
         }
-        textFieldRunning.setText(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_RUNNING_TEXT).get(0).attributeValue(Uses.TAG_BOARD_VALUE));
+        textFieldRunning.setText(
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_RUNNING_TEXT).get(0)
+                .attributeValue(Uses.TAG_BOARD_VALUE));
         textAreaHtml.setText(params.getText().trim());
         runningLabel.setRunningText(textFieldRunning.getText());
         runningLabel.setText(textAreaHtml.getText().trim());
-        textFieldPict.setText(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FON_IMG).get(0).attributeValue(Uses.TAG_BOARD_VALUE));
-        textFieldVideo.setText(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_VIDEO_FILE).get(0).attributeValue(Uses.TAG_BOARD_VALUE));
-        spinnerFontSize.setValue(Integer.parseInt(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FONT_SIZE).get(0).attributeValue(Uses.TAG_BOARD_VALUE)));
-        textFieldFontColor.setText(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FONT_COLOR).get(0).attributeValue(Uses.TAG_BOARD_VALUE));
-        runningLabel.setFont(new Font(runningLabel.getFont().getFontName(), runningLabel.getFont().getStyle(), (Integer) spinnerFontSize.getValue()));
+        textFieldPict.setText(
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FON_IMG).get(0)
+                .attributeValue(Uses.TAG_BOARD_VALUE));
+        textFieldVideo.setText(
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_VIDEO_FILE).get(0)
+                .attributeValue(Uses.TAG_BOARD_VALUE));
+        spinnerFontSize.setValue(Integer.parseInt(
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FONT_SIZE).get(0)
+                .attributeValue(Uses.TAG_BOARD_VALUE)));
+        textFieldFontColor.setText(
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FONT_COLOR).get(0)
+                .attributeValue(Uses.TAG_BOARD_VALUE));
+        runningLabel.setFont(
+            new Font(runningLabel.getFont().getFontName(), runningLabel.getFont().getStyle(),
+                (Integer) spinnerFontSize.getValue()));
         runningLabel.setForeground(Color.decode("#" + textFieldFontColor.getText()));
-        spinnerSpeed.setValue(Integer.parseInt(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_SPEED_TEXT).get(0).attributeValue(Uses.TAG_BOARD_VALUE)));
+        spinnerSpeed.setValue(Integer.parseInt(
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_SPEED_TEXT).get(0)
+                .attributeValue(Uses.TAG_BOARD_VALUE)));
         runningLabel.setSpeedRunningText((Integer) spinnerSpeed.getValue());
-        checkBoxDate.setSelected("1".equals(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_SIMPLE_DATE).get(0).attributeValue(Uses.TAG_BOARD_VALUE)));
+        checkBoxDate.setSelected("1".equals(
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_SIMPLE_DATE).get(0)
+                .attributeValue(Uses.TAG_BOARD_VALUE)));
         if (!Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT).isEmpty()) {
-            checkBoxGridNext.setSelected("1".equals(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT).get(0).attributeValue(Uses.TAG_BOARD_VALUE)));
-            spinnerGridNextCols.setValue(Integer.parseInt(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT_COLS).get(0).attributeValue(Uses.TAG_BOARD_VALUE)));
-            spinnerGridNextRows.setValue(Integer.parseInt(Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT_ROWS).get(0).attributeValue(Uses.TAG_BOARD_VALUE)));
+            checkBoxGridNext.setSelected("1".equals(
+                Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT).get(0)
+                    .attributeValue(Uses.TAG_BOARD_VALUE)));
+            spinnerGridNextCols.setValue(Integer.parseInt(
+                Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT_COLS)
+                    .get(0)
+                    .attributeValue(Uses.TAG_BOARD_VALUE)));
+            spinnerGridNextRows.setValue(Integer.parseInt(
+                Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT_ROWS)
+                    .get(0)
+                    .attributeValue(Uses.TAG_BOARD_VALUE)));
         } else {
             Element n = new DefaultElement(Uses.TAG_BOARD_PROP);
             n.addAttribute(Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT);
@@ -216,11 +271,15 @@ public class FBoardParams extends javax.swing.JDialog {
      */
     private void saveXML() {
         if (params != null) {
-            if (Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FRACTAL).size() > 0) {
-                Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FRACTAL).get(0).addAttribute(Uses.TAG_BOARD_VALUE, tfFRactal.getText());
+            if (Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FRACTAL).size()
+                > 0) {
+                Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FRACTAL).get(0)
+                    .addAttribute(Uses.TAG_BOARD_VALUE, tfFRactal.getText());
             }
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_RUNNING_TEXT).get(0).addAttribute(Uses.TAG_BOARD_VALUE, textFieldRunning.getText());
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FON_IMG).get(0).addAttribute(Uses.TAG_BOARD_VALUE, textFieldPict.getText());
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_RUNNING_TEXT).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE, textFieldRunning.getText());
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FON_IMG).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE, textFieldPict.getText());
             // удалить предыдущие узды CDATA
             for (int i = 0; i < params.nodeCount(); i++) {
                 final Node node = params.node(i);
@@ -232,21 +291,33 @@ public class FBoardParams extends javax.swing.JDialog {
             if (!"".equals(str)) {
                 params.addCDATA(str);
             }
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_VIDEO_FILE).get(0).addAttribute(Uses.TAG_BOARD_VALUE, textFieldVideo.getText());
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FONT_SIZE).get(0).addAttribute(Uses.TAG_BOARD_VALUE, String.valueOf((Integer) spinnerFontSize.getValue()));
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_SPEED_TEXT).get(0).addAttribute(Uses.TAG_BOARD_VALUE, String.valueOf((Integer) spinnerSpeed.getValue()));
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FONT_COLOR).get(0).addAttribute(Uses.TAG_BOARD_VALUE, textFieldFontColor.getText());
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_SIMPLE_DATE).get(0).addAttribute(Uses.TAG_BOARD_VALUE, checkBoxDate.isSelected() ? "1" : "0");
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT).get(0).addAttribute(Uses.TAG_BOARD_VALUE, checkBoxGridNext.isSelected() ? "1" : "0");
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT_COLS).get(0).addAttribute(Uses.TAG_BOARD_VALUE, String.valueOf((Integer) spinnerGridNextCols.getValue()));
-            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT_ROWS).get(0).addAttribute(Uses.TAG_BOARD_VALUE, String.valueOf((Integer) spinnerGridNextRows.getValue()));
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_VIDEO_FILE).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE, textFieldVideo.getText());
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FONT_SIZE).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE,
+                    String.valueOf((Integer) spinnerFontSize.getValue()));
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_SPEED_TEXT).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE,
+                    String.valueOf((Integer) spinnerSpeed.getValue()));
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_FONT_COLOR).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE, textFieldFontColor.getText());
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_SIMPLE_DATE).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE, checkBoxDate.isSelected() ? "1" : "0");
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE, checkBoxGridNext.isSelected() ? "1" : "0");
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT_COLS).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE,
+                    String.valueOf((Integer) spinnerGridNextCols.getValue()));
+            Uses.elementsByAttr(params, Uses.TAG_BOARD_NAME, Uses.TAG_BOARD_GRID_NEXT_ROWS).get(0)
+                .addAttribute(Uses.TAG_BOARD_VALUE,
+                    String.valueOf((Integer) spinnerGridNextRows.getValue()));
 
         }
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -286,7 +357,9 @@ public class FBoardParams extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FBoardParams.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(FBoardParams.class);
         buttonOk.setText(resourceMap.getString("buttonOk.text")); // NOI18N
         buttonOk.setName("buttonOk"); // NOI18N
 
@@ -384,7 +457,8 @@ public class FBoardParams extends javax.swing.JDialog {
         runningLabel.setName("runningLabel"); // NOI18N
         jScrollPane2.setViewportView(runningLabel);
 
-        buttonRefreshRunningText.setText(resourceMap.getString("buttonRefreshRunningText.text")); // NOI18N
+        buttonRefreshRunningText
+            .setText(resourceMap.getString("buttonRefreshRunningText.text")); // NOI18N
         buttonRefreshRunningText.setName("buttonRefreshRunningText"); // NOI18N
         buttonRefreshRunningText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -422,228 +496,277 @@ public class FBoardParams extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(textFieldRunning, javax.swing.GroupLayout.DEFAULT_SIZE, 626, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(spinnerFontSize, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(spinnerSpeed, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 706,
+                            Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel4))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(textFieldRunning,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, 626, Short.MAX_VALUE)
                                     .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(
+                                            javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(spinnerFontSize,
+                                                javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(spinnerSpeed,
+                                                javax.swing.GroupLayout.Alignment.LEADING,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 60,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createParallelGroup(
+                                            javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jLabel8)
+                                                .addPreferredGap(
+                                                    javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(textFieldFontColor,
+                                                    javax.swing.GroupLayout.PREFERRED_SIZE, 77,
+                                                    javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(
+                                                    javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(buttonColor)
+                                                .addPreferredGap(
+                                                    javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                    270, Short.MAX_VALUE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addPreferredGap(
+                                                    javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                    javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                    Short.MAX_VALUE)
+                                                .addComponent(buttonRefreshRunningText)
+                                                .addGap(18, 18, 18)))
+                                        .addComponent(buttonRun))))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel5))
+                            .addGap(9, 9, 9)
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(textFieldPict,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        640, Short.MAX_VALUE)
+                                    .addComponent(textFieldVideo,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        640, Short.MAX_VALUE)))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                            layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(buttonOk)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(buttonCancel, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                    89,
+                                    javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(checkBoxGridNext)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(textFieldFontColor, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(buttonColor)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(buttonRefreshRunningText)
-                                        .addGap(18, 18, 18)))
-                                .addComponent(buttonRun))))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel5))
-                        .addGap(9, 9, 9)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(textFieldPict, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
-                            .addComponent(textFieldVideo, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(buttonOk)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(checkBoxGridNext)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spinnerGridNextCols, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spinnerGridNextRows, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(checkBoxDate)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel1))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfFRactal)))
-                .addContainerGap())
+                                        .addComponent(jLabel3)
+                                        .addPreferredGap(
+                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(spinnerGridNextCols,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE, 50,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(
+                                            javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jLabel9)
+                                        .addPreferredGap(
+                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(spinnerGridNextRows,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE, 48,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(checkBoxDate)
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel1))
+                            .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel10)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(tfFRactal)))
+                    .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tfFRactal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(textFieldRunning, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(spinnerSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(spinnerFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8)
-                            .addComponent(textFieldFontColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buttonColor)))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap()
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(buttonRun)
-                        .addComponent(buttonRefreshRunningText)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(checkBoxDate)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(checkBoxGridNext)
-                    .addComponent(jLabel3)
-                    .addComponent(spinnerGridNextCols, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9)
-                    .addComponent(spinnerGridNextRows, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textFieldPict, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(textFieldVideo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonOk)
-                    .addComponent(buttonCancel))
-                .addContainerGap())
+                        .addComponent(tfFRactal, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel10))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(textFieldRunning, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(spinnerSpeed,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel7)
+                                    .addComponent(spinnerFontSize,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel8)
+                                    .addComponent(textFieldFontColor,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(buttonColor)))
+                        .addGroup(
+                            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(buttonRun)
+                                .addComponent(buttonRefreshRunningText)))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(checkBoxDate)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(checkBoxGridNext)
+                        .addComponent(jLabel3)
+                        .addComponent(spinnerGridNextCols, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel9)
+                        .addComponent(spinnerGridNextRows, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(textFieldPict, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel5))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6)
+                        .addComponent(textFieldVideo, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE,
+                            javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel1)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114,
+                        Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 134,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(buttonOk)
+                        .addComponent(buttonCancel))
+                    .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-private void textFieldRunningKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldRunningKeyReleased
-    //runningLabel.stop();
-    //runningLabel.setRunningText(textFieldRunning.getText());
-}//GEN-LAST:event_textFieldRunningKeyReleased
+    private void textFieldRunningKeyReleased(
+        java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textFieldRunningKeyReleased
+        //runningLabel.stop();
+        //runningLabel.setRunningText(textFieldRunning.getText());
+    }//GEN-LAST:event_textFieldRunningKeyReleased
 
-private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
+    private void buttonRunActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
 
-    if (buttonRun.isSelected()) {
-        runningLabel.setRunningText(textFieldRunning.getText());
-        runningLabel.start();
-        buttonRun.setText(getLocaleMessage("dialog.stop"));
-    } else {
-        runningLabel.stop();
-        buttonRun.setText(getLocaleMessage("dialog.start"));
-    }
-}//GEN-LAST:event_buttonRunActionPerformed
-
-private void checkBoxDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxDateActionPerformed
-
-    runningLabel.setShowTime(checkBoxDate.isSelected());
-    if (checkBoxDate.isSelected()) {
-        checkBoxGridNext.setSelected(!checkBoxDate.isSelected());
-    }
-
-}//GEN-LAST:event_checkBoxDateActionPerformed
-
-private void buttonColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonColorActionPerformed
-
-    final JDialog di = new JDialog(this, true);
-    di.setTitle(getLocaleMessage("dialog.select_color"));
-    final JColorChooser cc = new JColorChooser(Color.decode("#" + textFieldFontColor.getText()));
-    di.setSize(450, 440);
-    LayoutManager l = new FlowLayout(2, 10, 10);
-    di.setLayout(l);
-    di.add(cc);
-    final JButton but = new JButton(new AbstractAction() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            textFieldFontColor.setText(Integer.toHexString(cc.getColor().getRGB()).substring(2).toUpperCase());
-            runningLabel.setForeground(Color.decode("#" + textFieldFontColor.getText()));
-            di.setVisible(false);
+        if (buttonRun.isSelected()) {
+            runningLabel.setRunningText(textFieldRunning.getText());
+            runningLabel.start();
+            buttonRun.setText(getLocaleMessage("dialog.stop"));
+        } else {
+            runningLabel.stop();
+            buttonRun.setText(getLocaleMessage("dialog.start"));
         }
-    });
-    but.setText(getLocaleMessage("dialog.select"));
-    but.setSize(20, 20);
-    di.add(but);
-    Uses.setLocation(di);
-    di.setVisible(true);
+    }//GEN-LAST:event_buttonRunActionPerformed
 
-}//GEN-LAST:event_buttonColorActionPerformed
+    private void checkBoxDateActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxDateActionPerformed
 
-private void textAreaHtmlKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaHtmlKeyReleased
-    runningLabel.setText(textAreaHtml.getText());
-}//GEN-LAST:event_textAreaHtmlKeyReleased
+        runningLabel.setShowTime(checkBoxDate.isSelected());
+        if (checkBoxDate.isSelected()) {
+            checkBoxGridNext.setSelected(!checkBoxDate.isSelected());
+        }
 
-    private void buttonRefreshRunningTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRefreshRunningTextActionPerformed
+    }//GEN-LAST:event_checkBoxDateActionPerformed
+
+    private void buttonColorActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonColorActionPerformed
+
+        final JDialog di = new JDialog(this, true);
+        di.setTitle(getLocaleMessage("dialog.select_color"));
+        final JColorChooser cc = new JColorChooser(
+            Color.decode("#" + textFieldFontColor.getText()));
+        di.setSize(450, 440);
+        LayoutManager l = new FlowLayout(2, 10, 10);
+        di.setLayout(l);
+        di.add(cc);
+        final JButton but = new JButton(new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textFieldFontColor
+                    .setText(
+                        Integer.toHexString(cc.getColor().getRGB()).substring(2).toUpperCase());
+                runningLabel.setForeground(Color.decode("#" + textFieldFontColor.getText()));
+                di.setVisible(false);
+            }
+        });
+        but.setText(getLocaleMessage("dialog.select"));
+        but.setSize(20, 20);
+        di.add(but);
+        Uses.setLocation(di);
+        di.setVisible(true);
+
+    }//GEN-LAST:event_buttonColorActionPerformed
+
+    private void textAreaHtmlKeyReleased(
+        java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaHtmlKeyReleased
+        runningLabel.setText(textAreaHtml.getText());
+    }//GEN-LAST:event_textAreaHtmlKeyReleased
+
+    private void buttonRefreshRunningTextActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRefreshRunningTextActionPerformed
         if (!textFieldRunning.getText().isEmpty() && netProps != null) {
             NetCommander.setRunningText(netProps, textFieldRunning.getText(), params.getName());
         }
     }//GEN-LAST:event_buttonRefreshRunningTextActionPerformed
 
-    private void checkBoxGridNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxGridNextActionPerformed
+    private void checkBoxGridNextActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxGridNextActionPerformed
         if (checkBoxGridNext.isSelected()) {
             checkBoxDate.setSelected(!checkBoxGridNext.isSelected());
         }
     }//GEN-LAST:event_checkBoxGridNextActionPerformed
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonCancel;
-    private javax.swing.JButton buttonColor;
-    private javax.swing.JButton buttonOk;
-    private javax.swing.JButton buttonRefreshRunningText;
-    private javax.swing.JToggleButton buttonRun;
-    private javax.swing.JCheckBox checkBoxDate;
-    private javax.swing.JCheckBox checkBoxGridNext;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private ru.apertum.qsystem.common.RunningLabel runningLabel;
-    private javax.swing.JSpinner spinnerFontSize;
-    private javax.swing.JSpinner spinnerGridNextCols;
-    private javax.swing.JSpinner spinnerGridNextRows;
-    private javax.swing.JSpinner spinnerSpeed;
-    private javax.swing.JTextArea textAreaHtml;
-    private javax.swing.JTextField textFieldFontColor;
-    private javax.swing.JTextField textFieldPict;
-    private javax.swing.JTextField textFieldRunning;
-    private javax.swing.JTextField textFieldVideo;
-    private javax.swing.JTextField tfFRactal;
     // End of variables declaration//GEN-END:variables
 }

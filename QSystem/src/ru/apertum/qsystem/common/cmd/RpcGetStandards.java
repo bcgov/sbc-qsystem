@@ -21,19 +21,18 @@ import com.google.gson.annotations.SerializedName;
 import ru.apertum.qsystem.server.model.QStandards;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetStandards extends JsonRPC20 {
 
-    public RpcGetStandards() {
-    }
-    
     @Expose
     @SerializedName("result")
     private QStandards result;
 
-    public void setResult(QStandards result) {
+    public RpcGetStandards() {
+    }
+
+    public RpcGetStandards(QStandards result) {
         this.result = result;
     }
 
@@ -41,7 +40,7 @@ public class RpcGetStandards extends JsonRPC20 {
         return result;
     }
 
-    public RpcGetStandards(QStandards result) {
+    public void setResult(QStandards result) {
         this.result = result;
     }
 

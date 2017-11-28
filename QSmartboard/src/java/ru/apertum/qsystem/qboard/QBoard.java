@@ -12,38 +12,51 @@ import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
+import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zkex.zul.Columnchildren;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Vbox;
 import ru.apertum.qsystem.common.CustomerState;
-import ru.apertum.qsystem.server.model.QPlanService;
-import ru.apertum.qsystem.smartboard.PrintRecords;
-import ru.apertum.qsystem.server.model.QServiceTree;
-import ru.apertum.qsystem.server.model.QUserList;
-import ru.apertum.qsystem.server.model.QUser;
-import org.zkoss.bind.annotation.NotifyChange;
+import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.QSessions;
-import org.zkoss.zk.ui.Sessions;
+import ru.apertum.qsystem.server.model.QOffice;
+import ru.apertum.qsystem.server.model.QOfficeList;
+import ru.apertum.qsystem.server.model.QPlanService;
+import ru.apertum.qsystem.server.model.QServiceTree;
+import ru.apertum.qsystem.server.model.QUser;
+import ru.apertum.qsystem.server.model.QUserList;
+import ru.apertum.qsystem.smartboard.PrintRecords;
+import ru.apertum.qsystem.smartboard.PrintRecordsList;
 
 /**
- *
  * @author Evgeniy Egorov
  */
-public class QBoard {
-   
+public class QBoard extends GenericForwardComposer {
+
+    private final LinkedHashMap<Integer, Str> lines = new LinkedHashMap<>();
+    @Wire
+    Columnchildren left;
+    @Wire
+    Columnchildren right;
+    private Boolean plFlag = null;
+    private List<QPlanService> plan = new LinkedList<>();
+
     /**
-     * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg")
-     *
-     * @param view
+     * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard
+     * #incChangePriorityDialog #changePriorityDlg")
      */
     @AfterCompose
-    public void afterCompose(@ContextParam(ContextType.VIEW) Component view)  {
-        
+    public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
+        String office_id = Executions.getCurrent().getParameter("office_id");
+        Sessions.getCurrent().setAttribute("office_id", office_id);
         /*
          <!--div class="lineDivOdd" width="100%" height="14%" >
          <vbox id="str1a" width="100%" height="100%" pack="center" align="center">  </vbox>
@@ -85,9 +98,6 @@ public class QBoard {
 
         Selectors.wireComponents(view, this, false);
     }
-    private final LinkedHashMap<Integer, Str> lines = new LinkedHashMap<>();
-
-    private Boolean plFlag = null;
 
     private boolean checkPlugin() {
         if (plFlag == null) {
@@ -102,26 +112,63 @@ public class QBoard {
         return plFlag;
     }
 
+    private PrintRecords getPrintRecordsByOfficeId(Integer office_id) {
+        if (office_id == null) {
+            throw new UnsupportedOperationException("Office ID cannot be null");
+        }
+
+        Long office = Integer.toUnsignedLong(office_id);
+
+        for (PrintRecords pr : PrintRecordsList.getInstance().getPrintRecords()) {
+            if (office == pr.getOffice().getId()) {
+                return pr;
+            }
+        }
+        throw new UnsupportedOperationException("Office not found.");
+    }
+
+    private PrintRecords getPrintRecordsByOffice(QOffice office) {
+        if (office == null) {
+            throw new UnsupportedOperationException("Office cannot be null");
+        }
+        for (PrintRecords pr : PrintRecordsList.getInstance().getPrintRecords()) {
+            if (office.equals(pr.getOffice())) {
+                return pr;
+            }
+        }
+        throw new UnsupportedOperationException("Office not found.");
+    }
+
+    private Integer getSessionOfficeId() {
+        return Integer.parseInt((String) Sessions.getCurrent().getAttribute("office_id"));
+    }
+
     @Command("clickMe")
     public void clickMe() {
         if (!checkPlugin()) {
             return;
         }
-        if (PrintRecords.getInstance().isInvited()) {
-            PrintRecords.getInstance().setInvited(false);
+
+        Integer office_id = getSessionOfficeId();
+        PrintRecords records = getPrintRecordsByOfficeId(office_id);
+        if (records.isInvited()) {
+            records.setInvited(false);
             Clients.evalJavaScript("DHTMLSound()");
         }
 
-        //System.out.println("recs.length=" + PrintRecords.getInstance().getRecords().size() + " / " + PrintRecords.getInstance().getRecords().toString());
         for (int i = 1; i < lines.size(); i++) {
             final Str line = lines.get(i);
             line.clear();
-            if (i <= PrintRecords.getInstance().getRecords().size()) {
-                line.labelA = new Label(PrintRecords.getInstance().getRecords().get(i - 1).customerPrefix + PrintRecords.getInstance().getRecords().get(i - 1).customerNumber);
-                line.labelB = new Label(PrintRecords.getInstance().getRecords().get(i - 1).point);
+            if (i <= records.getRecords().size()) {
+                line.labelA = new Label(
+                    records.getRecords().get(i - 1).customerPrefix + records.getRecords()
+                        .get(i - 1).customerNumber);
+                line.labelB = new Label(records.getRecords().get(i - 1).point);
 
-                final boolean blink = (PrintRecords.getInstance().getRecords().get(i - 1).getState() == CustomerState.STATE_INVITED
-                        || PrintRecords.getInstance().getRecords().get(i - 1).getState() == CustomerState.STATE_INVITED);
+                final boolean blink = (
+                    records.getRecords().get(i - 1).getState() == CustomerState.STATE_INVITED
+                        || records.getRecords().get(i - 1).getState()
+                        == CustomerState.STATE_INVITED);
                 line.labelA.setClass(blink ? "blink_me" : "no_blink");
                 line.labelB.setClass(blink ? "blink_me" : "no_blink");
 
@@ -130,6 +177,156 @@ public class QBoard {
         }
 
     }
+
+    // ************************************************************************************************************************************************
+    // ************************************************************************************************************************************************
+    // Настройки табло
+    // ************************************************************************************************************************************************
+    // ************************************************************************************************************************************************
+    public String getTopSize() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getTopSize() : "0px";
+    }
+
+    public boolean getTopVisible() {
+        return checkPlugin() ? !"".equals(
+            getPrintRecordsByOfficeId(getSessionOfficeId()).getTopSize().replaceAll("0|%|(px)", ""))
+            : false;
+    }
+
+    public String getTopUrl() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getTopUrl() : "";
+    }
+
+    public String getLeftSize() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getLeftSize()
+            : "0px";
+    }
+
+    public boolean getLeftVisible() {
+        return checkPlugin() ? !"".equals(
+            getPrintRecordsByOfficeId(getSessionOfficeId()).getLeftSize()
+                .replaceAll("0|%|(px)", ""))
+            : false;
+    }
+
+    public String getLeftUrl() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getLeftUrl() : "";
+    }
+
+    public String getRightSize() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getRightSize()
+            : "0px";
+    }
+
+    public String getRightVisible() {
+        String rt = "background:#B0E7A0;";
+        if (checkPlugin() && ""
+            .equals(getPrintRecordsByOfficeId(getSessionOfficeId()).getRightSize()
+                .replaceAll("0|%|(px)", ""))) {
+            rt = "display:none";
+        }
+        return rt;
+    }
+
+    public String getSouthHeight() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
+            : "0px";
+    }
+
+    public String getRightUrl() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getRightUrl() : "";
+    }
+
+    public String getBottomSize() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
+            : "0px";
+    }
+
+    public boolean getBottomVisible() {
+        QLog.l().logQUser().debug(getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize());
+        QLog.l().logQUser().debug(checkPlugin() ? !"".equals(
+            getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
+                .replaceAll("0|%|(px)", ""))
+            : false);
+
+        return checkPlugin() ? !"".equals(
+            getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
+                .replaceAll("0|%|(px)", ""))
+            : false;
+    }
+
+    public String getBottomUrl() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomUrl() : "";
+    }
+
+    public String getColumnFirst() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getColumnFirst()
+            : "For clients";
+    }
+
+    public String getColumnSecond() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getColumnSecond()
+            : "To point";
+    }
+
+    public int getLinesCount() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getLinesCount() : 6;
+    }
+
+    public String getCustomerDisplay() {
+        return checkPlugin() ? getPrintRecordsByOfficeId(getSessionOfficeId()).getCustomerDisplay()
+            : "padding:0px";
+    }
+
+    public List<QPlanService> getPlan() {
+        return plan;
+    }
+
+    public void setPlan(List<QPlanService> plan) {
+        this.plan = plan;
+    }
+
+    public int getCustomersCount() {
+        int total = 0;
+        Long office_id = Integer.toUnsignedLong(getSessionOfficeId());
+        QOffice office = QOfficeList.getInstance().getById(office_id);
+
+        total = QServiceTree.getInstance().getNodes()
+            .stream()
+            .filter((service) -> service.getSmartboard().equals("Y"))
+            .map((service) -> service.getCountCustomersByOffice(office))
+            .reduce(total, Integer::sum);
+
+        return total;
+    }
+
+    @Command
+    @NotifyChange(value = {"customersCount"})
+    public void refreshListServices() {
+        for (QUser user : QUserList.getInstance().getItems()) {
+            if (user.getName().equalsIgnoreCase("Smartboard")) {
+                QSessions.getInstance().update(user.getId(), Sessions.getCurrent().getRemoteHost(),
+                    Sessions.getCurrent().getRemoteAddr().getBytes());
+            }
+        }
+    }
+
+//    public int getEstimatedTime() {
+//        int estimatedTime = 0;
+//        for (QUser user : QUserList.getInstance().getItems()) {  
+//          if (user.getName().equalsIgnoreCase("Smartboard")) {  
+//                plan = user.getPlanServiceList().getServices();  
+//                
+//                for (QPlanService qPlanService : plan) {  
+//                    //Following number 10 min is hard code here. It will be in TODO list in the future.
+//                     estimatedTime += (QServiceTree.getInstance().getById(qPlanService.getService().getId()).getCountCustomers()) * 10; 
+//                }   
+//           }
+//        }
+//        
+//        return estimatedTime;
+//    }
+//    
 
     public static class Str {
 
@@ -171,139 +368,4 @@ public class QBoard {
             }
         }
     }
-    @Wire
-    Columnchildren left;
-    @Wire
-    Columnchildren right;
-
-    // ************************************************************************************************************************************************
-    // ************************************************************************************************************************************************
-    // Настройки табло
-    // ************************************************************************************************************************************************
-    // ************************************************************************************************************************************************
-   public String getTopSize() {
-        return checkPlugin() ? PrintRecords.getInstance().getTopSize() : "0px";
-    }
-
-    public boolean getTopVisible() {
-        return checkPlugin() ? !"".equals(PrintRecords.getInstance().getTopSize().replaceAll("0|%|(px)", "")) : false;
-    }
-
-    public String getTopUrl() {
-        return checkPlugin() ? PrintRecords.getInstance().getTopUrl() : "";
-    }
-
-    public String getLeftSize() {
-        return checkPlugin() ? PrintRecords.getInstance().getLeftSize() : "0px";
-    }
-
-    public boolean getLeftVisible() {
-        return checkPlugin() ? !"".equals(PrintRecords.getInstance().getLeftSize().replaceAll("0|%|(px)", "")) : false;
-    }
-
-    public String getLeftUrl() {
-        return checkPlugin() ? PrintRecords.getInstance().getLeftUrl() : "";
-    }
-
-    public String getRightSize() {
-        return checkPlugin() ? PrintRecords.getInstance().getRightSize() : "0px";
-    }
-
-    public String getRightVisible() {
-        String rt = "background:#B0E7A0;";
-        if ( checkPlugin() && "".equals(PrintRecords.getInstance().getRightSize().replaceAll("0|%|(px)", "") ) ) {
-            rt = "display:none";
-        }  
-        return rt;
-    }
-    
-    public String getSouthHeight() { 
-		return checkPlugin() ? PrintRecords.getInstance().getBottomSize() : "0px";	
-	}   
-
-    public String getRightUrl() {
-        return checkPlugin() ? PrintRecords.getInstance().getRightUrl() : "";
-    }
-
-    public String getBottomSize() {
-        return checkPlugin() ? PrintRecords.getInstance().getBottomSize() : "0px";
-    }
-
-    public boolean getBottomVisible() {
-        return checkPlugin() ? !"".equals(PrintRecords.getInstance().getBottomSize().replaceAll("0|%|(px)", "")) : false;
-    }
-
-    public String getBottomUrl() {
-        return checkPlugin() ? PrintRecords.getInstance().getBottomUrl() : "";
-    }
-
-    public String getColumnFirst() {
-        return checkPlugin() ? PrintRecords.getInstance().getColumnFirst() : "For clients";
-    }
-
-    public String getColumnSecond() {
-        return checkPlugin() ? PrintRecords.getInstance().getColumnSecond() : "To point";
-    }
-
-    public int getLinesCount() {
-        return checkPlugin() ? PrintRecords.getInstance().getLinesCount() : 6;
-    }
-    
-    public String getCustomerDisplay() {        
-        return checkPlugin() ? PrintRecords.getInstance().getCustomerDisplay(): "padding:0px" ;
-    }   
-
-    
-    private List<QPlanService> plan = new LinkedList<>();
-    public List<QPlanService> getPlan() {
-        return plan;
-    }
-
-    public void setPlan(List<QPlanService> plan) {
-        this.plan = plan;
-    }
-    public int getCustomersCount() {
-        int total = 0;
-         
-        for (QUser user : QUserList.getInstance().getItems()) {  
-          if (user.getName().equalsIgnoreCase("Smartboard")) {  
-                plan = user.getPlanServiceList().getServices();                 
-                total = plan.stream().map((plan1) -> QServiceTree.getInstance().getById(plan1.getService().getId()).getCountCustomers()).reduce(total, Integer::sum);
-                break;
-           }
-        }
-              
-        return total;   
-    }
-
-    
-//    public int getEstimatedTime() {      
-//        int estimatedTime = 0;
-//        for (QUser user : QUserList.getInstance().getItems()) {  
-//          if (user.getName().equalsIgnoreCase("Smartboard")) {  
-//                plan = user.getPlanServiceList().getServices();  
-//                
-//                for (QPlanService qPlanService : plan) {  
-//                    //Following number 10 min is hard code here. It will be in TODO list in the future.
-//                     estimatedTime += (QServiceTree.getInstance().getById(qPlanService.getService().getId()).getCountCustomers()) * 10; 
-//                }   
-//           }
-//        }
-//        
-//        return estimatedTime;
-//    }
-//    
-    
-    
-    @Command
-    @NotifyChange(value = {"customersCount"})
-    public void refreshListServices() {
-        
-        for (QUser user : QUserList.getInstance().getItems()) {  
-          if (user.getName().equalsIgnoreCase("Smartboard")) {             
-                QSessions.getInstance().update(user.getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
-          }
-        }
-    }
-         
 }

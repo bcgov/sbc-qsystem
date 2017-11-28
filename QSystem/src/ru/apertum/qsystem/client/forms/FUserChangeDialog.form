@@ -93,6 +93,11 @@
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="tfTabloText" max="32767" attributes="0"/>
                       </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                        <Component id="labelOfficeId" min="-2" max="-2" attributes="0"/>
+                        <EmptySpace type="separate" max="-2" attributes="0"/>
+                        <Component id="tfOfficeId" max="32767" attributes="0"/>
+                      </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
@@ -144,6 +149,11 @@
                       <Component id="tfTabloText" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="labelTabloText" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                    <Group type="103" groupAlignment="3" attributes="0">
+                        <Component id="tfOfficeId" alignment="3" min="-2" max="-2" attributes="0"/>
+                        <Component id="labelOfficeId" alignment="3" min="-2" max="-2" attributes="0"/>
+                    </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -239,6 +249,13 @@
         <Component class="javax.swing.JTextField" name="tfTabloText">
         </Component>
         <Component class="javax.swing.JLabel" name="labelTabloText">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="tablo_text"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfOfficeId">
+        </Component>
+        <Component class="javax.swing.JLabel" name="labelOfficeId">
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="tablo_text"/>
           </Properties>

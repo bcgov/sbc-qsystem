@@ -19,19 +19,20 @@ package ru.apertum.qsystem.common.model;
 import java.net.InetAddress;
 
 /**
- * @author Evgeniy Egorov
- * Получение необходимых данных для организации работы с сетью.
+ * @author Evgeniy Egorov Получение необходимых данных для организации работы с сетью.
  */
 public interface INetProperty {
 
     /**
      * Порт для приемы сообщений от клиентских модулей по протоколу TCP
+     *
      * @return номер порта
      */
     public Integer getPort();
 
     /**
      * Адрес машины, сетевой адрес
+     *
      * @return сетевой адрес
      */
     public InetAddress getAddress();

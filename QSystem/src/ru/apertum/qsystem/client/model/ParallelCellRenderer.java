@@ -16,6 +16,8 @@
  */
 package ru.apertum.qsystem.client.model;
 
+import static ru.apertum.qsystem.client.forms.FClient.getLocaleMessage;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -26,12 +28,10 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
-import static ru.apertum.qsystem.client.forms.FClient.getLocaleMessage;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class ParallelCellRenderer extends JTextPane implements ListCellRenderer<QCustomer> {
@@ -40,9 +40,12 @@ public class ParallelCellRenderer extends JTextPane implements ListCellRenderer<
     private static final LineBorder BORDER_FOCUS = new LineBorder(new Color(51, 202, 241), 3, true);
     private static final LineBorder BORDER_NO_FOCUS = new LineBorder(Color.BLACK, 1, true);
     private static final LineBorder BORDER_INVITED = new LineBorder(Color.RED, 3, true);
-    private static final CompoundBorder BORDER_NO_FOCUS2 = new CompoundBorder(new EmptyBorder(5, 0, 5, 0), BORDER_NO_FOCUS);
-    private static final CompoundBorder BORDER_FOCUS2 = new CompoundBorder(new MatteBorder(5, 0, 5, 0, Color.WHITE), BORDER_FOCUS);
-    private static final CompoundBorder BORDER_INVITED2 = new CompoundBorder(new MatteBorder(5, 0, 5, 0, Color.WHITE), BORDER_INVITED);
+    private static final CompoundBorder BORDER_NO_FOCUS2 = new CompoundBorder(
+        new EmptyBorder(5, 0, 5, 0), BORDER_NO_FOCUS);
+    private static final CompoundBorder BORDER_FOCUS2 = new CompoundBorder(
+        new MatteBorder(5, 0, 5, 0, Color.WHITE), BORDER_FOCUS);
+    private static final CompoundBorder BORDER_INVITED2 = new CompoundBorder(
+        new MatteBorder(5, 0, 5, 0, Color.WHITE), BORDER_INVITED);
 
     public ParallelCellRenderer() {
 
@@ -64,8 +67,10 @@ public class ParallelCellRenderer extends JTextPane implements ListCellRenderer<
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends QCustomer> list, QCustomer value, int index, boolean isSelected, boolean cellHasFocus) {
-        if (CustomerState.STATE_INVITED.equals(value.getState()) || CustomerState.STATE_INVITED_SECONDARY.equals(value.getState())) {
+    public Component getListCellRendererComponent(JList<? extends QCustomer> list, QCustomer value,
+        int index, boolean isSelected, boolean cellHasFocus) {
+        if (CustomerState.STATE_INVITED.equals(value.getState())
+            || CustomerState.STATE_INVITED_SECONDARY.equals(value.getState())) {
             setBorder(BORDER_INVITED2);
             setBackground(Color.cyan);
         } else {
@@ -105,13 +110,15 @@ public class ParallelCellRenderer extends JTextPane implements ListCellRenderer<
         setContentType("text/html");
         setText("");
         setText("<html>"
-                + "<div style='text-align: center;'><span style='font-size:32.0pt;color:purple;'>" + textCust + "</span>"
-                + "<span style='font-size:14.0pt;color:gray'> " + priority + "</span>"
-                + "</div>"
-                + "<div style='margin: 0px 0px 0px 2px'>"
-                + "<span style='font-size:14.0pt;color:black'> " + getLocaleMessage("messages.service") + ": " + value.getService().getName() + "</span><br>"
-                + "<span style='font-size:14.0pt;color:gray'> " + s + "</span>"
-                + "</div>");
+            + "<div style='text-align: center;'><span style='font-size:32.0pt;color:purple;'>"
+            + textCust + "</span>"
+            + "<span style='font-size:14.0pt;color:gray'> " + priority + "</span>"
+            + "</div>"
+            + "<div style='margin: 0px 0px 0px 2px'>"
+            + "<span style='font-size:14.0pt;color:black'> " + getLocaleMessage("messages.service")
+            + ": " + value.getService().getName() + "</span><br>"
+            + "<span style='font-size:14.0pt;color:gray'> " + s + "</span>"
+            + "</div>");
 
         return this;
     }

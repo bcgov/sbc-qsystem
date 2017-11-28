@@ -20,19 +20,18 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetInt extends JsonRPC20 {
 
-    public RpcGetInt() {
-    }
-    
     @Expose
     @SerializedName("result")
     private int result;
 
-    public void setResult(int result) {
+    public RpcGetInt() {
+    }
+
+    public RpcGetInt(int result) {
         this.result = result;
     }
 
@@ -40,7 +39,7 @@ public class RpcGetInt extends JsonRPC20 {
         return result;
     }
 
-    public RpcGetInt(int result) {
+    public void setResult(int result) {
         this.result = result;
     }
 

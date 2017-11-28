@@ -12,4 +12,4 @@ cd /opt/app-root/src/source/dist
 java -Djava.security.egd=file:/dev/./urandom -jar Seeder.jar sql qskySql
 
 # Run QSystem
-exec java -Djava.security.egd=file:/dev/./urandom -jar QSystem.jar -t --http-server 8080 $APP_OPTIONS 
+exec java -Djava.security.egd=file:/dev/./urandom $USER_JAVA_OPTIONS -jar QSystem.jar -t --http-server 8080 $APP_OPTIONS

@@ -24,10 +24,11 @@ import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.ATListModel;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QCalendarList extends ATListModel<QCalendar> implements ComboBoxModel {
+
+    private QCalendar selected;
 
     private QCalendarList() {
         super();
@@ -37,26 +38,25 @@ public class QCalendarList extends ATListModel<QCalendar> implements ComboBoxMod
         return QCalendarListHolder.INSTANCE;
     }
 
-    private static class QCalendarListHolder {
-
-        private static final QCalendarList INSTANCE = new QCalendarList();
-    }
-
     @Override
     protected LinkedList<QCalendar> load() {
         return new LinkedList<>(Spring.getInstance().getHt().
-                findByCriteria(DetachedCriteria.forClass(QCalendar.class).
-                        setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)));
+            findByCriteria(DetachedCriteria.forClass(QCalendar.class).
+                setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)));
     }
-    private QCalendar selected;
+
+    @Override
+    public Object getSelectedItem() {
+        return selected;
+    }
 
     @Override
     public void setSelectedItem(Object anItem) {
         selected = (QCalendar) anItem;
     }
 
-    @Override
-    public Object getSelectedItem() {
-        return selected;
+    private static class QCalendarListHolder {
+
+        private static final QCalendarList INSTANCE = new QCalendarList();
     }
 }

@@ -15,19 +15,20 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Window;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class ChangeStatusDialogController extends SelectorComposer<Component> {
+
     private static final long serialVersionUID = 1L;
-     
+
     @Wire
     Window redirectDialog;
-     
+
     @Listen("onClick = #closeBtn")
     public void closeModal(Event e) {
         redirectDialog.detach();
     }
+
     @Listen("onClick = #applyBtn")
     public void okModal(Event e) {
         redirectDialog.detach();

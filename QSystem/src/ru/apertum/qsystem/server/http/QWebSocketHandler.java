@@ -29,7 +29,6 @@ import ru.apertum.qsystem.common.QLog;
  */
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QWebSocketHandler {

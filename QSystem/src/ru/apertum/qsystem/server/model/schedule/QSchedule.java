@@ -40,16 +40,100 @@ import ru.apertum.qsystem.server.model.IidGetter;
 @Table(name = "schedule")
 public class QSchedule implements IidGetter, Serializable {
 
-    public QSchedule() {
-    }
     @Id
     @Column(name = "id")
     //@GeneratedValue(strategy = GenerationType.AUTO)
     private Long id = new Date().getTime();
+    /**
+     * Наименование плана.
+     */
+    @Column(name = "name")
+    private String name;
+    /**
+     * Тип плана 0 - недельный 1 - четные/нечетные дни
+     */
+    @Column(name = "type")
+    private Integer type;
+    /**
+     * Время начала работы в первый день недели или в нечетный день, зависит от type
+     */
+    @Column(name = "time_begin_1")
+    @Temporal(TemporalType.TIME)
+    private Date time_begin_1;
+    /**
+     * Время завершения работы в первый день недели или в нечетный день, зависит от type
+     */
+    @Column(name = "time_end_1")
+    @Temporal(TemporalType.TIME)
+    private Date time_end_1;
+    @Column(name = "time_begin_2")
+    @Temporal(TemporalType.TIME)
+    private Date time_begin_2;
+    @Column(name = "time_end_2")
+    @Temporal(TemporalType.TIME)
+    private Date time_end_2;
+    @Column(name = "time_begin_3")
+    @Temporal(TemporalType.TIME)
+    private Date time_begin_3;
+    @Column(name = "time_end_3")
+    @Temporal(TemporalType.TIME)
+    private Date time_end_3;
+    @Column(name = "time_begin_4")
+    @Temporal(TemporalType.TIME)
+    private Date time_begin_4;
+    @Column(name = "time_end_4")
+    @Temporal(TemporalType.TIME)
+    private Date time_end_4;
+    @Column(name = "time_begin_5")
+    @Temporal(TemporalType.TIME)
+    private Date time_begin_5;
+    @Column(name = "time_end_5")
+    @Temporal(TemporalType.TIME)
+    private Date time_end_5;
+    @Column(name = "time_begin_6")
+    @Temporal(TemporalType.TIME)
+    private Date time_begin_6;
+    @Column(name = "time_end_6")
+    @Temporal(TemporalType.TIME)
+    private Date time_end_6;
+    @Column(name = "time_begin_7")
+    @Temporal(TemporalType.TIME)
+    private Date time_begin_7;
+    @Column(name = "time_end_7")
+    @Temporal(TemporalType.TIME)
+    private Date time_end_7;
+    @OneToOne
+    @JoinColumn(name = "breaks_id1")
+    private QBreaks breaks_1;
+    @ManyToOne
+    @JoinColumn(name = "breaks_id2")
+    private QBreaks breaks_2;
+    @ManyToOne
+    @JoinColumn(name = "breaks_id3")
+    private QBreaks breaks_3;
+    @ManyToOne
+    @JoinColumn(name = "breaks_id4")
+    private QBreaks breaks_4;
+    @ManyToOne
+    @JoinColumn(name = "breaks_id5")
+    private QBreaks breaks_5;
+    @ManyToOne
+    @JoinColumn(name = "breaks_id6")
+    private QBreaks breaks_6;
+    @ManyToOne
+    @JoinColumn(name = "breaks_id7")
+    private QBreaks breaks_7;
+
+    public QSchedule() {
+    }
 
     @Override
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
@@ -58,7 +142,8 @@ public class QSchedule implements IidGetter, Serializable {
             return false;
         }
         if (!(o instanceof QSchedule)) {
-            throw new TypeNotPresentException("Неправильный тип для сравнения", new ServerException("Неправильный тип для сравнения"));
+            throw new TypeNotPresentException("Неправильный тип для сравнения",
+                new ServerException("Неправильный тип для сравнения"));
         }
         return id.equals(((QSchedule) o).id);
     }
@@ -67,15 +152,6 @@ public class QSchedule implements IidGetter, Serializable {
     public int hashCode() {
         return (int) (this.id != null ? this.id : 0);
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-    /**
-     * Наименование плана.
-     */
-    @Column(name = "name")
-    private String name;
 
     @Override
     public String getName() {
@@ -90,11 +166,6 @@ public class QSchedule implements IidGetter, Serializable {
     public String toString() {
         return name;
     }
-    /**
-     * Тип плана 0 - недельный 1 - четные/нечетные дни
-     */
-    @Column(name = "type")
-    private Integer type;
 
     /**
      * Тип плана 0 - недельный 1 - четные/нечетные дни
@@ -107,33 +178,6 @@ public class QSchedule implements IidGetter, Serializable {
 
     public void setType(Integer type) {
         this.type = type;
-    }
-
-    /**
-     * Начало и конец рабочего дня, к примеру.
-     */
-    public static class Interval {
-
-        public final Date start;
-        public final Date finish;
-
-        public Interval(Date start, Date finish) {
-            if (start == null || finish == null) {
-                this.start = new Date(111);
-                this.finish = new Date(222);
-            } else {
-                if (finish.before(start)) {
-                    throw new ServerException("Finish date " + finish + " before than start date " + start);
-                }
-                this.start = start;
-                this.finish = finish;
-            }
-        }
-
-        public long diff() {
-            return finish.getTime() - start.getTime();
-        }
-
     }
 
     public Interval getWorkInterval(Date date) {
@@ -189,8 +233,9 @@ public class QSchedule implements IidGetter, Serializable {
     }
 
     /**
-     * Проверка на перерыв. К примеру. В перерывах нет возможности записываться, по этому это время не поедет в пункт регистрации. Есть расписание, у него на
-     * каждый день список перерывов. Папало ли время в перерыв на ту дату
+     * Проверка на перерыв. К примеру. В перерывах нет возможности записываться, по этому это время
+     * не поедет в пункт регистрации. Есть расписание, у него на каждый день список перерывов.
+     * Папало ли время в перерыв на ту дату
      *
      * @param date проверка этой даты на перерыв
      * @return да или нет
@@ -254,8 +299,9 @@ public class QSchedule implements IidGetter, Serializable {
     }
 
     /**
-     * Проверка на перерыв. К примеру. В перерывах нет возможности записываться, по этому это время не поедет в пункт регистрации. Есть расписание, у него на
-     * каждый день список перерывов. Папал ли интервал(пересечение) в перерыв на ту дату
+     * Проверка на перерыв. К примеру. В перерывах нет возможности записываться, по этому это время
+     * не поедет в пункт регистрации. Есть расписание, у него на каждый день список перерывов. Папал
+     * ли интервал(пересечение) в перерыв на ту дату
      *
      * @param interval проверка этго интервала на перерыв
      * @return да или нет
@@ -268,8 +314,9 @@ public class QSchedule implements IidGetter, Serializable {
     }
 
     /**
-     * Проверка на перерыв. К примеру. В перерывах нет возможности записываться, по этому это время не поедет в пункт регистрации. Есть расписание, у него на
-     * каждый день список перерывов. Папал ли интервал(пересечение) в перерыв на ту дату
+     * Проверка на перерыв. К примеру. В перерывах нет возможности записываться, по этому это время
+     * не поедет в пункт регистрации. Есть расписание, у него на каждый день список перерывов. Папал
+     * ли интервал(пересечение) в перерыв на ту дату
      *
      * @param start начало этoго интервала на перерыв
      * @param finish конец этoго интервала на перерыв
@@ -282,13 +329,6 @@ public class QSchedule implements IidGetter, Serializable {
         return inBreak(start) || inBreak(gc.getTime());
     }
 
-    /**
-     * Время начала работы в первый день недели или в нечетный день, зависит от type
-     */
-    @Column(name = "time_begin_1")
-    @Temporal(TemporalType.TIME)
-    private Date time_begin_1;
-
     public Date getTime_begin_1() {
         return time_begin_1;
     }
@@ -296,12 +336,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_begin_1(Date time_begin_1) {
         this.time_begin_1 = time_begin_1;
     }
-    /**
-     * Время завершения работы в первый день недели или в нечетный день, зависит от type
-     */
-    @Column(name = "time_end_1")
-    @Temporal(TemporalType.TIME)
-    private Date time_end_1;
 
     public Date getTime_end_1() {
         return time_end_1;
@@ -310,9 +344,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_end_1(Date time_end_1) {
         this.time_end_1 = time_end_1;
     }
-    @Column(name = "time_begin_2")
-    @Temporal(TemporalType.TIME)
-    private Date time_begin_2;
 
     public Date getTime_begin_2() {
         return time_begin_2;
@@ -321,9 +352,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_begin_2(Date time_begin_2) {
         this.time_begin_2 = time_begin_2;
     }
-    @Column(name = "time_end_2")
-    @Temporal(TemporalType.TIME)
-    private Date time_end_2;
 
     public Date getTime_end_2() {
         return time_end_2;
@@ -332,9 +360,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_end_2(Date time_end_2) {
         this.time_end_2 = time_end_2;
     }
-    @Column(name = "time_begin_3")
-    @Temporal(TemporalType.TIME)
-    private Date time_begin_3;
 
     public Date getTime_begin_3() {
         return time_begin_3;
@@ -343,9 +368,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_begin_3(Date time_begin_3) {
         this.time_begin_3 = time_begin_3;
     }
-    @Column(name = "time_end_3")
-    @Temporal(TemporalType.TIME)
-    private Date time_end_3;
 
     public Date getTime_end_3() {
         return time_end_3;
@@ -354,9 +376,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_end_3(Date time_end_3) {
         this.time_end_3 = time_end_3;
     }
-    @Column(name = "time_begin_4")
-    @Temporal(TemporalType.TIME)
-    private Date time_begin_4;
 
     public Date getTime_begin_4() {
         return time_begin_4;
@@ -365,9 +384,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_begin_4(Date time_begin_4) {
         this.time_begin_4 = time_begin_4;
     }
-    @Column(name = "time_end_4")
-    @Temporal(TemporalType.TIME)
-    private Date time_end_4;
 
     public Date getTime_end_4() {
         return time_end_4;
@@ -376,9 +392,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_end_4(Date time_end_4) {
         this.time_end_4 = time_end_4;
     }
-    @Column(name = "time_begin_5")
-    @Temporal(TemporalType.TIME)
-    private Date time_begin_5;
 
     public Date getTime_begin_5() {
         return time_begin_5;
@@ -387,9 +400,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_begin_5(Date time_begin_5) {
         this.time_begin_5 = time_begin_5;
     }
-    @Column(name = "time_end_5")
-    @Temporal(TemporalType.TIME)
-    private Date time_end_5;
 
     public Date getTime_end_5() {
         return time_end_5;
@@ -398,9 +408,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_end_5(Date time_end_5) {
         this.time_end_5 = time_end_5;
     }
-    @Column(name = "time_begin_6")
-    @Temporal(TemporalType.TIME)
-    private Date time_begin_6;
 
     public Date getTime_begin_6() {
         return time_begin_6;
@@ -409,9 +416,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_begin_6(Date time_begin_6) {
         this.time_begin_6 = time_begin_6;
     }
-    @Column(name = "time_end_6")
-    @Temporal(TemporalType.TIME)
-    private Date time_end_6;
 
     public Date getTime_end_6() {
         return time_end_6;
@@ -420,9 +424,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_end_6(Date time_end_6) {
         this.time_end_6 = time_end_6;
     }
-    @Column(name = "time_begin_7")
-    @Temporal(TemporalType.TIME)
-    private Date time_begin_7;
 
     public Date getTime_begin_7() {
         return time_begin_7;
@@ -431,9 +432,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_begin_7(Date time_begin_7) {
         this.time_begin_7 = time_begin_7;
     }
-    @Column(name = "time_end_7")
-    @Temporal(TemporalType.TIME)
-    private Date time_end_7;
 
     public Date getTime_end_7() {
         return time_end_7;
@@ -442,9 +440,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setTime_end_7(Date time_end_7) {
         this.time_end_7 = time_end_7;
     }
-    @OneToOne
-    @JoinColumn(name = "breaks_id1")
-    private QBreaks breaks_1;
 
     public QBreaks getBreaks_1() {
         return breaks_1;
@@ -453,24 +448,6 @@ public class QSchedule implements IidGetter, Serializable {
     public void setBreaks_1(QBreaks breaks_1) {
         this.breaks_1 = breaks_1;
     }
-    @ManyToOne
-    @JoinColumn(name = "breaks_id2")
-    private QBreaks breaks_2;
-    @ManyToOne
-    @JoinColumn(name = "breaks_id3")
-    private QBreaks breaks_3;
-    @ManyToOne
-    @JoinColumn(name = "breaks_id4")
-    private QBreaks breaks_4;
-    @ManyToOne
-    @JoinColumn(name = "breaks_id5")
-    private QBreaks breaks_5;
-    @ManyToOne
-    @JoinColumn(name = "breaks_id6")
-    private QBreaks breaks_6;
-    @ManyToOne
-    @JoinColumn(name = "breaks_id7")
-    private QBreaks breaks_7;
 
     public QBreaks getBreaks_2() {
         return breaks_2;
@@ -518,5 +495,33 @@ public class QSchedule implements IidGetter, Serializable {
 
     public void setBreaks_7(QBreaks breaks_7) {
         this.breaks_7 = breaks_7;
+    }
+
+    /**
+     * Начало и конец рабочего дня, к примеру.
+     */
+    public static class Interval {
+
+        public final Date start;
+        public final Date finish;
+
+        public Interval(Date start, Date finish) {
+            if (start == null || finish == null) {
+                this.start = new Date(111);
+                this.finish = new Date(222);
+            } else {
+                if (finish.before(start)) {
+                    throw new ServerException(
+                        "Finish date " + finish + " before than start date " + start);
+                }
+                this.start = start;
+                this.finish = finish;
+            }
+        }
+
+        public long diff() {
+            return finish.getTime() - start.getTime();
+        }
+
     }
 }

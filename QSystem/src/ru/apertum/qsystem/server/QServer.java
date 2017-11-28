@@ -19,17 +19,26 @@ package ru.apertum.qsystem.server;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Scanner;
 import java.util.ServiceLoader;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.About;
 import ru.apertum.qsystem.client.Locales;
 import ru.apertum.qsystem.client.forms.FAbout;
@@ -37,10 +46,9 @@ import ru.apertum.qsystem.common.CodepagePrintStream;
 import ru.apertum.qsystem.common.GsonPool;
 import ru.apertum.qsystem.common.Mailer;
 import ru.apertum.qsystem.common.QConfig;
-import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.cmd.JsonRPC20;
-import ru.apertum.qsystem.common.cmd.RpcGetAdvanceCustomer;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.common.model.ATalkingClock;
 import ru.apertum.qsystem.common.model.QCustomer;
@@ -63,11 +71,21 @@ import ru.apertum.qsystem.server.model.postponed.QPostponedList;
  */
 public class QServer extends Thread {
 
+    private static volatile boolean globalExit = false;
     private final Socket socket;
 
     /**
+     * @param socket
+     */
+    public QServer(Socket socket) {
+        this.socket = socket;
+        // и запускаем новый вычислительный поток (см. ф-ю run())
+        setDaemon(true);
+        setPriority(NORM_PRIORITY);
+    }
+
+    /**
      * @param args - первым параметром передается полное имя настроечного XML-файла
-     * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         About.printdef();
@@ -89,35 +107,58 @@ public class QServer extends Thread {
         FAbout.loadVersionSt();
 
         if (Locales.getInstance().isRuss) {
-
             if ("0".equals(FAbout.CMRC_)) {
-                System.out.println("Добро пожаловать на сервер QSystem. Для работы необходим MySQL5.5 или выше.");
-                System.out.println("Версия сервера: " + FAbout.VERSION_ + "-community QSystem Server (GPL)");
-                System.out.println("Версия базы данных: " + FAbout.VERSION_DB_ + " for MySQL 5.5-community Server (GPL)");
+                System.out
+                    .println(
+                        "Добро пожаловать на сервер QSystem. Для работы необходим MySQL5.5 или выше.");
+                System.out
+                    .println(
+                        "Версия сервера: " + FAbout.VERSION_ + "-community QSystem Server (GPL)");
+                System.out.println(
+                    "Версия базы данных: " + FAbout.VERSION_DB_
+                        + " for MySQL 5.5-community Server (GPL)");
                 System.out.println("Дата выпуска : " + FAbout.DATE_);
                 System.out.println("Copyright (c) 2016, Apertum Projects. Все права защищены.");
-                System.out.println("QSystem является свободным программным обеспечением, вы можете");
-                System.out.println("распространять и/или изменять его согласно условиям Стандартной Общественной");
-                System.out.println("Лицензии GNU (GNU GPL), опубликованной Фондом свободного программного");
-                System.out.println("обеспечения (FSF), либо Лицензии версии 3, либо более поздней версии.");
-
-                System.out.println("Вы должны были получить копию Стандартной Общественной Лицензии GNU вместе");
-                System.out.println("с этой программой. Если это не так, напишите в Фонд Свободного ПО ");
-                System.out.println("(Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA)");
+                System.out
+                    .println("QSystem является свободным программным обеспечением, вы можете");
+                System.out.println(
+                    "распространять и/или изменять его согласно условиям Стандартной Общественной");
+                System.out.println(
+                    "Лицензии GNU (GNU GPL), опубликованной Фондом свободного программного");
+                System.out.println(
+                    "обеспечения (FSF), либо Лицензии версии 3, либо более поздней версии.");
+                System.out
+                    .println(
+                        "Вы должны были получить копию Стандартной Общественной Лицензии GNU вместе");
+                System.out
+                    .println("с этой программой. Если это не так, напишите в Фонд Свободного ПО ");
+                System.out
+                    .println(
+                        "(Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA)");
             }
 
             System.out.println("Набирите 'exit' чтобы штатно остановить работу сервера.");
             System.out.println();
         } else {
             if ("0".equals(FAbout.CMRC_)) {
-                System.out.println("Server version: " + FAbout.VERSION_ + "-community QSystem Server (GPL)");
-                System.out.println("Database version: " + FAbout.VERSION_DB_ + " for MySQL 5.5-community Server (GPL)");
+                System.out
+                    .println(
+                        "Server version: " + FAbout.VERSION_ + "-community QSystem Server (GPL)");
+                System.out.println(
+                    "Database version: " + FAbout.VERSION_DB_
+                        + " for MySQL 5.5-community Server (GPL)");
                 System.out.println("Released : " + FAbout.DATE_);
 
-                System.out.println("Copyright (c) 2010-2016, Apertum Projects and/or its affiliates. All rights reserved.");
-                System.out.println("This software comes with ABSOLUTELY NO WARRANTY. This is free software,");
-                System.out.println("and you are welcome to modify and redistribute it under the GPL v3 license");
-                System.out.println("Text of this license on your language located in the folder with the program.");
+                System.out.println(
+                    "Copyright (c) 2010-2016, Apertum Projects and/or its affiliates. All rights reserved.");
+                System.out
+                    .println(
+                        "This software comes with ABSOLUTELY NO WARRANTY. This is free software,");
+                System.out
+                    .println(
+                        "and you are welcome to modify and redistribute it under the GPL v3 license");
+                System.out.println(
+                    "Text of this license on your language located in the folder with the program.");
             }
 
             System.out.println("Type 'exit' to stop work and close server.");
@@ -139,17 +180,22 @@ public class QServer extends Thread {
             try {
                 JettyRunner.start(QConfig.cfg().getHttp());
             } catch (NumberFormatException ex) {
-                QLog.l().logger().error("Номер порта для Jetty в параметрах запуска не является числом. Формат параметра для порта 8081 '-http 8081'.", ex);
+                QLog.l().logger().error(
+                    "Номер порта для Jetty в параметрах запуска не является числом. Формат параметра для порта 8081 '-http 8081'.",
+                    ex);
             }
         }
 
         // Отчетный сервер, выступающий в роли вэбсервера, обрабатывающего запросы на выдачу отчетов
-        WebServer.getInstance().startWebServer(ServerProps.getInstance().getProps().getWebServerPort());
+        WebServer.getInstance()
+            .startWebServer(ServerProps.getInstance().getProps().getWebServerPort());
         loadPool();
         // запускаем движок индикации сообщения для кастомеров
         //MainBoard.getInstance().showBoard();
         // test ServerProps.getInstance().getProps().getZoneBoardServAddrList();
-        if (!(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getStartTime()).equals(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getFinishTime())))) {
+        if (!(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getStartTime())
+            .equals(
+                Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getFinishTime())))) {
             /**
              * Таймер, по которому будем Очистка всех услуг и рассылка спама с дневным отчетом.
              */
@@ -158,15 +204,22 @@ public class QServer extends Thread {
                 @Override
                 public void run() {
                     // это обнуление :: This obnulenye
-                    if (!QConfig.cfg().isRetain() && Uses.FORMAT_HH_MM.format(new Date(new Date().getTime() + 10 * 60 * 1000)).equals(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getStartTime()))) {
+                    if (!QConfig.cfg().isRetain() && Uses.FORMAT_HH_MM
+                        .format(new Date(new Date().getTime() + 10 * 60 * 1000)).equals(
+                            Uses.FORMAT_HH_MM
+                                .format(ServerProps.getInstance().getProps().getStartTime()))) {
                         QLog.l().logger().info("Очистка всех услуг.");
                         // почистим все услуги от трупов кастомеров с прошлого дня
                         QServer.clearAllQueue();
                     }
 
                     // это рассылка дневного отчета :: This is a daily report
-                    if (("true".equalsIgnoreCase(Mailer.fetchConfig().getProperty("mailing")) || "1".equals(Mailer.fetchConfig().getProperty("mailing")))
-                            && Uses.FORMAT_HH_MM.format(new Date(new Date().getTime() - 30 * 60 * 1000)).equals(Uses.FORMAT_HH_MM.format(ServerProps.getInstance().getProps().getFinishTime()))) {
+                    if (("true".equalsIgnoreCase(Mailer.fetchConfig().getProperty("mailing")) || "1"
+                        .equals(Mailer.fetchConfig().getProperty("mailing")))
+                        && Uses.FORMAT_HH_MM.format(new Date(new Date().getTime() - 30 * 60 * 1000))
+                        .equals(
+                            Uses.FORMAT_HH_MM
+                                .format(ServerProps.getInstance().getProps().getFinishTime()))) {
                         QLog.l().logger().info("Рассылка дневного отчета.");
                         // почистим все услуги от трупов кастомеров с прошлого дня
                         // Clean all services from the corpses of custodians from the last day
@@ -174,13 +227,16 @@ public class QServer extends Thread {
                             if (user.getReportAccess()) {
                                 final HashMap<String, String> p = new HashMap<>();
                                 p.put("date", Uses.FORMAT_DD_MM_YYYY.format(new Date()));
-                                final byte[] result = QReportsList.getInstance().generate(user, "/distribution_job_day.pdf", p);
+                                final byte[] result = QReportsList.getInstance()
+                                    .generate(user, "/distribution_job_day.pdf", p);
                                 try {
-                                    try (FileOutputStream fos = new FileOutputStream("temp/distribution_job_day.pdf")) {
+                                    try (FileOutputStream fos = new FileOutputStream(
+                                        "temp/distribution_job_day.pdf")) {
                                         fos.write(result);
                                         fos.flush();
                                     }
-                                    Mailer.sendReporterMailAtFon(null, null, null, "temp/distribution_job_day.pdf");
+                                    Mailer.sendReporterMailAtFon(null, null, null,
+                                        "temp/distribution_job_day.pdf");
                                 } catch (Exception ex) {
                                     QLog.l().logger().error("Какой-то облом с дневным отчетом", ex);
                                 }
@@ -209,7 +265,9 @@ public class QServer extends Thread {
         // привинтить сокет на локалхост, порт 3128
         final ServerSocket server;
         try {
-            QLog.l().logger().info("Сервер системы захватывает порт \"" + ServerProps.getInstance().getProps().getServerPort() + "\".");
+            QLog.l().logger().info(
+                "Сервер системы захватывает порт \"" + ServerProps.getInstance().getProps()
+                    .getServerPort() + "\".");
             server = new ServerSocket(ServerProps.getInstance().getProps().getServerPort());
         } catch (IOException e) {
             throw new ServerException("Network error. Creating net socket is not possible: " + e);
@@ -217,9 +275,11 @@ public class QServer extends Thread {
             throw new ServerException("Network error: " + e);
         }
         server.setSoTimeout(500);
-        final AnnotationSessionFactoryBean as = (AnnotationSessionFactoryBean) Spring.getInstance().getFactory().getBean("conf");
+        final AnnotationSessionFactoryBean as = (AnnotationSessionFactoryBean) Spring.getInstance()
+            .getFactory().getBean("conf");
         System.out.println("Server QSystem started.\n");
-        QLog.l().logger().info("Сервер системы 'Очередь' запущен. DB name='" + as.getName() + "' url=" + as.getUrl());
+        QLog.l().logger().info(
+            "Сервер системы 'Очередь' запущен. DB name='" + as.getName() + "' url=" + as.getUrl());
         int pos = 0;
         boolean exit = false;
         // слушаем порт
@@ -254,7 +314,6 @@ public class QServer extends Thread {
                 }
                 System.out.print(progres);
                 System.out.write(13);// '\b' - возвращает корретку на одну позицию назад
-
             }
 
             // Попробуем считать нажатую клавишу
@@ -266,11 +325,11 @@ public class QServer extends Thread {
                 byte[] data = new byte[bytesAvailable];
                 System.in.read(data);
                 if (bytesAvailable == 5
-                        && data[0] == 101
-                        && data[1] == 120
-                        && data[2] == 105
-                        && data[3] == 116
-                        && ((data[4] == 10) || (data[4] == 13))) {
+                    && data[0] == 101
+                    && data[1] == 120
+                    && data[2] == 105
+                    && data[3] == 116
+                    && ((data[4] == 10) || (data[4] == 13))) {
                     // набрали команду "exit" и нажали ENTER
                     QLog.l().logger().info("Завершение работы сервера.");
                     exit = true;
@@ -287,28 +346,103 @@ public class QServer extends Thread {
         QLog.l().logger().debug("Выключение центрального табло.");
         MainBoard.getInstance().close();
 
-        deleteTempFile();
         Thread.sleep(1500);
-        QLog.l().logger().info("Сервер штатно завершил работу. Время работы: " + Uses.roundAs(((double) (System.currentTimeMillis() - start)) / 1000 / 60, 2) + " мин.");
+        QLog.l().logger().info("Сервер штатно завершил работу. Время работы: " + Uses
+            .roundAs(((double) (System.currentTimeMillis() - start)) / 1000 / 60, 2) + " мин.");
         System.exit(0);
     }
 
-    private static volatile boolean globalExit = false;
-
     /**
-     * @param socket
+     * Загрузка состояния пула услуг из временного json-файла
      */
-    public QServer(Socket socket) {
-        this.socket = socket;
-        // и запускаем новый вычислительный поток (см. ф-ю run())
-        setDaemon(true);
-        setPriority(NORM_PRIORITY);
+    static public void loadPool() {
+        QLog.l().logQUser().debug("loadPool");
+
+        final LinkedList<QCustomer> customers = new LinkedList<QCustomer>(
+            Spring.getInstance().getHt().findByCriteria(
+                DetachedCriteria.forClass(QCustomer.class)
+                    .add(Property.forName("stateIn").ne(0))
+                    .add(Property.forName("stateIn").ne(10))
+                    .add(Property.forName("stateIn").ne(11))
+                    .add(Property.forName("stateIn").ne(12))
+                    .add(Property.forName("stateIn").ne(13))
+                    .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))));
+
+        QLog.l().logQUser().debug("adding Customers to hold list from database");
+        for (QCustomer cust : customers) {
+            QLog.l().logQUser().debug("Customer: " + cust + ", " + cust.getId());
+            QLog.l().logQUser().debug("serviceId: " + cust.getService().getId());
+            final QService service = QServiceTree.getInstance().getById(cust.getService().getId());
+            if (service == null) {
+                QLog.l().logQUser().debug("null... next");
+            }
+
+            service.setCountPerDay(cust.getService().getCountPerDay());
+            service.setDay(cust.getService().getDay());
+
+            final QUser user = cust.getUser();
+            cust.setService(service);
+
+            if (user != null) {
+                QLog.l().logQUser().debug("user not null");
+                // сохраненный кастомер обрабатывался юзером с именем userId
+                if (QUserList.getInstance().getById(user.getId()) == null) {
+                    continue;
+                }
+                QUserList.getInstance().getById(user.getId()).setCustomer(cust);
+                cust.setUser(QUserList.getInstance().getById(user.getId()));
+            }
+
+            QLog.l().logQUser().debug("setPriority");
+            cust.setPriority(1);
+
+            QLog.l().logQUser().debug("setState: " + cust.getStateIn());
+            Integer state = cust.getStateIn();
+            cust.setState(state);
+
+            QLog.l().logQUser().debug("Adding customer to serviceTree");
+            QServiceTree.getInstance().getById(cust.getService().getId())
+                .addCustomer(cust);
+        }
+
+        QLog.l().logQUser().debug("Refreshing postponed list");
+        QPostponedList.getInstance().loadPostponedList(new LinkedList<QCustomer>());
+
+        return;
+    }
+
+    static public void clearAllQueue() {
+        // почистим все услуги от трупов кастомеров
+        QServiceTree.getInstance().getNodes().forEach((service) -> {
+            service.clearNextNumber();
+            service.freeCustomers();
+        });
+        QService.clearNextStNumber();
+
+        QPostponedList.getInstance().clear();
+        MainBoard.getInstance().clear();
+
+        // Сотрем временные файлы
+        QLog.l().logger().info("Очистка всех пользователей от привязанных кастомеров.");
+        QUserList.getInstance().getItems().forEach((user) -> {
+            user.setCustomer(null);
+            user.getParallelCustomers().clear();
+            user.setShadow(null);
+            user.getPlanServices().forEach((plan) -> {
+                plan.setAvg_wait(0);
+                plan.setAvg_work(0);
+                plan.setKilled(0);
+                plan.setWorked(0);
+            });
+        });
     }
 
     @Override
     public void run() {
         try {
-            QLog.l().logger().debug(" Start thread for receiving task. host=" + socket.getInetAddress().getHostAddress() + " ip=" + Arrays.toString(socket.getInetAddress().getAddress()));
+            QLog.l().logger().debug(
+                " Start thread for receiving task. host=" + socket.getInetAddress().getHostAddress()
+                    + " ip=" + Arrays.toString(socket.getInetAddress().getAddress()));
 
             // из сокета клиента берём поток входящих данных
             // From the client's socket we take the stream of incoming data
@@ -316,7 +450,8 @@ public class QServer extends Thread {
             try {
                 is = socket.getInputStream();
             } catch (IOException e) {
-                throw new ServerException("Input Stream broken: " + Arrays.toString(e.getStackTrace()));
+                throw new ServerException(
+                    "Input Stream broken: " + Arrays.toString(e.getStackTrace()));
             }
 
             final String data;
@@ -342,7 +477,8 @@ public class QServer extends Thread {
             } catch (IllegalArgumentException ex) {
                 throw new ServerException("Ошибка декодирования сетевого сообщения: " + ex);
             }
-            QLog.l().logger().trace("Task:\n" + (data.length() > 200 ? (data.substring(0, 200) + "...") : data));
+            QLog.l().logger()
+                .trace("Task:\n" + (data.length() > 200 ? (data.substring(0, 200) + "...") : data));
 
             /*
              Если по сетке поймали exit, то это значит что запустили останавливающий батник.
@@ -360,32 +496,45 @@ public class QServer extends Thread {
                 rpc = gson.fromJson(data, JsonRPC20.class);
                 // полученное задание передаем в пул
                 // We send the received task to the pool
-                final Object result = Executer.getInstance().doTask(rpc, socket.getInetAddress().getHostAddress(), socket.getInetAddress().getAddress());
+                final Object result = Executer.getInstance()
+                    .doTask(rpc, socket.getInetAddress().getHostAddress(),
+                        socket.getInetAddress().getAddress());
                 answer = gson.toJson(result);
             } catch (JsonSyntaxException ex) {
-                QLog.l().logger().error("Received data \"" + data + "\" has not correct JSOM format. ", ex);
-                throw new ServerException("Received data \"" + data + "\" has not correct JSOM format. " + Arrays.toString(ex.getStackTrace()));
+                QLog.l().logger()
+                    .error("Received data \"" + data + "\" has not correct JSOM format. ", ex);
+                throw new ServerException(
+                    "Received data \"" + data + "\" has not correct JSOM format. " + Arrays
+                        .toString(ex.getStackTrace()));
             } catch (Exception ex) {
                 QLog.l().logger().error("Late caught the error when running the command. ", ex);
-                throw new ServerException("Поздно пойманная ошибка при выполнении команды: " + Arrays.toString(ex.getStackTrace()));
+                throw new ServerException(
+                    "Поздно пойманная ошибка при выполнении команды: " + Arrays
+                        .toString(ex.getStackTrace()));
             } finally {
                 GsonPool.getInstance().returnGson(gson);
             }
 
             // выводим данные:
-            QLog.l().logger().trace("Response:\n" + (answer.length() > 200 ? (answer.substring(0, 200) + "...") : answer));
+            QLog.l().logger().trace(
+                "Response:\n" + (answer.length() > 200 ? (answer.substring(0, 200) + "...")
+                    : answer));
             try {
                 // Передача данных ответа
                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
                 writer.print(URLEncoder.encode(answer, "utf-8"));
                 writer.flush();
             } catch (IOException e) {
-                throw new ServerException("Ошибка при записи в поток: " + Arrays.toString(e.getStackTrace()));
+                throw new ServerException(
+                    "Ошибка при записи в поток: " + Arrays.toString(e.getStackTrace()));
             }
         } catch (ServerException | JsonParseException ex) {
             final StringBuilder sb = new StringBuilder("\nStackTrace:\n");
             for (StackTraceElement bag : ex.getStackTrace()) {
-                sb.append("    at ").append(bag.getClassName()).append(".").append(bag.getMethodName()).append("(").append(bag.getFileName()).append(":").append(bag.getLineNumber()).append(")\n");
+                sb.append("    at ").append(bag.getClassName()).append(".")
+                    .append(bag.getMethodName())
+                    .append("(").append(bag.getFileName()).append(":").append(bag.getLineNumber())
+                    .append(")\n");
             }
             final String err = sb.toString() + "\n";
             sb.setLength(0);
@@ -399,251 +548,6 @@ public class QServer extends Thread {
                 QLog.l().logger().trace(e);
             }
             QLog.l().logger().trace("Response was finished");
-        }
-    }
-
-    /**
-     * Сохранение состояния пула услуг в xml-файл на диск
-     * Saving the status of the service pool to an xml file on disk
-     */
-    public synchronized static void savePool() {
-        final long start = System.currentTimeMillis();
-        QLog.l().logger().info("Save the state.");
-        final LinkedList<QCustomer> backup = new LinkedList<>();// создаем список сохраняемых кастомеров
-        final LinkedList<QCustomer> parallelBackup = new LinkedList<>();// создаем список сохраняемых Parallel кастомеров
-        final LinkedList<Long> pauses = new LinkedList<>();// создаем список юзеров у которых менопауза
-        QServiceTree.getInstance().getNodes().stream().forEach((service) -> {
-            backup.addAll(service.getClients());
-        });
-
-        QUserList.getInstance().getItems().forEach((user) -> {
-            if (user.getCustomer() != null) {
-                backup.add(user.getCustomer());
-            }
-            parallelBackup.addAll(user.getParallelCustomers().values());
-            if (user.isPause()) {
-                pauses.add(user.getId());
-            }
-        });
-        // в темповый файл
-        final FileOutputStream fos;
-        try {
-            (new File(Uses.TEMP_FOLDER)).mkdir();
-            fos = new FileOutputStream(new File(Uses.TEMP_FOLDER + File.separator + Uses.TEMP_STATE_FILE));
-        } catch (FileNotFoundException ex) {
-            throw new ServerException("Не возможно создать временный файл состояния. " + ex.getMessage());
-        }
-        Gson gson = null;
-        try {
-            gson = GsonPool.getInstance().borrowGson();
-            fos.write(gson.toJson(new TempList(backup, parallelBackup, QPostponedList.getInstance().getPostponedCustomers(), pauses)).getBytes("UTF-8"));
-            fos.flush();
-            fos.close();
-        } catch (IOException ex) {
-            throw new ServerException("Не возможно сохранить изменения в поток." + ex.getMessage());
-        } finally {
-            GsonPool.getInstance().returnGson(gson);
-        }
-        QLog.l().logger().info("Состояние сохранено. Затрачено времени: " + ((double) (System.currentTimeMillis() - start)) / 1000 + " сек.");
-    }
-
-    static public class TempList {
-
-        public TempList() {
-        }
-
-        public TempList(LinkedList<QCustomer> backup, LinkedList<QCustomer> parallelBackup, LinkedList<QCustomer> postponed) {
-            this.backup = backup;
-            this.parallelBackup = parallelBackup;
-            this.postponed = postponed;
-        }
-
-        public TempList(LinkedList<QCustomer> backup, LinkedList<QCustomer> parallelBackup, LinkedList<QCustomer> postponed, LinkedList<Long> pauses) {
-            this.backup = backup;
-            this.parallelBackup = parallelBackup;
-            this.postponed = postponed;
-            this.pauses = pauses;
-        }
-        @Expose
-        @SerializedName("backup")
-        public LinkedList<QCustomer> backup;
-        @Expose
-        @SerializedName("parallelBackup")
-        public LinkedList<QCustomer> parallelBackup;
-        @Expose
-        @SerializedName("postponed")
-        public LinkedList<QCustomer> postponed;
-        @Expose
-        @SerializedName("method")
-        public String method = null;
-        @Expose
-        @SerializedName("pauses")
-        public LinkedList<Long> pauses = null;
-        @Expose
-        @SerializedName("date")
-        public Long date = new Date().getTime();
-    }
-
-    /**
-     * Загрузка состояния пула услуг из временного json-файла
-     */
-    static public void loadPool() {
-        final long start = System.currentTimeMillis();
-        // если есть временный файлик сохранения состояния, то надо его загрузить.
-        // все ошибки чтения и парсинга игнорить.
-        QLog.l().logger().info("Пробуем восстановить состояние системы.");
-        File recovFile = new File(Uses.TEMP_FOLDER + File.separator + Uses.TEMP_STATE_FILE);
-        if (recovFile.exists()) {
-            QLog.l().logger().warn(Locales.locMes("came_back"));
-            //восстанавливаем состояние
-
-            final FileInputStream fis;
-            try {
-                fis = new FileInputStream(recovFile);
-            } catch (FileNotFoundException ex) {
-                throw new ServerException(ex);
-            }
-            final Scanner scan = new Scanner(fis, "utf8");
-            String rec_data = "";
-            while (scan.hasNextLine()) {
-                rec_data += scan.nextLine();
-            }
-            try {
-                fis.close();
-            } catch (IOException ex) {
-                throw new ServerException(ex);
-            }
-
-            final TempList recList;
-            final Gson gson = GsonPool.getInstance().borrowGson();
-            final RpcGetAdvanceCustomer rpc;
-            try {
-                recList = gson.fromJson(rec_data, TempList.class);
-            } catch (JsonSyntaxException ex) {
-                throw new ServerException("Не возможно интерпритировать сохраненные данные.\n" + ex.toString());
-            } finally {
-                GsonPool.getInstance().returnGson(gson);
-            }
-
-            // Проверим не просрочился ли кеш. Время просточки 3 часа.
-            if (!QConfig.cfg().isRetain() && (recList.date == null || new Date().getTime() - recList.date > 3 * 60 * 60 * 1000)) {
-                // Просрочился кеш, не грузим
-                QLog.l().logger().warn("Срок давности хранения состояния истек. Если в системе ничего не происходит 3 часа, то считается что сохраненные данные устарели безвозвратно.");
-            } else {
-                // Свежий, загружаем в сервер данные кеша
-
-                try {
-                    QPostponedList.getInstance().loadPostponedList(recList.postponed);
-                    for (QCustomer recCustomer : recList.backup) {
-                        // в эту очередь он был
-                        final QService service = QServiceTree.getInstance().getById(recCustomer.getService().getId());
-                        if (service == null) {
-                            QLog.l().logger().warn("Попытка добавить клиента \"" + recCustomer.getPrefix() + recCustomer.getNumber() + "\" к услуге \"" + recCustomer.getService().getName() + "\" не успешна. Услуга не обнаружена!");
-                            continue;
-                        }
-                        service.setCountPerDay(recCustomer.getService().getCountPerDay());
-                        service.setDay(recCustomer.getService().getDay());
-                        // так зовут юзера его обрабатываюшего
-                        final QUser user = recCustomer.getUser();
-                        // кастомер ща стоит к этой услуге к какой стоит
-                        recCustomer.setService(service);
-                        // смотрим к чему привязан кастомер. либо в очереди стоит, либо у юзера обрабатыватся
-                        if (user == null) {
-                            // сохраненный кастомер стоял в очереди и ждал, но его еще никто не звал
-                            QServiceTree.getInstance().getById(recCustomer.getService().getId()).addCustomerForRecoveryOnly(recCustomer);
-                            QLog.l().logger().debug("Добавили клиента \"" + recCustomer.getPrefix() + recCustomer.getNumber() + "\" к услуге \"" + recCustomer.getService().getName() + "\"");
-                        } else {
-                            // сохраненный кастомер обрабатывался юзером с именем userId
-                            if (QUserList.getInstance().getById(user.getId()) == null) {
-                                QLog.l().logger().warn("Попытка добавить клиента \"" + recCustomer.getPrefix() + recCustomer.getNumber() + "\" к юзеру \"" + user.getName() + "\" не успешна. Юзер не обнаружен!");
-                                continue;
-                            }
-                            QUserList.getInstance().getById(user.getId()).setCustomer(recCustomer);
-                            recCustomer.setUser(QUserList.getInstance().getById(user.getId()));
-                            QLog.l().logger().debug("Добавили клиента \"" + recCustomer.getPrefix() + recCustomer.getNumber() + "\" к юзеру \"" + user.getName() + "\"");
-                        }
-                    }
-                    // Параллельные кастомеры, загрузим
-                    for (QCustomer recCustomer : recList.parallelBackup) {
-                        // в эту очередь он был
-                        final QService service = QServiceTree.getInstance().getById(recCustomer.getService().getId());
-                        if (service == null) {
-                            QLog.l().logger().warn("Попытка добавить клиента \"" + recCustomer.getPrefix() + recCustomer.getNumber() + "\" к услуге \"" + recCustomer.getService().getName() + "\" не успешна. Услуга не обнаружена!");
-                            continue;
-                        }
-                        service.setCountPerDay(recCustomer.getService().getCountPerDay());
-                        service.setDay(recCustomer.getService().getDay());
-                        // так зовут юзера его обрабатываюшего
-                        final QUser user = recCustomer.getUser();
-                        // кастомер ща стоит к этой услуге к какой стоит
-                        recCustomer.setService(service);
-                        // смотрим к чему привязан кастомер. либо в очереди стоит, либо у юзера обрабатыватся
-                        if (user == null) {
-                            QLog.l().logger().warn("Для параллельного клиента \"" + recCustomer.getPrefix() + recCustomer.getNumber() + "\" добавление к юзеру не успешна. Юзер потерялся!");
-                        } else {
-                            // сохраненный кастомер обрабатывался юзером с именем userId
-                            if (QUserList.getInstance().getById(user.getId()) == null) {
-                                QLog.l().logger().warn("Попытка добавить параллельного клиента \"" + recCustomer.getPrefix() + recCustomer.getNumber() + "\" к юзеру \"" + user.getName() + "\" не успешна. Юзер не обнаружен!");
-                                continue;
-                            }
-                            QUserList.getInstance().getById(user.getId()).setCustomer(recCustomer);
-                            recCustomer.setUser(QUserList.getInstance().getById(user.getId()));
-                            QLog.l().logger().debug("Добавили клиента \"" + recCustomer.getPrefix() + recCustomer.getNumber() + "\" к юзеру \"" + user.getName() + "\"");
-                        }
-                    }
-                    for (long idUser : recList.pauses) {
-                        final QUser user = QUserList.getInstance().getById(idUser);
-                        if (user != null) {
-                            user.setPause(Boolean.TRUE);
-                        }
-                    }
-                } catch (ServerException ex) {
-                    System.err.println("Востановление состояния сервера после изменения конфигурации. " + ex);
-                    clearAllQueue();
-                    QLog.l().logger().error("Востановление состояния сервера после изменения конфигурации. Для выключения сервера используйте команду exit. ", ex);
-                }
-            }
-        }
-        QLog.l().logger().info("Восстановление состояния системы завершено. Затрачено времени: " + ((double) (System.currentTimeMillis() - start)) / 1000 + " сек.");
-    }
-
-    static public void clearAllQueue() {
-        // почистим все услуги от трупов кастомеров
-        QServiceTree.getInstance().getNodes().forEach((service) -> {
-            service.clearNextNumber();
-            service.freeCustomers();
-        });
-        QService.clearNextStNumber();
-
-        QPostponedList.getInstance().clear();
-        MainBoard.getInstance().clear();
-
-        // Сотрем временные файлы
-        deleteTempFile();
-        QLog.l().logger().info("Очистка всех пользователей от привязанных кастомеров.");
-        QUserList.getInstance().getItems().forEach((user) -> {
-            user.setCustomer(null);
-            user.getParallelCustomers().clear();
-            user.setShadow(null);
-            user.getPlanServices().forEach((plan) -> {
-                plan.setAvg_wait(0);
-                plan.setAvg_work(0);
-                plan.setKilled(0);
-                plan.setWorked(0);
-            });
-        });
-    }
-
-    public static void deleteTempFile() {
-        QLog.l().logger().debug("Remove " + Uses.TEMP_FOLDER + File.separator + Uses.TEMP_STATE_FILE);
-        File file = new File(Uses.TEMP_FOLDER + File.separator + Uses.TEMP_STATE_FILE);
-        if (file.exists()) {
-            file.delete();
-        }
-        QLog.l().logger().debug("Remove " + Uses.TEMP_FOLDER + File.separator + Uses.TEMP_STATATISTIC_FILE);
-        file = new File(Uses.TEMP_FOLDER + File.separator + Uses.TEMP_STATATISTIC_FILE);
-        if (file.exists()) {
-            file.delete();
         }
     }
 }

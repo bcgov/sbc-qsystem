@@ -42,12 +42,35 @@ import ru.apertum.qsystem.common.cmd.RpcGetSelfSituation.SelfSituation;
 import ru.apertum.qsystem.common.model.INetProperty;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class FServicePriority extends javax.swing.JDialog {
 
     private static ResourceMap localeMap = null;
+    /**
+     * Используемая ссылка на диалоговое окно.
+     */
+    private static FServicePriority dialog;
+    private final HashMap<Long, Integer> oldValues = new HashMap<>();
+    private boolean isUndo = true;
+    private INetProperty netProperty;
+    private Long userId;
+    private SelfSituation plan;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonApply;
+    private javax.swing.JButton buttonExit;
+    private javax.swing.JButton buttonOK;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tablePlan;
+
+    /**
+     * Creates new form FServicePriority
+     */
+    public FServicePriority(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+    }
 
     /**
      * Сделано паблик чтоб отсюда брать названия приоритетов услуг
@@ -57,24 +80,10 @@ public class FServicePriority extends javax.swing.JDialog {
      */
     public static String getLocaleMessage(String key) {
         if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(FServicePriority.class);
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(FServicePriority.class);
         }
         return localeMap.getString(key);
-    }
-    /**
-     * Используемая ссылка на диалоговое окно.
-     */
-    private static FServicePriority dialog;
-
-    /**
-     * Creates new form FServicePriority
-     *
-     * @param parent
-     * @param modal
-     */
-    public FServicePriority(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
     }
 
     /**
@@ -83,16 +92,17 @@ public class FServicePriority extends javax.swing.JDialog {
      * @param netProperty свойства коннекта
      * @param owner для модальности
      * @param plan список обрабатываемых услуг
-     * @param userId
      */
-    public static void show(INetProperty netProperty, JFrame owner, SelfSituation plan, Long userId) {
+    public static void show(INetProperty netProperty, JFrame owner, SelfSituation plan,
+        Long userId) {
         QLog.l().logger().info("Диалог управления приоритетами.");
         if (dialog == null) {
             dialog = new FServicePriority(owner, true);
         }
         dialog.fillPlan(plan);
-        dialog.setLocation(Math.round(owner.getLocation().x + owner.getWidth() / 2 - dialog.getWidth() / 2),
-                Math.round(owner.getLocation().y + owner.getHeight() / 2 - dialog.getHeight() / 2));
+        dialog.setLocation(
+            Math.round(owner.getLocation().x + owner.getWidth() / 2 - dialog.getWidth() / 2),
+            Math.round(owner.getLocation().y + owner.getHeight() / 2 - dialog.getHeight() / 2));
 
         dialog.isUndo = true;
         dialog.netProperty = netProperty;
@@ -102,10 +112,6 @@ public class FServicePriority extends javax.swing.JDialog {
             dialog.undo();
         }
     }
-    private final HashMap<Long, Integer> oldValues = new HashMap<>();
-    private boolean isUndo = true;
-    private INetProperty netProperty;
-    private Long userId;
 
     private void undo() {
         // вернем старые значения
@@ -115,7 +121,6 @@ public class FServicePriority extends javax.swing.JDialog {
             }
         }
     }
-    private SelfSituation plan;
 
     public void fillPlan(SelfSituation plan) {
         this.plan = plan;
@@ -145,16 +150,15 @@ public class FServicePriority extends javax.swing.JDialog {
     }
 
     /**
-     * команду на сервер для изменения текущих приоритетов. Изменения только текущие, ничего не сохранияется в БД
-     *
-     * @param netProperty
-     * @param userId
+     * команду на сервер для изменения текущих приоритетов. Изменения только текущие, ничего не
+     * сохранияется в БД
      */
     public void savePlan(INetProperty netProperty, Long userId) {
         final StringBuilder sb = new StringBuilder();
         for (SelfService service : plan.getSelfservices()) {
             if (service.isFlexy()) {
-                sb.append(sb.length() == 0 ? "" : "&").append(service.getId()).append("=").append(service.getPriority());
+                sb.append(sb.length() == 0 ? "" : "&").append(service.getId()).append("=")
+                    .append(service.getPriority());
             }
         }
         NetCommander.changeFlexPriority(netProperty, userId, sb.toString());
@@ -172,7 +176,9 @@ public class FServicePriority extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         tablePlan = new javax.swing.JTable();
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ru.apertum.qsystem.QSystem.class).getContext().getResourceMap(FServicePriority.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application
+            .getInstance(ru.apertum.qsystem.QSystem.class).getContext()
+            .getResourceMap(FServicePriority.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setIconImage(null);
         setName("Form"); // NOI18N
@@ -208,36 +214,40 @@ public class FServicePriority extends javax.swing.JDialog {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(buttonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonApply)
-                .addGap(18, 18, 18)
-                .addComponent(buttonExit)
-                .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(buttonOK, javax.swing.GroupLayout.PREFERRED_SIZE, 80,
+                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonApply)
+                        .addGap(18, 18, 18)
+                        .addComponent(buttonExit)
+                        .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonExit)
-                    .addComponent(buttonApply)
-                    .addComponent(buttonOK))
-                .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(buttonExit)
+                            .addComponent(buttonApply)
+                            .addComponent(buttonOK))
+                        .addContainerGap())
         );
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
         tablePlan.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+            new Object[][]{
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null}
             },
-            new String [] {
+            new String[]{
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
@@ -249,26 +259,33 @@ public class FServicePriority extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 290,
+                    Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 243,
+                        Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buttonExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExitActionPerformed
+    private void buttonExitActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExitActionPerformed
         isUndo = true;
         dialog.setVisible(false);
     }//GEN-LAST:event_buttonExitActionPerformed
 
-    private void buttonApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonApplyActionPerformed
+    private void buttonApplyActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonApplyActionPerformed
         // сохраним изменения
         savePlan(netProperty, userId);
         // запомним старые значения на случай отката
@@ -281,17 +298,11 @@ public class FServicePriority extends javax.swing.JDialog {
         isUndo = true;
     }//GEN-LAST:event_buttonApplyActionPerformed
 
-    private void buttonOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOKActionPerformed
+    private void buttonOKActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOKActionPerformed
         savePlan(netProperty, userId);
         isUndo = false;
         dialog.setVisible(false);
     }//GEN-LAST:event_buttonOKActionPerformed
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonApply;
-    private javax.swing.JButton buttonExit;
-    private javax.swing.JButton buttonOK;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tablePlan;
     // End of variables declaration//GEN-END:variables
 }

@@ -19,9 +19,9 @@ package ru.apertum.qsystem.common.exceptions;
 import ru.apertum.qsystem.common.QLog;
 
 /**
- * Этот класс исключения использовать для програмной генерации исклюсений.
- * Записывает StackTrace и  само исключение в лог.
- * Это исключение не показывает диологовое окно при возникновении ошибки
+ * Этот класс исключения использовать для програмной генерации исклюсений. Записывает StackTrace и
+ * само исключение в лог. Это исключение не показывает диологовое окно при возникновении ошибки
+ *
  * @author Evgeniy Egorov
  */
 public class ReportException extends RuntimeException {

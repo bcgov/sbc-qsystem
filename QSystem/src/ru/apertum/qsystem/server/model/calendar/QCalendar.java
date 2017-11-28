@@ -46,12 +46,22 @@ import ru.apertum.qsystem.server.model.schedule.QSpecSchedule;
 @Table(name = "calendar")
 public class QCalendar implements IidGetter, Serializable {
 
-    public QCalendar() {
-    }
     @Id
     @Column(name = "id")
     //@GeneratedValue(strategy = GenerationType.AUTO)
     private Long id = new Date().getTime();
+    /**
+     * Наименование плана.
+     */
+    @Column(name = "name")
+    private String name;
+    //MOSCOW1
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "calendar_id", updatable = false, insertable = false)
+    private List<QSpecSchedule> specSchedules = new LinkedList<>();
+
+    public QCalendar() {
+    }
 
     @Override
     public Long getId() {
@@ -61,11 +71,6 @@ public class QCalendar implements IidGetter, Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    /**
-     * Наименование плана.
-     */
-    @Column(name = "name")
-    private String name;
 
     @Override
     public String getName() {
@@ -75,11 +80,6 @@ public class QCalendar implements IidGetter, Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
-    //MOSCOW1
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinColumn(name = "calendar_id", updatable = false, insertable = false)
-    private List<QSpecSchedule> specSchedules = new LinkedList<>();
 
     public List<QSpecSchedule> getSpecSchedules() {
         return specSchedules;
@@ -100,7 +100,8 @@ public class QCalendar implements IidGetter, Serializable {
             return false;
         }
         if (!(o instanceof QCalendar)) {
-            throw new TypeNotPresentException("Неправильный тип для сравнения", new ServerException("Неправильный тип для сравнения"));
+            throw new TypeNotPresentException("Неправильный тип для сравнения",
+                new ServerException("Неправильный тип для сравнения"));
         }
         return id.equals(((QCalendar) o).id);
     }

@@ -34,7 +34,6 @@ import javax.swing.tree.TreeNode;
 import ru.apertum.qsystem.server.model.ITreeIdGetter;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 @Entity
@@ -47,6 +46,41 @@ public class QInfoItem extends DefaultMutableTreeNode implements ITreeIdGetter, 
     @SerializedName("id")
     //@GeneratedValue(strategy = GenerationType.AUTO) авто нельзя, т.к. id нужны для формирования дерева
     private Long id = new Date().getTime();
+    /**
+     * Иерархическая ссылка для построения дерева
+     */
+    @Column(name = "parent_id")
+    private Long parentId;
+    /**
+     * Наименование узла справки
+     */
+    @Expose
+    @SerializedName("name")
+    @Column(name = "name")
+    private String name;
+    /**
+     * Текст HTML
+     */
+    @Expose
+    @SerializedName("html")
+    @Column(name = "text")
+    private String htmlText;
+    /**
+     * Текст для печати
+     */
+    @Expose
+    @SerializedName("print")
+    @Column(name = "text_print")
+    private String textPrint;
+    /**
+     * По сути группа объединения услуг или коернь всего дерева. То во что включена данныя услуга.
+     */
+    @Transient
+    private QInfoItem parentService;
+    @Expose
+    @SerializedName("child_items")
+    @Transient
+    private LinkedList<QInfoItem> childrenOfService = new LinkedList<>();
 
     @Override
     public Long getId() {
@@ -56,11 +90,6 @@ public class QInfoItem extends DefaultMutableTreeNode implements ITreeIdGetter, 
     public void setId(Long id) {
         this.id = id;
     }
-    /**
-     * Иерархическая ссылка для построения дерева
-     */
-    @Column(name = "parent_id")
-    private Long parentId;
 
     @Override
     public Long getParentId() {
@@ -70,13 +99,6 @@ public class QInfoItem extends DefaultMutableTreeNode implements ITreeIdGetter, 
     public void setParentId(Long paremtId) {
         this.parentId = paremtId;
     }
-    /**
-     * Наименование узла справки
-     */
-    @Expose
-    @SerializedName("name")
-    @Column(name = "name")
-    private String name;
 
     @Override
     public String getName() {
@@ -91,13 +113,6 @@ public class QInfoItem extends DefaultMutableTreeNode implements ITreeIdGetter, 
     public String toString() {
         return name;
     }
-    /**
-     * Текст HTML
-     */
-    @Expose
-    @SerializedName("html")
-    @Column(name = "text")
-    private String htmlText;
 
     public String getHTMLText() {
         return htmlText;
@@ -106,14 +121,9 @@ public class QInfoItem extends DefaultMutableTreeNode implements ITreeIdGetter, 
     public void setHTMLText(String htmlText) {
         this.htmlText = htmlText;
     }
-
-    /**
-     * Текст для печати
-     */
-    @Expose
-    @SerializedName("print")
-    @Column(name = "text_print")
-    private String textPrint;
+    //*******************************************************************************************************************
+    //*******************************************************************************************************************
+    //********************** Реализация методов узла в дереве ***********************************************************
 
     public String getTextPrint() {
         return textPrint;
@@ -122,19 +132,6 @@ public class QInfoItem extends DefaultMutableTreeNode implements ITreeIdGetter, 
     public void setTextPrint(String textPrint) {
         this.textPrint = textPrint;
     }
-    //*******************************************************************************************************************
-    //*******************************************************************************************************************
-    //********************** Реализация методов узла в дереве ***********************************************************
-    /**
-     * По сути группа объединения услуг или коернь всего дерева.
-     * То во что включена данныя услуга.
-     */
-    @Transient
-    private QInfoItem parentService;
-    @Expose
-    @SerializedName("child_items")
-    @Transient
-    private LinkedList<QInfoItem> childrenOfService = new LinkedList<>();
 
     public LinkedList<QInfoItem> getChildren() {
         return childrenOfService;
@@ -153,6 +150,16 @@ public class QInfoItem extends DefaultMutableTreeNode implements ITreeIdGetter, 
     @Override
     public QInfoItem getParent() {
         return parentService;
+    }
+
+    @Override
+    public void setParent(MutableTreeNode newParent) {
+        parentService = (QInfoItem) newParent;
+        if (parentService != null) {
+            setParentId(parentService.id);
+        } else {
+            parentId = null;
+        }
     }
 
     public int getIndex(QInfoItem node) {
@@ -193,16 +200,6 @@ public class QInfoItem extends DefaultMutableTreeNode implements ITreeIdGetter, 
     @Override
     public void removeFromParent() {
         getParent().remove(getParent().getIndex(this));
-    }
-
-    @Override
-    public void setParent(MutableTreeNode newParent) {
-        parentService = (QInfoItem) newParent;
-        if (parentService != null) {
-            setParentId(parentService.id);
-        } else {
-            parentId = null;
-        }
     }
 
     @Override

@@ -21,19 +21,18 @@ import com.google.gson.annotations.SerializedName;
 import ru.apertum.qsystem.server.model.QAuthorizationCustomer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetAuthorizCustomer extends JsonRPC20 {
 
-    public RpcGetAuthorizCustomer() {
-    }
-    
     @Expose
     @SerializedName("result")
     private QAuthorizationCustomer result;
 
-    public void setResult(QAuthorizationCustomer result) {
+    public RpcGetAuthorizCustomer() {
+    }
+
+    public RpcGetAuthorizCustomer(QAuthorizationCustomer result) {
         this.result = result;
     }
 
@@ -41,7 +40,7 @@ public class RpcGetAuthorizCustomer extends JsonRPC20 {
         return result;
     }
 
-    public RpcGetAuthorizCustomer(QAuthorizationCustomer result) {
+    public void setResult(QAuthorizationCustomer result) {
         this.result = result;
     }
 

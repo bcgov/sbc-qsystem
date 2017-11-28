@@ -16,11 +16,15 @@
  */
 package ru.apertum.qsystem.fx;
 
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.exceptions.ServerException;
+
 /*
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -38,21 +42,10 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
- * 
+ *
  */
-import javax.swing.Timer;
-import org.apache.commons.configuration2.FileBasedConfiguration;
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.Uses;
-import ru.apertum.qsystem.common.exceptions.ServerException;
-import ru.apertum.qsystem.server.model.QUser;
 
 /**
- *
  * @author Евгений
  */
 public class OrangeMainboard extends ABoardFX {
@@ -61,12 +54,16 @@ public class OrangeMainboard extends ABoardFX {
     public void showBoard() {
         File paramFile = new File("config/mainboardfx.properties");
         try {
-            final FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-                    .configure(new FileBasedBuilderParametersImpl().setFile(paramFile).setEncoding("utf8"));
+            final FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
+                PropertiesConfiguration.class)
+                .configure(
+                    new FileBasedBuilderParametersImpl().setFile(paramFile).setEncoding("utf8"));
             cfg = builder.getConfiguration();
         } catch (ConfigurationException ex) {
-            QLog.l().logger().error("Не загружен файл конфигурации " + paramFile.getAbsolutePath(), ex);
-            throw new ServerException("Не загружен файл конфигурации " + paramFile.getAbsolutePath());
+            QLog.l().logger()
+                .error("Не загружен файл конфигурации " + paramFile.getAbsolutePath(), ex);
+            throw new ServerException(
+                "Не загружен файл конфигурации " + paramFile.getAbsolutePath());
         }
 
         super.showBoard();

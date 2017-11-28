@@ -8,15 +8,15 @@ import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.impl.SoftReferenceObjectPool;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class ActionRunnablePool extends SoftReferenceObjectPool {
 
+    private static ActionRunnablePool instance = null;
+
     private ActionRunnablePool(BasePoolableObjectFactory basePoolableObjectFactory) {
         super(basePoolableObjectFactory);
     }
-    private static ActionRunnablePool instance = null;
 
     public static ActionRunnablePool getInstance() {
         if (instance == null) {

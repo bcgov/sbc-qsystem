@@ -20,12 +20,14 @@ import ru.apertum.qsystem.client.forms.FReception;
 
 /**
  * Интерфейс плагинов, которые просто стартуют при старте программы оператора
+ *
  * @author Evgeniy Egorov
  */
 public interface IStartReception extends IExtra {
 
     /**
      * Метод выполнится после создания формы приложения оператора
+     *
      * @param form форма приложения оператора
      */
     public void start(FReception form);

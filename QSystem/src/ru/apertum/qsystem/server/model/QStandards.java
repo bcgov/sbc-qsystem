@@ -35,20 +35,10 @@ import javax.persistence.Table;
 @Table(name = "standards")
 public class QStandards implements Serializable {
 
-    public QStandards() {
-    }
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
     /**
      * Максимальное время ожидания, в минутах
      */
@@ -84,6 +74,24 @@ public class QStandards implements Serializable {
     @Expose
     @SerializedName("line_total_max")
     private Integer lineTotalMax;
+    /**
+     * типа параметр если есть перемещение, например между корпусами или ходьба до оператора
+     */
+    @Column(name = "relocation")
+    @Expose
+    @SerializedName("relocation")
+    private Integer relocation;
+
+    public QStandards() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Integer getDowntimeMax() {
         return downtimeMax;
@@ -128,19 +136,11 @@ public class QStandards implements Serializable {
     @Override
     public String toString() {
         return "[MaxWait=" + getWaitMax()
-                + ",WorkMax=" + getWorkMax()
-                + ",DowntimeMax=" + getDowntimeMax()
-                + ",LineServiceMax=" + getLineServiceMax()
-                + ",LineTotalMax=" + getLineTotalMax() + "]";
+            + ",WorkMax=" + getWorkMax()
+            + ",DowntimeMax=" + getDowntimeMax()
+            + ",LineServiceMax=" + getLineServiceMax()
+            + ",LineTotalMax=" + getLineTotalMax() + "]";
     }
-
-    /**
-     * типа параметр если есть перемещение, например между корпусами или ходьба до оператора
-     */
-    @Column(name = "relocation")
-    @Expose
-    @SerializedName("relocation")
-    private Integer relocation;
 
     public Integer getRelocation() {
         return relocation;

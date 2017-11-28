@@ -309,6 +309,13 @@
         <appender-ref ref="CONSOLE-WARN" />
         <appender-ref ref="LOG-FILE-APPENDER-QUSER" />
     </category>
+
+    <!--
+    <category name="org.hibernate.type">
+        <priority value="TRACE"/>
+        <appender-ref ref="CONSOLE-DEBUG" />
+    </category>
+    -->
    
     <!-- Выводит любое сообщение в файл -->
     <root>

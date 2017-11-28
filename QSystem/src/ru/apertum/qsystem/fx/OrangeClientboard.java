@@ -16,7 +16,6 @@
  */
 package ru.apertum.qsystem.fx;
 
-import java.io.File;
 /* todo
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -35,14 +34,10 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
- * 
+ *
  */
-import javax.swing.SwingUtilities;
-import ru.apertum.qsystem.common.QLog;
-import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
- *
  * @author Евгений
  */
 public class OrangeClientboard extends ABoardFX {

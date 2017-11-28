@@ -23,6 +23,7 @@ import java.awt.Color;
 
 /**
  * Параметр для табло
+ *
  * @author Evgeniy Egorov
  */
 public class QParam {

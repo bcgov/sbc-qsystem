@@ -25,13 +25,16 @@ import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.server.Spring;
 
 /**
- * Дерево услуг.
- * Годится для отображения в JTree.
- * Наследует DefaultTreeModel и содердит свою модель.
+ * Дерево услуг. Годится для отображения в JTree. Наследует DefaultTreeModel и содердит свою модель.
  * Singleton.
+ *
  * @author Evgeniy Egorov
  */
 public class QServiceTree extends ATreeModel<QService> {
+
+    private QServiceTree() {
+        super();
+    }
 
     public static QServiceTree getInstance() {
         return QServiceTreeHolder.INSTANCE;
@@ -39,7 +42,8 @@ public class QServiceTree extends ATreeModel<QService> {
 
     @Override
     protected LinkedList<QService> load() {
-        return new LinkedList<>(Spring.getInstance().getHt().findByCriteria(DetachedCriteria.forClass(QService.class).
+        return new LinkedList<>(
+            Spring.getInstance().getHt().findByCriteria(DetachedCriteria.forClass(QService.class).
                 setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).
                 add(Property.forName("deleted").isNull()).
                 addOrder(Property.forName("seqId").asc()).
@@ -65,9 +69,5 @@ public class QServiceTree extends ATreeModel<QService> {
     private static class QServiceTreeHolder {
 
         private static final QServiceTree INSTANCE = new QServiceTree();
-    }
-
-    private QServiceTree() {
-        super();
     }
 }

@@ -23,10 +23,13 @@ import java.util.LinkedList;
 import ru.apertum.qsystem.server.model.QAdvanceCustomer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetGridOfDay extends JsonRPC20 {
+
+    @Expose
+    @SerializedName("result")
+    private GridDayAndParams result;
 
     public RpcGetGridOfDay() {
     }
@@ -35,7 +38,22 @@ public class RpcGetGridOfDay extends JsonRPC20 {
         this.result = result;
     }
 
+    public GridDayAndParams getResult() {
+        return result;
+    }
+
+    public void setResult(GridDayAndParams result) {
+        this.result = result;
+    }
+
     public static class GridDayAndParams {
+
+        @Expose
+        @SerializedName("limit")
+        private int advanceLimit;
+        @Expose
+        @SerializedName("times")
+        private LinkedList<AdvTime> times = new LinkedList<>();
 
         public GridDayAndParams() {
         }
@@ -43,9 +61,6 @@ public class RpcGetGridOfDay extends JsonRPC20 {
         public GridDayAndParams(int advanceLimit) {
             this.advanceLimit = advanceLimit;
         }
-        @Expose
-        @SerializedName("limit")
-        private int advanceLimit;
 
         public int getAdvanceLimit() {
             return advanceLimit;
@@ -54,9 +69,6 @@ public class RpcGetGridOfDay extends JsonRPC20 {
         public void setAdvanceLimit(int advanceLimit) {
             this.advanceLimit = advanceLimit;
         }
-        @Expose
-        @SerializedName("times")
-        private LinkedList<AdvTime> times =  new LinkedList<>();
 
         public void addTime(AdvTime time) {
             if (times == null) {
@@ -72,17 +84,19 @@ public class RpcGetGridOfDay extends JsonRPC20 {
 
     public static class AdvTime {
 
-        public AdvTime() {
-        }
-        public AdvTime(Date date) {
-            this.date = date;
-        }
         @Expose
         @SerializedName("date")
         private Date date;
         @Expose
         @SerializedName("acusts")
         private LinkedList<QAdvanceCustomer> acusts;
+
+        public AdvTime() {
+        }
+
+        public AdvTime(Date date) {
+            this.date = date;
+        }
 
         public LinkedList<QAdvanceCustomer> getAcusts() {
             return acusts;
@@ -106,16 +120,5 @@ public class RpcGetGridOfDay extends JsonRPC20 {
         public void setDate(Date date) {
             this.date = date;
         }
-    }
-    @Expose
-    @SerializedName("result")
-    private GridDayAndParams result;
-
-    public void setResult(GridDayAndParams result) {
-        this.result = result;
-    }
-
-    public GridDayAndParams getResult() {
-        return result;
     }
 }

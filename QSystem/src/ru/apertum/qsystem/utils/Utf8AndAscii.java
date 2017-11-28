@@ -14,7 +14,6 @@ import java.io.OutputStreamWriter;
 import java.util.Properties;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class Utf8AndAscii {
@@ -59,17 +58,22 @@ public class Utf8AndAscii {
         if (folderIn == null || !new File(folderIn).isDirectory()) {
             System.out.println();
             System.out.println(" Help about Utf8AndAscii:");
-            System.out.println(" Util for converting text files ASCII, using Unicode escapes (\"\\uxxxx\" notation), to UTF-8 and vice versa. ");
-            System.out.println(" java -cp dist/QSystem.jar ru.apertum.qsystem.utils.Utf8AndAscii [-toascii|-toutf8] -folder folder/with/files [-regex regex/choose/files] ");
+            System.out.println(
+                " Util for converting text files ASCII, using Unicode escapes (\"\\uxxxx\" notation), to UTF-8 and vice versa. ");
+            System.out.println(
+                " java -cp dist/QSystem.jar ru.apertum.qsystem.utils.Utf8AndAscii [-toascii|-toutf8] -folder folder/with/files [-regex regex/choose/files] ");
             System.out.println();
             System.out.println(" ASCII to UTF-8");
-            System.out.println(" java -cp dist/QSystem.jar ru.apertum.qsystem.utils.Utf8AndAscii -toascii -folder folder/with/files -regex regex/choose/files ");
+            System.out.println(
+                " java -cp dist/QSystem.jar ru.apertum.qsystem.utils.Utf8AndAscii -toascii -folder folder/with/files -regex regex/choose/files ");
             System.out.println();
             System.out.println(" UTF-8 to ASCII");
-            System.out.println(" java -cp dist/QSystem.jar ru.apertum.qsystem.utils.Utf8AndAscii -toutf8 -folder folder/with/files -regex regex/choose/files ");
+            System.out.println(
+                " java -cp dist/QSystem.jar ru.apertum.qsystem.utils.Utf8AndAscii -toutf8 -folder folder/with/files -regex regex/choose/files ");
             System.out.println();
             System.out.println(" select files");
-            System.out.println(" java -cp dist/QSystem.jar ru.apertum.qsystem.utils.Utf8AndAscii folder/with/files regex/choose/files ");
+            System.out.println(
+                " java -cp dist/QSystem.jar ru.apertum.qsystem.utils.Utf8AndAscii folder/with/files regex/choose/files ");
             System.out.println();
             return;
         }
@@ -100,7 +104,9 @@ public class Utf8AndAscii {
                         //System.out.println(o + "=" + prop.getProperty((String) o));
                         prop2.setProperty((String) o, prop.getProperty((String) o));
                     });
-                    prop2.store(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()), "UTF-8"), "Utf8AndAncii");
+                    prop2.store(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()),
+                            "UTF-8"),
+                        "Utf8AndAncii");
                 }
             }
             return files.length + cnt;

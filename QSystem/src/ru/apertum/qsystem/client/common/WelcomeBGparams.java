@@ -24,7 +24,6 @@ import java.util.Scanner;
 import ru.apertum.qsystem.common.QLog;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class WelcomeBGparams {
@@ -58,18 +57,17 @@ public class WelcomeBGparams {
         }
     }
 
+    public static WelcomeBGparams getInstance() {
+        return WelcomeBGparamsHolder.INSTANCE;
+    }
+
     /**
-     *
      * @param id for service
      * @return spec file or default = WelcomeParams.getInstance().backgroundImg
      */
     public String getImg(Long id) {
         final String res = IMGS.get(id);
         return res == null ? WelcomeParams.getInstance().backgroundImg : res;
-    }
-
-    public static WelcomeBGparams getInstance() {
-        return WelcomeBGparamsHolder.INSTANCE;
     }
 
     private static class WelcomeBGparamsHolder {

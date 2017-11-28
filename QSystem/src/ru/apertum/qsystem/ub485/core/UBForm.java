@@ -32,7 +32,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import ru.apertum.qsystem.QSystem;
 import ru.apertum.qsystem.client.Locales;
-import ru.apertum.qsystem.client.forms.FAdmin;
 import ru.apertum.qsystem.client.model.QTray;
 import ru.apertum.qsystem.common.NetCommander;
 import ru.apertum.qsystem.common.QConfig;
@@ -48,23 +47,71 @@ import ru.evgenic.rxtx.serialPort.ISerialPort;
 import ru.evgenic.rxtx.serialPort.RxtxSerialPort;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class UBForm extends JFrame {
 
     /**
+     * Ключ блокировки для манипуляции с кстомерами
+     */
+    public static final Lock receprtTaskLock = new ReentrantLock();
+    public static LinkedList<QUser> users = new LinkedList<>();
+    public static LinkedList<ServiceInfo> servs = new LinkedList<>();
+    public static UBForm form;
+    private static ResourceMap localeMap = null;
+    /**
      * Системный трей.
      */
     private final QTray tray;
-    private static ResourceMap localeMap = null;
-
-    private static String getLocaleMessage(String key) {
-        if (localeMap == null) {
-            localeMap = Application.getInstance(QSystem.class).getContext().getResourceMap(UBForm.class);
-        }
-        return localeMap.getString(key);
-    }
+    /**
+     * пул потоков для работы с командами отоператоров
+     */
+    public ExecutorService es;
+    public INetProperty netProperty;
+    File propFile = null;
+    Properties props = null;
+    private Timer apdater;
+    private Thread th;
+    private volatile boolean isrun;
+    private ISerialPort port;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonChangeAdress;
+    private javax.swing.JButton buttonRefesh;
+    private javax.swing.JButton buttonSave;
+    private javax.swing.JButton buttonSendSignal;
+    private javax.swing.JButton buttonStart;
+    private javax.swing.JButton buttonStop;
+    private javax.swing.JButton buttonStopTestCOM;
+    private javax.swing.JButton buttonTestCOM;
+    private javax.swing.JToggleButton buttonTestDev;
+    private javax.swing.JButton buttonTestQSys;
+    private javax.swing.JCheckBox checkBoxParity;
+    private javax.swing.JCheckBox checkBoxSignal;
+    private javax.swing.JComboBox comboBoxBits;
+    private javax.swing.JComboBox comboBoxSignal;
+    private javax.swing.JComboBox comboBoxSpeed;
+    private javax.swing.JComboBox comboBoxStopBits;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel labelTest;
+    private javax.swing.JPanel panelDev;
+    private javax.swing.JSpinner spinnerAddr;
+    private javax.swing.JSpinner spinnerAddr1;
+    private javax.swing.JSpinner spinnerServerPort;
+    private javax.swing.JTable table;
+    private javax.swing.JTextArea textDebug;
+    private javax.swing.JTextField textFieldPortName;
+    private javax.swing.JTextField textServerAddr;
 
     /**
      * Creates new form UBForm
@@ -78,23 +125,27 @@ public class UBForm extends JFrame {
             devFuctory = event;
             break;
         }
-        table.setModel(devFuctory == null ? new UserTableModel(AddrProp.getInstance()) : devFuctory.getDeviceTable());
+        table.setModel(devFuctory == null ? new UserTableModel(AddrProp.getInstance())
+            : devFuctory.getDeviceTable());
 
         // Фича. По нажатию Escape закрываем форму
         // свернем по esc
         getRootPane().registerKeyboardAction((ActionEvent e) -> {
-            setVisible(false);
-        },
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_IN_FOCUSED_WINDOW);
+                setVisible(false);
+            },
+            KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+            JComponent.WHEN_IN_FOCUSED_WINDOW);
         // инициализим trayIcon, т.к. setSituation() требует работу с tray
         final JFrame fr = this;
         try {
-            setIconImage(ImageIO.read(UBForm.class.getResource("/ru/apertum/qsystem/client/forms/resources/client.png")));
+            setIconImage(ImageIO
+                .read(UBForm.class
+                    .getResource("/ru/apertum/qsystem/client/forms/resources/client.png")));
         } catch (IOException ex) {
             System.err.println(ex);
         }
-        tray = QTray.getInstance(fr, "/ru/apertum/qsystem/client/forms/resources/client.png", getLocaleMessage("messages.tray.hint"));
+        tray = QTray.getInstance(fr, "/ru/apertum/qsystem/client/forms/resources/client.png",
+            getLocaleMessage("messages.tray.hint"));
         tray.addItem("Открыть", (ActionEvent e) -> {
             setVisible(true);
             setState(JFrame.NORMAL);
@@ -114,9 +165,78 @@ public class UBForm extends JFrame {
         }
     }
 
+    private static String getLocaleMessage(String key) {
+        if (localeMap == null) {
+            localeMap = Application.getInstance(QSystem.class).getContext()
+                .getResourceMap(UBForm.class);
+        }
+        return localeMap.getString(key);
+    }
+
+    public static synchronized void sendToDevice(byte[] b) {
+        try {
+            String s = "";
+            for (byte b1 : b) {
+                s = s + (b1 & 0xFF) + "_";
+            }
+            System.out.print("<<" + s + " ... ");
+            form.port.send(b);
+            System.out.println(" !!!!!!!!\n");
+        } catch (Exception ex) {
+            System.err.println(ex);
+            form.textDebug.setText("В порт не отослалось. " + ex + "\n" + form.textDebug.getText());
+        }
+    }
+
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        QLog.initial(args, 5);
+        Locale.setDefault(Locales.getInstance().getLangCurrent());
+        // Загрузка плагинов из папки plugins
+        if (QConfig.cfg().isPlaginable()) {
+            Uses.loadPlugins("./plugins/");
+        }
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+         */
+
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
+                .getInstalledLookAndFeels()) {
+                /*
+                 * Metal
+                 Nimbus
+                 CDE/Motif
+                 Windows
+                 Windows Classic
+                 */
+                if ("Windows".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(UBForm.class.getName())
+                .log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            form = new UBForm();
+            form.setLocationRelativeTo(null);
+            form.setVisible(true);
+        });
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -165,17 +285,20 @@ public class UBForm extends JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Параметры порта"));
 
-        comboBoxSpeed.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "9600", "14400", "19200", "38400", "57600", "115200", "128000", "921600" }));
+        comboBoxSpeed.setModel(new javax.swing.DefaultComboBoxModel(
+            new String[]{"9600", "14400", "19200", "38400", "57600", "115200", "128000",
+                "921600"}));
 
         jLabel1.setText("Скорость порта");
 
-        comboBoxBits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "4", "5", "6", "7", "8" }));
+        comboBoxBits
+            .setModel(new javax.swing.DefaultComboBoxModel(new String[]{"4", "5", "6", "7", "8"}));
 
         jLabel2.setText("Биты данных");
 
         checkBoxParity.setText("Четность");
 
-        comboBoxStopBits.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "2" }));
+        comboBoxStopBits.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"1", "2"}));
 
         jLabel3.setText("Стоповые биты");
 
@@ -201,63 +324,95 @@ public class UBForm extends JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(textFieldPortName, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(checkBoxParity, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(comboBoxBits, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(comboBoxSpeed, 0, 89, Short.MAX_VALUE)
-                            .addComponent(comboBoxStopBits, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(buttonRefesh)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                        .addComponent(buttonSave)))
-                .addContainerGap())
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(
+                        jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                    32,
+                                    Short.MAX_VALUE)
+                                .addGroup(jPanel2Layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                        false)
+                                    .addComponent(textFieldPortName,
+                                        javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(checkBoxParity,
+                                        javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(comboBoxBits, 0,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        Short.MAX_VALUE)
+                                    .addComponent(comboBoxSpeed, 0, 89, Short.MAX_VALUE)
+                                    .addComponent(comboBoxStopBits,
+                                        javax.swing.GroupLayout.Alignment.LEADING, 0,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(buttonRefesh)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                    32,
+                                    Short.MAX_VALUE)
+                                .addComponent(buttonSave)))
+                    .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboBoxSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboBoxBits, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(checkBoxParity)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboBoxStopBits, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textFieldPortName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonRefesh)
-                    .addComponent(buttonSave))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGroup(
+                        jPanel2Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboBoxSpeed, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        jPanel2Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboBoxBits, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(checkBoxParity)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        jPanel2Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboBoxStopBits, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        jPanel2Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(textFieldPortName, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(
+                        jPanel2Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(buttonRefesh)
+                            .addComponent(buttonSave))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         table.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+            new Object[][]{
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null}
             },
-            new String [] {
+            new String[]{
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
@@ -300,31 +455,50 @@ public class UBForm extends JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(textServerAddr, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(spinnerServerPort, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonTestQSys)))
-                .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(
+                            jPanel1Layout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel5)
+                                .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(
+                            jPanel1Layout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(textServerAddr, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                    167,
+                                    Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(spinnerServerPort,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE, 58,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(
+                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(buttonTestQSys)))
+                        .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(textServerAddr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(spinnerServerPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(buttonTestQSys)))
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(
+                        jPanel1Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(textServerAddr, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        jPanel1Layout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(spinnerServerPort, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6)
+                            .addComponent(buttonTestQSys)))
         );
 
         buttonTestCOM.setText("Тест COM");
@@ -354,7 +528,10 @@ public class UBForm extends JFrame {
 
         checkBoxSignal.setText("Звук");
 
-        comboBoxSignal.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "светодиод погашен", "включен Красный", "включен Зеленый", "мигает Красный (200 мс)", "мигает Зеленый (200 мс)", "мигает Красный (500 мс)", "мигает Зеленый (500 мс)" }));
+        comboBoxSignal.setModel(new javax.swing.DefaultComboBoxModel(
+            new String[]{"светодиод погашен", "включен Красный", "включен Зеленый",
+                "мигает Красный (200 мс)", "мигает Зеленый (200 мс)", "мигает Красный (500 мс)",
+                "мигает Зеленый (500 мс)"}));
 
         jLabel8.setText("Заменить на адрес RS485");
 
@@ -390,115 +567,157 @@ public class UBForm extends JFrame {
         panelDev.setLayout(panelDevLayout);
         panelDevLayout.setHorizontalGroup(
             panelDevLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDevLayout.createSequentialGroup()
-                .addComponent(checkBoxSignal)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(comboBoxSignal, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(panelDevLayout.createSequentialGroup()
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(spinnerAddr1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDevLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(panelDevLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(buttonSendSignal, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(buttonChangeAdress, javax.swing.GroupLayout.Alignment.TRAILING)))
-            .addGroup(panelDevLayout.createSequentialGroup()
-                .addGroup(panelDevLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelDevLayout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spinnerAddr, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelDevLayout.createSequentialGroup()
-                        .addComponent(buttonTestDev)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(labelTest)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panelDevLayout.createSequentialGroup()
+                    .addComponent(checkBoxSignal)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(comboBoxSignal, 0, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        Short.MAX_VALUE))
+                .addGroup(panelDevLayout.createSequentialGroup()
+                    .addComponent(jLabel8)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(spinnerAddr1, javax.swing.GroupLayout.PREFERRED_SIZE, 44,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                    panelDevLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(panelDevLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(buttonSendSignal,
+                                javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(buttonChangeAdress,
+                                javax.swing.GroupLayout.Alignment.TRAILING)))
+                .addGroup(panelDevLayout.createSequentialGroup()
+                    .addGroup(
+                        panelDevLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelDevLayout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(spinnerAddr, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                    44,
+                                    javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelDevLayout.createSequentialGroup()
+                                .addComponent(buttonTestDev)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelTest)))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelDevLayout.setVerticalGroup(
             panelDevLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDevLayout.createSequentialGroup()
-                .addGroup(panelDevLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(spinnerAddr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDevLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(checkBoxSignal)
-                    .addComponent(comboBoxSignal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonSendSignal)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDevLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(spinnerAddr1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonChangeAdress)
-                .addGap(18, 18, 18)
-                .addGroup(panelDevLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelTest)
-                    .addComponent(buttonTestDev))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panelDevLayout.createSequentialGroup()
+                    .addGroup(
+                        panelDevLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(spinnerAddr, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        panelDevLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(checkBoxSignal)
+                            .addComponent(comboBoxSignal, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(buttonSendSignal)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        panelDevLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(spinnerAddr1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(buttonChangeAdress)
+                    .addGap(18, 18, 18)
+                    .addGroup(
+                        panelDevLayout
+                            .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(labelTest)
+                            .addComponent(buttonTestDev))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(
+                            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                false)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addComponent(panelDev, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(layout.createSequentialGroup()
                             .addContainerGap()
-                            .addComponent(panelDev, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(buttonTestCOM)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonStopTestCOM)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonStart)
-                        .addGap(18, 18, 18)
-                        .addComponent(buttonStop)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE))))
+                            .addComponent(buttonTestCOM)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(buttonStopTestCOM)))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(buttonStart)
+                            .addGap(18, 18, 18)
+                            .addComponent(buttonStop)
+                            .addContainerGap())
+                        .addGroup(layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583,
+                                Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(buttonTestCOM)
-                            .addComponent(buttonStopTestCOM))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelDev, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(buttonStop)
-                            .addComponent(buttonStart))))
-                .addContainerGap())
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(buttonTestCOM)
+                                    .addComponent(buttonStopTestCOM))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(panelDev, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jScrollPane1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(
+                                layout
+                                    .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(buttonStop)
+                                    .addComponent(buttonStart))))
+                    .addContainerGap())
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buttonRefeshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRefeshActionPerformed
+    private void buttonRefeshActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRefeshActionPerformed
         final JFileChooser fc = new JFileChooser();
         fc.setDialogTitle("Выберите файл конфигурации");
         fc.setFileFilter(new FileFilter() {
@@ -537,7 +756,8 @@ public class UBForm extends JFrame {
         }
     }//GEN-LAST:event_buttonRefeshActionPerformed
 
-    private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
+    private void buttonSaveActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
         if (propFile != null) {
             try {
                 final FileOutputStream out = new FileOutputStream(propFile);
@@ -551,15 +771,16 @@ public class UBForm extends JFrame {
             } catch (IOException ex) {
                 System.err.println(ex);
                 JOptionPane.showMessageDialog(this,
-                        "Файл конфигурации НЕ сохранен. " + ex,
-                        "Сохранение",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Файл конфигурации НЕ сохранен. " + ex,
+                    "Сохранение",
+                    JOptionPane.ERROR_MESSAGE);
             }
 
         }
     }//GEN-LAST:event_buttonSaveActionPerformed
 
-    private void buttonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStartActionPerformed
+    private void buttonStartActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStartActionPerformed
         buttonStart.setEnabled(false);
         buttonStop.setEnabled(true);
         initProps();
@@ -570,9 +791,9 @@ public class UBForm extends JFrame {
         } catch (Exception ex) {
             System.err.println(ex);
             JOptionPane.showMessageDialog(this,
-                    "Порт не захватился. " + ex,
-                    "Отсыл",
-                    JOptionPane.ERROR_MESSAGE);
+                "Порт не захватился. " + ex,
+                "Отсыл",
+                JOptionPane.ERROR_MESSAGE);
             throw new RuntimeException(ex);
         }
         apdater = new Timer(1000, new ActionListener() {
@@ -599,7 +820,8 @@ public class UBForm extends JFrame {
                     return;
                 }
                 final LinkedList<ServiceInfo> servs = NetCommander.getServerState(netProperty);
-                for (ButtonDevice adr : AddrProp.getInstance().getAddrs().values().toArray(new ButtonDevice[0])) {
+                for (ButtonDevice adr : AddrProp.getInstance().getAddrs().values()
+                    .toArray(new ButtonDevice[0])) {
                     int l = 0;
                     for (QPlanService pser : adr.getUser().getPlanServices()) {
                         for (ServiceInfo serviceInfo : servs) {
@@ -615,7 +837,6 @@ public class UBForm extends JFrame {
         });
         apdater.start();
     }//GEN-LAST:event_buttonStartActionPerformed
-    private Timer apdater;
 
     private void initProps() {
         FileInputStream fis;
@@ -663,9 +884,6 @@ public class UBForm extends JFrame {
         };
     }
 
-    public static LinkedList<QUser> users = new LinkedList<>();
-    public static LinkedList<ServiceInfo> servs = new LinkedList<>();
-
     private void initQsys() {
         if (propFile == null) {
             initProps();
@@ -689,15 +907,21 @@ public class UBForm extends JFrame {
         users = NetCommander.getUsers(netProperty);
         users.stream().forEach((qUser) -> {
             qUser.getPlanServices().stream().forEach((pser) -> {
-                System.out.println("User: " + qUser.getName() + " => " + pser.getService().getId() + "-" + pser.getService().getName());
+                System.out.println(
+                    "User: " + qUser.getName() + " => " + pser.getService().getId() + "-" + pser
+                        .getService().getName());
             });
         });
         servs = NetCommander.getServerState(netProperty);
         servs.stream().forEach((serviceInfo) -> {
-            System.out.println("Servece: " + serviceInfo.getId() + "-" + serviceInfo.getServiceName() + "-" + serviceInfo.getCountWait());
+            System.out.println(
+                "Servece: " + serviceInfo.getId() + "-" + serviceInfo.getServiceName() + "-"
+                    + serviceInfo
+                    .getCountWait());
         });
 
-        for (ButtonDevice adr : AddrProp.getInstance().getAddrs().values().toArray(new ButtonDevice[0])) {
+        for (ButtonDevice adr : AddrProp.getInstance().getAddrs().values()
+            .toArray(new ButtonDevice[0])) {
             for (QUser qUser : users) {
                 if (adr.userId.equals(qUser.getId())) {
                     adr.setUser(qUser);
@@ -714,7 +938,8 @@ public class UBForm extends JFrame {
                 }
             }
             for (ServiceInfo serviceInfo : servs) {
-                if (adr.redirectServiceId != null && adr.redirectServiceId.equals(serviceInfo.getId())) {
+                if (adr.redirectServiceId != null && adr.redirectServiceId
+                    .equals(serviceInfo.getId())) {
                     adr.serveceName = serviceInfo.getServiceName();
                     break;
                 }
@@ -728,7 +953,8 @@ public class UBForm extends JFrame {
             devFuctory.refreshDeviceTable(users, servs);
             break;
         }
-        table.setModel(devFuctory == null ? new UserTableModel(AddrProp.getInstance()) : devFuctory.getDeviceTable());
+        table.setModel(devFuctory == null ? new UserTableModel(AddrProp.getInstance())
+            : devFuctory.getDeviceTable());
     }
 
     private void initCOM(boolean isTest) throws Exception {
@@ -748,9 +974,9 @@ public class UBForm extends JFrame {
         } catch (Exception ex) {
             System.err.println(ex);
             JOptionPane.showMessageDialog(this,
-                    "Порт не создался. " + ex,
-                    "Отсыл",
-                    JOptionPane.ERROR_MESSAGE);
+                "Порт не создался. " + ex,
+                "Отсыл",
+                JOptionPane.ERROR_MESSAGE);
             throw new RuntimeException(ex);
         }
         port.setSpeed(Integer.parseInt((String) comboBoxSpeed.getSelectedItem()));
@@ -768,7 +994,8 @@ public class UBForm extends JFrame {
                         s = s + (b & 0xFF) + "_";
                     }
                     System.out.println(">>" + s);
-                    textDebug.setText(">>" + s + "|" + new String(bytes) + "\n" + textDebug.getText());
+                    textDebug
+                        .setText(">>" + s + "|" + new String(bytes) + "\n" + textDebug.getText());
                 }
 
                 @Override
@@ -788,9 +1015,11 @@ public class UBForm extends JFrame {
                         s = s + (b & 0xFF) + "_";
                     }
                     System.out.println(">>" + s);
-                    textDebug.setText(">>" + s + "|" + new String(bytes) + "\n" + textDebug.getText());
+                    textDebug
+                        .setText(">>" + s + "|" + new String(bytes) + "\n" + textDebug.getText());
                     try {
-                        final ActionTransmit aTransmitter = ActionRunnablePool.getInstance().borrowTransmitter();
+                        final ActionTransmit aTransmitter = ActionRunnablePool.getInstance()
+                            .borrowTransmitter();
                         try {
                             aTransmitter.setBytes(bytes);
                             es.submit(aTransmitter);
@@ -798,7 +1027,8 @@ public class UBForm extends JFrame {
                             ActionRunnablePool.getInstance().returnTransmitter(aTransmitter);
                         }
                     } catch (Exception ex) {
-                        throw new RuntimeException("Ошибка при принятии пакета и работы с ним." + ex);
+                        throw new RuntimeException(
+                            "Ошибка при принятии пакета и работы с ним." + ex);
                     } finally {
                         receprtTaskLock.unlock();
                     }
@@ -811,30 +1041,8 @@ public class UBForm extends JFrame {
         }
     }
 
-    public static synchronized void sendToDevice(byte[] b) {
-        try {
-            String s = "";
-            for (byte b1 : b) {
-                s = s + (b1 & 0xFF) + "_";
-            }
-            System.out.print("<<" + s + " ... ");
-            form.port.send(b);
-            System.out.println(" !!!!!!!!\n");
-        } catch (Exception ex) {
-            System.err.println(ex);
-            form.textDebug.setText("В порт не отослалось. " + ex + "\n" + form.textDebug.getText());
-        }
-    }
-    /**
-     * Ключ блокировки для манипуляции с кстомерами
-     */
-    public static final Lock receprtTaskLock = new ReentrantLock();
-    /**
-     * пул потоков для работы с командами отоператоров
-     */
-    public ExecutorService es;
-
-    private void buttonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
+    private void buttonStopActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
         if (apdater != null) {
             apdater.stop();
         }
@@ -847,19 +1055,21 @@ public class UBForm extends JFrame {
             } catch (Exception ex) {
                 System.err.println(ex);
                 JOptionPane.showMessageDialog(this,
-                        "Порт не закрылся. " + ex,
-                        "Отсыл",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Порт не закрылся. " + ex,
+                    "Отсыл",
+                    JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(ex);
             }
         }
     }//GEN-LAST:event_buttonStopActionPerformed
 
-    private void buttonTestQSysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestQSysActionPerformed
+    private void buttonTestQSysActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestQSysActionPerformed
         initQsys();
     }//GEN-LAST:event_buttonTestQSysActionPerformed
 
-    private void buttonTestCOMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestCOMActionPerformed
+    private void buttonTestCOMActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestCOMActionPerformed
         try {
             initCOM(true);
         } catch (Exception ex) {
@@ -868,9 +1078,9 @@ public class UBForm extends JFrame {
             textDebug.setText("Порт не захватился. " + ex);
             System.err.println(ex);
             JOptionPane.showMessageDialog(this,
-                    "Порт не захватился. " + ex,
-                    "Отсыл",
-                    JOptionPane.ERROR_MESSAGE);
+                "Порт не захватился. " + ex,
+                "Отсыл",
+                JOptionPane.ERROR_MESSAGE);
             throw new RuntimeException(ex);
         }
         textDebug.setText("Порт открылся");
@@ -882,7 +1092,8 @@ public class UBForm extends JFrame {
         buttonTestDev.setEnabled(true);
     }//GEN-LAST:event_buttonTestCOMActionPerformed
 
-    private void buttonStopTestCOMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopTestCOMActionPerformed
+    private void buttonStopTestCOMActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopTestCOMActionPerformed
         buttonTestCOM.setEnabled(true);
         buttonStopTestCOM.setEnabled(false);
         panelDev.setEnabled(false);
@@ -896,16 +1107,17 @@ public class UBForm extends JFrame {
                 System.err.println(ex);
                 textDebug.setText("Порт не закрылся. " + ex);
                 JOptionPane.showMessageDialog(this,
-                        "Порт не закрылся. " + ex,
-                        "Отсыл",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Порт не закрылся. " + ex,
+                    "Отсыл",
+                    JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(ex);
             }
         }
         textDebug.setText("... Порт закрылся\n" + textDebug.getText());
     }//GEN-LAST:event_buttonStopTestCOMActionPerformed
 
-    private void buttonSendSignalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSendSignalActionPerformed
+    private void buttonSendSignalActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSendSignalActionPerformed
         if (port == null) {
             try {
                 initCOM(true);
@@ -913,9 +1125,9 @@ public class UBForm extends JFrame {
                 textDebug.setText("Порт не захватился. " + ex);
                 System.err.println(ex);
                 JOptionPane.showMessageDialog(this,
-                        "Порт не захватился. " + ex,
-                        "Отсыл",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Порт не захватился. " + ex,
+                    "Отсыл",
+                    JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(ex);
             }
         }
@@ -968,16 +1180,16 @@ public class UBForm extends JFrame {
         } catch (Exception ex) {
             System.err.println(ex);
             JOptionPane.showMessageDialog(this,
-                    "В порт не отослалось. " + ex,
-                    "Отсыл",
-                    JOptionPane.ERROR_MESSAGE);
+                "В порт не отослалось. " + ex,
+                "Отсыл",
+                JOptionPane.ERROR_MESSAGE);
             throw new RuntimeException(ex);
         }
         textDebug.setText("  OK -> " + textDebug.getText());
     }//GEN-LAST:event_buttonSendSignalActionPerformed
-    private Thread th;
-    private volatile boolean isrun;
-    private void buttonTestDevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestDevActionPerformed
+
+    private void buttonTestDevActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTestDevActionPerformed
         if (port == null) {
             try {
                 initCOM(true);
@@ -985,9 +1197,9 @@ public class UBForm extends JFrame {
                 textDebug.setText("Порт не захватился. " + ex);
                 System.err.println(ex);
                 JOptionPane.showMessageDialog(this,
-                        "Порт не захватился. " + ex,
-                        "Отсыл",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Порт не захватился. " + ex,
+                    "Отсыл",
+                    JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(ex);
             }
         } else {
@@ -1022,9 +1234,9 @@ public class UBForm extends JFrame {
                     } catch (Exception ex) {
                         System.err.println(ex);
                         JOptionPane.showMessageDialog(null,
-                                "В порт не отослалось. " + ex,
-                                "Отсыл",
-                                JOptionPane.ERROR_MESSAGE);
+                            "В порт не отослалось. " + ex,
+                            "Отсыл",
+                            JOptionPane.ERROR_MESSAGE);
                         throw new RuntimeException(ex);
                     }
                     try {
@@ -1046,7 +1258,8 @@ public class UBForm extends JFrame {
         }
     }//GEN-LAST:event_buttonTestDevActionPerformed
 
-    private void buttonChangeAdressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChangeAdressActionPerformed
+    private void buttonChangeAdressActionPerformed(
+        java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChangeAdressActionPerformed
         if (port == null) {
             try {
                 initCOM(true);
@@ -1054,9 +1267,9 @@ public class UBForm extends JFrame {
                 textDebug.setText("Порт не захватился. " + ex);
                 System.err.println(ex);
                 JOptionPane.showMessageDialog(this,
-                        "Порт не захватился. " + ex,
-                        "Отсыл",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Порт не захватился. " + ex,
+                    "Отсыл",
+                    JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(ex);
             }
         }
@@ -1076,99 +1289,12 @@ public class UBForm extends JFrame {
         } catch (Exception ex) {
             System.err.println(ex);
             JOptionPane.showMessageDialog(this,
-                    "В порт не отослалось. " + ex,
-                    "Отсыл",
-                    JOptionPane.ERROR_MESSAGE);
+                "В порт не отослалось. " + ex,
+                "Отсыл",
+                JOptionPane.ERROR_MESSAGE);
             throw new RuntimeException(ex);
         }
         textDebug.setText("  OK -> " + textDebug.getText());
     }//GEN-LAST:event_buttonChangeAdressActionPerformed
-    public static UBForm form;
-    File propFile = null;
-    Properties props = null;
-    public INetProperty netProperty;
-    private ISerialPort port;
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        QLog.initial(args, 5);
-        Locale.setDefault(Locales.getInstance().getLangCurrent());
-        // Загрузка плагинов из папки plugins
-        if (QConfig.cfg().isPlaginable()) {
-            Uses.loadPlugins("./plugins/");
-        }
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                /*
-                 * Metal
-                 Nimbus
-                 CDE/Motif
-                 Windows
-                 Windows Classic
-                 */
-                if ("Windows".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UBForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            form = new UBForm();
-            form.setLocationRelativeTo(null);
-            form.setVisible(true);
-        });
-    }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonChangeAdress;
-    private javax.swing.JButton buttonRefesh;
-    private javax.swing.JButton buttonSave;
-    private javax.swing.JButton buttonSendSignal;
-    private javax.swing.JButton buttonStart;
-    private javax.swing.JButton buttonStop;
-    private javax.swing.JButton buttonStopTestCOM;
-    private javax.swing.JButton buttonTestCOM;
-    private javax.swing.JToggleButton buttonTestDev;
-    private javax.swing.JButton buttonTestQSys;
-    private javax.swing.JCheckBox checkBoxParity;
-    private javax.swing.JCheckBox checkBoxSignal;
-    private javax.swing.JComboBox comboBoxBits;
-    private javax.swing.JComboBox comboBoxSignal;
-    private javax.swing.JComboBox comboBoxSpeed;
-    private javax.swing.JComboBox comboBoxStopBits;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel labelTest;
-    private javax.swing.JPanel panelDev;
-    private javax.swing.JSpinner spinnerAddr;
-    private javax.swing.JSpinner spinnerAddr1;
-    private javax.swing.JSpinner spinnerServerPort;
-    private javax.swing.JTable table;
-    private javax.swing.JTextArea textDebug;
-    private javax.swing.JTextField textFieldPortName;
-    private javax.swing.JTextField textServerAddr;
     // End of variables declaration//GEN-END:variables
 }

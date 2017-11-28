@@ -29,7 +29,6 @@ import ru.apertum.qsystem.server.model.QPlanService;
 import ru.apertum.qsystem.server.model.QUserList;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RepCurrentUsers extends AGenerator {
@@ -50,9 +49,14 @@ public class RepCurrentUsers extends AGenerator {
                 user_killed += plan.getKilled();
                 user_avg_time_work += (plan.getAvg_work() * plan.getWorked());
             }
-            user_avg_time_work = user.getPlanServices().isEmpty() || user_worked == 0 ? 0 : user_avg_time_work / user_worked;
+            user_avg_time_work = user.getPlanServices().isEmpty() || user_worked == 0 ? 0
+                : user_avg_time_work / user_worked;
             for (QPlanService plan : user.getPlanServices()) {
-                dataSource.add(new CurRepRecord(user.getName(), plan.getService().getName(), user_worked, user_killed, user_avg_time_work, plan.getWorked(), plan.getKilled(), plan.getAvg_work()));
+                dataSource.add(
+                    new CurRepRecord(user.getName(), plan.getService().getName(), user_worked,
+                        user_killed,
+                        user_avg_time_work, plan.getWorked(), plan.getKilled(),
+                        plan.getAvg_work()));
             }
         });
         return new JRBeanCollectionDataSource(dataSource);

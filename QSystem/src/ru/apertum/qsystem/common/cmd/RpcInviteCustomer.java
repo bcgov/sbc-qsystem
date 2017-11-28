@@ -21,19 +21,18 @@ import com.google.gson.annotations.SerializedName;
 import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcInviteCustomer extends JsonRPC20 {
 
-    public RpcInviteCustomer() {
-    }
-    
     @Expose
     @SerializedName("result")
     private QCustomer result;
 
-    public void setResult(QCustomer result) {
+    public RpcInviteCustomer() {
+    }
+
+    public RpcInviteCustomer(QCustomer result) {
         this.result = result;
     }
 
@@ -41,7 +40,7 @@ public class RpcInviteCustomer extends JsonRPC20 {
         return result;
     }
 
-    public RpcInviteCustomer(QCustomer result) {
+    public void setResult(QCustomer result) {
         this.result = result;
     }
 

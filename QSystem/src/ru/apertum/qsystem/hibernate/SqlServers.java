@@ -21,7 +21,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.LinkedList;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class SqlServers {
@@ -30,18 +29,18 @@ public class SqlServers {
     @SerializedName("servers")
     private LinkedList<SqlServer> servers = new LinkedList<>();
 
+    public SqlServers() {
+    }
+
+    public SqlServers(LinkedList<SqlServer> servers) {
+        this.servers = servers;
+    }
+
     public LinkedList<SqlServer> getServers() {
         return servers;
     }
 
     public void setServers(LinkedList<SqlServer> servers) {
-        this.servers = servers;
-    }
-
-    public SqlServers() {
-    }
-
-    public SqlServers(LinkedList<SqlServer> servers) {
         this.servers = servers;
     }
 
@@ -73,7 +72,8 @@ public class SqlServers {
         public SqlServer() {
         }
 
-        public SqlServer(String name, String user, String password, String url, boolean main, boolean current) {
+        public SqlServer(String name, String user, String password, String url, boolean main,
+            boolean current) {
             this.current = current;
             this.main = main;
             this.password = password;
@@ -140,7 +140,8 @@ public class SqlServers {
 
         @Override
         public String toString() {
-            return name + "   " + (isCurrent() ? "C" : "_") + "   " + (isMain() ? "M" : "_") + "   " + getUrl();
+            return name + "   " + (isCurrent() ? "C" : "_") + "   " + (isMain() ? "M" : "_") + "   "
+                + getUrl();
         }
     }
 }

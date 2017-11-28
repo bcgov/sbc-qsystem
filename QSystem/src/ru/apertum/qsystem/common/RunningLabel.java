@@ -21,7 +21,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
@@ -63,12 +62,122 @@ import ru.apertum.qsystem.client.Locales;
 import ru.apertum.qsystem.common.model.ATalkingClock;
 
 /**
- * Компонент расширенной метки JLabel. Класс, расширяющий JLabel. Добавлены свойства создания бегущего текста, статического текста без привязки к лайаутам и
- * т.д. Умеет мигать.
+ * Компонент расширенной метки JLabel. Класс, расширяющий JLabel. Добавлены свойства создания
+ * бегущего текста, статического текста без привязки к лайаутам и т.д. Умеет мигать.
  *
  * @author Evgeniy Egorov
  */
 public class RunningLabel extends JLabel implements Serializable {
+
+    public static final String PROP_SPEED = "speedRunningText";
+    public static final String PROP_RUNNING_TEXT = "running_text";
+    public static final String PROP_BACKGROUND_IMG = "backgroundImgage";
+    public static final String PROP_IS_RUN = "isRunText";
+    public static final String PROP_BLINK_COUNT = "blinkCount";
+    public static final String PROP_SPEED_BLINK = "speed_blink";
+    public static final String PROP_SPEED_BLINK_DARK = "speed_blink_dark";
+    public static final String PROP_SHOW_TIME = "showTime";
+    private final PropertyChangeSupport propertySupport = new PropertyChangeSupport(this);
+    private final LinkedList<String> lines = new LinkedList<>();
+    /**
+     * Событие перерисовки 25 кадров в секунду.
+     */
+    private final ActionListener actionListener = (ActionEvent e) -> {
+        need = true;
+        repaint();
+    };
+
+    /**
+     * Поток генерации событий смещения текста
+     */
+    //private Thread timerThread = null;
+    private final Timer timerThread = new Timer(40, actionListener);
+    private int delta = 100;
+    private int nPosition = 0;
+    private int nTitleHeight;
+    private Image mImg;
+    private Graphics gImg = null;
+    private Dimension dmImg = null;
+    /**
+     * Скорость движения текста. На сколько пикселей сместится кадр относительно предыдущего при 24
+     * кадра в секкунду. По умолчанию 10 пикселей, т.е. 240 пикселей с секунку будет скорость
+     * движения текста.
+     */
+    private int speedRunningText = 10;
+    /**
+     * Бегущий текст, это не тот же что статический
+     */
+    private String runningText = "runningText";
+    private int[] sizes = new int[0];
+    private int totalSize = 0;
+    private String oldTxt = "";
+    private String fileWithStrings;
+    private boolean needNextLine = false;
+    private int currentLine = -1;//то что надо выводить
+    private SimpleDateFormat sdf;
+    /**
+     * Фоновая картинка.
+     */
+    private String backgroundImage = "";
+    private Image backgroundImg = null;
+    /**
+     * бежит ли строка
+     */
+    private Boolean run = false;
+    /**
+     * Возникло ли событие смещение надписи
+     */
+    private boolean need = false;
+
+    private boolean needRepaint = false;
+    /**
+     * Количество миганий текста.
+     */
+    private int blinkCount = 0;
+    private int phasesLight = 1;
+    private int phasesDark = 1;
+    /**
+     * Время невидимой фазы текста.
+     */
+    private int speedBlinkDark = 500;
+    /**
+     * Время фазы горения текста.
+     */
+    private int speedBlink = 500;
+    /**
+     * Нужно для мигания.
+     */
+    private boolean isVisibleRunningText = true;
+    /**
+     * Показывать или нет время вместо текста на бегущей строке.
+     */
+    private Boolean showTime = false;
+    /**
+     * Таймер мигания надписи
+     */
+    private final ATalkingClock blinkTimer = new ATalkingClock(getSpeedBlinkTimer(),
+        getBlinkCount()) {
+
+        private int phases = 1;
+
+        @Override
+        public void run() {
+            setRateMainTimer();
+            if ((isVisibleRunningText && phasesLight == phases) || (!isVisibleRunningText
+                && phasesDark == phases)) {
+                isVisibleRunningText = !isVisibleRunningText;
+                phases = 1;
+            } else {
+                phases++;
+            }
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            stopBlink();
+        }
+    };
 
     public RunningLabel() {
         init();
@@ -82,27 +191,18 @@ public class RunningLabel extends JLabel implements Serializable {
                 onResize(evt);
             }
         });
-        
+
         phasesLight = speedBlink / getSpeedBlinkTimer();
         phasesDark = speedBlinkDark / getSpeedBlinkTimer();
     }
 
     /**
-     * Событие ресайза метки. Если что-то нужно повесиь на ресайз, то перекрыть этод метод, незабыв вызвать предка.
-     *
-     * @param evt
+     * Событие ресайза метки. Если что-то нужно повесиь на ресайз, то перекрыть этод метод, незабыв
+     * вызвать предка.
      */
     protected void onResize(java.awt.event.ComponentEvent evt) {
         needRepaint();
     }
-    /**
-     * Событие перерисовки 25 кадров в секунду.
-     */
-    private final ActionListener actionListener = (ActionEvent e) -> {
-        need = true;
-        repaint();
-    };
-    private final PropertyChangeSupport propertySupport = new PropertyChangeSupport(this);
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -140,18 +240,6 @@ public class RunningLabel extends JLabel implements Serializable {
         delta = 100 + 1 * font.getSize();
         needRepaint();
     }
-    private int delta = 100;
-    private int nPosition = 0;
-    private int nTitleHeight;
-    private Image mImg;
-    private Graphics gImg = null;
-    private Dimension dmImg = null;
-    public static final String PROP_SPEED = "speedRunningText";
-    /**
-     * Скорость движения текста. На сколько пикселей сместится кадр относительно предыдущего при 24 кадра в секкунду. По умолчанию 10 пикселей, т.е. 240
-     * пикселей с секунку будет скорость движения текста.
-     */
-    private int speedRunningText = 10;
 
     public int getSpeedRunningText() {
         return speedRunningText;
@@ -162,13 +250,6 @@ public class RunningLabel extends JLabel implements Serializable {
         this.speedRunningText = speedRunningText;
         propertySupport.firePropertyChange(PROP_SPEED, oldValue, speedRunningText);
     }
-    public static final String PROP_RUNNING_TEXT = "running_text";
-    /**
-     * Бегущий текст, это не тот же что статический
-     */
-    private String runningText = "runningText";
-    private int[] sizes = new int[0];
-    private int totalSize = 0;
 
     private void setSizes(String text) {
         // подсчитаем длины
@@ -182,8 +263,19 @@ public class RunningLabel extends JLabel implements Serializable {
         //System.out.println(getFont().getName() + " " + totalSize + " " + text);
     }
 
+    public String getRunningText() {
+        final String txt = isShowTime() ? getDate()
+            : (currentLine >= 0 && !lines.isEmpty() ? getNextStringFromLines() : runningText);
+        if (sizes == null || oldTxt.length() != txt.length()) {
+            setSizes(txt);
+        }
+        oldTxt = txt;
+        return txt;
+    }
+
     /**
-     * Этот метод установит новое значение бегущего текста, выведет его на конву и отцентрирует его в зависимости от установленных выравниваний.
+     * Этот метод установит новое значение бегущего текста, выведет его на конву и отцентрирует его
+     * в зависимости от установленных выравниваний.
      *
      * @param text устанавливаемый бегущий текст
      */
@@ -201,20 +293,6 @@ public class RunningLabel extends JLabel implements Serializable {
         //setSizes(getRunningText());
         needRepaint();
     }
-    private String oldTxt = "";
-
-    public String getRunningText() {
-        final String txt = isShowTime() ? getDate() : (currentLine >= 0 && !lines.isEmpty() ? getNextStringFromLines() : runningText);
-        if (sizes == null || oldTxt.length() != txt.length()) {
-            setSizes(txt);
-        }
-        oldTxt = txt;
-        return txt;
-    }
-    private final LinkedList<String> lines = new LinkedList<>();
-    private String fileWithStrings;
-    private boolean needNextLine = false;
-    private int currentLine = -1;//то что надо выводить
 
     private void prepareStrings(String filePath) {
         fileWithStrings = filePath;
@@ -224,7 +302,8 @@ public class RunningLabel extends JLabel implements Serializable {
         } catch (FileNotFoundException ex) {
         }
         try {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(fis, Charset.forName("utf8")))) {
+            try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(fis, Charset.forName("utf8")))) {
                 String line;
                 lines.clear();
                 while ((line = br.readLine()) != null) {
@@ -245,7 +324,8 @@ public class RunningLabel extends JLabel implements Serializable {
             final Matcher matcher = pattern.matcher(url);
             // check all occurance
             while (matcher.find()) {
-                final SimpleDateFormat sdf2 = new SimpleDateFormat(matcher.group().substring(2, (matcher.group().length() - 2)));
+                final SimpleDateFormat sdf2 = new SimpleDateFormat(
+                    matcher.group().substring(2, (matcher.group().length() - 2)));
                 url = url.replace(matcher.group(), sdf2.format(new Date()));
             }
             try {
@@ -267,7 +347,8 @@ public class RunningLabel extends JLabel implements Serializable {
                 transformer.transform(source, result);
 
                 fis = new ByteArrayInputStream(os.toByteArray());
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(fis, Charset.forName("utf8")))) {
+                try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(fis, Charset.forName("utf8")))) {
                     String line;
                     lines.clear();
                     while ((line = br.readLine()) != null) {
@@ -310,12 +391,12 @@ public class RunningLabel extends JLabel implements Serializable {
         needNextLine = false;
         return res;
     }
-    private SimpleDateFormat sdf;
 
     private String getDate() {
         if (Locales.getInstance().isRuss) {
             if (sdf == null) {
-                DateFormatSymbols russSymbol = new DateFormatSymbols(Locales.getInstance().getLangCurrent());
+                DateFormatSymbols russSymbol = new DateFormatSymbols(
+                    Locales.getInstance().getLangCurrent());
                 russSymbol.setMonths(Uses.RUSSIAN_MONAT);
                 sdf = new SimpleDateFormat("dd MMMM  HH.mm:ss", russSymbol);
             }
@@ -346,7 +427,8 @@ public class RunningLabel extends JLabel implements Serializable {
     public void paint(Graphics g) {
         if (backgroundImg != null || !"".equals(getRunningText()) || isShowTime()) {
             // Тут условия на изменение картинки с текстом
-            if (((run || isBlink()) && need) || ((run == false && isBlink() == false) && need) || needRepaint) {
+            if (((run || isBlink()) && need) || ((run == false && isBlink() == false) && need)
+                || needRepaint) {
 
                 updateImg();
                 need = false;
@@ -376,8 +458,8 @@ public class RunningLabel extends JLabel implements Serializable {
         int wndHeight = dm.height;
 
         if ((dmImg == null)
-                || (dmImg.width != wndWidth)
-                || (dmImg.height != wndHeight)) {
+            || (dmImg.width != wndWidth)
+            || (dmImg.height != wndHeight)) {
             dmImg = new Dimension(wndWidth, wndHeight);
             mImg = createImage(wndWidth, wndHeight);
             gImg = mImg.getGraphics();
@@ -432,7 +514,8 @@ public class RunningLabel extends JLabel implements Serializable {
 
         String forDrow = null;
         nPosition = nPosition - (run ? getSpeedRunningText() : 0);
-        if (nPosition < -len) { // проверка, если уехало целиков за левый край, то перекинем все за правый край
+        if (nPosition
+            < -len) { // проверка, если уехало целиков за левый край, то перекинем все за правый край
             needNextLine = true; // повторный пробег
             forDrow = getRunningText(); // подсосалась и обработалась следующая строка
             nPosition = getSize().width;
@@ -455,16 +538,10 @@ public class RunningLabel extends JLabel implements Serializable {
             forDrow = forDrow.substring(pos == -1 ? 0 : pos + 1, posLast);
             //System.out.println("st=" + pos + " fin=" + posLast + "     x=" + (nPosition + lenHead) + " y=" + (y + nTitleHeight + (int) (getFont().getSize() * 0.75)) + " : " + forDrow);
             gImg.drawString(forDrow,
-                    nPosition + lenHead,
-                    y + nTitleHeight + (int) (getFont().getSize() * 0.75));
+                nPosition + lenHead,
+                y + nTitleHeight + (int) (getFont().getSize() * 0.75));
         }
     }
-    public static final String PROP_BACKGROUND_IMG = "backgroundImgage";
-    /**
-     * Фоновая картинка.
-     */
-    private String backgroundImage = "";
-    private Image backgroundImg = null;
 
     public String getBackgroundImage() {
         return backgroundImage;
@@ -477,11 +554,6 @@ public class RunningLabel extends JLabel implements Serializable {
         propertySupport.firePropertyChange(PROP_BACKGROUND_IMG, oldValue, resourceName);
         needRepaint();
     }
-    public static final String PROP_IS_RUN = "isRunText";
-    /**
-     * бежит ли строка
-     */
-    private Boolean run = false;
 
     public Boolean isRun() {
         return run;
@@ -497,16 +569,6 @@ public class RunningLabel extends JLabel implements Serializable {
             stop();
         }
     }
-    /**
-     * Возникло ли событие смещение надписи
-     */
-    private boolean need = false;
-    private boolean needRepaint = false;
-    /**
-     * Поток генерации событий смещения текста
-     */
-    //private Thread timerThread = null;
-    private final Timer timerThread = new Timer(40, actionListener);
 
     /**
      * Запустить бегущий текст
@@ -533,11 +595,6 @@ public class RunningLabel extends JLabel implements Serializable {
             timerThread.stop();
         }
     }
-    public static final String PROP_BLINK_COUNT = "blinkCount";
-    /**
-     * Количество миганий текста.
-     */
-    private int blinkCount = 0;
 
     public int getBlinkCount() {
         return blinkCount;
@@ -549,19 +606,10 @@ public class RunningLabel extends JLabel implements Serializable {
         propertySupport.firePropertyChange(PROP_BLINK_COUNT, oldValue, blinkCount);
         blinkTimer.setCount(blinkCount * 2);
     }
-    public static final String PROP_SPEED_BLINK = "speed_blink";
-    public static final String PROP_SPEED_BLINK_DARK = "speed_blink_dark";
-
-    private int phasesLight = 1;
-    private int phasesDark = 1;
 
     private int getSpeedBlinkTimer() {
         return (speedBlink + speedBlinkDark) / 10;
     }
-    /**
-     * Время невидимой фазы текста.
-     */
-    private int speedBlinkDark = 500;
 
     public int getSpeedBlinkDark() {
         return speedBlinkDark;
@@ -577,11 +625,6 @@ public class RunningLabel extends JLabel implements Serializable {
         phasesDark = speedBlinkDark / period;
     }
 
-    /**
-     * Время фазы горения текста.
-     */
-    private int speedBlink = 500;
-
     public int getSpeedBlink() {
         return speedBlink;
     }
@@ -595,30 +638,6 @@ public class RunningLabel extends JLabel implements Serializable {
         phasesLight = speedBlink / period;
         phasesDark = speedBlinkDark / period;
     }
-    /**
-     * Таймер мигания надписи
-     */
-    private final ATalkingClock blinkTimer = new ATalkingClock(getSpeedBlinkTimer(), getBlinkCount()) {
-        
-        private int phases = 1;
-
-        @Override
-        public void run() {
-            setRateMainTimer();
-            if ((isVisibleRunningText && phasesLight == phases) || (!isVisibleRunningText && phasesDark == phases)) {
-                isVisibleRunningText = !isVisibleRunningText;
-                phases = 1;
-            } else {
-                phases++;
-            }
-        }
-
-        @Override
-        public void stop() {
-            super.stop();
-            stopBlink();
-        }
-    };
 
     /**
      * Запустить мигание текста
@@ -650,10 +669,6 @@ public class RunningLabel extends JLabel implements Serializable {
         }
         setRateMainTimer();
     }
-    /**
-     * Нужно для мигания.
-     */
-    private boolean isVisibleRunningText = true;
 
     /**
      * мигает ли строка
@@ -661,11 +676,6 @@ public class RunningLabel extends JLabel implements Serializable {
     private boolean isBlink() {
         return blinkTimer.isActive();
     }
-    public static final String PROP_SHOW_TIME = "showTime";
-    /**
-     * Показывать или нет время вместо текста на бегущей строке.
-     */
-    private Boolean showTime = false;
 
     public Boolean isShowTime() {
         return showTime;

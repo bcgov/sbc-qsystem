@@ -23,23 +23,26 @@ import java.util.ListIterator;
 import javax.swing.AbstractListModel;
 
 /**
- * Список услуг, обрабатываемых пользователем. Класс - рулит списком услуг юзера. Должен строиться для каждого юзера и он же должен отображаться в админской
- * проге. Элементы списка это QPlanService. Пока пустой. Нужен для того чтобы при необходимости чот-то переопределить.
+ * Список услуг, обрабатываемых пользователем. Класс - рулит списком услуг юзера. Должен строиться
+ * для каждого юзера и он же должен отображаться в админской проге. Элементы списка это
+ * QPlanService. Пока пустой. Нужен для того чтобы при необходимости чот-то переопределить.
  *
- * List of services to be processed by the user. Class - steers list of services user. Should be built for each user and it should be displayed in admin
- * Proge. List items are QPlanService. While empty. It is necessary to redefine if necessary.
+ * List of services to be processed by the user. Class - steers list of services user. Should be
+ * built for each user and it should be displayed in admin Proge. List items are QPlanService. While
+ * empty. It is necessary to redefine if necessary.
+ *
  * @author Evgeniy Egorov
  */
 public class QPlanServiceList extends AbstractListModel implements List {
 
     private final List<QPlanService> services;
 
-    public List<QPlanService> getServices() {
-        return services;
-    }
-
     public QPlanServiceList(List<QPlanService> services) {
         this.services = services;
+    }
+
+    public List<QPlanService> getServices() {
+        return services;
     }
 
     @Override

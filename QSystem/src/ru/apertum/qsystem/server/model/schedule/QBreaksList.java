@@ -25,10 +25,12 @@ import ru.apertum.qsystem.server.Spring;
 import ru.apertum.qsystem.server.model.ATListModel;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QBreaksList extends ATListModel<QBreaks> implements ComboBoxModel {
+
+    private final ArrayList<QBreak> breakForDel = new ArrayList<>();
+    private QBreaks selected;
 
     private QBreaksList() {
     }
@@ -37,27 +39,21 @@ public class QBreaksList extends ATListModel<QBreaks> implements ComboBoxModel {
         return QBreaksListHolder.INSTANCE;
     }
 
-    private static class QBreaksListHolder {
-
-        private static final QBreaksList INSTANCE = new QBreaksList();
-    }
-
     @Override
     protected LinkedList<QBreaks> load() {
         return new LinkedList<>(Spring.getInstance().getHt().
-                findByCriteria(DetachedCriteria.forClass(QBreaks.class).
-                        setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)));
-    }
-    private QBreaks selected;
-
-    @Override
-    public void setSelectedItem(Object anItem) {
-        selected = (QBreaks) anItem;
+            findByCriteria(DetachedCriteria.forClass(QBreaks.class).
+                setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)));
     }
 
     @Override
     public Object getSelectedItem() {
         return selected;
+    }
+
+    @Override
+    public void setSelectedItem(Object anItem) {
+        selected = (QBreaks) anItem;
     }
 
     @Override
@@ -69,9 +65,13 @@ public class QBreaksList extends ATListModel<QBreaks> implements ComboBoxModel {
             Spring.getInstance().getHt().saveOrUpdateAll(qBreaks.getBreaks());
         });
     }
-    private final ArrayList<QBreak> breakForDel = new ArrayList<>();
 
     public void addBreakForDelete(QBreak qbreak) {
         breakForDel.add(qbreak);
+    }
+
+    private static class QBreaksListHolder {
+
+        private static final QBreaksList INSTANCE = new QBreaksList();
     }
 }

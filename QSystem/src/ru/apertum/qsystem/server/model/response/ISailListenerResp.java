@@ -17,8 +17,8 @@
 package ru.apertum.qsystem.server.model.response;
 
 /**
- * Инрерфейс для событий обхода дерева инфоузлов.
- * Должен возникать для каждого инфоузла
+ * Инрерфейс для событий обхода дерева инфоузлов. Должен возникать для каждого инфоузла
+ *
  * @author Evgeniy Egorov
  */
 @FunctionalInterface
@@ -26,6 +26,7 @@ public interface ISailListenerResp {
 
     /**
      * Вызывается для каждого инфоузла при рекурсии.
+     *
      * @param item текущий шаг рекурсии.
      */
     public void actionPerformed(QRespItem item);

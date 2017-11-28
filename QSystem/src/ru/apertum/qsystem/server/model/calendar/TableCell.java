@@ -30,6 +30,7 @@ import ru.apertum.qsystem.client.forms.FAdmin;
 
 /**
  * Ячейка сетки календаря
+ *
  * @author Evgeniy Egorov
  */
 public class TableCell extends JLabel implements TableCellRenderer {
@@ -41,7 +42,8 @@ public class TableCell extends JLabel implements TableCellRenderer {
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+        boolean hasFocus, int row, int column) {
         if (column == 0) {
             // setBackground(Color.lightGray);
             switch (row) {
@@ -92,9 +94,16 @@ public class TableCell extends JLabel implements TableCellRenderer {
             // залочим несуществующие даты, таблица все же прямоугольная
             if (checkDate(row, column)) {
                 if (isSelected && table.hasFocus()) {
-                    setBackground(((CalendarTableModel) table.getModel()).addDay(getDate(row, column), /*!hasFocus*/ !(table.getSelectedColumnCount() == 1 && table.getSelectedRowCount() == 1)) ? Color.lightGray : getWorkColor(row));
+                    setBackground(((CalendarTableModel) table.getModel())
+                        .addDay(getDate(row, column), /*!hasFocus*/
+                            !(table.getSelectedColumnCount() == 1
+                                && table.getSelectedRowCount() == 1))
+                        ? Color.lightGray : getWorkColor(row));
                 } else {
-                    setBackground(((CalendarTableModel) table.getModel()).isFreeDate(getDate(row, column)) != null ? Color.lightGray : getWorkColor(row));
+                    setBackground(
+                        ((CalendarTableModel) table.getModel()).isFreeDate(getDate(row, column))
+                            != null
+                            ? Color.lightGray : getWorkColor(row));
                 }
             } else {
                 setBackground(Color.black);

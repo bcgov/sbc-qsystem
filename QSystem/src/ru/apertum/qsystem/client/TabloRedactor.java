@@ -28,8 +28,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import ru.apertum.qsystem.client.forms.FBoardConfig;
 import ru.apertum.qsystem.common.QConfig;
-import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.QLog;
+import ru.apertum.qsystem.common.Uses;
 import ru.apertum.qsystem.common.exceptions.ServerException;
 
 /**
@@ -55,7 +55,8 @@ public class TabloRedactor {
         }
         file = new File(QConfig.cfg().getTabloBoardCfgFile());
         if (!file.exists()) {
-            throw new ServerException("File context \"" + QConfig.cfg().getTabloBoardCfgFile() + "\" not exist.");
+            throw new ServerException(
+                "File context \"" + QConfig.cfg().getTabloBoardCfgFile() + "\" not exist.");
         }
         QLog.l().logger().info("Load file: " + file.getAbsolutePath());
         final SAXReader reader = new SAXReader(false);
@@ -78,27 +79,6 @@ public class TabloRedactor {
          });*/
     }
 
-    static class FBoardConfigImpl extends FBoardConfig {
-
-        public FBoardConfigImpl(JFrame parent, boolean modal) {
-            super(parent, modal);
-            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        }
-
-        @Override
-        public void saveResult() throws IOException {
-            saveForm();
-            saveToFile();
-            JOptionPane.showMessageDialog(this, "Сохранение завершено успешно.", "Сохранение", JOptionPane.INFORMATION_MESSAGE);
-        }
-
-        @Override
-        public void hideRedactor() {
-            super.hideRedactor();
-            System.exit(0);
-        }
-    }
-
     /**
      *
      */
@@ -110,7 +90,8 @@ public class TabloRedactor {
         try {
             fos = new FileOutputStream(file);
         } catch (FileNotFoundException ex) {
-            throw new ServerException("Не возможно создать файл настроек табло. " + ex.getMessage());
+            throw new ServerException(
+                "Не возможно создать файл настроек табло. " + ex.getMessage());
         }
         try {
             fos.write(root.asXML().getBytes("UTF-8"));
@@ -119,6 +100,29 @@ public class TabloRedactor {
         } catch (IOException ex) {
             throw new ServerException("Не возможно сохранить изменения в поток." + ex.getMessage());
         }
-        QLog.l().logger().info("Состояние сохранено. Затрачено времени: " + ((double) (System.currentTimeMillis() - start)) / 1000 + " сек.");
+        QLog.l().logger().info("Состояние сохранено. Затрачено времени: "
+            + ((double) (System.currentTimeMillis() - start)) / 1000 + " сек.");
+    }
+
+    static class FBoardConfigImpl extends FBoardConfig {
+
+        public FBoardConfigImpl(JFrame parent, boolean modal) {
+            super(parent, modal);
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        }
+
+        @Override
+        public void saveResult() throws IOException {
+            saveForm();
+            saveToFile();
+            JOptionPane.showMessageDialog(this, "Сохранение завершено успешно.", "Сохранение",
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        @Override
+        public void hideRedactor() {
+            super.hideRedactor();
+            System.exit(0);
+        }
     }
 }

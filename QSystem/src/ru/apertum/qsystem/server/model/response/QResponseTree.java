@@ -27,33 +27,19 @@ import ru.apertum.qsystem.server.controller.ServerEvents;
 import ru.apertum.qsystem.server.model.ATreeModel;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class QResponseTree extends ATreeModel<QRespItem> {
-
-    public static QResponseTree getInstance() {
-        return QInfoTreeHolder.INSTANCE;
-    }
-
-    @Override
-    protected LinkedList<QRespItem> load() {
-        return new LinkedList<>(Spring.getInstance().getHt().findByCriteria(DetachedCriteria.forClass(QRespItem.class).
-                setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).
-                add(Property.forName("deleted").isNull()).
-                addOrder(Property.forName("id").asc())));
-    }
-
-    private static class QInfoTreeHolder {
-
-        private static final QResponseTree INSTANCE = new QResponseTree();
-    }
 
     private QResponseTree() {
         super();
         ServerEvents.getInstance().registerListener(() -> {
             createTree();
         });
+    }
+
+    public static QResponseTree getInstance() {
+        return QInfoTreeHolder.INSTANCE;
     }
 
     public static void formTree(QRespItem root) {
@@ -63,6 +49,15 @@ public class QResponseTree extends ATreeModel<QRespItem> {
         }).forEach((resp) -> {
             formTree(resp);
         });
+    }
+
+    @Override
+    protected LinkedList<QRespItem> load() {
+        return new LinkedList<>(
+            Spring.getInstance().getHt().findByCriteria(DetachedCriteria.forClass(QRespItem.class).
+                setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).
+                add(Property.forName("deleted").isNull()).
+                addOrder(Property.forName("id").asc())));
     }
 
     @Override
@@ -79,5 +74,10 @@ public class QResponseTree extends ATreeModel<QRespItem> {
         Spring.getInstance().getHt().saveOrUpdateAll(deleted);
         deleted.clear();
         Spring.getInstance().getHt().saveOrUpdateAll(getNodes());
+    }
+
+    private static class QInfoTreeHolder {
+
+        private static final QResponseTree INSTANCE = new QResponseTree();
     }
 }

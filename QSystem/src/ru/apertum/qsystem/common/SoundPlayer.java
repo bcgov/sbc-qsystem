@@ -18,32 +18,58 @@ package ru.apertum.qsystem.common;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
-import javax.sound.sampled.*;
-import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import ru.apertum.qsystem.server.ServerProps;
 import ru.apertum.qsystem.server.model.QService;
 
 /**
- * Класс проигрывания звуковых ресурсов и файлов. Создает отдельный поток для каждого проигрыша, но игоает синхронизированно. По этому все ресурсы проиграются
- * друг за другом и это не будет тормозить основной поток. Воспроизведение кучи мелких файлов глючит, накладываются др. на др.
+ * Класс проигрывания звуковых ресурсов и файлов. Создает отдельный поток для каждого проигрыша, но
+ * игоает синхронизированно. По этому все ресурсы проиграются друг за другом и это не будет
+ * тормозить основной поток. Воспроизведение кучи мелких файлов глючит, накладываются др. на др.
  *
  * @author Evgeniy Egorov
  */
 public class SoundPlayer implements Runnable {
 
-    public SoundPlayer(LinkedList<String> resourceList) {
-        this.resourceList = resourceList;
-    }
+    /**
+     * Листенер, срабатываюшщий при начале проигрывания семплов
+     */
+    private static ActionListener startListener = null;
+    /**
+     * Событие завершения проигрывания семплов
+     */
+    private static ActionListener finishListener = null;
+    // private static boolean isRus(String elem) {
+    //     return "йцукенгшщзхъфывапролджэячсмитьбю".indexOf(elem.toLowerCase()) != -1;
+    // }
+    private static HashMap<String, String> latters = null;
+    private static String preffix = "";
     /**
      * Тут храним имя ресурса для загрузки
      */
     private final LinkedList<String> resourceList;
+
+    public SoundPlayer(LinkedList<String> resourceList) {
+        this.resourceList = resourceList;
+    }
 
     /**
      * Проиграть звуковой ресурс
@@ -82,31 +108,6 @@ public class SoundPlayer implements Runnable {
         System.out.println("*****************************************\n");
     }
 
-    /**
-     * Asks the user to select a file to play.
-     *
-     * @return
-     */
-    public File getFileToPlay() {
-        File file = null;
-        JFrame frame = new JFrame();
-        JFileChooser chooser = new JFileChooser(".");
-        int returnvalue = chooser.showDialog(frame, "Select File to Play");
-        if (returnvalue == JFileChooser.APPROVE_OPTION) {
-            file = chooser.getSelectedFile();
-        }
-        return file;
-    }
-
-    @Override
-    public void run() {
-        doSounds(this, resourceList);
-    }
-    /**
-     * Листенер, срабатываюшщий при начале проигрывания семплов
-     */
-    private static ActionListener startListener = null;
-
     public static ActionListener getStartListener() {
         return startListener;
     }
@@ -114,10 +115,6 @@ public class SoundPlayer implements Runnable {
     public static void setStartListener(ActionListener startListener) {
         SoundPlayer.startListener = startListener;
     }
-    /**
-     * Событие завершения проигрывания семплов
-     */
-    private static ActionListener finishListener = null;
 
     public static ActionListener getFinishListener() {
         return finishListener;
@@ -144,31 +141,32 @@ public class SoundPlayer implements Runnable {
         AudioInputStream ais = null;
         try {
             ais = AudioSystem.getAudioInputStream(Object.class.getResource(resourceName));
-            //get the AudioFormat for the AudioInputStream 
+            //get the AudioFormat for the AudioInputStream
             AudioFormat audioformat = ais.getFormat();
             //printAudioFormatInfo(audioformat);
-            //ULAW & ALAW format to PCM format conversion 
+            //ULAW & ALAW format to PCM format conversion
             if ((audioformat.getEncoding() == AudioFormat.Encoding.ULAW)
-                    || (audioformat.getEncoding() == AudioFormat.Encoding.ALAW)) {
+                || (audioformat.getEncoding() == AudioFormat.Encoding.ALAW)) {
                 AudioFormat newformat = new AudioFormat(
-                        AudioFormat.Encoding.PCM_SIGNED,
-                        audioformat.getSampleRate(),
-                        audioformat.getSampleSizeInBits() * 2,
-                        audioformat.getChannels(),
-                        audioformat.getFrameSize() * 2,
-                        audioformat.getFrameRate(),
-                        true);
+                    AudioFormat.Encoding.PCM_SIGNED,
+                    audioformat.getSampleRate(),
+                    audioformat.getSampleSizeInBits() * 2,
+                    audioformat.getChannels(),
+                    audioformat.getFrameSize() * 2,
+                    audioformat.getFrameRate(),
+                    true);
                 ais = AudioSystem.getAudioInputStream(newformat, ais);
                 audioformat = newformat;
                 //printAudioFormatInfo(audioformat);
             }
-            //checking for a supported output line 
+            //checking for a supported output line
             DataLine.Info datalineinfo = new DataLine.Info(SourceDataLine.class, audioformat);
             if (!AudioSystem.isLineSupported(datalineinfo)) {
                 System.out.println("Line matching " + datalineinfo + " is not supported.");
             } else {
                 byte[] sounddata;
-                try (SourceDataLine sourcedataline = (SourceDataLine) AudioSystem.getLine(datalineinfo)) {
+                try (SourceDataLine sourcedataline = (SourceDataLine) AudioSystem
+                    .getLine(datalineinfo)) {
                     sourcedataline.open(audioformat);
                     sourcedataline.start();
                     int framesizeinbytes = audioformat.getFrameSize();
@@ -202,7 +200,8 @@ public class SoundPlayer implements Runnable {
                     ais.close();
                 }
             } catch (IOException ex) {
-                QLog.l().logger().error("IOException при освобождении входного потока медиаресурса: " + ex);
+                QLog.l().logger()
+                    .error("IOException при освобождении входного потока медиаресурса: " + ex);
             }
         }
     }
@@ -210,7 +209,8 @@ public class SoundPlayer implements Runnable {
     /**
      * Разбить фразу на звуки и сформировать набор файлов для воспроизведения.
      *
-     * @param path путь, где лежать звуковые ресурсы, это могут быть файлы на диске или ресурсы в jar
+     * @param path путь, где лежать звуковые ресурсы, это могут быть файлы на диске или ресурсы в
+     * jar
      * @param phrase фраза для разбора
      * @return список файлов для воспроизведения фразы
      */
@@ -264,7 +264,8 @@ public class SoundPlayer implements Runnable {
     /**
      * Разбить фразу на звуки и сформировать набор файлов для воспроизведения. Упрощенный вариант.
      *
-     * @param path путь, где лежать звуковые ресурсы, это могут быть файлы на диске или ресурсы в jar
+     * @param path путь, где лежать звуковые ресурсы, это могут быть файлы на диске или ресурсы в
+     * jar
      * @param phrase фраза для разбора
      * @return список файлов для воспроизведения фразы
      */
@@ -302,9 +303,11 @@ public class SoundPlayer implements Runnable {
     }
 
     /**
-     * Разбить фразу на звуки и сформировать набор файлов для воспроизведения. Упрощенный вариант с поиском существующих семплов.
+     * Разбить фразу на звуки и сформировать набор файлов для воспроизведения. Упрощенный вариант с
+     * поиском существующих семплов.
      *
-     * @param path путь, где лежать звуковые ресурсы, это могут быть файлы на диске или ресурсы в jar
+     * @param path путь, где лежать звуковые ресурсы, это могут быть файлы на диске или ресурсы в
+     * jar
      * @param phrase фраза для разбора
      * @return список файлов для воспроизведения фразы
      */
@@ -350,7 +353,8 @@ public class SoundPlayer implements Runnable {
                 res.add(file);
                 break;
             } else {
-                String elemZer = (elem.substring(0, 1) + "00000000000000000000000000").substring(0, elem.length());
+                String elemZer = (elem.substring(0, 1) + "00000000000000000000000000")
+                    .substring(0, elem.length());
                 file = path + elemZer + ".wav";
                 if (file.getClass().getResourceAsStream(file) != null) {
                     //System.out.println(elemZer + " + " + file);
@@ -390,21 +394,17 @@ public class SoundPlayer implements Runnable {
 
     }
 
-    // private static boolean isRus(String elem) {
-    //     return "йцукенгшщзхъфывапролджэячсмитьбю".indexOf(elem.toLowerCase()) != -1;
-    // }
-    private static HashMap<String, String> latters = null;
-    private static String preffix = "";
-
     private static String reRus(String elem) {
         if (latters == null) {
             latters = new HashMap<>();
             try {
-                final InputStream ris = elem.getClass().getResourceAsStream("/ru/apertum/qsystem/server/sound/latters.properties");
+                final InputStream ris = elem.getClass()
+                    .getResourceAsStream("/ru/apertum/qsystem/server/sound/latters.properties");
                 if (ris == null) {
                     return null;
                 }
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(ris, Charset.forName("utf8")))) {
+                try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(ris, Charset.forName("utf8")))) {
                     String line;
                     boolean f = true;
                     while ((line = br.readLine()) != null) {
@@ -429,12 +429,15 @@ public class SoundPlayer implements Runnable {
         //final String is__ru = "й ц у к е н г ш щ з х ъ ф ы в а п р о л д ж э я ч с м и т ь б ю ё ";
         //final String not_ru = "iic u k e n g shghz x zzf yyv a p r o l d jzeeiachs m i t ccb iuio";
         //int pos = is__ru.indexOf(elem.toLowerCase());
-        final String ns = latters.get(elem) == null ? elem : preffix + latters.get(elem); //not_ru.substring(pos, pos + 2).trim().toLowerCase();
+        final String ns = latters.get(elem) == null ? elem
+            : preffix + latters.get(elem); //not_ru.substring(pos, pos + 2).trim().toLowerCase();
         return ns;
     }
 
     private static boolean isNum(char elem) {
-        return '1' == elem || '2' == elem || '3' == elem || '4' == elem || '5' == elem || '6' == elem || '7' == elem || '8' == elem || '9' == elem || '0' == elem;
+        return '1' == elem || '2' == elem || '3' == elem || '4' == elem || '5' == elem
+            || '6' == elem
+            || '7' == elem || '8' == elem || '9' == elem || '0' == elem;
     }
 
     private static boolean isNum(String elem) {
@@ -455,7 +458,6 @@ public class SoundPlayer implements Runnable {
      *
      * @param clientNumber номер вызываемого клиента
      * @param pointNumber номер кабинета, куда вызвали
-     * @param isFirst
      */
     public static void inviteClient(String clientNumber, String pointNumber, boolean isFirst) {
         inviteClient(clientNumber, pointNumber, isFirst, null, null, null);
@@ -466,15 +468,21 @@ public class SoundPlayer implements Runnable {
      *
      * @param clientNumber номер вызываемого клиента
      * @param pointNumber номер кабинета, куда вызвали
-     * @param isFirst
-     * @param inviteType Для сервера всегда null. Для всего остального смотреть в настройках сервера и передавать
-     * @param voiceType Для сервера всегда null. Для всего остального смотреть в настройках сервера и передавать
-     * @param pointType Для сервера всегда null. Для всего остального смотреть в настройках сервера и передавать 0 - кабинет, 1 - окно, 2 - стойка
+     * @param inviteType Для сервера всегда null. Для всего остального смотреть в настройках сервера
+     * и передавать
+     * @param voiceType Для сервера всегда null. Для всего остального смотреть в настройках сервера
+     * и передавать
+     * @param pointType Для сервера всегда null. Для всего остального смотреть в настройках сервера
+     * и передавать 0 - кабинет, 1 - окно, 2 - стойка
      */
-    public static void inviteClient(String clientNumber, String pointNumber, boolean isFirst, Integer inviteType, Integer voiceType, Integer pointType) {
-        final int ivt = inviteType == null ? ServerProps.getInstance().getProps().getSound() : inviteType;
-        final int voc = voiceType == null ? ServerProps.getInstance().getProps().getVoice() : voiceType;
-        final int pnt = pointType == null ? ServerProps.getInstance().getProps().getPoint() : pointType;
+    public static void inviteClient(String clientNumber, String pointNumber, boolean isFirst,
+        Integer inviteType, Integer voiceType, Integer pointType) {
+        final int ivt =
+            inviteType == null ? ServerProps.getInstance().getProps().getSound() : inviteType;
+        final int voc =
+            voiceType == null ? ServerProps.getInstance().getProps().getVoice() : voiceType;
+        final int pnt =
+            pointType == null ? ServerProps.getInstance().getProps().getPoint() : pointType;
         if (ivt == 0) {
             return;
         }
@@ -514,15 +522,15 @@ public class SoundPlayer implements Runnable {
     /**
      * Проговорить вызов клиента голосом
      *
-     * @param service
      * @param clientNumber номер вызываемого клиента
      * @param pointNumber номер кабинета, куда вызвали
-     * @param isFirst
      */
-    public static void inviteClient(QService service, String clientNumber, String pointNumber, boolean isFirst) {
+    public static void inviteClient(QService service, String clientNumber, String pointNumber,
+        boolean isFirst) {
         // Для начала найдем шаблон
         QService tempServ = service;
-        while ((tempServ.getSoundTemplate() == null || tempServ.getSoundTemplate().startsWith("0")) && tempServ.getParent() != null) {
+        while ((tempServ.getSoundTemplate() == null || tempServ.getSoundTemplate().startsWith("0"))
+            && tempServ.getParent() != null) {
             tempServ = tempServ.getParent();
         }
         if (tempServ.getSoundTemplate() == null || tempServ.getSoundTemplate().startsWith("0")) {
@@ -588,11 +596,15 @@ public class SoundPlayer implements Runnable {
         }
 
         if (!(isFirst && gong == 3)) {
-            if (client) {
-                res.add(path + "client.wav");
-            }
-            if (cl_num) {
-                res.addAll(toSoundSimple2(path, clientNumber));
+            try {
+                if (client) {
+                    res.add(path + "client.wav");
+                }
+                if (cl_num) {
+                    res.addAll(toSoundSimple2(path, clientNumber));
+                }
+            } catch (NullPointerException e) {
+                QLog.l().logQUser().debug("Caught exception. Continue");
             }
             switch (go_to) {
                 case 1:
@@ -614,5 +626,24 @@ public class SoundPlayer implements Runnable {
             }
         }
         SoundPlayer.play(res);
+    }
+
+    /**
+     * Asks the user to select a file to play.
+     */
+    public File getFileToPlay() {
+        File file = null;
+        JFrame frame = new JFrame();
+        JFileChooser chooser = new JFileChooser(".");
+        int returnvalue = chooser.showDialog(frame, "Select File to Play");
+        if (returnvalue == JFileChooser.APPROVE_OPTION) {
+            file = chooser.getSelectedFile();
+        }
+        return file;
+    }
+
+    @Override
+    public void run() {
+        doSounds(this, resourceList);
     }
 }

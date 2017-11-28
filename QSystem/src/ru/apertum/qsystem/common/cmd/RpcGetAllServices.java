@@ -23,10 +23,13 @@ import ru.apertum.qsystem.server.model.QNet;
 import ru.apertum.qsystem.server.model.QService;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetAllServices extends JsonRPC20 {
+
+    @Expose
+    @SerializedName("result")
+    private ServicesForWelcome result;
 
     public RpcGetAllServices() {
     }
@@ -35,7 +38,32 @@ public class RpcGetAllServices extends JsonRPC20 {
         this.result = result;
     }
 
+    public ServicesForWelcome getResult() {
+        return result;
+    }
+
+    public void setResult(ServicesForWelcome result) {
+        this.result = result;
+    }
+
     public static class ServicesForWelcome {
+
+        @Expose
+        @SerializedName("root")
+        private QService root;
+        @Expose
+        @SerializedName("start_time")
+        private Date startTime;
+        @Expose
+        @SerializedName("finish_time")
+        private Date finishTime;
+        /**
+         * Свободное расположение кнопок на пункте регистрации Free location of buttons on the
+         * registration point
+         */
+        @Expose
+        @SerializedName("btn_free_dsn")
+        private Boolean buttonFreeDesign;
 
         public ServicesForWelcome() {
         }
@@ -46,9 +74,6 @@ public class RpcGetAllServices extends JsonRPC20 {
             this.finishTime = qnet.getFinishTime();
             this.buttonFreeDesign = qnet.getButtonFreeDesign();
         }
-        @Expose
-        @SerializedName("root")
-        private QService root;
 
         public QService getRoot() {
             return root;
@@ -57,9 +82,6 @@ public class RpcGetAllServices extends JsonRPC20 {
         public void setRoot(QService root) {
             this.root = root;
         }
-        @Expose
-        @SerializedName("start_time")
-        private Date startTime;
 
         public Date getFinishTime() {
             return finishTime;
@@ -76,16 +98,6 @@ public class RpcGetAllServices extends JsonRPC20 {
         public void setStartTime(Date startTime) {
             this.startTime = startTime;
         }
-        @Expose
-        @SerializedName("finish_time")
-        private Date finishTime;
-        /**
-         * Свободное расположение кнопок на пункте регистрации
-         * Free location of buttons on the registration point
-         */
-        @Expose
-        @SerializedName("btn_free_dsn")
-        private Boolean buttonFreeDesign;
 
         public Boolean getButtonFreeDesign() {
             return buttonFreeDesign;
@@ -94,16 +106,5 @@ public class RpcGetAllServices extends JsonRPC20 {
         public void setButtonFreeDesign(Boolean buttonFreeDesign) {
             this.buttonFreeDesign = buttonFreeDesign;
         }
-    }
-    @Expose
-    @SerializedName("result")
-    private ServicesForWelcome result;
-
-    public void setResult(ServicesForWelcome result) {
-        this.result = result;
-    }
-
-    public ServicesForWelcome getResult() {
-        return result;
     }
 }

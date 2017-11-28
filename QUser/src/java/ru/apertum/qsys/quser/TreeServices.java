@@ -10,7 +10,6 @@ import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QServiceTree;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class TreeServices extends AbstractTreeModel<QService> {
@@ -18,7 +17,7 @@ public class TreeServices extends AbstractTreeModel<QService> {
     public TreeServices() {
         super(QServiceTree.getInstance().getRoot());
     }
-    
+
     @Override
     public boolean isLeaf(QService e) {
         return e.isLeaf();

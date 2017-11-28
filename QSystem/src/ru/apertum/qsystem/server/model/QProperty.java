@@ -31,13 +31,49 @@ import javax.persistence.Table;
 import ru.apertum.qsystem.common.Uses;
 
 /**
- * Настройки системы в БД. Каждая настройка находится в своей секции. Секция может быть NULL. Значение параметра может быть NULL. Имя параметра не NULL.
+ * Настройки системы в БД. Каждая настройка находится в своей секции. Секция может быть NULL.
+ * Значение параметра может быть NULL. Имя параметра не NULL.
  *
  * @author Evgeniy Egorov
  */
 @Entity
 @Table(name = "properties")
 public class QProperty implements Serializable {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Expose
+    @SerializedName("id")
+    private Long id;
+    /**
+     * Раздел параметров
+     */
+    @Expose
+    @SerializedName("section")
+    @Column(name = "psection")
+    private String section;
+    /**
+     * Ключ параметра
+     */
+    @Expose
+    @SerializedName("key")
+    @Column(name = "pkey")
+    private String key;
+    /**
+     * Значение параметра
+     */
+    @Expose
+    @SerializedName("value")
+    @Column(name = "pvalue")
+    private String value;
+    /**
+     * Коммент для параметра
+     */
+    @Expose
+    @SerializedName("comment")
+    @Column(name = "pcomment")
+    private String comment;
 
     public QProperty(String section, String key, String value) {
         if (key == null) {
@@ -68,50 +104,14 @@ public class QProperty implements Serializable {
 
     public QProperty() {
     }
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Expose
-    @SerializedName("id")
-    private Long id;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getId() {
         return id;
     }
 
-    /**
-     * Раздел параметров
-     */
-    @Expose
-    @SerializedName("section")
-    @Column(name = "psection")
-    private String section;
-
-    /**
-     * Ключ параметра
-     */
-    @Expose
-    @SerializedName("key")
-    @Column(name = "pkey")
-    private String key;
-    /**
-     * Значение параметра
-     */
-    @Expose
-    @SerializedName("value")
-    @Column(name = "pvalue")
-    private String value;
-    /**
-     * Коммент для параметра
-     */
-    @Expose
-    @SerializedName("comment")
-    @Column(name = "pcomment")
-    private String comment;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getSection() {
         return section;
@@ -134,6 +134,14 @@ public class QProperty implements Serializable {
 
     public String getValue() {
         return value;
+    }
+
+    public void setValue(Boolean value) {
+        this.value = value == null ? null : (value ? "true" : "false");
+    }
+
+    public void setValue(Date value) {
+        this.value = value == null ? null : (Uses.FORMAT_FOR_REP.format(value));
     }
 
     public Integer getValueAsInt() {
@@ -176,14 +184,6 @@ public class QProperty implements Serializable {
         this.value = value == null ? null : value.toString();
     }
 
-    public void setValue(Boolean value) {
-        this.value = value == null ? null : (value ? "true" : "false");
-    }
-
-    public void setValue(Date value) {
-        this.value = value == null ? null : (Uses.FORMAT_FOR_REP.format(value));
-    }
-
     public void setValue(Date value, String pattern) {
         this.value = value == null ? null : (new SimpleDateFormat(pattern).format(value));
     }
@@ -198,7 +198,11 @@ public class QProperty implements Serializable {
 
     @Override
     public String toString() {
-        return (getSection() == null ? "" : ("[" + (getSection().length() > 24 ? getSection().substring(0, 23) : getSection()) + "]")) + (getKey().length() > 24 ? getKey().substring(0, 23) : getKey()) + ":" + (getValue().length() > 24 ? getValue().substring(0, 23) : getValue());
+        return (getSection() == null ? ""
+            : ("[" + (getSection().length() > 24 ? getSection().substring(0, 23) : getSection())
+                + "]"))
+            + (getKey().length() > 24 ? getKey().substring(0, 23) : getKey()) + ":" + (
+            getValue().length() > 24 ? getValue().substring(0, 23) : getValue());
     }
 
     @Override
@@ -206,8 +210,8 @@ public class QProperty implements Serializable {
         if (obj != null && obj instanceof QProperty) {
             final QProperty p = (QProperty) obj;
             return ((section == null ? p.getSection() == null : section.equals(p.getSection()))
-                    && (key == null ? p.getKey() == null : key.equals(p.getKey()))
-                    && (value == null ? p.getValue() == null : value.equals(p.getValue())));
+                && (key == null ? p.getKey() == null : key.equals(p.getKey()))
+                && (value == null ? p.getValue() == null : value.equals(p.getValue())));
         } else {
             return false;
         }

@@ -23,13 +23,13 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class FlexPriorityCell implements TableCellRenderer {
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+        boolean hasFocus, int row, int column) {
         final JLabel l = new JLabel((String) value);
         if (!((FlexPriorityMableModel) table.getModel()).getServicesInRows().get(row).isFlexy()) {
             l.setBackground(Color.LIGHT_GRAY);

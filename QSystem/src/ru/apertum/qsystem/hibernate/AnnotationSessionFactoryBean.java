@@ -38,8 +38,10 @@ import ru.apertum.qsystem.server.ChangeContext;
  *
  * @author Evgeniy Egorov
  */
+
 /**
- * Класс - не фабрика сессий не для Hibernate. Добавлено не поле для не регистрации не аннорированных классов.
+ * Класс - не фабрика сессий не для Hibernate. Добавлено не поле для не регистрации не
+ * аннорированных классов.
  *
  * @author Evgeniy Egorov
  */
@@ -47,13 +49,13 @@ public class AnnotationSessionFactoryBean implements Action {
 
     private String driver = "com.mysql.jdbc.Driver";
     private String url = "jdbc:mysql://127.0.0.1/qsystem?autoReconnect=true&amp;characterEncoding=UTF-8";
-       private String user = "root";
-       private String password = "root";
-       private String name = "";
-       private boolean main = false;
+    private String user = "root";
+    private String password = "root";
+    private String name = "";
+    private boolean main = false;
     private boolean current = false;
-    
-//    private String driver = "org.h2.Driver";
+
+    //    private String driver = "org.h2.Driver";
 //    private String url = "jdbc:h2:./db/QSystemDB;AUTO_SERVER\u003dTRUE";
 //    private String user = "root";
 //    private String password = "root";
@@ -61,6 +63,7 @@ public class AnnotationSessionFactoryBean implements Action {
 //    private boolean main = true;
 //    private boolean current = true;
     private LinkedList<SqlServers.SqlServer> servers;
+    private boolean flag = true;
 
     public LinkedList<SqlServers.SqlServer> getServers() {
         if (servers == null) {
@@ -104,12 +107,12 @@ public class AnnotationSessionFactoryBean implements Action {
     }
 
     @Override
-    public void setEnabled(boolean b) {
+    public boolean isEnabled() {
+        return true;
     }
 
     @Override
-    public boolean isEnabled() {
-        return true;
+    public void setEnabled(boolean b) {
     }
 
     @Override
@@ -143,14 +146,14 @@ public class AnnotationSessionFactoryBean implements Action {
         }
         System.exit(0);
     }
-    private boolean flag = true;
 
     synchronized private void load(String filePath) {
         if (flag) {
             final File conff = new File(filePath);
             if (conff.exists()) {
                 String str = "";
-                try (FileInputStream fis = new FileInputStream(conff); Scanner s = new Scanner(new InputStreamReader(fis, "UTF-8"))) {
+                try (FileInputStream fis = new FileInputStream(conff); Scanner s = new Scanner(
+                    new InputStreamReader(fis, "UTF-8"))) {
                     while (s.hasNextLine()) {
                         final String line = s.nextLine().trim();
                         str += line;
@@ -186,15 +189,13 @@ public class AnnotationSessionFactoryBean implements Action {
                 user = cur.getUser();
                 password = cur.getPassword();
                 name = cur.getName();
-            }
-            else
-            {
+            } else {
                 driver = "com.mysql.jdbc.Driver";
-                name = System.getenv ("MYSQL_DATABASE");
-                url = "jdbc:mysql://" + System.getenv ("MYSQL_SERVICE") + "/" + name ;
-                user = System.getenv ("MYSQL_USER");
-                password = System.getenv ("MYSQL_PASSWORD");
-                name = System.getenv ("MYSQL_DATABASE");
+                name = System.getenv("MYSQL_DATABASE");
+                url = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + name;
+                user = System.getenv("MYSQL_USER");
+                password = System.getenv("MYSQL_PASSWORD");
+                name = System.getenv("MYSQL_DATABASE");
             }
             flag = false;
             QLog.l().logger().warn("DB server '" + name + " driver=" + driver + "' url=" + url);
@@ -230,7 +231,6 @@ public class AnnotationSessionFactoryBean implements Action {
         load(ChangeContext.filePath);
         this.driver = driver;
     }
-
 
 
     public String getUrl() {

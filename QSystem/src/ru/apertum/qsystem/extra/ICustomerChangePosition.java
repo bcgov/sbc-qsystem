@@ -19,7 +19,6 @@ package ru.apertum.qsystem.extra;
 import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
- *
  * @author egorov
  */
 public interface ICustomerChangePosition extends IExtra {

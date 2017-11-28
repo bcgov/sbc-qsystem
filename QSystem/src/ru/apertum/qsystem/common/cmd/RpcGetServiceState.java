@@ -22,10 +22,13 @@ import java.util.concurrent.LinkedBlockingDeque;
 import ru.apertum.qsystem.common.model.QCustomer;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetServiceState extends JsonRPC20 {
+
+    @Expose
+    @SerializedName("result")
+    private ServiceState result;
 
     public RpcGetServiceState() {
     }
@@ -33,12 +36,10 @@ public class RpcGetServiceState extends JsonRPC20 {
     public RpcGetServiceState(int code, String message) {
         this.result = new ServiceState(code, message);
     }
+
     public RpcGetServiceState(LinkedBlockingDeque<QCustomer> line) {
         this.result = new ServiceState(line);
     }
-    @Expose
-    @SerializedName("result")
-    private ServiceState result;
 
     public ServiceState getResult() {
         return result;
@@ -50,6 +51,16 @@ public class RpcGetServiceState extends JsonRPC20 {
 
     public static class ServiceState {
 
+        @Expose
+        @SerializedName("code")
+        private int code;
+        @Expose
+        @SerializedName("message")
+        private String message;
+        @Expose
+        @SerializedName("clients")
+        private LinkedBlockingDeque<QCustomer> clients;
+
         public ServiceState() {
         }
 
@@ -57,14 +68,12 @@ public class RpcGetServiceState extends JsonRPC20 {
             this.code = code;
             this.message = message;
         }
+
         public ServiceState(LinkedBlockingDeque<QCustomer> line) {
             this.code = 1;
             this.message = null;
             this.clients = line;
         }
-        @Expose
-        @SerializedName("code")
-        private int code;
 
         public int getCode() {
             return code;
@@ -73,9 +82,6 @@ public class RpcGetServiceState extends JsonRPC20 {
         public void setCode(int code) {
             this.code = code;
         }
-        @Expose
-        @SerializedName("message")
-        private String message;
 
         public String getMessage() {
             return message;
@@ -84,10 +90,6 @@ public class RpcGetServiceState extends JsonRPC20 {
         public void setMessage(String message) {
             this.message = message;
         }
-        
-        @Expose
-        @SerializedName("clients")
-        private LinkedBlockingDeque<QCustomer> clients;
 
         public LinkedBlockingDeque<QCustomer> getClients() {
             return clients;

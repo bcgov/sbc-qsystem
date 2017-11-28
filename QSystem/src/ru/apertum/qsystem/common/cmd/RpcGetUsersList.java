@@ -22,18 +22,18 @@ import java.util.LinkedList;
 import ru.apertum.qsystem.server.model.QUser;
 
 /**
- *
  * @author Evgeniy Egorov
  */
 public class RpcGetUsersList extends JsonRPC20 {
 
-    public RpcGetUsersList() {
-    }
     @Expose
     @SerializedName("result")
     private LinkedList<QUser> result;
 
-    public void setResult(LinkedList<QUser> result) {
+    public RpcGetUsersList() {
+    }
+
+    public RpcGetUsersList(LinkedList<QUser> result) {
         this.result = result;
     }
 
@@ -41,7 +41,7 @@ public class RpcGetUsersList extends JsonRPC20 {
         return result;
     }
 
-    public RpcGetUsersList(LinkedList<QUser> result) {
+    public void setResult(LinkedList<QUser> result) {
         this.result = result;
     }
 }

@@ -17,13 +17,11 @@
 package ru.apertum.qsystem.server;
 
 import java.util.ServiceLoader;
-import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.server.controller.IIndicatorBoard;
 import ru.apertum.qsystem.server.controller.QIndicatorBoardMonitor;
 import ru.apertum.qsystem.server.htmlboard.QIndicatorHtmlboard;
 
 /**
- *
  * @author egorov
  */
 public class MainBoard {
@@ -44,11 +42,9 @@ public class MainBoard {
             // поддержка расширяемости плагинами
             IIndicatorBoard res = null;
             for (final IIndicatorBoard board : ServiceLoader.load(IIndicatorBoard.class)) {
-                QLog.l().logger().info("Вызов SPI расширения. Описание: " + board.getDescription());
                 try {
                     res = board;
                 } catch (Throwable tr) {
-                    QLog.l().logger().error("Вызов SPI расширения завершился ошибкой. Описание: " + tr);
                 }
                 // раз напечатили и хорошь
                 if (res != null) {
@@ -56,7 +52,10 @@ public class MainBoard {
                 }
             }
             if (res == null) {
-                final boolean bClassicType = IIndicatorBoard.CLASSIC.equalsIgnoreCase(ServerProps.getInstance().getProperty(IIndicatorBoard.SECTION, IIndicatorBoard.PARAMETER, IIndicatorBoard.CLASSIC));
+                final boolean bClassicType = IIndicatorBoard.CLASSIC.equalsIgnoreCase(
+                    ServerProps.getInstance()
+                        .getProperty(IIndicatorBoard.SECTION, IIndicatorBoard.PARAMETER,
+                            IIndicatorBoard.CLASSIC));
                 if (bClassicType) {
                     res = new QIndicatorBoardMonitor();
                     ((QIndicatorBoardMonitor) res).setConfigFile("config\\mainboard.xml");

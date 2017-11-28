@@ -61,13 +61,10 @@
             Sessions.getCurrent().setAttribute("org.zkoss.web.preferred.timeZone", event.getTimeZone());
         }
         </zscript>
-        <north size="180px" border="0" sclass="blue-background">
+        <north size="180px" border="0" sclass="blue-background" id="main_north">
             <vbox height="100%" pack="center">
                 <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px" style=" margin-top: 24px;"/>
-                    
-                <hlayout>
-                </hlayout>
-                
+                <hlayout></hlayout>
                 <vlayout sclass="blue-background" height="100px" width="1200px">
                     <div>
                         <hbox width="80%">
@@ -85,20 +82,15 @@
                         </hbox>
                     </div>
                 </vlayout>
-                
                 <hbox width="100%" style="padding: 1px;" pack="center" align="center">
                     <!-- Это форма для логирования, форма для показа залогированного пользователя This is a form for logging, a form for displaying a logged user-->
                     <include src="/include/loginForm.zul"/>
                 </hbox>
             </vbox>
-                    
-
         </north>
-        
         <west visible="false" title="Полезные материалы" size="25%" hflex="min" maxsize="250" splittable="true" collapsible="true">
             <include src="/include/westUsefullStuff.zul"/>
         </west>
-        
         <center border="none" hflex="true">
              <include id="incClientDashboard" src="/include/clientDashboard.zul"/>            
         </center>
@@ -143,7 +135,6 @@
             </div>
         </east>
         -->
-        
         <south   size="40px" style="background-color: #003366;" border="0">
             <toolbar mold="panel" align="center">
                 <toolbarbutton sclass="toolbar-items" label="License" href="https://github.com/bcgov/sbc-qsystem/blob/master/LICENSE" target="_blank" />
@@ -153,12 +144,9 @@
                 <toolbarbutton sclass="toolbar-items" label="Powered by Government of British Columbia" href="gww.gov.bc.ca" target="_blank" />
 <!--                 <div width="720px" style="background-color:#003366;">
                 </div> -->
-                <label sclass="toolbar-items" value="${c:l('versions')}"/> 
+                <label sclass="toolbar-items" value="${c:l('versions')}"/>
                 <!-- label=   "version 0.2" -->
             </toolbar>
         </south>
-        
-        
     </borderlayout>
-
 </zk>

@@ -30,11 +30,10 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 /**
- * Класс для работы с треем.
- * Класс для работы с треем.
- * Должен уметь помещать в трей иконку, определять к ней контекстное меню,
- * обрабатывать пункты этого меню, управлять эконкой.
- * Класс должен быть Singleton.
+ * Класс для работы с треем. Класс для работы с треем. Должен уметь помещать в трей иконку,
+ * определять к ней контекстное меню, обрабатывать пункты этого меню, управлять эконкой. Класс
+ * должен быть Singleton.
+ *
  * @author Evgeniy Egorov
  */
 public final class QTray {
@@ -48,17 +47,20 @@ public final class QTray {
      */
     private final PopupMenu popupMenu = new PopupMenu();
     /**
-     * Это эконка в трее.
-     */
-    private TrayIcon trayIcon;
-
-    public TrayIcon getTrayIcon() {
-        return trayIcon;
-    }
-    /**
      * Системный трей.
      */
     private final SystemTray systemTray = SystemTray.getSystemTray();
+    //***********************************************************************
+    //*************** Работа с миганием *************************************
+    private final int DELAY_BLINK = 500;
+    /**
+     * Таймер мигания.
+     */
+    private final Timer timer = new Timer(DELAY_BLINK, new TimerPrinter());
+    /**
+     * Это эконка в трее.
+     */
+    private TrayIcon trayIcon;
     /**
      * Ресурс главной эконки.
      */
@@ -72,6 +74,19 @@ public final class QTray {
      * Конструктор.
      */
     private QTray() {
+    }
+
+    synchronized public static QTray getInstance(final JFrame frame, String resourceName,
+        String hint) {
+        if (_instance == null) {
+            _instance = new QTray();
+            _instance.setTray(frame, resourceName, hint);
+        }
+        return _instance;
+    }
+
+    public TrayIcon getTrayIcon() {
+        return trayIcon;
     }
 
     /**
@@ -89,16 +104,9 @@ public final class QTray {
         }
     }
 
-    synchronized public static QTray getInstance(final JFrame frame, String resourceName, String hint) {
-        if (_instance == null) {
-            _instance = new QTray();
-            _instance.setTray(frame, resourceName, hint);
-        }
-        return _instance;
-    }
-
     /**
      * Добавление пункта в контекстное меню.
+     *
      * @param itemName Название пункта меню.
      * @param actionListener Событие при выборе этого пункта.
      */
@@ -110,6 +118,7 @@ public final class QTray {
 
     /**
      * Вывод эконки в трей и определение событий для трея.
+     *
      * @param frame форма, с которой связана эконка
      * @param resourceName имя файла картинки в ресурсах, например /ru/forms/resources/busyicons/client.png
      * @param hint Хинт для эконки в трее.
@@ -137,44 +146,17 @@ public final class QTray {
 
     /**
      * Установить новую эконку в трей.
+     *
      * @param resourceName ресурс новой эконки.
      */
     synchronized public void setNewIcon(String resourceName) {
         mainImage = new ImageIcon(getClass().getResource(resourceName)).getImage();
         trayIcon.setImage(mainImage);
     }
-    //***********************************************************************
-    //*************** Работа с миганием *************************************
-    private final int DELAY_BLINK = 500;
-    /**
-     * Таймер мигания.
-     */
-    private final Timer timer = new Timer(DELAY_BLINK, new TimerPrinter());
-
-    /**
-     * Собыите на таймер
-     */
-    private class TimerPrinter implements ActionListener {
-
-        private boolean flag = true;
-
-        /**
-         * Обеспечение мигания.
-         * @param e
-         */
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (flag) {
-                trayIcon.setImage(mainImage);
-            } else {
-                trayIcon.setImage(blinkImage);
-            }
-            flag = !flag;
-        }
-    };
 
     /**
      * Стерт мигания эконки в трее.
+     *
      * @param resourceName Мигает меняясь на эту эконку.
      * @param period Мигает с периодом.
      */
@@ -186,6 +168,8 @@ public final class QTray {
         }
     }
 
+    ;
+
     synchronized public void stopBlinkIcon() {
         timer.stop();
         if (mainImage != null) {
@@ -195,7 +179,7 @@ public final class QTray {
 
     /**
      * Показать сообщение в системном трее
-     * @param caption
+     *
      * @param message текст сообщения
      * @param type тип сообщения
      */
@@ -218,24 +202,55 @@ public final class QTray {
         trayIcon.displayMessage(caption, message, t);
     }
 
-    public enum MessageType {
-
-        /** An error message */
-        ERROR,
-        /** A warning message */
-        WARNING,
-        /** An information message */
-        INFO,
-        /** Simple message */
-        NONE
-    };
-
     /**
-     * Убрать иконку из трея.
-     * При завершении приложения, этот класс должен освободиться, при этом иконка должна убраться автоматически.
+     * Убрать иконку из трея. При завершении приложения, этот класс должен освободиться, при этом
+     * иконка должна убраться автоматически.
      */
     synchronized public void removeTrayIcon() {
         // подотрем иконку из трея
         systemTray.remove(trayIcon);
+    }
+
+    public enum MessageType {
+
+        /**
+         * An error message
+         */
+        ERROR,
+        /**
+         * A warning message
+         */
+        WARNING,
+        /**
+         * An information message
+         */
+        INFO,
+        /**
+         * Simple message
+         */
+        NONE
+    }
+
+    ;
+
+    /**
+     * Собыите на таймер
+     */
+    private class TimerPrinter implements ActionListener {
+
+        private boolean flag = true;
+
+        /**
+         * Обеспечение мигания.
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (flag) {
+                trayIcon.setImage(mainImage);
+            } else {
+                trayIcon.setImage(blinkImage);
+            }
+            flag = !flag;
+        }
     }
 }
