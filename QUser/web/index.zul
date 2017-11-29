@@ -63,7 +63,14 @@
         </zscript>
         <north size="180px" border="0" sclass="blue-background" id="main_north">
             <vbox height="100%" pack="center">
-                <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px" style=" margin-top: 24px;"/>
+                <hbox>
+                    <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px" style=" margin-top: 24px;"/>
+                    <div width="20px"/>
+                    <vbox>
+                        <div height="50px"/>
+                        <label sclass="login-text bdd-login-officename" value="@load(fmodel.officeName)" height="56px" style="margin-top: 24px;"/>
+                    </vbox>
+                </hbox>
                 <hlayout></hlayout>
                 <vlayout sclass="blue-background" height="100px" width="1200px">
                     <div>
