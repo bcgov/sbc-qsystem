@@ -8,7 +8,7 @@ class AuthModule extends Module {
         loginPass { $("input", class: "bdd-pwd") }
         loginButton { $("button", class:"login-button")[0] }
         logoutButton { $("button", class:"login-button")[1] }
-        loggedInUser { $("span", class:"login-text")[3] }
+        loggedInUser { $("span", class:"login-text")[4] }
     }
 
     void signIn(String username, String password) {
