@@ -1545,4 +1545,8 @@ public class Form {
         customer = user.getUser().getCustomer();
         customer.setQuantity("1");
     }
+    
+    public String getOfficeName(){
+        return officeName;
+    }
 }
