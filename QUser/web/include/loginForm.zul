@@ -44,6 +44,8 @@
         <hbox>
 <!--             <label style="cursor:pointer;text-decoration: underline; color:green; font-size:1.2em;"
                 value="GA Board" onClick="@command('GABoard')" visible="@load(fmodel.user.getGABoard())"/> -->
+<!--             <label style="cursor:pointer;text-decoration: underline; color:green; font-size:1.2em;"
+            value="Report Bug" onClick="@command('ReportBug')" visible="true"/> -->
             <hbox>
                 <div>
 

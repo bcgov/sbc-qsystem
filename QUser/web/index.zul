@@ -68,7 +68,7 @@
                     <div width="20px"/>
                     <vbox>
                         <div height="50px"/>
-                        <label sclass="login-text bdd-login-officename" value="@load(fmodel.officeName)" height="56px" style="margin-top: 24px;"/>
+                        <label sclass="login-text bdd-login-officename" value="@bind(fmodel.officeName)" height="56px" style="margin-top: 24px;"/>
                     </vbox>
                 </hbox>
                 <hlayout></hlayout>
@@ -143,7 +143,9 @@
         </east>
         -->
         <south   size="40px" style="background-color: #003366;" border="0">
-            <toolbar mold="panel" align="center">
+            <!-- <toolbar mold="panel" align="center"> -->
+            <toolbar mold="panel">
+                <div sclass="toolbar-items" width="680px" />
                 <toolbarbutton sclass="toolbar-items" label="License" href="https://github.com/bcgov/sbc-qsystem/blob/master/LICENSE" target="_blank" />
                 <toolbarbutton sclass="toolbar-items" label="Manual" onClick='alert("Not ready")'/>
                 <toolbarbutton sclass="toolbar-items" label="${c:l('support')}"  href="mailto:xyz@gov.bc.ca" target="_blank" />
@@ -152,8 +154,15 @@
 <!--                 <div width="720px" style="background-color:#003366;">
                 </div> -->
                 <label sclass="toolbar-items" value="${c:l('versions')}"/>
+                <div sclass="toolbar-items" width="380px" />
+                
+                <label style="cursor:pointer;text-decoration: underline; color:white; font-size:1.2em; font-weight:bold"
+                    value="Report Bug" onClick="@command('ReportBug')" visible="true"/>    
+                
                 <!-- label=   "version 0.2" -->
             </toolbar>
+  
         </south>
+
     </borderlayout>
 </zk>
