@@ -153,6 +153,9 @@ public class Form {
     Window addTicketDailogWindow;
     @Wire("#incClientDashboard #GAManagement")
     Window GAManagement;
+    @Wire("#incClientDashboard #incReportingBug #ReportingBug")
+    Window ReportingBugWindow;
+    
     QService pickedMainService;
     @Wire
     private Textbox typeservices;
@@ -190,6 +193,7 @@ public class Form {
     private String officeName = "";
     private Combobox cboFmCompress;
     private String filterCa = "";
+    private String CSRIcon = "";
 
 //    public LinkedList<QUser> test2 = greed.get(2).getShadow();
 //    public LinkedList<QUser> userList = QUserList.getInstance().getItems();
@@ -261,7 +265,7 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn"})
+    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn", "officeName"})
     public void login() {
 
         Uses.userTimeZone = (TimeZone) Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone");
@@ -312,6 +316,50 @@ public class Form {
     }
 
     @Command
+    public void ReportBug() {
+        ReportingBugWindow.setVisible(true);
+        ReportingBugWindow.doModal();
+    }
+
+    @Command
+    public void SendingSlack(){
+        String ReportMsg = "";
+        String ReportTicket = "";
+        String Username = "";
+        String BugMsg = ((Textbox) ReportingBugWindow.getFellow("Reportbugs")).getText();
+        CSRIcon = ":information_desk_person:";
+        
+        //Call Slack Api to connect to address
+        SlackApi api = new SlackApi("https://hooks.slack.com/services/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");
+//        SlackMessage msg = null;
+        SlackMessage msg = new SlackMessage(null);
+        Username = "CSR - " + user.getName();
+        if (user.getUser().getCustomer()!=null){
+            ReportTicket = user.getUser().getCustomer().getName();
+        }else{
+            ReportTicket = "Ticket numebr is not provided";
+        }
+        ReportMsg = ReportMsg + Username + "\n" + "Office Name: " + getOfficeName() + "\n" + "Ticket Number: " + ReportTicket + "\n\n" + BugMsg + "\n"; 
+                
+        
+        msg.setIcon(CSRIcon);
+        msg.setText(ReportMsg);
+        msg.setUsername(Username);
+//        api.SlackMessage.setIcon(":information_desk_person:");
+        api.call(msg);
+        
+        ReportingBugWindow.setVisible(false);
+        ((Textbox) ReportingBugWindow.getFellow("Reportbugs")).setText("");
+    }
+    
+    @Command
+    public void CancelReporting(){
+        ReportingBugWindow.setVisible(false);
+        
+        ((Textbox) ReportingBugWindow.getFellow("Reportbugs")).setText("");
+    }
+
+    @Command
     public void about() {
         final Properties settings = new Properties();
         final InputStream inStream = this.getClass()
@@ -343,7 +391,7 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn"})
+    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn", "officeName"})
     public void logout() {
         QLog.l().logQUser().debug("Logout " + user.getName());
 
@@ -588,8 +636,7 @@ public class Form {
     @Command
     public void updateComments() {
         // Inheritance the comment from Serve-customer window to hold window
-        String tempComment = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments"))
-            .getText();
+        String tempComment = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
         customer.setTempComments(tempComment);
         QLog.l().logQUser().debug("\n\nPostponed!!:\n" + customer.getTempComments() + "\n\n\n");
     }
