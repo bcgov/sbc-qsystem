@@ -178,7 +178,7 @@
             <div width="170px" style="background-color:Yellow;">
                 </div>
 
-            <vbox style="margin-right: 70px; margin-top: 12px;" >
+            <vbox style="margin-right: 20px; margin-top: 12px;" >
                 <button sclass="act-button" style="" label="Finish" disabled="@load(fmodel.btnsDisabled[5])" onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
                 </button>
                 
@@ -186,11 +186,22 @@
                 </div>
                 
                 <!--<checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
-                <checkbox  onCheck="@command('disableButtons')" style="margin-right: 120px;margin-top: 20px; font-size : 14px;" sclass="text-style bdd-inaccurate-time-check-box" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
+                <checkbox  onCheck="@command('disableButtons')" style="margin-right: 30px;margin-top: 20px; font-size : 14px;" sclass="text-style bdd-inaccurate-time-check-box" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
 
             </vbox>
+
+            <div width="80px" style="background-color:Yellow;">
+            </div>
+            <vbox style="margin-right: 10px;" >
+                <div height="60px" />
+                <label style=" cursor:pointer;text-decoration: underline; color:white; font-size:1em; font-weight:bold"
+                value="Feedback" onClick="@command('ReportBug')" visible="true" tooltip="csrReports, position=end_before"/>
+            </vbox>>   
         </hbox> 
         
     </vlayout>
+    <popup id="csrReports" width="200px" >
+        <label value="${c:l('ReportBug_Explanation')}" style="font-weight:bold; font-family: Helvetica; font-size:12px; "></label>
+    </popup>
 </window>
 </zk>

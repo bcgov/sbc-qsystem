@@ -413,6 +413,10 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public void setId(Long id) {
         this.id = id;
     }
+    
+    public String getPopup(){
+        return (getId()+ ", position=start_before");
+    }
 
     public Date getDeleted() {
         return deleted;

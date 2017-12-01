@@ -52,7 +52,15 @@
           </listhead>
           <template name="model" var="item">
             <listitem >
-                <listcell label="@load(item.getName())" tooltip="@load(item.getId())"/>
+
+<!--               <zscript><![CDATA[
+                String SpecialId=fmodel.listServices.getId()                         
+              ]]></zscript> 
+ -->
+
+                <listcell label="@load(item.getName())" tooltip="@load(item.getPopup())" />
+                <!-- tooltip="@load(item.getId())" -->
+                <!-- .concat(', ').concat('position=start_before') -->
                 <listcell label="@load(item.getParent().getName())" />
             </listitem>
           </template>
