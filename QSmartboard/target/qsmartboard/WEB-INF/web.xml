@@ -170,7 +170,8 @@ Copyright (C) 2004 Potix Corporation. All Rights Reserved.
 	<!-- /////////// -->
 	<!-- Miscellaneous -->
 	<session-config>
-		<session-timeout>60</session-timeout>
+		<!-- <session-timeout>1</session-timeout> -->
+		<timer-keep-alive>true</timer-keep-alive>
 	</session-config>
 
 	<!-- MIME mapping -->

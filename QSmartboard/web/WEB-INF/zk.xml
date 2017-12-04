@@ -1,0 +1,3 @@
+<session-config>
+  <timer-keep-alive>true</timer-keep-alive>
+</session-config>
