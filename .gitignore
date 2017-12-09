@@ -61,3 +61,5 @@ hs_err_pid*
 .DS_Store
 .classpath
 .project
+.settings
+nb-configuration.xml
