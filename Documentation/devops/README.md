@@ -32,7 +32,7 @@ The Build template is used to provision the Tools project.  Be sure to review th
 If no changes to the default parameters are required, the template can be processed and used to create OpenShift objects with the following commands:
 
 `oc project servicebc-customer-flow-tools`
-`oc process -f sbc-qsystem-build-template.json | oc create -f -` 
+`oc process -f sbc-qsystem-build-template.json | oc create -f -`
 
 Jenkins
 -------
@@ -126,8 +126,7 @@ It is recommended you add the office via the web user interface.  Use the follow
 	1. If no results are found, follow the instructions above in the Environment Template section to add the template.
 4. Carefully enter the required fields.
 	1. Office Service Name - very important, the service name for the new office.  Must be lowercase and in hostname format, for example office-10
-	2. Smartboard Layout - the smartboard layout is defaulted for Digital Signage only. If you want to setup the layout for Call by Ticket, enter: callbyticket.  If you want to setup the layout where you call by name and would like to only show the number of citizens waiting, enter: callbyname.
-	2. Image tag containing application images - change to the tag for the project you are working with.  For example, set to test if working on the test project. 
+	2. Image tag containing application images - change to the tag for the project you are working with.  For example, set to test if working on the test project.
 	3. Application Image Name - image name to use the office - the default should work.
 	4. Namespace containing application images - the default should work.
 
@@ -148,8 +147,3 @@ To remove an office, do the following:
 - Delete the permanent storage for the office
 - `oc rsh <mysql_podname>` and then `mysql`
 - `drop database <office-name>`
-	
-
-
-
-
