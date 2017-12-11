@@ -15,25 +15,26 @@
         <vlayout visible="@load(fmodel.officeType eq 'reception')">
           <label value="${c:l('comments')}"/>
           <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
-        </vlayout>
-        <label value="Channels:" visible="@load(fmodel.addWindowButtons[0])"/>
-        <div width="30%">
-          <combobox id="Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
 
-            <!-- visible="@load(fmodel.addWindowButtons[0])" -->
-            <!-- @load(fmodel.CheckCombobox()) -->
-            <attribute name="onCreate">self.setSelectedIndex(0);</attribute>
-            <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
-            <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
-            <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
-            <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
-            <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
-            <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
-            <!-- <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" /> -->
-            <!-- <comboitem label="${c:l('25min')}"/> -->
-            <!-- <comboitem label="${c:l('30min')}"/> -->
-          </combobox>
-        </div>
+          <label value="Channels:"/>
+          <div width="30%">
+            <combobox id="reception_Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+              <!-- visible="@load(fmodel.addWindowButtons[0])" -->
+              <!-- @load(fmodel.CheckCombobox()) -->
+              <attribute name="onCreate">self.setSelectedIndex(0);</attribute>
+              <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
+              <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
+              <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
+              <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
+              <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
+              <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
+              <!-- <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" /> -->
+              <!-- <comboitem label="${c:l('25min')}"/> -->
+              <!-- <comboitem label="${c:l('30min')}"/> -->
+            </combobox>
+          </div>
+        </vlayout>
+
         <label value="Type Service here" width="150px" />
         <hbox>
           <vbox>
@@ -67,6 +68,23 @@
           </template>
         </listbox>
         <vlayout visible="@load(fmodel.officeType eq 'non-reception')">
+          <label value="Channels:" />
+          <div width="30%">
+            <combobox id="general_Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+              <!-- visible="@load(fmodel.addWindowButtons[0])" -->
+              <!-- @load(fmodel.CheckCombobox()) -->
+              <attribute name="onCreate">self.setSelectedIndex(0);</attribute>
+              <comboitem label="${c:l('inperson')}" value="${c:l('inperson')}"  />
+              <comboitem label="${c:l('phone')}" value="${c:l('phone')}" />
+              <comboitem label="${c:l('backoffice')}" value="${c:l('backoffice')}" />
+              <comboitem label="${c:l('emailfaxmail')}" value="${c:l('emailfaxmail')}" />
+              <comboitem label="${c:l('catassisted')}" value="${c:l('catassisted')}" />
+              <comboitem label="${c:l('mobileassist')}" value="${c:l('mobileassist')}" />
+              <!-- <comboitem label="${c:l('inpersonRedirect')}" value="${c:l('inpersonRedirect')}" /> -->
+              <!-- <comboitem label="${c:l('25min')}"/> -->
+              <!-- <comboitem label="${c:l('30min')}"/> -->
+            </combobox>
+          </div>
           <div style="margin:10px 10px 10px 5px;"></div>
           <label value="${c:l('comments')}"/>
           <textbox id="general_ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
