@@ -98,6 +98,12 @@ public class QUser implements IidGetter, Serializable {
     @Expose
     @SerializedName("enable")
     private Integer enable = 1;
+    
+   //Andrew 
+    //Get the state of the user for GABoard - online/offline
+    @Expose
+    @SerializedName("current_state")
+    private boolean currentState = false;
     /**
      * Параметр доступа к администрированию системы. Parameter of access to system administration.
      */
@@ -226,6 +232,15 @@ public class QUser implements IidGetter, Serializable {
 
     public void setEnable(Integer enable) {
         this.enable = enable;
+    }
+    
+    @Column(name = "current_state")
+    public Boolean getCurrentState() {
+        return currentState;
+    }
+    
+    public void setCurrentState(boolean state) {
+        this.currentState = state;
     }
 
     @Column(name = "admin_access")

@@ -32,81 +32,85 @@
             border="normal"
             width="780px" 
             position="center,center" closable="true"
-            onClose="self.visible = false; event.stopPropagation();"
+            onClose=" @command('closeGA') "
+
             action="show: slideDown;hide: slideUp">
+            <!-- self.visible = false; event.stopPropagation(); -->
         <caption label="QSystem" image="/resources/img/logo32.png" />
         <div width="50px">
         </div>
 
-	<hbox>
-        <vbox align="center">
-	        <div width="50px">
-	        </div>
+    	<hbox>
+            <vbox align="center">
+    	        <div width="50px">
+    	        </div>
 
-<!-- style="font-size : 23px; font-family: Helvetica; color: Black; background-color: #94b8b8" -->
-        	<label value="Customer Waitings" sclass="top-text"/>
-        	<label value="@load(fmodel.user.customerList.size())" style="font-size : 42px; font-weight:bold"  />
-        	<label width="22px"/>
+    <!-- style="font-size : 23px; font-family: Helvetica; color: Black; background-color: #94b8b8" -->
+            	<label value="Customer Waitings" sclass="top-text"/>
+            	<label value="@load(fmodel.getCustomersCount())" style="font-size : 42px; font-weight:bold"  />
+            	<label width="22px"/>
 
-	        <div width="50px">
-	        </div>
-		</vbox>
+    	        <div width="50px">
+    	        </div>
+    		</vbox>
 
-	        <div width="50px">
-	        </div>
+    	        <div width="50px">
+    	        </div>
 
-		<vbox align="center">
-			<div width="50px">
-	        </div>
+    		<vbox align="center">
+    			<div width="50px">
+    	        </div>
 
-			<label value="Total Number of CSRs" sclass="top-text" />
-        	<label value="@load(fmodel.user.customerList.size())" style="font-size : 42px; font-weight:bold"  />
-        	<label width="22px"/>
+    			<label value="Total Number of CSRs" sclass="top-text" />
+            	<label value="@load(fmodel.getUsersForLogin().size())" style="font-size : 42px; font-weight:bold"  />
+                <!-- fmodel.user.customerList.size() -->
+            	<label width="22px"/>
 
-        	<div width="50px">
-	        </div>
-        </vbox>
+            	<div width="50px">
+    	        </div>
+            </vbox>
 
-	        <div width="50px">
-	        </div>
+    	        <div width="50px">
+    	        </div>
 
-    	<vbox align="center">
+        	<vbox align="center">
 
-    		<div width="50px">
-	        </div>
+        		<div width="50px">
+    	        </div>
 
-			<label value="Serving CSRs" sclass="top-text" />
-	    	<label value="@load(fmodel.getUsersForLogin().size()-2)" style="font-size : 42px; font-weight:bold"  />
-	    	<label width="22px"/>
+    			<label value="Serving CSRs" sclass="top-text" />
+    	    	<label value="@load(fmodel.getUsersForLogin().size()-2)" style="font-size : 42px; font-weight:bold"  />
+    	    	<label width="22px"/>
 
-    		<div width="50px">
-	        </div>
+        		<div width="50px">
+    	        </div>
 
-		</vbox>
-	</hbox>
+    		</vbox>
+    	</hbox>
         <vlayout height="260px" style="background-color:White">
         
 	        <!-- <listbox id="service_list" model="@load(fmodel.user.customerList)"  selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max" > -->
-	        <listbox id="GA_list" model="@load(fmodel.getUsersForLogin())" selectedItem="@bind(fmodel.pickedCustomer)" onSelect=""  width="100%" height="100%"  >
+	        <listbox id="GA_list" model="@load(fmodel.userList)" selectedItem="@bind(fmodel.pickedCustomer)" onSelect=""  width="100%" height="200px"  >
 
                 <listhead>
                     <listheader label="Staff Member" width="140px" align="center"/>
                     <listheader label="Service" width="200px" align="center"/>
-                    <listheader label="State" width="50px" align="center" />
-                    <listheader label="Serving Time" width="90px" align="center" />
-                    <listheader label="Comments" width="100px" align="center"/> 
+                    <listheader label="State" width="80px" align="center" />
+                    <listheader label="Serving Time" width="120px" align="center" />
+                    <listheader label="Comments" width="150px" align="center"/> 
 
                 </listhead>
                 <template name="model" var="userList">
                     <listitem context="servicesListPopup">
                         <listcell label="@load(userList.getName())" />
-                        <listcell label="@load(userList.getName())"/>
-                        <listcell label="@load(userList.getName())" />
-                        <listcell label="@load(userList.getName())" />
-                        <listcell label="@load(userList.getName())" />
+                        <listcell label="@load(userList.getParallelAccess())"/>
+                        <listcell label="@bind(userList.getCurrentState())" />
+                        <listcell label="@load(userList.getCustomer())" />
+                        <listcell label="@load(userList.getCurrentState())" />
                     </listitem>
                 </template>
             </listbox>
+            <timer id="timer_GA_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
 
 
 
