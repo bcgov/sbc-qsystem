@@ -58,27 +58,6 @@
             "apiVersion": "v1",
             "metadata":
             {
-                "name": "${QSYSTEM_SERVICE}-data"
-            },
-            "spec":
-            {
-                "accessModes": [
-                    "ReadWriteOnce"
-                ],
-                "resources":
-                {
-                    "requests":
-                    {
-                        "storage": "${QSYSTEM_VOLUME_CAPACITY}"
-                    }
-                }
-            }
-        },
-        {
-            "kind": "PersistentVolumeClaim",
-            "apiVersion": "v1",
-            "metadata":
-            {
                 "name": "cerberus-data"
             },
             "spec":
@@ -206,14 +185,6 @@
                     },
                     "spec":
                     {
-                        "volumes": [
-                        {
-                            "name": "${QSYSTEM_SERVICE}-data",
-                            "persistentVolumeClaim":
-                            {
-                                "claimName": "${QSYSTEM_SERVICE}-data"
-                            }
-                        }],
                         "containers": [
                         {
                             "name": "${QSYSTEM_SERVICE}",
@@ -224,15 +195,12 @@
                             }],
                             "livenessProbe":
                             {
-                                "exec":
+                                "timeoutSeconds": 1,
+                                "initialDelaySeconds": 120,
+                                "tcpSocket":
                                 {
-                                    "command": ["ls", "/opt/app-root/src/source/dist/temp"]
-                                },
-                                "initialDelaySeconds": 10,
-                                "timeoutSeconds": 5,
-                                "periodSeconds": 60,
-                                "successThreshold": 1,
-                                "failureThreshold": 3
+                                    "port": 8080
+                                }
                             },
                             "readinessProbe":
                             {
@@ -243,11 +211,6 @@
                                     "port": 8080
                                 }
                             },
-                            "volumeMounts": [
-                            {
-                                "name": "${QSYSTEM_SERVICE}-data",
-                                "mountPath": "/opt/app-root/src/source/dist/temp"
-                            }],
                             "env": [
                             {
                                 "name": "MYSQL_SERVICE",
@@ -307,10 +270,6 @@
                             {
                                 "name": "MYSQL_DATABASE",
                                 "value": "${DATABASE_NAME}"
-                            },
-                            {
-                                "name": "QSB",
-                                "value": "${QSB}"
                             }]
 
                         }]
@@ -672,13 +631,6 @@
             "value": "qsystem"
         },
         {
-            "name": "QSB",
-            "displayName": "Smartboard Layout",
-            "description": "** The smartboard layout is defaulted to Non-Reception or call by Name.  If you want to setup the layout for Call by Ticket, Enter: callbyticket",
-            "value": "nocallonsmartboard",
-            "required": true
-        },
-        {
             "name": "NGINX_SERVICE_NAME",
             "displayName": "Nginx Service Name",
             "description": "The name assigned to all of the Nginx objects defined in this template.",
@@ -739,8 +691,8 @@
         },
         {
             "name": "QSYSTEM_VOLUME_CAPACITY",
-            "displayName": "QSystem Volume Capacity",
-            "description": "Volume space available for QSystem, e.g. 512Mi, 2Gi.",
+            "displayName": "QSystem Cerberus Volume Capacity",
+            "description": "Volume space available for Multimedia for Digital Board, e.g. 512Mi, 2Gi.",
             "value": "100Mi",
             "required": true
         },

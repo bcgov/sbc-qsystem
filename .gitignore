@@ -19,12 +19,14 @@
 *.rar
 
 # Maven builds
+# CM comment:  This doesn't appear to be recursive. Need extra target excludes below
 /*/target
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /QSystem/build
-/QSystem/target
+# CM comment:  Added trailing slash to make it a directory.
+/QSystem/target/
 !/QSystem/logs
 /dist
 !/QSystem/nbproject/
@@ -33,10 +35,13 @@ hs_err_pid*
 /QSmartboardPlugin/build/
 /QSmartboardPlugin/dist/
 /QSmartboardPlugin/nbproject/private/
+# CM comment:  Exclude the entire target directory.
+/QSmartboardPlugin/target/
 /QSmartboardPlugin/target/maven-archiver/pom.properties
 /QSmartboard/build/
 /QSmartboard/dist/
-
+# CM comment:  Exclude target from QSmartboard
+/QSmartboard/target/
 /QSystem/nbproject/private/
 /QUser/nbproject/private/
 
@@ -61,6 +66,5 @@ hs_err_pid*
 .DS_Store
 .classpath
 .project
-target
 .settings
 nb-configuration.xml

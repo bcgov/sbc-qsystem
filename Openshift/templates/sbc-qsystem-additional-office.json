@@ -1,293 +1,207 @@
 {
-    "kind": "Template",
-    "apiVersion": "v1",
-    "metadata":
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "sbc-qsystem-office",
+    "annotations": {
+      "description": "Deploy an additional QSystem Office",
+      "tags": "java",
+      "iconClass": "icon-java"
+    }
+  },
+  "labels": {
+    "template": "sbc-qsystem-environment"
+  },
+  "objects": [
     {
-        "name": "sbc-qsystem-office",
-        "annotations":
-        {
-            "description": "Deploy an additional QSystem Office",
-            "tags": "java",
-            "iconClass": "icon-java"
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${OFFICE_SERVICE}",
+        "annotations": {
+          "description": "Exposes and load balances the Office"
         }
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "web",
+            "port": 8080,
+            "targetPort": 8080
+          },
+          {
+            "name": "reports",
+            "port": 8088,
+            "targetPort": 8088
+          },
+          {
+            "name": "server",
+            "port": 3128,
+            "targetPort": 3128
+          },
+          {
+            "name": "client",
+            "port": 3129,
+            "targetPort": 3129
+          }
+        ],
+        "selector": {
+          "name": "${OFFICE_SERVICE}"
+        }
+      }
     },
-    "labels":
     {
-        "template": "sbc-qsystem-environment"
-    },
-    "objects": [
-        {
-            "kind": "PersistentVolumeClaim",
-            "apiVersion": "v1",
-            "metadata":
-            {
-                "name": "${OFFICE_SERVICE}-data"
-            },
-            "spec":
-            {
-                "accessModes": [
-                    "ReadWriteOnce"
-                ],
-                "resources":
-                {
-                    "requests":
-                    {
-                        "storage": "${OFFICE_VOLUME_CAPACITY}"
-                    }
-                }
-            }
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${OFFICE_SERVICE}",
+        "annotations": {
+          "description": "Defines how to deploy the Office Service"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Rolling"
         },
-        {
-            "kind": "Service",
-            "apiVersion": "v1",
-            "metadata":
-            {
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "${OFFICE_SERVICE}"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "namespace": "${APP_IMAGE_NAMESPACE}",
+                "name": "${APP_IMAGE_NAME}:${APP_DEPLOYMENT_TAG}"
+              }
+            }
+          },
+          {
+            "type": "ConfigChange"
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "name": "${OFFICE_SERVICE}"
+        },
+        "template": {
+          "metadata": {
+            "name": "${OFFICE_SERVICE}",
+            "labels": {
+              "name": "${OFFICE_SERVICE}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
                 "name": "${OFFICE_SERVICE}",
-                "annotations":
-                {
-                    "description": "Exposes and load balances the Office"
-                }
-            },
-            "spec":
-            {
+                "image": " ",
                 "ports": [
-                {
-                    "name": "web",
-                    "port": 8080,
-                    "targetPort": 8080
+                  {
+                    "containerPort": 8080
+                  }
+                ],
+                "livenessProbe": {
+                  "timeoutSeconds": 1,
+                  "initialDelaySeconds": 120,
+                  "tcpSocket": {
+                    "port": 8080
+                  }
                 },
-                {
-                    "name": "reports",
-                    "port": 8088,
-                    "targetPort": 8088
+                "readinessProbe": {
+                  "timeoutSeconds": 1,
+                  "initialDelaySeconds": 120,
+                  "tcpSocket": {
+                    "port": 8080
+                  }
                 },
-                {
-                    "name": "server",
-                    "port": 3128,
-                    "targetPort": 3128
-                },
-                {
-                    "name": "client",
-                    "port": 3129,
-                    "targetPort": 3129
-                }],
-                "selector":
-                {
-                    "name": "${OFFICE_SERVICE}"
-                }
-            }
-        },
-
-        {
-            "kind": "DeploymentConfig",
-            "apiVersion": "v1",
-            "metadata":
-            {
-                "name": "${OFFICE_SERVICE}",
-                "annotations":
-                {
-                    "description": "Defines how to deploy the Office Service"
-                }
-            },
-            "spec":
-            {
-                "strategy":
-                {
-                    "type": "Rolling"
-                },
-                "triggers": [
-                {
-                    "type": "ImageChange",
-                    "imageChangeParams":
-                    {
-                        "automatic": true,
-                        "containerNames": [
-                            "${OFFICE_SERVICE}"
-                        ],
-                        "from":
-                        {
-                            "kind": "ImageStreamTag",
-                            "namespace": "${APP_IMAGE_NAMESPACE}",
-                            "name": "${APP_IMAGE_NAME}:${APP_DEPLOYMENT_TAG}"
-                        }
+                "env": [
+                  {
+                    "name": "MYSQL_SERVICE",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sbc-secrets",
+                        "key": "database-server"
+                      }
                     }
-                },
-                {
-                    "type": "ConfigChange"
-                }],
-                "replicas": 1,
-                "selector":
-                {
-                    "name": "${OFFICE_SERVICE}"
-                },
-                "template":
-                {
-                    "metadata":
-                    {
-                        "name": "${OFFICE_SERVICE}",
-                        "labels":
-                        {
-                            "name": "${OFFICE_SERVICE}"
-                        }
-                    },
-                    "spec":
-                    {
-                        "volumes": [
-                        {
-                            "name": "${OFFICE_SERVICE}-data",
-                            "persistentVolumeClaim":
-                            {
-                                "claimName": "${OFFICE_SERVICE}-data"
-                            }
-                        }],
-                        "containers": [
-                        {
-                            "name": "${OFFICE_SERVICE}",
-                            "image": " ",
-                            "ports": [
-                            {
-                                "containerPort": 8080
-                            }],
-                            "livenessProbe":
-                            {
-                                "exec":
-                                {
-                                    "command": ["sh", "/opt/app-root/src/source/scripts/mount_test.sh", "/opt/app-root/src/source/dist/temp/","60"]
-                                },
-                                "initialDelaySeconds": 10,
-                                "timeoutSeconds": 5,
-                                "periodSeconds": 60,
-                                "successThreshold": 1,
-                                "failureThreshold": 3
-                            },
-                            "readinessProbe":
-                            {
-                                "timeoutSeconds": 1,
-                                "initialDelaySeconds": 120,
-                                "tcpSocket":
-                                {
-                                    "port": 8080
-                                }
-                            },
-                            "volumeMounts": [
-                            {
-                                "name": "${OFFICE_SERVICE}-data",
-                                "mountPath": "/opt/app-root/src/source/dist/temp"
-                            }],
-                            "env": [
-                            {
-                                "name": "MYSQL_SERVICE",
-                                "valueFrom":
-                                {
-                                    "secretKeyRef":
-                                    {
-                                        "name": "sbc-secrets",
-                                        "key": "database-server"
-                                    }
-                                }
-                            },
-                            {
-                                "name": "MYSQL_USER",
-                                "valueFrom":
-                                {
-                                    "secretKeyRef":
-                                    {
-                                        "name": "sbc-secrets",
-                                        "key": "database-user"
-                                    }
-                                }
-                            },
-                            {
-                                "name": "MYSQL_ROOT_USER",
-                                "valueFrom":
-                                {
-                                    "secretKeyRef":
-                                    {
-                                        "name": "sbc-secrets",
-                                        "key": "database-root-user"
-                                    }
-                                }
-                            },
-                            {
-                                "name": "MYSQL_PASSWORD",
-                                "valueFrom":
-                                {
-                                    "secretKeyRef":
-                                    {
-                                        "name": "sbc-secrets",
-                                        "key": "database-password"
-                                    }
-                                }
-                            },
-                            {
-                                "name": "MYSQL_ROOT_PASSWORD",
-                                "valueFrom":
-                                {
-                                    "secretKeyRef":
-                                    {
-                                        "name": "sbc-secrets",
-                                        "key": "database-root-password"
-                                    }
-                                }
-                            },
-                            {
-                                "name": "MYSQL_DATABASE",
-                                "value": "${OFFICE_SERVICE}"
-                            },
-                            {
-                                "name": "QSB",
-                                "value": "${QSB}"
-                            }]
-
-                        }]
+                  },
+                  {
+                    "name": "MYSQL_USER",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sbc-secrets",
+                        "key": "database-user"
+                      }
                     }
-                }
-            }
+                  },
+                  {
+                    "name": "MYSQL_ROOT_USER",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sbc-secrets",
+                        "key": "database-root-user"
+                      }
+                    }
+                  },
+                  {
+                    "name": "MYSQL_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sbc-secrets",
+                        "key": "database-password"
+                      }
+                    }
+                  },
+                  {
+                    "name": "MYSQL_ROOT_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sbc-secrets",
+                        "key": "database-root-password"
+                      }
+                    }
+                  },
+                  {
+                    "name": "MYSQL_DATABASE",
+                    "value": "${OFFICE_SERVICE}"
+                  }
+                ]
+              }
+            ]
+          }
         }
-
-    ],
-    "parameters": [
-        {
-            "name": "OFFICE_VOLUME_CAPACITY",
-            "displayName": "QSystem Volume Capacity",
-            "description": "Volume space available for QSystem, e.g. 512Mi, 2Gi.",
-            "value": "100Mi",
-            "required": true
-        },
-        {
-            "name": "OFFICE_SERVICE",
-            "displayName": "Office Service Name",
-            "description": "** The name assigned to the Deployment and Database for the new office.  Must start with a letter and be a valid hostname, for example office-01",
-            "required": true
-        },
-        {
-            "name": "QSB",
-            "displayName": "Smartboard Layout",
-            "description": "** The smartboard layout is defaulted to Non-Reception or call by Name.  If you want to setup the layout for Call by Ticket, Enter: callbyticket",
-            "value": "nocallonsmartboard",
-            "required": true
-        },
-        {
-            "name": "APP_DEPLOYMENT_TAG",
-            "displayName": "Image tag",
-            "description": "** Image tag to watch for changes and trigger deployment.  For example, test",
-            "value": "latest",
-            "required": true
-        },
-        {
-            "name": "APP_IMAGE_NAME",
-            "displayName": "Application image name.",
-            "description": "Application image name.  You should not need to change this.",
-            "value": "qsystem",
-            "required": true
-        },
-        {
-            "name": "APP_IMAGE_NAMESPACE",
-            "displayName": "Namespace containing application images.",
-            "description": "Namespace containing application images. You should not need to change this.",
-            "value": "servicebc-customer-flow-tools",
-            "required": true
-        }
-
-    ]
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "OFFICE_SERVICE",
+      "displayName": "Office Service Name",
+      "description": "** The name assigned to the Deployment and Database for the new office.  Must start with a letter and be a valid hostname, for example office-01",
+      "required": true
+    },
+    {
+      "name": "APP_DEPLOYMENT_TAG",
+      "displayName": "Image tag",
+      "description": "** Image tag to watch for changes and trigger deployment.  For example, test",
+      "value": "latest",
+      "required": true
+    },
+    {
+      "name": "APP_IMAGE_NAME",
+      "displayName": "Application image name.",
+      "description": "Application image name.  You should not need to change this.",
+      "value": "qsystem",
+      "required": true
+    },
+    {
+      "name": "APP_IMAGE_NAMESPACE",
+      "displayName": "Namespace containing application images.",
+      "description": "Namespace containing application images. You should not need to change this.",
+      "value": "servicebc-customer-flow-tools",
+      "required": true
+    }
+  ]
 }
