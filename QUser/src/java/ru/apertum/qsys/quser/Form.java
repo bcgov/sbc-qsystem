@@ -951,7 +951,12 @@ public class Form {
 
     @Command
     public void DetermineChannels() {
-        int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+        
+        if (getCFMSType()) {
+            int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedIndex() + 1;
+        } else {
+            int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedIndex() + 1;
+        }  
     }
 
     @Command
@@ -965,7 +970,12 @@ public class Form {
 
     public void refreshChannels() {
         QLog.l().logger().debug("refreshChannels");
-        ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(0);
+        if (getCFMSType()) {
+            ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).setSelectedIndex(0);
+        } else {
+            ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).setSelectedIndex(0);
+        }  
+//        ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(0);
     }
 
     public LinkedList<QCustomer> getPostponList() {
@@ -1077,7 +1087,12 @@ public class Form {
 
         if (customer != null) {
             QLog.l().logQUser().debug("Set addTicket combo box. Index: " + customer.getChannelsIndex());
-            ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(customer.getChannelsIndex() - 1);
+            if (getCFMSType()) {
+                ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).setSelectedIndex(customer.getChannelsIndex() - 1);
+            } else {
+                ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).setSelectedIndex(customer.getChannelsIndex() - 1);
+            }  
+//            ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(customer.getChannelsIndex() - 1);
         } else {
             QLog.l().logQUser().debug("Customer of channel index is null");
         }
@@ -1208,7 +1223,7 @@ public class Form {
                 .collect(Collectors.toList());
         }
 
-        listServices = requiredServices;
+        listServices = filterServicesByUser(requiredServices);
     }
 
 
@@ -1342,8 +1357,15 @@ public class Form {
             params.resultId = -1L;
             params.channelsIndex = customer.getChannelsIndex();
             params.channels = customer.getChannels();
-            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
+            if (getCFMSType()) {
+                params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedIndex() + 1;
+                params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedItem().getValue().toString();
+            } else {
+                params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedIndex() + 1;
+                params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedItem().getValue().toString();
+            }  
+//            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+//            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
 
             if (getCFMSType()) {
                 params.comments = ((Textbox) addTicketDailogWindow.getFellow("reception_ticket_comments")).getText();
@@ -1402,8 +1424,15 @@ public class Form {
             this.invite();
             this.begin();
             this.refreshChannels();
-            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
+            if (getCFMSType()) {
+                params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedIndex() + 1;
+                params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedItem().getValue().toString();
+            } else {
+                params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedIndex() + 1;
+                params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedItem().getValue().toString();
+            }  
+//                params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+//                params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
             customer.setChannelsIndex(params.new_channels_Index);
             customer.setChannels(params.new_channels);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -1448,13 +1477,16 @@ public class Form {
         params.isMine = isMine;
         if (getCFMSType()) {
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("reception_ticket_comments")).getText();
+            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedIndex() + 1;
+            params.channels = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedItem().getValue().toString();
         } else {
             params.comments = ((Textbox) addTicketDailogWindow.getFellow("general_ticket_comments")).getText();
+            params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedIndex() + 1;
+            params.channels = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedItem().getValue().toString();
         }
-        params.channelsIndex =
-            ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-        params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options"))
-            .getSelectedItem().getValue().toString();
+        
+//        params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+//        params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
         params.welcomeTime = user.getCustomerWelcomeTime();
 
         return params;
@@ -1501,8 +1533,15 @@ public class Form {
             }
             params.channelsIndex = customer.getChannelsIndex();
             params.channels = customer.getChannels();
-            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
+            if (getCFMSType()) {
+                params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedIndex() + 1;
+                params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedItem().getValue().toString();
+            } else {
+                params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedIndex() + 1;
+                params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).getSelectedItem().getValue().toString();
+            }  
+//            params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+//            params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
 
             Executer.getInstance().getTasks().get(Uses.TASK_CHANGE_SERVICE).process(params, "", new byte[4]);
 
