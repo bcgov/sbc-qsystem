@@ -3,7 +3,7 @@
 <zk xmlns="http://www.zkoss.org/2005/zul">
 
   <window id="addTicketDialog"
-            title=""
+            title="Search Screen"
             border="normal"
             width="480px"
             position="center,center" closable="true"
