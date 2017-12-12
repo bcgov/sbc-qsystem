@@ -9,9 +9,6 @@
             position="center,center" closable="true"
             onClose="self.visible = false; event.stopPropagation();"
             action="show: slideDown;hide: slideUp">
-    <!--
-    <caption label="QSystem" image="/resources/img/logo32.png" />
-    -->
     <caption label="" image="/resources/img/logo32.png" />
     <div style="margin:10px 10px 10px 10px;">
       <vlayout>
