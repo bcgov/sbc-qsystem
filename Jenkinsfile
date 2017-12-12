@@ -60,9 +60,11 @@ node('maven') {
                     echo "TEST_USERNAME: ${TEST_USERNAME}"
                     echo "TEST_PASSWORD: ${TEST_PASSWORD}"
       
-                    sh "export TEST_USERNAME=${TEST_USERNAME}\nexport TEST_PASSWORD=${TEST_PASSWORD}\n./gradlew --debug --stacktrace phantomJsTest"
+                    sh "export TEST_USERNAME=${TEST_USERNAME}\nexport TEST_PASSWORD=${TEST_PASSWORD}\n./gradlew --debug --stacktrace chromeHeadlessTest"
                 } finally {
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
+                    junit 'build/test-results/**/*.xml'
                 }
             }
         }
