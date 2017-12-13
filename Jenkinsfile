@@ -56,15 +56,20 @@ node('maven') {
                                 script: 'oc env bc/qsystem --list | awk  -F  "=" \'/TEST_PASSWORD/{print $2}\'',
                                 returnStdout: true
                                 ).trim()
+
+                    BASEURL = sh (
+                                script: 'oc env bc/qsystem --list | awk  -F  "=" \'/BASEURL/{print $2}\'',
+                                returnStdout: true
+                                ).trim()
                           
                     echo "TEST_USERNAME: ${TEST_USERNAME}"
                     echo "TEST_PASSWORD: ${TEST_PASSWORD}"
       
-                    sh "export TEST_USERNAME=${TEST_USERNAME}\nexport TEST_PASSWORD=${TEST_PASSWORD}\n./gradlew --debug --stacktrace chromeHeadlessTest"
+                    sh "export BASEURL=${BASEURL}\nTEST_USERNAME=${TEST_USERNAME}\nexport TEST_PASSWORD=${TEST_PASSWORD}\n./gradlew --debug --stacktrace chromeHeadlessTest"
                 } finally {
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
-                    junit 'build/test-results/**/*.xml'
+                    // junit 'build/test-results/**/*.xml'
                 }
             }
         }
