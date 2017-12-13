@@ -8,7 +8,7 @@ and open the template in the editor.
 
 <zk>
     <session-config>
-        <session-timeout>14400</session-timeout>
+    	<session-timeout>600</session-timeout>
         <timer-keep-alive>true</timer-keep-alive>
     </session-config>
 	<system-config>
