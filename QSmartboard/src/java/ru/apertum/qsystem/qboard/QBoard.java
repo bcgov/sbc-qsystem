@@ -15,6 +15,7 @@ import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
@@ -308,6 +309,14 @@ public class QBoard extends GenericForwardComposer {
                 QSessions.getInstance().update(user.getId(), Sessions.getCurrent().getRemoteHost(),
                     Sessions.getCurrent().getRemoteAddr().getBytes());
             }
+        }
+    }
+    
+    @Command
+    public void refreshSmartBoard(){
+        final Session sess = Sessions.getCurrent();
+        if (sess==null) {
+            Executions.getCurrent().sendRedirect("");
         }
     }
 
