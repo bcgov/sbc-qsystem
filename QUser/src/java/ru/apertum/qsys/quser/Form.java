@@ -199,6 +199,7 @@ public class Form {
     private String CSRIcon = "";
     private int customersCount = 0;
     private boolean currentState = false;
+    private boolean CheckGABoard = false;
 
 //    public LinkedList<QUser> test2 = greed.get(2).getShadow();
 //    public LinkedList<QUser> userList = QUserList.getInstance().getItems();
@@ -332,12 +333,14 @@ public class Form {
     public void GABoard() {
         GAManagementDialogWindow.setVisible(true);
         GAManagementDialogWindow.doModal();
+        CheckGABoard = true;
     }
     
     @Command
     public void closeGA(@ContextParam(ContextType.VIEW) Component comp) {
-        GAManagementDialogWindow.detach();
+//        GAManagementDialogWindow.detach();
         GAManagementDialogWindow.setVisible(false);
+        CheckGABoard = false;
     }
 
     @Command
@@ -963,7 +966,7 @@ public class Form {
         if (isLogin()){
             QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GAManagementDialogWindow.isVisible() + "\n\n");
 //            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GAManagementDialogWindow.isAttached() + "\n\n");
-            if (!GAManagementDialogWindow.isVisible()){
+            if (CheckGABoard){
                     UsersInside.getInstance().getUsersInside()
                 .put(user.getName() + user.getPassword(), new Date().getTime());
                                 QSessions.getInstance()
