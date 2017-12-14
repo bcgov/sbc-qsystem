@@ -42,6 +42,7 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
+import org.zkoss.zul.ListModel;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Messagebox;
@@ -336,15 +337,14 @@ public class Form {
         GAManagementDialogWindow.setVisible(true);
         GAManagementDialogWindow.doModal();
         CheckGABoard = true;
-        user.setGABoard(true);
-        QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
+
+//        QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
     }
     
 //    @ContextParam(ContextType.VIEW) Component comp
     @Command
     public void closeGA() {
         CheckGABoard = false;
-        user.setGABoard(false);
         GAManagementDialogWindow.addEventListener("onClose", new EventListener() {
 	
             @Override
@@ -355,7 +355,6 @@ public class Form {
                 GAManagementDialogWindow.setVisible(false);
 
                 CheckGABoard = false;
-                user.setGABoard(false);
                 
                 QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
                 QLog.l().logQUser().debug("\n\n\n\n Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
@@ -493,6 +492,7 @@ public class Form {
         user.setCustomerList(Collections.<QPlanService>emptyList());
         user.setName("");
         user.setPassword("");
+        user.setGABoard(false);
 
         for (QSession session : QSessions.getInstance().getSessions()) {
             if (user.getUser().getId().equals(session.getUser().getId())) {
@@ -986,12 +986,11 @@ public class Form {
     
     
     @Command
-    @NotifyChange(value = {"GA_list", "currentState", "userList"})
-    public void refreshGAList(){
+    @NotifyChange(value = {"currentState", "userList"})
+    public void refreshGAList(Component comp){
         if (isLogin()){
-            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + CheckGABoard + "\n\n");
-//            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY user.getGABoard(): \n" + user.getGABoard() + "\n\n");
-//            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GAManagementDialogWindow.isAttached() + "\n\n");
+//            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + CheckGABoard + "\n\n");
+//            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY user.getGABoard(): \n" + user.getGABoard() + "\n\n");            
 // user.getGABoard()
             if (CheckGABoard == true ){
                     UsersInside.getInstance().getUsersInside()
@@ -1004,14 +1003,17 @@ public class Form {
                 QUser quser = QUserList.getInstance().getById(userId);
                 quser.setCurrentState(currentState);
                 
-                
 //                    aftercompose(#GAManagementDialog);
-                    GAManagementDialogWindow.doModal();
-//                    GA_list.setModel(GA_list.getModel());
-                
+                GAManagementDialogWindow.doModal();
+                final Listbox GA_list = (Listbox) comp;
+                ListModel lml = (ListModel)GA_list.getModel();
+                GA_list.setModel(lml);
+//                GA_list.setModel(GA_list.getItems());
+//                QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GA_list.getModel() + "\n\n");
 //                GA_list.setModel(GA_list.getModel());
-                BindUtils.postNotifyChange(null, null, Form.this, "*");
+                
             }
+            BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
     

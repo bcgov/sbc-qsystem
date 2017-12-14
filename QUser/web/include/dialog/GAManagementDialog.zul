@@ -110,7 +110,7 @@
                     </listitem>
                 </template>
             </listbox>
-            <!-- <timer id="timer_GA_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/> -->
+            <timer id="timer_GA_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
 
 
 
