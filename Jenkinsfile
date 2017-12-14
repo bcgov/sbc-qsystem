@@ -70,7 +70,7 @@ node('bddstack') {
               echo "TEST_USERNAME: ${TEST_USERNAME}"
               echo "TEST_PASSWORD: ${TEST_PASSWORD}"
   
-              sh "export BASEURL=${BASEURL}\nTEST_USERNAME=${TEST_USERNAME}\nexport TEST_PASSWORD=${TEST_PASSWORD}\n./gradlew --debug --stacktrace chromeHeadlessTest"
+              sh "export BASEURL=${BASEURL}\nexport TEST_USERNAME=${TEST_USERNAME}\nexport TEST_PASSWORD=${TEST_PASSWORD}\n./gradlew --debug --stacktrace chromeHeadlessTest"
           } finally {
               archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
               archiveArtifacts allowEmptyArchive: true, artifacts: 'build/test-results/**/*'
