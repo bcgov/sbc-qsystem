@@ -171,4 +171,5 @@
               <label value="${c:l('ReportBug_Explanation')}" style="font-weight:bold; font-family: Helvetica; font-size:12px; "></label>
 
     </popup>
+    <!-- <timer id="timer_refresh_Quser" delay="30000" repeats="true" running="true" onTimer="@command('refreshQuser')"/>   -->
 </zk>

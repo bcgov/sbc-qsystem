@@ -61,5 +61,7 @@
                 </columnlayout>                
             </div>		
         </south>       
+
     </borderlayout>
+    <timer id="timer_refresh_GABoard" delay="1000" repeats="true" running="true" onTimer="@command('refreshSmartBoard')"/>  
 </zk>

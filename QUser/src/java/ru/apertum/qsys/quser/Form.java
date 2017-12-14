@@ -30,6 +30,7 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.resource.Labels;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
@@ -920,6 +921,16 @@ public class Form {
         }
     }
 
+//    @Command
+//    public void refreshQuser(){
+//        final Session sess = Sessions.getCurrent();
+//        if (sess==null) {
+//            Executions.getCurrent().sendRedirect("");
+//        }
+//    }
+    
+    
+    
     @Command
     public void closePostponeCustomerDialog() {
         postponeCustomerDialog.setVisible(false);
