@@ -334,12 +334,23 @@ public class Form {
         SlackApi api = new SlackApi("https://hooks.slack.com/services/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");
 //        SlackMessage msg = null;
         SlackMessage msg = new SlackMessage(null);
-        Username = "CSR - " + user.getName();
-        if (user.getUser().getCustomer()!=null){
-            ReportTicket = user.getUser().getCustomer().getName();
+        
+        if (user.getUser()!=null && user.getName() !=null){
+            Username = "CSR - " + user.getName();
+            if(user.getUser().getCustomer()!=null){
+                ReportTicket = user.getUser().getCustomer().getName();
+            } else{
+                ReportTicket = "Ticket numebr is not provided";
+            }
         }else{
-            ReportTicket = "Ticket numebr is not provided";
+            Username = "User is not logged in";
         }
+        
+//        if (user.getName() !=null && user.getUser().getCustomer()!=null){
+//            ReportTicket = user.getUser().getCustomer().getName();
+//        }else{
+//            ReportTicket = "Ticket numebr is not provided";
+//        }
         ReportMsg = ReportMsg + Username + "\n" + "Office Name: " + getOfficeName() + "\n" + "Ticket Number: " + ReportTicket + "\n\n" + BugMsg + "\n"; 
                 
         
