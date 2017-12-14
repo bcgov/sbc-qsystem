@@ -21,7 +21,7 @@ public class User {
     private List<QPlanService> plan = new LinkedList<>();
     private LinkedList<QCustomer> customerList = new LinkedList<>();
     private Date customerWelcomeTime;
-    private boolean GABoard;
+    private boolean GABoard = false;
 
     public String l(String resName) {
         return Labels.getLabel(resName);

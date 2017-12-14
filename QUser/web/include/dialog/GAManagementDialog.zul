@@ -32,9 +32,9 @@
             border="normal"
             width="780px" 
             position="center,center" closable="true"
-            onClose=" @command('closeGA') "
-
+            onClose= "@command('closeGA')"
             action="show: slideDown;hide: slideUp">
+
             <!-- self.visible = false; event.stopPropagation(); -->
         <caption label="QSystem" image="/resources/img/logo32.png" />
         <div width="50px">
@@ -110,7 +110,7 @@
                     </listitem>
                 </template>
             </listbox>
-            <timer id="timer_GA_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
+            <!-- <timer id="timer_GA_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/> -->
 
 
 

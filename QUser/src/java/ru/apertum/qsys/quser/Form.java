@@ -34,6 +34,7 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.InputEvent;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -335,14 +336,37 @@ public class Form {
         GAManagementDialogWindow.setVisible(true);
         GAManagementDialogWindow.doModal();
         CheckGABoard = true;
+        user.setGABoard(true);
+        QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
     }
     
+//    @ContextParam(ContextType.VIEW) Component comp
     @Command
-    public void closeGA(@ContextParam(ContextType.VIEW) Component comp) {
-//        GAManagementDialogWindow.detach();
-        GAManagementDialogWindow.setVisible(false);
+    public void closeGA() {
         CheckGABoard = false;
+        user.setGABoard(false);
+        GAManagementDialogWindow.addEventListener("onClose", new EventListener() {
+	
+            @Override
+            public void onEvent(Event event) throws Exception {
+                // TODO Auto-generated method stub
+                event.stopPropagation();
+                //        GAManagementDialogWindow.detach();
+                GAManagementDialogWindow.setVisible(false);
+
+                CheckGABoard = false;
+                user.setGABoard(false);
+                
+                QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
+                QLog.l().logQUser().debug("\n\n\n\n Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
+            }
+        });
+
+        QLog.l().logQUser().debug("\n\n\n\n OUTSIDE Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
     }
+    
+    
+
 
     @Command
     public void ReportBug() {
@@ -965,9 +989,11 @@ public class Form {
     @NotifyChange(value = {"GA_list", "currentState", "userList"})
     public void refreshGAList(){
         if (isLogin()){
-            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GAManagementDialogWindow.isVisible() + "\n\n");
+            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + CheckGABoard + "\n\n");
+//            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY user.getGABoard(): \n" + user.getGABoard() + "\n\n");
 //            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GAManagementDialogWindow.isAttached() + "\n\n");
-            if (CheckGABoard){
+// user.getGABoard()
+            if (CheckGABoard == true ){
                     UsersInside.getInstance().getUsersInside()
                 .put(user.getName() + user.getPassword(), new Date().getTime());
                                 QSessions.getInstance()
@@ -981,10 +1007,11 @@ public class Form {
                 
 //                    aftercompose(#GAManagementDialog);
                     GAManagementDialogWindow.doModal();
-                    GA_list.setModel(GA_list.getModel());
-                }
+//                    GA_list.setModel(GA_list.getModel());
+                
 //                GA_list.setModel(GA_list.getModel());
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
+            }
         }
     }
     
