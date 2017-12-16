@@ -104,6 +104,16 @@ public class QUser implements IidGetter, Serializable {
     @Expose
     @SerializedName("current_state")
     private boolean currentState = false;
+    
+    //Andrew 
+    //Get the state of the user for GABoard - online/offline
+    @Expose
+    @SerializedName("current_service")
+    private String currentService = "";
+    
+//    @Expose
+//    @SerializedName("current_comments")
+//    private String currentComments = "";
     /**
      * Параметр доступа к администрированию системы. Parameter of access to system administration.
      */
@@ -235,14 +245,65 @@ public class QUser implements IidGetter, Serializable {
     }
     
     @Column(name = "current_state")
-    public Boolean getCurrentState() {
+    public boolean getCurrentState() {
         return currentState;
+    }
+    
+    //Andrew
+    public String ConvertCurrentState(){
+        // Instead of showing true/false, showing online/offline on board
+        if (getCurrentState()){
+            return "online";
+        }else{
+            return "offline";
+        }
     }
     
     public void setCurrentState(boolean state) {
         this.currentState = state;
     }
 
+    @Column(name = "current_service")
+    public String getCurrentService() {
+        return currentService;
+    }
+    
+    public void setCurrentService(String service) {
+        this.currentService = service;
+    }
+    
+//    @Column(name = "current_comments")
+    public String gCurrentComments() { 
+        if(getCustomer()!=null && this.getCustomer().getTempComments()!=null){
+            return (this.getCustomer().getTempComments());
+        }else{
+            return "";
+        }
+//        return currentComments;  
+    }
+    
+    public String ServingTime(){
+        
+        if(getCurrentService()!=null && getCustomer()!=null && getCustomer().getStandTime()!=null){
+            Long ServingSec = (System.currentTimeMillis() - getCustomer().getStandTime().getTime()) / 1000  + 1;
+    
+            long hours = ServingSec / 3600;
+            long minutes = (ServingSec % 3600) / 60;
+            long seconds = ServingSec % 60;
+
+            String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            return timeString; 
+        }else{
+            return "";
+        }
+
+    }
+    
+//    public void setCurrentComments(String Comments) {
+//        this.currentComments = Comments;
+//    }
+    
+    
     @Column(name = "admin_access")
     public Boolean getAdminAccess() {
         return adminAccess;

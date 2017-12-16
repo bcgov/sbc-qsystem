@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -42,6 +43,7 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.ListModel;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
@@ -186,7 +188,7 @@ public class Form {
     private Listbox service_list;
     @Wire("#incClientDashboard #postpone_list")
     private Listbox postpone_list;
-    @Wire("#incClientDashboard #incGAManagementDialog #GA_list")
+    @Wire("#incGAManagementDialog #GA_list")
     private Listbox GA_list;
     //********************************************************************************************************************************************
     //**  Change priority - By Customer
@@ -337,6 +339,13 @@ public class Form {
         GAManagementDialogWindow.setVisible(true);
         GAManagementDialogWindow.doModal();
         CheckGABoard = true;
+        try{
+            Thread.sleep(1000);
+        } 
+        catch(InterruptedException ex) 
+        {
+            Thread.currentThread().interrupt();
+        }
 
 //        QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
     }
@@ -495,7 +504,7 @@ public class Form {
         QUser quser = user.getUser();
         quser.setCurrentState(false);
         QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getName() + "\n\n\n\n");
-        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getCurrentState() + "\n\n\n\n");
+//        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getCurrentState() + "\n\n\n\n");
 
         final Session sess = Sessions.getCurrent();
         sess.removeAttribute("userForQUser");
@@ -703,6 +712,10 @@ public class Form {
                     customer.refreshPrevious();
                     customer = null;
 
+                    // Set the current working service to be empty 
+                    QUser quser = QUserList.getInstance().getById(params.userId);
+                    quser.setCurrentService("");
+                    
                     setKeyRegim(KEYS_MAY_INVITE);
                     service_list.setModel(service_list.getModel());
 
@@ -722,8 +735,10 @@ public class Form {
         Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER)
             .process(params, "", new byte[4]);
 
-        //Andrew - to set quser state for GABoard
-
+        //Andrew - to set quser service for GABoard
+        QUser quser = QUserList.getInstance().getById(params.userId);
+        quser.setCurrentService(user.getUser().getCustomer().getService().getName());
+        
         setKeyRegim(KEYS_STARTED);
         service_list.setModel(service_list.getModel());
         BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -734,6 +749,11 @@ public class Form {
         // Inheritance the comment from Serve-customer window to hold window
         String tempComment = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
         customer.setTempComments(tempComment);
+        
+        //Set to User current Comments
+//        QUser quser = QUserList.getInstance().getById(user.getUser().getId());
+//        quser.setCurrentComments(tempComment);
+        
         QLog.l().logQUser().debug("\n\nPostponed!!:\n" + customer.getTempComments() + "\n\n\n");
     }
 
@@ -760,6 +780,10 @@ public class Form {
         customer = user.getUser().getCustomer();
         params.serviceId = user.getUser().getCustomer().getService().getId();
         customer.setTempComments(params.comments);
+        
+        //Set to User current Comments
+//        QUser quser = QUserList.getInstance().getById(params.userId);
+//        quser.setCurrentComments(params.comments);
 
         Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE)
             .process(params, "", new byte[4]);
@@ -792,6 +816,10 @@ public class Form {
             params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
 
             customer.setTempComments(params.comments);
+            
+            //Set to User current Comments
+//            QUser quser = QUserList.getInstance().getById(params.userId);
+//            quser.setCurrentComments(params.comments);
 
             final QUser redirectUser = QUserList.getInstance().getById(params.userId);
             //переключение на кастомера при параллельном приеме, должен приехать customerID
@@ -906,6 +934,10 @@ public class Form {
         customer.refreshPrevious();
         customer = null;
 
+        // Set the current working service to be empty 
+        QUser quser = QUserList.getInstance().getById(params.userId);
+        quser.setCurrentService("");
+        
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
 
@@ -997,34 +1029,37 @@ public class Form {
     
     
     @Command
-    @NotifyChange(value = {"currentState", "userList"})
-    public void refreshGAList(Component comp){
+    @NotifyChange(value = {"service_list", "currentState", "userList"})
+    public void refreshGAList(){
         if (isLogin()){
 //            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + CheckGABoard + "\n\n");
 //            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY user.getGABoard(): \n" + user.getGABoard() + "\n\n");            
 // user.getGABoard()
             if (CheckGABoard == true ){
-                    UsersInside.getInstance().getUsersInside()
-                .put(user.getName() + user.getPassword(), new Date().getTime());
-                                QSessions.getInstance()
-                .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(),
-                    Sessions.getCurrent().getRemoteAddr().getBytes());
-                                
-                Long userId = user.getUser().getId();
-                QUser quser = QUserList.getInstance().getById(userId);
-                quser.setCurrentState(currentState);
+//                    UsersInside.getInstance().getUsersInside()
+//                .put(user.getName() + user.getPassword(), new Date().getTime());
+//                                QSessions.getInstance()
+//                .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(),
+//                    Sessions.getCurrent().getRemoteAddr().getBytes());
+////                                
+//                Long userId = user.getUser().getId();
+//                QUser quser = QUserList.getInstance().getById(userId);
+//                quser.setCurrentState(currentState);
                 
 //                    aftercompose(#GAManagementDialog);
                 GAManagementDialogWindow.doModal();
-                final Listbox GA_list = (Listbox) comp;
-                ListModel lml = (ListModel)GA_list.getModel();
-                GA_list.setModel(lml);
+                Label l = (Label)GAManagementDialogWindow.getFellow("GA_CW");
+                String m = new Integer(getCustomersCount()).toString();
+                l.setValue(m);
+//                final Listbox GA_list = (Listbox) comp;
+//                ListModel lml = (ListModel)GA_list.getModel();
+//                GA_list.setModel(lml);
 //                GA_list.setModel(GA_list.getItems());
 //                QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GA_list.getModel() + "\n\n");
 //                GA_list.setModel(GA_list.getModel());
                 
             }
-            BindUtils.postNotifyChange(null, null, Form.this, "*");
+//            BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
     }
     
@@ -1089,6 +1124,9 @@ public class Form {
             .process(params, "", new byte[4]);
         customer = null;
 
+        QUser quser = QUserList.getInstance().getById(params.userId);
+        quser.setCurrentService("");
+        
         setKeyRegim(KEYS_MAY_INVITE);
         postpone_list.setModel(postpone_list.getModel());
         postponeCustomerDialog.setVisible(false);

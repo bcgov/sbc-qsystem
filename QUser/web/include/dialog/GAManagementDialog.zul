@@ -31,9 +31,18 @@
             title="Administrator Management Board"
             border="normal"
             width="780px" 
+            height="1200px"
             position="center,center" closable="true"
             onClose= "@command('closeGA')"
             action="show: slideDown;hide: slideUp">
+        <style>
+
+            .z-listbox-autopaging .z-listcell-cnt {
+                    height: 30px;
+                    overflow: hidden;
+            }
+
+        </style>
 
             <!-- self.visible = false; event.stopPropagation(); -->
         <caption label="QSystem" image="/resources/img/logo32.png" />
@@ -47,7 +56,7 @@
 
     <!-- style="font-size : 23px; font-family: Helvetica; color: Black; background-color: #94b8b8" -->
             	<label value="Customer Waitings" sclass="top-text"/>
-            	<label value="@load(fmodel.getCustomersCount())" style="font-size : 42px; font-weight:bold"  />
+            	<label id="GA_CW" value="@load(fmodel.getCustomersCount())" style="font-size : 42px; font-weight:bold"  />
             	<label width="22px"/>
 
     	        <div width="50px">
@@ -86,11 +95,14 @@
     	        </div>
 
     		</vbox>
+            <timer id="timer_numbers" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
     	</hbox>
-        <vlayout height="260px" style="background-color:White">
+
+        <vlayout height="910px" style="background-color:White">
         
 	        <!-- <listbox id="service_list" model="@load(fmodel.user.customerList)"  selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max" > -->
-	        <listbox id="GA_list" model="@load(fmodel.userList)" selectedItem="@bind(fmodel.pickedCustomer)" onSelect=""  width="100%" height="200px"  >
+	        <listbox id="GA_list" model="@load(fmodel.userList)" selectedItem="@bind(fmodel.pickedCustomer)" onSelect=""  width="100%" height="900px"  >
+
 
                 <listhead>
                     <listheader label="Staff Member" width="140px" align="center"/>
@@ -103,14 +115,15 @@
                 <template name="model" var="userList">
                     <listitem context="servicesListPopup">
                         <listcell label="@load(userList.getName())" />
-                        <listcell label="@load(userList.getParallelAccess())"/>
-                        <listcell label="@bind(userList.getCurrentState())" />
-                        <listcell label="@load(userList.getCustomer())" />
-                        <listcell label="@load(userList.getCurrentState())" />
+                        <listcell label="@load(userList.getCurrentService())"/>
+                        <listcell label="@bind(userList.ConvertCurrentState())" />
+                        <listcell label="@load(userList.ServingTime())" />
+                        <listcell label="@load(userList.gCurrentComments())" />
                     </listitem>
                 </template>
             </listbox>
             <timer id="timer_GA_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
+
 
 
 
