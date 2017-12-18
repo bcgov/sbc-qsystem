@@ -226,6 +226,10 @@ public class QUser implements IidGetter, Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+    
+//    public Long getOfficeId() {
+//        return this.getOffice().getId();
+//    }
 
     public Date getDeleted() {
         return deleted;

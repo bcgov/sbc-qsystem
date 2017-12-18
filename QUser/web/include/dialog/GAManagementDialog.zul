@@ -31,7 +31,7 @@
             title="Administrator Management Board"
             border="normal"
             width="780px" 
-            height="1200px"
+            height="880px"
             position="center,center" closable="true"
             onClose= "@command('closeGA')"
             action="show: slideDown;hide: slideUp">
@@ -55,7 +55,7 @@
     	        </div>
 
     <!-- style="font-size : 23px; font-family: Helvetica; color: Black; background-color: #94b8b8" -->
-            	<label value="Customer Waitings" sclass="top-text"/>
+            	<label value="Customer Waiting" sclass="top-text"/>
             	<label id="GA_CW" value="@load(fmodel.getCustomersCount())" style="font-size : 42px; font-weight:bold"  />
             	<label width="22px"/>
 
@@ -71,7 +71,7 @@
     	        </div>
 
     			<label value="Total Number of CSRs" sclass="top-text" />
-            	<label value="@load(fmodel.getUsersForLogin().size())" style="font-size : 42px; font-weight:bold"  />
+            	<label value="@load(fmodel.getuserListbyOffice().size())" style="font-size : 42px; font-weight:bold"  />
                 <!-- fmodel.user.customerList.size() -->
             	<label width="22px"/>
 
@@ -88,7 +88,7 @@
     	        </div>
 
     			<label value="Serving CSRs" sclass="top-text" />
-    	    	<label value="@load(fmodel.getUsersForLogin().size()-2)" style="font-size : 42px; font-weight:bold"  />
+    	    	<label id="GA_SC" value="@load(fmodel.servingCSR())" style="font-size : 42px; font-weight:bold"  />
     	    	<label width="22px"/>
 
         		<div width="50px">
@@ -98,11 +98,11 @@
             <timer id="timer_numbers" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
     	</hbox>
 
-        <vlayout height="910px" style="background-color:White">
+        <vlayout height="710px" style="background-color:White">
         
 	        <!-- <listbox id="service_list" model="@load(fmodel.user.customerList)"  selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect="" onClick="@command('inviteCustomerNow')" vflex="max" > -->
-	        <listbox id="GA_list" model="@load(fmodel.userList)" selectedItem="@bind(fmodel.pickedCustomer)" onSelect=""  width="100%" height="900px"  >
-
+	        <listbox id="GA_list" model="@load(fmodel.userListbyOffice)" nonselectableTags="*"  width="100%" height="700px"  >
+<!-- selectedItem="@bind(fmodel.pickedCustomer)"  onSelect=""  -->
 
                 <listhead>
                     <listheader label="Staff Member" width="140px" align="center"/>
@@ -112,13 +112,13 @@
                     <listheader label="Comments" width="150px" align="center"/> 
 
                 </listhead>
-                <template name="model" var="userList">
+                <template name="model" var="userListbyOffice">
                     <listitem context="servicesListPopup">
-                        <listcell label="@load(userList.getName())" />
-                        <listcell label="@load(userList.getCurrentService())"/>
-                        <listcell label="@bind(userList.ConvertCurrentState())" />
-                        <listcell label="@load(userList.ServingTime())" />
-                        <listcell label="@load(userList.gCurrentComments())" />
+                        <listcell label="@load(userListbyOffice.getName())" />
+                        <listcell label="@load(userListbyOffice.getCurrentService())"/>
+                        <listcell label="@bind(userListbyOffice.ConvertCurrentState())" />
+                        <listcell label="@load(userListbyOffice.ServingTime())" />
+                        <listcell label="@load(userListbyOffice.gCurrentComments())" />
                     </listitem>
                 </template>
             </listbox>
