@@ -24,10 +24,7 @@
 
             <vbox>
                 <label sclass="login-text" value="${c:l('user')}" width="150px" />
-
-                <combobox sclass="bdd-usr" id="username" width="200px" tabindex="1" model="@load(fmodel.usersForLogin)" forward="onOK=btnSubmit.onClick" value="@bind(login_form.name)">
-                    <comboitem label="@load(each)"/>
-                </combobox>
+                <textbox sclass="bdd-usr" id="username" forward="onOK=btnSubmit.onClick" value="@bind(login_form.name)" width="200px" tabindex="1"/>
             </vbox>
             <vbox>
                 <label sclass="login-text" value="${c:l('password')}" width="150px" />

@@ -5,12 +5,22 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 
-
 <zk>
-    <session-config>
-    	<session-timeout>600</session-timeout>
-        <timer-keep-alive>true</timer-keep-alive>
-    </session-config>
+  <error-page>
+    <exception-type>ru.apertum.qsystem.common.exceptions.ServerException</exception-type>
+    <location>/WEB-INF/exceptions/error.zul</location>
+  </error-page>
+  <error-page>
+    <exception-type>java.lang.Throwable</exception-type>
+    <location>/WEB-INF/exceptions/error.zul</location>
+  </error-page>
+	<session-config>
+		<session-timeout>600</session-timeout>
+		<timer-keep-alive>true</timer-keep-alive>
+    <device-type>ajax</device-type>
+    <automatic-timeout />
+    <timeout-uri />
+	</session-config>
 	<system-config>
 		<max-desktops-per-session>-1</max-desktops-per-session>
 		<ui-factory-class>org.zkoss.zk.ui.http.SerializableUiFactory</ui-factory-class>

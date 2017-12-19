@@ -300,8 +300,7 @@ public final class Executer {
 //            customer.setPostponPeriod(cmdParams.postponedPeriod);
             customer.setPostponPeriod(0);
             // если отложили бессрочно и поставили галку, то можно видеть только отложенному
-            customer
-                .setIsMine(cmdParams.isMine != null && cmdParams.isMine ? cmdParams.userId : null);
+            customer.setIsMine(cmdParams.isMine != null && cmdParams.isMine ? cmdParams.userId : null);
             // в этом случае завершаем с пациентом
             //"все что хирург забыл в вас - в пул отложенных"
             // но сначала обозначим результат работы юзера с кастомером, если такой результат найдется в списке результатов
