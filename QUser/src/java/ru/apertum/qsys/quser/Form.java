@@ -347,7 +347,7 @@ public class Form {
             if(ServingCSRs.get(i).getCurrentService()==null || "".equals(ServingCSRs.get(i).getCurrentService())){
                 counter=counter;
             }else{
-                QLog.l().logQUser().debug("\n WHAT IS THAT: \n" + ServingCSRs.get(i).getCurrentService() + "\n");
+//                QLog.l().logQUser().debug("\n WHAT IS THAT: \n" + ServingCSRs.get(i).getCurrentService() + "\n");
                 counter++;
             }
         }
