@@ -38,7 +38,7 @@
         <label value="Type Service here" width="150px" />
         <hbox>
           <vbox>
-            <textbox id="typeservices" sclass="bdd-input-search" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
+            <textbox id="typeservices" sclass="bdd-input-search" focus="true" onCreate="self.focus()" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
           </vbox>
           <vbox>
             <combobox sclass="bdd-input-category" id="cboFmCompress" onChanging="@command('changingCategory', v=event.value)" onChange="@command('changeCategory')"  selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
