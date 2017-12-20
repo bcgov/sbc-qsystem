@@ -51,7 +51,7 @@
 
     	<hbox>
             <vbox align="center">
-    	        <div width="50px">
+    	        <div width="30px">
     	        </div>
 
     <!-- style="font-size : 23px; font-family: Helvetica; color: Black; background-color: #94b8b8" -->
@@ -59,15 +59,15 @@
             	<label id="GA_CW" value="@load(fmodel.getCustomersCount())" style="font-size : 42px; font-weight:bold"  />
             	<label width="22px"/>
 
-    	        <div width="50px">
+    	        <div width="30px">
     	        </div>
     		</vbox>
 
-    	        <div width="50px">
+    	        <div width="20px">
     	        </div>
 
     		<vbox align="center">
-    			<div width="50px">
+    			<div width="30px">
     	        </div>
 
     			<label value="Total Number of CSRs" sclass="top-text" />
@@ -75,26 +75,47 @@
                 <!-- fmodel.user.customerList.size() -->
             	<label width="22px"/>
 
-            	<div width="50px">
+            	<div width="30px">
     	        </div>
             </vbox>
 
-    	        <div width="50px">
+    	        <div width="20px">
     	        </div>
+
+            <vbox align="center">
+
+                <div width="30px">
+                </div>
+
+                <label value="Logged in CSRs" sclass="top-text" />
+                <label id="GA_LC" value="@load(fmodel.LogginCSR())" style="font-size : 42px; font-weight:bold"  />
+                <label width="22px"/>
+
+                <div width="30px">
+                </div>
+
+            </vbox>
+
+                <div width="20px">
+                </div>
 
         	<vbox align="center">
 
-        		<div width="50px">
+        		<div width="30px">
     	        </div>
 
     			<label value="Serving CSRs" sclass="top-text" />
     	    	<label id="GA_SC" value="@load(fmodel.servingCSR())" style="font-size : 42px; font-weight:bold"  />
     	    	<label width="22px"/>
 
-        		<div width="50px">
+        		<div width="30px">
     	        </div>
 
     		</vbox>
+
+
+
+
             <timer id="timer_numbers" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
     	</hbox>
 
