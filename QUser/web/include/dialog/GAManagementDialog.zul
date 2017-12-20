@@ -51,6 +51,7 @@
 
     	<hbox>
             <vbox align="center">
+
     	        <div width="30px">
     	        </div>
 
@@ -112,9 +113,6 @@
     	        </div>
 
     		</vbox>
-
-
-
 
             <timer id="timer_numbers" delay="1000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
     	</hbox>
