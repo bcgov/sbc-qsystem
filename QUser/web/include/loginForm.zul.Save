@@ -35,7 +35,7 @@
                 </combobox>
             </vbox>
             
-            <!--  Another column.  Contains label with text Password at top, input text box below. --> 
+            <!  Another column.  Contains label with text Password at top, input text box below. --> 
             <vbox>
                 <label sclass="login-text" value="${c:l('password')}" width="150px" />
                 <textbox sclass="bdd-pwd" id="pwd" type="password" forward="onOK=btnSubmit.onClick" value="@bind(login_form.password)" width="200px" tabindex="2"/>
@@ -44,8 +44,7 @@
         
         <!--  Just a div now.  No row.  Contains the login button -->
         <div style="margin:3px 0px 0px 0px;">
-            <button sclass="login-button" width="120px" height="34px" id="btnSubmit" label="${c:l('enter')}"
-                    onClick="@command('login')"  tabindex="3"/>
+            <button sclass="login-button" width="120px" height="34px" id="btnSubmit" label="${c:l('enter')}" onClick="@command('login')"  tabindex="3"/>
             <label style="color: white;" class="error" value="@bind(login_msgs['name'])" />
         </div>
         
@@ -58,22 +57,19 @@
     <div style="position: absolute; right: 10px; top: 20px; margin:0px 0px 0px 0px;" visible="@load(fmodel.login)">
     
         <!--  Row for GA Board, user information.  Report bug was here, but has moved. -->
-        <!--  Note:  Updated to have one row (hbox), three columns (vboxes).  Trivial change. -->
+        <!--  Note:  GABoard button seems to show up as a column, not a row. -->
         <hbox>
-        
-            <!--  The GA Board column. -->
-            <vbox>
-                <label style="cursor:pointer;text-decoration: underline; color:green; font-size:1.2em;"
-                       value="GA Board" onClick="@command('GABoard')" visible="@load(fmodel.user.getGABoard())" />
+            <label style="cursor:pointer;text-decoration: underline; color:green; font-size:1.2em;"
+                   value="GA Board" onClick="@command('GABoard')" visible="@load(fmodel.user.getGABoard())" />
 
-                <!--  Old position for Report Bug button
-                <label style="cursor:pointer;text-decoration: underline; color:green; font-size:1.2em;"
-                       value="Report Bug" onClick="@command('ReportBug')" visible="true"/>
-                -->
-            </vbox>  
+            <!--  Old position for Report Bug button
+            <label style="cursor:pointer;text-decoration: underline; color:green; font-size:1.2em;"
+                   value="Report Bug" onClick="@command('ReportBug')" visible="true"/>
+            -->
             
-            <!--  The User, Office, Logout column. -->
-            <vbox>
+            <!--  Another row.  Not sure how there can be row in row? Why not two vboxes? Ask Andrew -->
+            <!--  Note:  All these elements show up as a column, not as a row. -->
+            <hbox>
             
                 <!--  User, name, separator, office, separator, logout button. -->
                 <div>
@@ -85,22 +81,16 @@
                     <!--  NOTE!!  What is the user.user.point?  Blank seems to show up.  Should be office name? -->
                     <label sclass="login-text" value="@load(fmodel.user.user.point)" />
                     <separator  bar="true"/>
-                    <button sclass="login-button" width="120px" height="34px" label="${c:l('out')}"
-                            onClick="@command('logout')"/>
-                    <separator  bar="true"/>
-                    <checkbox id="QuickTxn" label="Quick Txn Counter" sclass="login-text"
-                              onCheck="@command('QuickTxnChecked')"/>
+                    <button sclass="login-button" width="120px" height="34px" label="${c:l('out')}" onClick="@command('logout')">
+                    </button>
                 </div>
-            </vbox>
                 
-            <!--  The checkmark image column. -->
-            <vbox>
+                <!--  The checkbox to the right of the User column. -->
                 <image id="" src="/resources/img/ok32_2.png"/>
-            </vbox>
-            
+            </hbox>
+            <!--  End of user/checkbox info -->
         </hbox>
-        <!--  End of the row containing GA Board, User/office info, and checkmark image -->    
-
+        <!--  End of entire screen element, including the GA Board link -->
     </div>
     <!--  End: Div for top right hand part of the screen, GABoard, logged in user, office, logout button. -->
 
