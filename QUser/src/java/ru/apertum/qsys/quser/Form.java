@@ -505,28 +505,29 @@ public class Form {
     @Command
     @NotifyChange(value = { "user" })
     public void QuickTxnChecked() {
+        /*
         boolean quick = true;
         QLog.l().logQUser().debug("--> Start: QuickTxnChecked");
         QUser quser = user.getUser();
         QLog.l().logQUser().debug("    --> User: " + quser.getName());
         QLog.l().logQUser().debug("    --> Old user quick value: " + quser.getQuickTxn());
         QLog.l().logQUser().debug("    --> New debug statement");
-
-        // boolean quick = ((Checkbox) LoginFormWindow.getFellow("QuickTxn")).getValue();
-        // boolean quick = true;
-        if (QuickTxn == null) {
-            QLog.l().logQUser().debug("    --> Quick checkbox is null.  Using default of true");
-        }
-        else {
-            quick = QuickTxn.getValue();
-        }
-
+        
         QLog.l().logQUser().debug("    --> Quick checkbox value: " + quick);
+        */
 
+        QUser quser = user.getUser();
+        boolean quick = !quser.getQuickTxn();
         quser.setQuickTxn(quick);
-        QLog.l().logQUser().debug("    --> New user quick value: " + quser.getQuickTxn());
+        String strQuick = "Default value";
+        strQuick = quick ? "Yes" : "No";
+        QLog.l().logQUser().debug("    --> CSR is Quick Transaction? " + strQuick);
 
+        /*
+        QLog.l().logQUser().debug("    --> New user quick value: " + quser.getQuickTxn());
+        
         QLog.l().logQUser().debug("--> End:   QuickTxnChecked");
+        */
     }
 
     @Command
@@ -547,7 +548,7 @@ public class Form {
         // Andrew - to change quser state for GABoard
         QUser quser = user.getUser();
         quser.setCurrentState(false);
-        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getName() + "\n\n\n\n");
+        // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getName() + "\n\n\n\n");
         // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getCurrentState() + "\n\n\n\n");
 
         final Session sess = Sessions.getCurrent();
