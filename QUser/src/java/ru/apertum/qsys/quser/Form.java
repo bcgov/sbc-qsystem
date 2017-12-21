@@ -1355,6 +1355,21 @@ public class Form {
                 ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options"))
                         .setSelectedIndex(customer.getChannelsIndex() - 1);
             }
+
+            //  Set default value for checkbox to be unchecked.            
+            Checkbox temp = (Checkbox) addTicketDailogWindow
+                    .getFellow("CustQuickTxnId");
+
+            if (temp == null) {
+                QLog.l().logQUser().debug("Bad news.  Checkbox is null");
+            }
+            else {
+                QLog.l().logQUser().debug("Yea!  Checkbox is not null");
+                temp.setChecked(false);
+                boolean Quick = temp.isChecked();
+                QLog.l().logQUser().debug("Checkbox is: " + (Quick ? "Checked" : "Not checked"));
+            }
+
             // ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(customer.getChannelsIndex() - 1);
         }
         else {
