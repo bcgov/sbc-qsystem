@@ -45,7 +45,10 @@
                         </listhead>
                         <template name="model" var="customerList">
                             <listitem context="servicesListPopup">
+                                <!--
                                 <listcell label="No" />
+                                -->
+                                <listcell label="@load(customerList.getTempQuickTxn())" />
                                 <listcell label="@load(customerList.standTimeinHHMMSS())" />
                                 <listcell label="@load(customerList.getFullNumber())" />
                                 <listcell label="@load(customerList.getAddedBy())"/>
