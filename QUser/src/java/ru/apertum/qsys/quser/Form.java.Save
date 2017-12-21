@@ -173,12 +173,6 @@ public class Form {
     private Listbox postpone_list;
     @Wire("#incGAManagementDialog #GA_list")
     private Listbox GA_list;
-
-    // Get Quick Transaction checkbox from the UI, client side.
-    // <checkbox id="QuickTxnId" label="Quick Txn Counter" sclass="login-text QuickTxnClass"
-    // @Wire("#QuickTxnId")
-    // private Checkbox QuickTxn;
-
     // ********************************************************************************************************************************************
     // ** Change priority - By Customer
     // ********************************************************************************************************************************************
@@ -506,28 +500,29 @@ public class Form {
     @Command
     @NotifyChange(value = { "user" })
     public void QuickTxnChecked() {
+        /*
         boolean quick = true;
         QLog.l().logQUser().debug("--> Start: QuickTxnChecked");
         QUser quser = user.getUser();
         QLog.l().logQUser().debug("    --> User: " + quser.getName());
         QLog.l().logQUser().debug("    --> Old user quick value: " + quser.getQuickTxn());
         QLog.l().logQUser().debug("    --> New debug statement");
+        
+        QLog.l().logQUser().debug("    --> Quick checkbox value: " + quick);
+        */
 
-        // boolean quick = ((Checkbox) LoginFormWindow.getFellow("QuickTxn")).getValue();
-        // boolean quick = true;
-        // if (QuickTxn == null) {
-        // QLog.l().logQUser().debug(" --> Quick checkbox is null. Using default of true");
-        // }
-        // else {
-        // quick = QuickTxn.getValue();
-        // }
+        QUser quser = user.getUser();
+        boolean quick = !quser.getQuickTxn();
+        quser.setQuickTxn(quick);
+        String strQuick = "Default value";
+        strQuick = quick ? "Yes" : "No";
+        QLog.l().logQUser().debug("    --> CSR is Quick Transaction? " + strQuick);
 
-        // QLog.l().logQUser().debug(" --> Quick checkbox value: " + quick);
-
-        quser.setQuickTxn(!quser.getQuickTxn());
+        /*
         QLog.l().logQUser().debug("    --> New user quick value: " + quser.getQuickTxn());
-
+        
         QLog.l().logQUser().debug("--> End:   QuickTxnChecked");
+        */
     }
 
     @Command
@@ -548,7 +543,7 @@ public class Form {
         // Andrew - to change quser state for GABoard
         QUser quser = user.getUser();
         quser.setCurrentState(false);
-        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getName() + "\n\n\n\n");
+        // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getName() + "\n\n\n\n");
         // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getCurrentState() + "\n\n\n\n");
 
         final Session sess = Sessions.getCurrent();
@@ -1340,30 +1335,71 @@ public class Form {
 
     @Command
     public void addTicketScreen() {
+
+        //  Debugging
+        QLog.l().logQUser().debug("==> Start: addTicketScreen");
+
+        //  Get quick transaction check box.
+        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow.getFellow("CustQuickTxnId");
+
         // Remove previous comments and categories searched
         this.refreshAddWindow();
         this.refreshChannels();
 
+        //  You are (???) pulling an existing customer, in queue or on hold.
         if (customer != null) {
             QLog.l().logQUser()
-                    .debug("Set addTicket combo box. Index: " + customer.getChannelsIndex());
+                    .debug("    --> Customer channel index not null: Set addTicket combo box. Index: "
+                            + customer.getChannelsIndex());
+
+            //  You are dealing with a reception office.
             if (getCFMSType()) {
                 ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options"))
                         .setSelectedIndex(customer.getChannelsIndex() - 1);
             }
+
+            //  Dealing with a non-reception office.
             else {
                 ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options"))
                         .setSelectedIndex(customer.getChannelsIndex() - 1);
             }
-            // ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).setSelectedIndex(customer.getChannelsIndex() - 1);
+
+            //  Make sure you found the checkbox.            
+            if (QuickTxn == null) {
+                QLog.l().logQUser().debug("    --> Bad news.  Could not find QuickTxn checkbox.");
+            }
+
+            //  *** To Do: Temporarily, set quicktxn to false. TODO!!  Set to be customer value.
+            else {
+                QuickTxn.setChecked(false);
+            }
         }
+
+        //  You are starting a new transaction.
         else {
-            QLog.l().logQUser().debug("Customer of channel index is null");
+            QLog.l().logQUser().debug("    -->  Customer of channel index is null");
+
+            //  If no customer, set default quick txn to be false.            
+            if (QuickTxn == null) {
+                QLog.l().logQUser().debug("    --> Bad news.  Could not find QuickTxn checkbox.");
+            }
+            else {
+                QuickTxn.setChecked(false);
+            }
+        }
+
+        //  Debug.
+        if (QuickTxn != null) {
+            boolean isQuick = QuickTxn.isChecked();
+            QLog.l().logQUser()
+                    .debug("    --> Checkbox is: " + (isQuick ? "Checked" : "Not checked"));
         }
 
         addTicketDailogWindow.setVisible(true);
         addTicketDailogWindow.doModal();
 
+        //  Debugging.
+        QLog.l().logQUser().debug("==> End: addTicketScreen");
     }
 
     public void refreshAddWindow() {
@@ -1828,6 +1864,27 @@ public class Form {
             params.channels = ((Combobox) addTicketDailogWindow
                     .getFellow("general_Channels_options")).getSelectedItem().getValue().toString();
         }
+
+        //  Add whether the transaction is a quick transaction or not.
+        Checkbox temp = (Checkbox) addTicketDailogWindow
+                .getFellow("CustQuickTxnId");
+        //boolean CustQTrans = ((Checkbox) addTicketDailogWindow
+        //        .getFellow("CustQuickTxn")).getValue();
+
+        if (temp == null) {
+            QLog.l().logQUser().debug("Bad news.  Checkbox is null");
+            params.custQtxn = false;
+        }
+        else {
+            QLog.l().logQUser().debug("Yea!  Checkbox is not null");
+            boolean Quick = temp.isChecked();
+            QLog.l().logQUser().debug("Checkbox is: " + (Quick ? "Checked" : "Not checked"));
+            params.custQtxn = Quick;
+        }
+
+        //         strQuick = quick ? "Yes" : "No";
+
+        //QLog.l().logQUser().debug("Customer Quick Trans? " + CustQTrans);
 
         // params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
         // params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
