@@ -315,7 +315,6 @@ public class Form {
 //        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getName() + "\n\n\n\n" + getuserList().size() + "\n");
         //Andrew- get quser state for GABoard
 
-
 //        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + userList.getCurrentState() + "\n\n\n\n");
         if (quser != null) {
             officeName = user.getUser().getOffice().getName();
@@ -354,6 +353,26 @@ public class Form {
         return counter;
     }
     
+
+    //Get the Logged in CSRs
+    @Command
+    public int LogginCSR() {
+        LinkedList<QUser> LogginCSRs = getuserListbyOffice();
+//        Iterator Iterator = ServingCSRs.iterator();
+        Integer counter = 0;
+//        LinkedList<String> linkedList = new LinkedList<>();
+        for (int i = 0; i < LogginCSRs.size(); i++) {
+            if(LogginCSRs.get(i).getCurrentState()){
+                counter++;
+            }else{
+//                QLog.l().logQUser().debug("\n WHAT IS THAT: \n" + ServingCSRs.get(i).getCurrentService() + "\n");
+                counter=counter;
+            }
+        }
+        return counter;
+    }
+    
+
     @Command
     public void GABoard() {
         GAManagementDialogWindow.setVisible(true);
@@ -393,6 +412,7 @@ public class Form {
         QLog.l().logQUser().debug("\n\n\n\n OUTSIDE Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
     }
     
+
     
 
 
@@ -1075,6 +1095,12 @@ public class Form {
                 Label SC = (Label)GAManagementDialogWindow.getFellow("GA_SC");
                 String S_SC = new Integer(servingCSR()).toString();
                 SC.setValue(S_SC);
+
+                
+                Label LC = (Label)GAManagementDialogWindow.getFellow("GA_LC");
+                String S_LC = new Integer(LogginCSR()).toString();
+                LC.setValue(S_LC);
+
 //                final Listbox GA_list = (Listbox) comp;
 //                ListModel lml = (ListModel)GA_list.getModel();
 //                GA_list.setModel(lml);
