@@ -1829,6 +1829,27 @@ public class Form {
                     .getFellow("general_Channels_options")).getSelectedItem().getValue().toString();
         }
 
+        //  Add whether the transaction is a quick transaction or not.
+        Checkbox temp = (Checkbox) addTicketDailogWindow
+                .getFellow("CustQuickTxnId");
+        //boolean CustQTrans = ((Checkbox) addTicketDailogWindow
+        //        .getFellow("CustQuickTxn")).getValue();
+
+        if (temp == null) {
+            QLog.l().logQUser().debug("Bad news.  Checkbox is null");
+            params.custQtxn = false;
+        }
+        else {
+            QLog.l().logQUser().debug("Yea!  Checkbox is not null");
+            boolean Quick = temp.isChecked();
+            QLog.l().logQUser().debug("Checkbox is: " + (Quick ? "Checked" : "Not checked"));
+            params.custQtxn = Quick;
+        }
+
+        //         strQuick = quick ? "Yes" : "No";
+
+        //QLog.l().logQUser().debug("Customer Quick Trans? " + CustQTrans);
+
         // params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
         // params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
         params.welcomeTime = user.getCustomerWelcomeTime();
