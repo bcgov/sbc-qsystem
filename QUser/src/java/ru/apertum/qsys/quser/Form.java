@@ -712,7 +712,7 @@ public class Form {
     @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
     public void invite() {
 
-        QLog.l().logQUser().debug("Invite by " + user.getName());
+        QLog.l().logQUser().debug("==> Start: invite - Invite by " + user.getName());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
@@ -732,6 +732,9 @@ public class Form {
         }
 
         service_list.setModel(service_list.getModel());
+
+        //  Debug
+        QLog.l().logQUser().debug("==> End: invite");
     }
 
     @Command
@@ -1842,7 +1845,11 @@ public class Form {
     }
 
     public CmdParams paramsForAddingInQueue(Integer priority, Boolean isMine) {
+
         final CmdParams params = new CmdParams();
+
+        //  Debug
+        QLog.l().logQUser().debug("==> Start: paramsForAddingInQueue");
 
         params.userId = user.getUser().getId();
         params.serviceId = pickedRedirectServ.getId();
@@ -1868,29 +1875,27 @@ public class Form {
         }
 
         //  Add whether the transaction is a quick transaction or not.
-        Checkbox temp = (Checkbox) addTicketDailogWindow
+        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow
                 .getFellow("CustQuickTxnId");
-        //boolean CustQTrans = ((Checkbox) addTicketDailogWindow
-        //        .getFellow("CustQuickTxn")).getValue();
 
-        if (temp == null) {
-            QLog.l().logQUser().debug("Bad news.  Checkbox is null");
+        if (QuickTxn == null) {
+            QLog.l().logQUser().debug("    --> Bad news.  Checkbox could not be found");
             params.custQtxn = false;
         }
         else {
-            QLog.l().logQUser().debug("Yea!  Checkbox is not null");
-            boolean Quick = temp.isChecked();
-            QLog.l().logQUser().debug("Checkbox is: " + (Quick ? "Checked" : "Not checked"));
+            QLog.l().logQUser().debug("    --> CheYea!  Checkbox is not null");
+            boolean Quick = QuickTxn.isChecked();
+            QLog.l().logQUser()
+                    .debug("    --> Checkbox found. It is: " + (Quick ? "Checked" : "Not checked"));
             params.custQtxn = Quick;
         }
-
-        //         strQuick = quick ? "Yes" : "No";
-
-        //QLog.l().logQUser().debug("Customer Quick Trans? " + CustQTrans);
 
         // params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
         // params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
         params.welcomeTime = user.getCustomerWelcomeTime();
+
+        //  Debug
+        QLog.l().logQUser().debug("==> End: paramsForAddingInQueue");
 
         return params;
     }
