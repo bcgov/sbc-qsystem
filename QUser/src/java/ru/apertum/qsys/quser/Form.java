@@ -1030,6 +1030,41 @@ public class Form {
     public void clickListServices() {
     }
 
+    /*
+     * new function prepareInvite() {
+     *     look through service list.
+     *     set pickedCustomer = one that matches
+     *     Write a new function inviteCustomerNow
+     *      
+     * }
+     * 
+     * 
+     * 
+     * 
+     *  keep the old inviteCustomerNow, but have it take a parameter of pickedCustomer
+     *  
+     *  write a new inviteCustomerNow, which takes no parameters, just like the old one.
+     *  It only has one line, it calls the old one with a parameter.
+     *  
+     *  
+     *  
+     *  public void inviteCustomerNew() {
+     *  
+     *    inviteCustomerOld(pickedCustomer);
+     *  }
+     *  
+     *  public void inviteCustomerOld(pickedCustomer) {
+     *  
+     *    all the old code
+     *  
+     *  }
+     *  
+     *  
+     *  Now, I can write a new function, which looks through the service list,
+     *  selects a customer, sets it to be pickedCustomer, and calls the function.
+     * 
+     */
+
     @Command
     public void inviteCustomerNow() {
         // 1. Postpone the customer
