@@ -55,36 +55,53 @@
             font-size : 1.5em;
         }
     </style>
-    <borderlayout onClientInfo="onClientInfo(event)" sclass="complex-layout" validationMessages="@id('login_msgs')" apply="org.zkoss.bind.BindComposer"  viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
+    
+    <!--  This is the definition file for the entire SBC-CFMS screen layout. -->
+    <!--  Only sections active at this time are north, center, and south.  East/west not used -->
+    <borderlayout onClientInfo="onClientInfo(event)" sclass="complex-layout" validationMessages="@id('login_msgs')"
+                  apply="org.zkoss.bind.BindComposer" viewModel="@id('fmodel') @init('ru.apertum.qsys.quser.Form')">
         <zscript>
             void onClientInfo(ClientInfoEvent event) {
             Sessions.getCurrent().setAttribute("org.zkoss.web.preferred.timeZone", event.getTimeZone());
         }
         </zscript>
+        
+        <!--  North is the top dark blue section with logo, office, login/out, invite, add citizen buttons -->
         <north size="180px" border="0" sclass="blue-background" id="main_north">
             <vbox height="100%" pack="center">
                 <hbox>
-                    <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px" style=" margin-top: 24px;"/>
+                    <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px"
+                           style=" margin-top: 24px;"/>
                     <div width="20px"/>
                     <vbox>
                         <div height="50px"/>
-                        <label sclass="login-text bdd-login-officename" value="@bind(fmodel.officeName)" height="56px" style="margin-top: 24px;"/>
+                        <label sclass="login-text bdd-login-officename" value="@bind(fmodel.officeName)"
+                               height="56px" style="margin-top: 24px;"/>
                     </vbox>
                 </hbox>
                 <hlayout></hlayout>
                 <vlayout sclass="blue-background" height="100px" width="1200px">
                     <div>
                         <hbox width="80%">
-                            <button sclass="act-button bdd-invite" style="margin-left: 22px; margin-top: 18px;" label="${c:l('invite_client')}" visible="@load(fmodel.getCFMSType())" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="38px" width="158px">
+                            <button sclass="act-button bdd-invite" style="margin-left: 22px; margin-top: 18px;"
+                                    label="${c:l('invite_client')}" visible="@load(fmodel.getCFMSType())"
+                                    disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')"
+                                    id="btn_invite" height="38px" width="158px">
                             </button>   
 
-                            <button sclass="act-button bdd-serve-now" style="margin-left: 15px; margin-top: 18px;" label="Serve Now" visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])" onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
+                            <button sclass="act-button bdd-serve-now" style="margin-left: 15px; margin-top: 18px;"
+                                    label="Serve Now"
+                                    visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])"
+                                    onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
                             </button>
 
                             <div width="320px" style="background-color:White;">
                             </div>
 
-                            <button sclass="act-button bdd-add-citizen" style="margin-right: 30px; margin-top: 18px;" label="${c:l('add_client')}" disabled="@load(fmodel.btnsDisabled[6])" onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
+                            <button sclass="act-button bdd-add-citizen" style="margin-right: 30px; margin-top: 18px;"
+                                    label="${c:l('add_client')}"
+                                    disabled="@load(fmodel.btnsDisabled[6])"
+                                    onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
                             </button>                    
                         </hbox>
                     </div>
@@ -95,12 +112,19 @@
                 </hbox>
             </vbox>
         </north>
+
+        <!--  West is not visible at this time, so not sure what it contains -->
         <west visible="false" title="Полезные материалы" size="25%" hflex="min" maxsize="250" splittable="true" collapsible="true">
             <include src="/include/westUsefullStuff.zul"/>
         </west>
+        
+        <!--  Center  -->
         <center border="none" hflex="true">
              <include id="incClientDashboard" src="/include/clientDashboard.zul"/>            
         </center>
+        
+        <!--  East is commented out, so again, not sure what this contains -->
+        <!--  Looks like it used to contain old command buttons in a vertical layout. -->
         <!--
         <east title="${c:l('management')}" size="220px"  hflex="min">
             <div align="center">
@@ -142,6 +166,8 @@
             </div>
         </east>
         -->
+        
+        <!--  South defines the bottom footer part of the screen. -->        
         <south   size="40px" style="background-color: #003366;" border="0">
             <!-- <toolbar mold="panel" align="center"> -->
             <toolbar mold="panel" align="center">
@@ -151,8 +177,10 @@
                 <toolbarbutton sclass="toolbar-items" label="${c:l('support')}"  href="mailto:xyz@gov.bc.ca" target="_blank" />
                 <separator orient="vertical" bar="true" />
                 <toolbarbutton sclass="toolbar-items" label="Powered by Government of British Columbia" href="gww.gov.bc.ca" target="_blank" />
-<!--                 <div width="720px" style="background-color:#003366;">
-                </div> -->
+                <!--            
+                <div width="720px" style="background-color:#003366;">
+                </div>
+                -->
                 <label sclass="toolbar-items" value="${c:l('versions')}"/>
                 <div sclass="toolbar-items" width="120px" />
                 
@@ -167,9 +195,15 @@
 
 
     </borderlayout>
+    
+    <!--  This is the tooltip popup for the Feedback button. --> 
     <popup id="csrReports" width="200px" >
-              <label value="${c:l('ReportBug_Explanation')}" style="font-weight:bold; font-family: Helvetica; font-size:12px; "></label>
+        <label value="${c:l('ReportBug_Explanation')}" style="font-weight:bold; font-family: Helvetica; font-size:12px; ">
+        </label>
 
     </popup>
-    <!-- <timer id="timer_refresh_Quser" delay="30000" repeats="true" running="true" onTimer="@command('refreshQuser')"/>   -->
+        <!--  Timer commented out for now. -->
+        <!--
+        <timer id="timer_refresh_Quser" delay="30000" repeats="true" running="true" onTimer="@command('refreshQuser')"/>
+        -->
 </zk>
