@@ -15,10 +15,12 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -34,6 +36,7 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.InputEvent;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -41,6 +44,8 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
+import org.zkoss.zul.Label;
+import org.zkoss.zul.ListModel;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Messagebox;
@@ -59,6 +64,7 @@ import ru.apertum.qsystem.server.QSession;
 import ru.apertum.qsystem.server.QSessions;
 import ru.apertum.qsystem.server.controller.Executer;
 import ru.apertum.qsystem.server.model.QOffice;
+import ru.apertum.qsystem.server.model.QOfficeList;
 import ru.apertum.qsystem.server.model.QPlanService;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QServiceTree;
@@ -118,6 +124,7 @@ public class Form {
     public LinkedList<String> prior_St = new LinkedList(Uses.get_COEFF_WORD().values());
     public String officeType = "non-reception";
     public LinkedList<QUser> userList = new LinkedList<>();
+    public LinkedList<QUser> userListbyOffice = new LinkedList<>();
     //Main service page
     @Wire("#incClientDashboard #client_north")
     North clientDashboardNorth;
@@ -152,8 +159,8 @@ public class Form {
     Window serveCustomerDialogWindow;
     @Wire("#incClientDashboard #incAddTicketDialog #addTicketDialog")
     Window addTicketDailogWindow;
-    @Wire("#incClientDashboard #GAManagement")
-    Window GAManagement;
+//    @wire("#incClientDashboard #GAManagement")
+//    Window GAManagement;
     @Wire("#incClientDashboard #incReportingBug #ReportingBug")
     Window ReportingBugWindow;
     
@@ -183,6 +190,8 @@ public class Form {
     private Listbox service_list;
     @Wire("#incClientDashboard #postpone_list")
     private Listbox postpone_list;
+    @Wire("#incGAManagementDialog #GA_list")
+    private Listbox GA_list;
     //********************************************************************************************************************************************
     //**  Change priority - By Customer
     //********************************************************************************************************************************************
@@ -195,6 +204,9 @@ public class Form {
     private Combobox cboFmCompress;
     private String filterCa = "";
     private String CSRIcon = "";
+    private int customersCount = 0;
+    private boolean currentState = false;
+    private boolean CheckGABoard = false;
 
 //    public LinkedList<QUser> test2 = greed.get(2).getShadow();
 //    public LinkedList<QUser> userList = QUserList.getInstance().getItems();
@@ -266,12 +278,13 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn", "officeName"})
+    @NotifyChange(value = {"btnsDisabled", "login", "user", "postponList", "customer", "avaitColumn", "officeName", "userList", "currentState", "userListbyOffice"})
     public void login() {
 
         Uses.userTimeZone = (TimeZone) Sessions.getCurrent().getAttribute("org.zkoss.web.preferred.timeZone");
         QLog.l().logQUser().debug("Login : " + user.getName());
-        if (user.getName().equals("Administrator")) {
+//        if (user.getUser().getName().equals("Administrator")) {
+        if (user.getUser().getAdminAccess()) { 
             user.setGABoard(true);
         }
         QLog.l().logQUser().debug("STATUS : " + user.getGABoard());
@@ -291,8 +304,18 @@ public class Form {
 
         setKeyRegimForUser(user);
 
-        QUser quser = user.getUser();
+//        QUser quser = user.getUser();
+        Long userId = user.getUser().getId();
+        QUser quser = QUserList.getInstance().getById(userId);
+        currentState = true;
+        quser.setCurrentState(currentState);
+//        for(int i=0; i<getuserList().size(); i++){
+//            QLog.l().logQUser().debug("\n\n\n\nBEFORE GETTING TRUE: STATE LOOP:  "+ getuserList().get(i).getName() + ":  " + getuserList().get(i).getCurrentState() + "\n\n\n\n");
+//        }
+//        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getName() + "\n\n\n\n" + getuserList().size() + "\n");
+        //Andrew- get quser state for GABoard
 
+//        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + userList.getCurrentState() + "\n\n\n\n");
         if (quser != null) {
             officeName = user.getUser().getOffice().getName();
         }
@@ -308,13 +331,90 @@ public class Form {
         } else {
             btn_invite.setVisible(false);
         }
+//        GA_list.setModel(GA_list.getModel());
+//        GA_list.getModel();
+        BindUtils.postNotifyChange(null, null, Form.this, "*");
     }
+
+    @Command
+    public int servingCSR() {
+        LinkedList<QUser> ServingCSRs = getuserListbyOffice();
+//        Iterator Iterator = ServingCSRs.iterator();
+        Integer counter = 0;
+//        LinkedList<String> linkedList = new LinkedList<>();
+        for (int i = 0; i < ServingCSRs.size(); i++) {
+            if(ServingCSRs.get(i).getCurrentService()==null || "".equals(ServingCSRs.get(i).getCurrentService())){
+                counter=counter;
+            }else{
+//                QLog.l().logQUser().debug("\n WHAT IS THAT: \n" + ServingCSRs.get(i).getCurrentService() + "\n");
+                counter++;
+            }
+        }
+        return counter;
+    }
+    
+
+    //Get the Logged in CSRs
+    @Command
+    public int LogginCSR() {
+        LinkedList<QUser> LogginCSRs = getuserListbyOffice();
+//        Iterator Iterator = ServingCSRs.iterator();
+        Integer counter = 0;
+//        LinkedList<String> linkedList = new LinkedList<>();
+        for (int i = 0; i < LogginCSRs.size(); i++) {
+            if(LogginCSRs.get(i).getCurrentState()){
+                counter++;
+            }else{
+//                QLog.l().logQUser().debug("\n WHAT IS THAT: \n" + ServingCSRs.get(i).getCurrentService() + "\n");
+                counter=counter;
+            }
+        }
+        return counter;
+    }
+    
 
     @Command
     public void GABoard() {
         GAManagementDialogWindow.setVisible(true);
         GAManagementDialogWindow.doModal();
+        CheckGABoard = true;
+        try{
+            Thread.sleep(1000);
+        } 
+        catch(InterruptedException ex) 
+        {
+            Thread.currentThread().interrupt();
+        }
+
+//        QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
     }
+    
+//    @ContextParam(ContextType.VIEW) Component comp
+    @Command
+    public void closeGA() {
+        CheckGABoard = false;
+        GAManagementDialogWindow.addEventListener("onClose", new EventListener() {
+	
+            @Override
+            public void onEvent(Event event) throws Exception {
+                // TODO Auto-generated method stub
+                event.stopPropagation();
+                //        GAManagementDialogWindow.detach();
+                GAManagementDialogWindow.setVisible(false);
+
+                CheckGABoard = false;
+                
+                QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
+                QLog.l().logQUser().debug("\n\n\n\n Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
+            }
+        });
+
+        QLog.l().logQUser().debug("\n\n\n\n OUTSIDE Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
+    }
+    
+
+    
+
 
     @Command
     public void ReportBug() {
@@ -322,6 +422,30 @@ public class Form {
         ReportingBugWindow.doModal();
     }
 
+    private Integer getSessionOfficeId() {
+        return Integer.parseInt((String) Sessions.getCurrent().getAttribute("office_id"));
+    }
+    
+    //To get GABoard Customer waiting 
+    @NotifyChange(value = {"service_list"})
+    public int getCustomersCount() {
+        int total = 0;
+//        Long office_id = Integer.toUnsignedLong(getSessionOfficeId());
+//        QOffice office = QOfficeList.getInstance().getById(office_id);
+//
+//        total = QServiceTree.getInstance().getNodes()
+//            .stream()
+//            .filter((service) -> service.getSmartboard().equals("Y"))
+//            .map((service) -> service.getCountCustomersByOffice(office))
+//            .reduce(total, Integer::sum);
+//        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + total + "\n\n\n\n");
+//        customersCount = total;
+//        total = listServices.size();
+//        service_list
+        total = service_list.getModel().getSize();
+        return total;
+    }
+    
     @Command
     public void SendingSlack(){
         String ReportMsg = "";
@@ -415,6 +539,12 @@ public class Form {
         checkCombo = false;
         customer = null;
         officeName = "";
+        
+        //Andrew - to change quser state for GABoard
+        QUser quser = user.getUser();
+        quser.setCurrentState(false);
+        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getName() + "\n\n\n\n");
+//        QLog.l().logQUser().debug("\n\n\n\n COUNT:  " + quser.getCurrentState() + "\n\n\n\n");
 
         final Session sess = Sessions.getCurrent();
         sess.removeAttribute("userForQUser");
@@ -422,6 +552,7 @@ public class Form {
         user.setCustomerList(Collections.<QPlanService>emptyList());
         user.setName("");
         user.setPassword("");
+        user.setGABoard(false);
 
         for (QSession session : QSessions.getInstance().getSessions()) {
             if (user.getUser().getId().equals(session.getUser().getId())) {
@@ -442,7 +573,7 @@ public class Form {
     public LinkedList<QUser> getuserList() {
         userList = QUserList.getInstance().getItems();
         return userList;
-    }
+    }  
 
     public boolean isLogin() {
         final Session sess = Sessions.getCurrent();
@@ -621,6 +752,10 @@ public class Form {
                     customer.refreshPrevious();
                     customer = null;
 
+                    // Set the current working service to be empty 
+                    QUser quser = QUserList.getInstance().getById(params.userId);
+                    quser.setCurrentService("");
+                    
                     setKeyRegim(KEYS_MAY_INVITE);
                     service_list.setModel(service_list.getModel());
 
@@ -640,6 +775,10 @@ public class Form {
         Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER)
             .process(params, "", new byte[4]);
 
+        //Andrew - to set quser service for GABoard
+        QUser quser = QUserList.getInstance().getById(params.userId);
+        quser.setCurrentService(user.getUser().getCustomer().getService().getName());
+        
         setKeyRegim(KEYS_STARTED);
         service_list.setModel(service_list.getModel());
         BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -650,6 +789,11 @@ public class Form {
         // Inheritance the comment from Serve-customer window to hold window
         String tempComment = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
         customer.setTempComments(tempComment);
+        
+        //Set to User current Comments
+//        QUser quser = QUserList.getInstance().getById(user.getUser().getId());
+//        quser.setCurrentComments(tempComment);
+        
         QLog.l().logQUser().debug("\n\nPostponed!!:\n" + customer.getTempComments() + "\n\n\n");
     }
 
@@ -676,6 +820,10 @@ public class Form {
         customer = user.getUser().getCustomer();
         params.serviceId = user.getUser().getCustomer().getService().getId();
         customer.setTempComments(params.comments);
+        
+        //Set to User current Comments
+//        QUser quser = QUserList.getInstance().getById(params.userId);
+//        quser.setCurrentComments(params.comments);
 
         Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE)
             .process(params, "", new byte[4]);
@@ -708,6 +856,10 @@ public class Form {
             params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments")).getText();
 
             customer.setTempComments(params.comments);
+            
+            //Set to User current Comments
+//            QUser quser = QUserList.getInstance().getById(params.userId);
+//            quser.setCurrentComments(params.comments);
 
             final QUser redirectUser = QUserList.getInstance().getById(params.userId);
             //переключение на кастомера при параллельном приеме, должен приехать customerID
@@ -750,7 +902,6 @@ public class Form {
 //        customer.setChannels(1);
         pickedRedirectServ = null;
         ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
-
         this.addTicketScreen();
     }
 
@@ -823,8 +974,13 @@ public class Form {
         customer.refreshPrevious();
         customer = null;
 
+        // Set the current working service to be empty 
+        QUser quser = QUserList.getInstance().getById(params.userId);
+        quser.setCurrentService("");
+        
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
+
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         serveCustomerDialogWindow.setVisible(false);
 
@@ -901,6 +1057,61 @@ public class Form {
         return user.getTotalLineSizeStr();
     }
 
+    
+//            Long userId = user.getUser().getId();
+//        QUser quser = QUserList.getInstance().getById(userId);
+//        for(int i=0; i<getuserList().size(); i++){
+//            QLog.l().logQUser().debug("\n\n\n\nBEFORE GETTING TRUE: STATE LOOP:  "+ getuserList().get(i).getName() + ":  " + getuserList().get(i).getCurrentState() + "\n\n\n\n");
+//        }
+//        currentState = true;
+//        quser.setCurrentState(currentState);
+    
+    
+    @Command
+    @NotifyChange(value = {"service_list", "currentState", "userList", "userListbyOffice"})
+    public void refreshGAList(){
+        if (isLogin()){
+//            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + CheckGABoard + "\n\n");
+//            QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY user.getGABoard(): \n" + user.getGABoard() + "\n\n");            
+// user.getGABoard()
+            if (CheckGABoard == true ){
+//                    UsersInside.getInstance().getUsersInside()
+//                .put(user.getName() + user.getPassword(), new Date().getTime());
+//                                QSessions.getInstance()
+//                .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(),
+//                    Sessions.getCurrent().getRemoteAddr().getBytes());
+////                                
+//                Long userId = user.getUser().getId();
+//                QUser quser = QUserList.getInstance().getById(userId);
+//                quser.setCurrentState(currentState);
+                
+//                    aftercompose(#GAManagementDialog);
+                GAManagementDialogWindow.doModal();
+                Label CW = (Label)GAManagementDialogWindow.getFellow("GA_CW");
+                String S_CW = new Integer(getCustomersCount()).toString();
+                CW.setValue(S_CW);
+                
+                Label SC = (Label)GAManagementDialogWindow.getFellow("GA_SC");
+                String S_SC = new Integer(servingCSR()).toString();
+                SC.setValue(S_SC);
+
+                
+                Label LC = (Label)GAManagementDialogWindow.getFellow("GA_LC");
+                String S_LC = new Integer(LogginCSR()).toString();
+                LC.setValue(S_LC);
+
+//                final Listbox GA_list = (Listbox) comp;
+//                ListModel lml = (ListModel)GA_list.getModel();
+//                GA_list.setModel(lml);
+//                GA_list.setModel(GA_list.getItems());
+//                QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GA_list.getModel() + "\n\n");
+//                GA_list.setModel(GA_list.getModel());
+                
+            }
+//            BindUtils.postNotifyChange(null, null, Form.this, "*");
+        }
+    }
+    
     @Command
     @NotifyChange(value = {"postponList", "avaitColumn"})
     public void refreshListServices() {
@@ -956,6 +1167,9 @@ public class Form {
         Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON).process(params, "", new byte[4]);
         customer = null;
 
+        QUser quser = QUserList.getInstance().getById(params.userId);
+        quser.setCurrentService("");
+        
         setKeyRegim(KEYS_MAY_INVITE);
         postpone_list.setModel(postpone_list.getModel());
         postponeCustomerDialog.setVisible(false);
@@ -993,7 +1207,7 @@ public class Form {
     }
 
     public LinkedList<QCustomer> getPostponList() {
-        QLog.l().logger().debug("getPostponList");
+//        QLog.l().logger().debug("getPostponList");
         LinkedList<QCustomer> postponedCustomers = QPostponedList.getInstance()
             .getPostponedCustomers();
         postponedCustomers = filterPostponedCustomersByUser(postponedCustomers);
@@ -1155,11 +1369,40 @@ public class Form {
         this.filter = filter;
     }
 
+    private LinkedList<QUser> filterusersByOffice(LinkedList<QUser> AllUsers){
+        LinkedList<QUser> Nusers = new LinkedList<QUser>();
+        if(isLogin()){
+            Long userId = user.getUser().getId();
+            QUser quser = QUserList.getInstance().getById(userId);
+            for (int i = 0; i < AllUsers.size(); i++) {
+            
+            if(AllUsers.get(i).getOffice().getId()==quser.getOffice().getId()){
+                Nusers.add(AllUsers.get(i));
+            }
+            }
+        }
+
+        return Nusers;
+    }
+   
+    
+    public LinkedList<QUser> getuserListbyOffice() {
+        userList = QUserList.getInstance().getItems();
+        userListbyOffice = filterusersByOffice(userList);
+        return userListbyOffice;
+    }
+        
+    public LinkedList<QUser> getNewOfficeusers(){
+        userList = QUserList.getInstance().getItems();
+//        LinkedList<QUser> UsersbyOffice = new LinkedList<QUser>();
+        return filterusersByOffice(userList);
+    }
+    
     private LinkedList<QCustomer> filterPostponedCustomersByUser(LinkedList<QCustomer> customers) {
 
         if (this.user != null && this.user.getUser() != null) {
             QOffice userOffice = this.user.getUser().getOffice();
-            QLog.l().logger().debug("Filtering by office: " + userOffice);
+//            QLog.l().logger().debug("Filtering by office: " + userOffice);
 
             if (userOffice != null) {
                 customers = customers
@@ -1238,6 +1481,7 @@ public class Form {
         }
 
         listServices = filterServicesByUser(requiredServices);
+
     }
 
 
