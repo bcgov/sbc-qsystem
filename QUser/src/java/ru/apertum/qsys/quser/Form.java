@@ -873,8 +873,7 @@ public class Form {
 
         service_list.setModel(service_list.getModel());
 
-        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
-            .process(params, "", new byte[4]);
+        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
         customer = user.getUser().getCustomer();
 
         setKeyRegim(KEYS_INVITED);
@@ -907,12 +906,10 @@ public class Form {
     public void refreshListServices() {
         if (isLogin()) {
             // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
-            UsersInside.getInstance().getUsersInside()
-                .put(user.getName() + user.getPassword(), new Date().getTime());
+            UsersInside.getInstance().getUsersInside().put(user.getName() + user.getPassword(), new Date().getTime());
             // тут поддержание сессии как залогинившегося юзера в СУО Here the maintenance of the session as a logged user in the MSA
             QSessions.getInstance()
-                .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(),
-                    Sessions.getCurrent().getRemoteAddr().getBytes());
+                .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
 
             final StringBuilder st = new StringBuilder();
             int number = user.getPlan().size();
@@ -939,9 +936,7 @@ public class Form {
 //            Executions.getCurrent().sendRedirect("");
 //        }
 //    }
-    
-    
-    
+
     @Command
     public void closePostponeCustomerDialog() {
         postponeCustomerDialog.setVisible(false);
@@ -955,12 +950,10 @@ public class Form {
     public void OKPostponeCustomerDialog() {
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
-        params.postponedPeriod =
-            ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
+        params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
         params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
 
-        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON)
-            .process(params, "", new byte[4]);
+        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON).process(params, "", new byte[4]);
         customer = null;
 
         setKeyRegim(KEYS_MAY_INVITE);
@@ -973,7 +966,6 @@ public class Form {
 
     @Command
     public void DetermineChannels() {
-        
         if (getCFMSType()) {
             int channelIndex = ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).getSelectedIndex() + 1;
         } else {
