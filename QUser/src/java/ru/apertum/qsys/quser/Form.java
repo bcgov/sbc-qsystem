@@ -1937,7 +1937,7 @@ public class Form {
             params.custQtxn = false;
         }
         else {
-            QLog.l().logQUser().debug("    --> CheYea!  Checkbox is not null");
+            QLog.l().logQUser().debug("    --> Yea!  Checkbox is not null");
             boolean Quick = QuickTxn.isChecked();
             QLog.l().logQUser()
                     .debug("    --> Checkbox found. It is: " + (Quick ? "Checked" : "Not checked"));
