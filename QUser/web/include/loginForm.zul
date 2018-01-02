@@ -38,7 +38,8 @@
             <!--  Another column.  Contains label with text Password at top, input text box below. --> 
             <vbox>
                 <label sclass="login-text" value="${c:l('password')}" width="150px" />
-                <textbox sclass="bdd-pwd" id="pwd" type="password" forward="onOK=btnSubmit.onClick" value="@bind(login_form.password)" width="200px" tabindex="2"/>
+                <textbox sclass="bdd-pwd" id="pwd" type="password" forward="onOK=btnSubmit.onClick"
+                         value="@bind(login_form.password)" width="200px" tabindex="2"/>
             </vbox>
         </hbox>
         
