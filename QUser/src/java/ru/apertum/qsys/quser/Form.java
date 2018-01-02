@@ -1862,6 +1862,10 @@ public class Form {
 
     @Command
     public void closeAddToQueueDialog() {
+
+        //  Debug
+        QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
+
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
@@ -1872,6 +1876,9 @@ public class Form {
             final CmdParams params = this
                     .paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
 
+            boolean Quick = params.custQtxn;
+            QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
+
             this.addToQueue(params);
 
             customer = null;
@@ -1880,6 +1887,9 @@ public class Form {
 
             addTicketDailogWindow.setVisible(false);
         }
+
+        //  Debug
+        QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
     }
 
     public void Sort() {
