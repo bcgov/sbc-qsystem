@@ -375,11 +375,13 @@ public class Form {
     // @ContextParam(ContextType.VIEW) Component comp
     @Command
     public void closeGA() {
+        QLog.l().logQUser().debug("==> Start: closeGA");
         CheckGABoard = false;
         GAManagementDialogWindow.addEventListener("onClose", new EventListener() {
 
             @Override
             public void onEvent(Event event) throws Exception {
+                QLog.l().logQUser().debug("    --> Start: onEvent in closeGA");
                 // TODO Auto-generated method stub
                 event.stopPropagation();
                 // GAManagementDialogWindow.detach();
@@ -388,14 +390,13 @@ public class Form {
                 CheckGABoard = false;
 
                 QLog.l().logQUser()
-                        .debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
-                QLog.l().logQUser()
-                        .debug("\n\n\n\n Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
+                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
+                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
+                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
             }
         });
 
-        QLog.l().logQUser()
-                .debug("\n\n\n\n OUTSIDE Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
+        QLog.l().logQUser().debug("==> End: closeGA");
     }
 
     @Command
