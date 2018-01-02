@@ -3,12 +3,12 @@
 <zk xmlns="http://www.zkoss.org/2005/zul">
 
   <window id="addTicketDialog"
-            title="Search Screen"
-            border="normal"
-            width="480px"
-            position="center,center" closable="true"
-            onClose="self.visible = false; event.stopPropagation();"
-            action="show: slideDown;hide: slideUp">
+          title="Search Screen"
+          border="normal"
+          width="480px"
+          position="center,center" closable="true"
+          onClose="self.visible = false; event.stopPropagation();"
+          action="show: slideDown;hide: slideUp">
     <caption label="" image="/resources/img/logo32.png" />
     <div style="margin:10px 10px 10px 10px;">
 
@@ -17,11 +17,13 @@
         <!--  NOTE!!  Below is the layout for reception offices -->
         <vlayout visible="@load(fmodel.officeType eq 'reception')">
           <label value="${c:l('comments')}"/>
-          <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+          <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2"
+                   value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
 
           <label value="Channels:"/>
           <div width="30%">
-            <combobox id="reception_Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+            <combobox id="reception_Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false"
+                      hflex="1" style="" onSelect="@command('DetermineChannels')"  >
               <!-- visible="@load(fmodel.addWindowButtons[0])" -->
               <!-- @load(fmodel.CheckCombobox()) -->
               <attribute name="onCreate">self.setSelectedIndex(0);</attribute>
