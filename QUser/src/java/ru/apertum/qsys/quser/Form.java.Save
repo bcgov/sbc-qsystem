@@ -293,14 +293,6 @@ public class Form {
         QUser quser = QUserList.getInstance().getById(userId);
         currentState = true;
         quser.setCurrentState(currentState);
-        // for(int i=0; i<getuserList().size(); i++){
-        // QLog.l().logQUser().debug("\n\n\n\nBEFORE GETTING TRUE: STATE LOOP: "+ getuserList().get(i).getName() + ": " + getuserList().get(i).getCurrentState()
-        // + "\n\n\n\n");
-        // }
-        // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getName() + "\n\n\n\n" + getuserList().size() + "\n");
-        // Andrew- get quser state for GABoard
-
-        // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + userList.getCurrentState() + "\n\n\n\n");
         if (quser != null) {
             officeName = user.getUser().getOffice().getName();
         }
@@ -341,6 +333,25 @@ public class Form {
         return counter;
     }
 
+    //Get the Logged in CSRs
+    @Command
+    public int LogginCSR() {
+        LinkedList<QUser> LogginCSRs = getuserListbyOffice();
+        //        Iterator Iterator = ServingCSRs.iterator();
+        Integer counter = 0;
+        //        LinkedList<String> linkedList = new LinkedList<>();
+        for (int i = 0; i < LogginCSRs.size(); i++) {
+            if (LogginCSRs.get(i).getCurrentState()) {
+                counter++;
+            }
+            else {
+                //                QLog.l().logQUser().debug("\n WHAT IS THAT: \n" + ServingCSRs.get(i).getCurrentService() + "\n");
+                counter = counter;
+            }
+        }
+        return counter;
+    }
+
     @Command
     public void GABoard() {
         GAManagementDialogWindow.setVisible(true);
@@ -359,11 +370,13 @@ public class Form {
     // @ContextParam(ContextType.VIEW) Component comp
     @Command
     public void closeGA() {
+        QLog.l().logQUser().debug("==> Start: closeGA");
         CheckGABoard = false;
         GAManagementDialogWindow.addEventListener("onClose", new EventListener() {
 
             @Override
             public void onEvent(Event event) throws Exception {
+                QLog.l().logQUser().debug("    --> Start: onEvent in closeGA");
                 // TODO Auto-generated method stub
                 event.stopPropagation();
                 // GAManagementDialogWindow.detach();
@@ -372,14 +385,13 @@ public class Form {
                 CheckGABoard = false;
 
                 QLog.l().logQUser()
-                        .debug("\n\n\n\n Close GA show FLAG:  " + user.getGABoard() + "\n\n\n\n");
-                QLog.l().logQUser()
-                        .debug("\n\n\n\n Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
+                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
+                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
+                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
             }
         });
 
-        QLog.l().logQUser()
-                .debug("\n\n\n\n OUTSIDE Close GA CheckGABoard:  " + CheckGABoard + "\n\n\n\n");
+        QLog.l().logQUser().debug("==> End: closeGA");
     }
 
     @Command
@@ -502,7 +514,6 @@ public class Form {
     public void QuickTxnChecked() {
         /*
         boolean quick = true;
-        QLog.l().logQUser().debug("--> Start: QuickTxnChecked");
         QUser quser = user.getUser();
         QLog.l().logQUser().debug("    --> User: " + quser.getName());
         QLog.l().logQUser().debug("    --> Old user quick value: " + quser.getQuickTxn());
@@ -511,18 +522,21 @@ public class Form {
         QLog.l().logQUser().debug("    --> Quick checkbox value: " + quick);
         */
 
+        QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
         QUser quser = user.getUser();
+        QLog.l().logQUser().debug("    --> Quick start value: " + quser.getQuickTxn() ? "Yes"
+                : "No");
         boolean quick = !quser.getQuickTxn();
         quser.setQuickTxn(quick);
-        String strQuick = "Default value";
-        strQuick = quick ? "Yes" : "No";
-        QLog.l().logQUser().debug("    --> CSR is Quick Transaction? " + strQuick);
+        QLog.l().logQUser().debug("    --> New value you want: " + quick ? "Yes" : "No");
+        QLog.l().logQUser().debug("    --> What got set: " + quser.getQuickTxn() ? "Yes" : "No");
 
         /*
         QLog.l().logQUser().debug("    --> New user quick value: " + quser.getQuickTxn());
         
         QLog.l().logQUser().debug("--> End:   QuickTxnChecked");
         */
+        QLog.l().logQUser().debug("==> End: QuickTxnChecked");
     }
 
     @Command
@@ -707,7 +721,7 @@ public class Form {
     @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
     public void invite() {
 
-        QLog.l().logQUser().debug("Invite by " + user.getName());
+        QLog.l().logQUser().debug("==> Start: invite - Invite by " + user.getName());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
@@ -727,6 +741,9 @@ public class Form {
         }
 
         service_list.setModel(service_list.getModel());
+
+        //  Debug
+        QLog.l().logQUser().debug("==> End: invite");
     }
 
     @Command
@@ -1022,6 +1039,41 @@ public class Form {
     public void clickListServices() {
     }
 
+    /*
+     * new function prepareInvite() {
+     *     look through service list.
+     *     set pickedCustomer = one that matches
+     *     Write a new function inviteCustomerNow
+     *      
+     * }
+     * 
+     * 
+     * 
+     * 
+     *  keep the old inviteCustomerNow, but have it take a parameter of pickedCustomer
+     *  
+     *  write a new inviteCustomerNow, which takes no parameters, just like the old one.
+     *  It only has one line, it calls the old one with a parameter.
+     *  
+     *  
+     *  
+     *  public void inviteCustomerNew() {
+     *  
+     *    inviteCustomerOld(pickedCustomer);
+     *  }
+     *  
+     *  public void inviteCustomerOld(pickedCustomer) {
+     *  
+     *    all the old code
+     *  
+     *  }
+     *  
+     *  
+     *  Now, I can write a new function, which looks through the service list,
+     *  selects a customer, sets it to be pickedCustomer, and calls the function.
+     * 
+     */
+
     @Command
     public void inviteCustomerNow() {
         // 1. Postpone the customer
@@ -1109,13 +1161,10 @@ public class Form {
                 Label SC = (Label) GAManagementDialogWindow.getFellow("GA_SC");
                 String S_SC = new Integer(servingCSR()).toString();
                 SC.setValue(S_SC);
-                // final Listbox GA_list = (Listbox) comp;
-                // ListModel lml = (ListModel)GA_list.getModel();
-                // GA_list.setModel(lml);
-                // GA_list.setModel(GA_list.getItems());
-                // QLog.l().logger().debug("\n\n\n\nGABOARD VISIBILITY: \n" + GA_list.getModel() + "\n\n");
-                // GA_list.setModel(GA_list.getModel());
 
+                Label LC = (Label) GAManagementDialogWindow.getFellow("GA_LC");
+                String S_LC = new Integer(LogginCSR()).toString();
+                LC.setValue(S_LC);
             }
             // BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
@@ -1811,6 +1860,10 @@ public class Form {
 
     @Command
     public void closeAddToQueueDialog() {
+
+        //  Debug
+        QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
+
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
@@ -1821,6 +1874,9 @@ public class Form {
             final CmdParams params = this
                     .paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
 
+            boolean Quick = params.custQtxn;
+            QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
+
             this.addToQueue(params);
 
             customer = null;
@@ -1829,6 +1885,9 @@ public class Form {
 
             addTicketDailogWindow.setVisible(false);
         }
+
+        //  Debug
+        QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
     }
 
     public void Sort() {
@@ -1837,6 +1896,7 @@ public class Form {
     }
 
     public CmdParams paramsForAddingInQueue(Integer priority, Boolean isMine) {
+
         final CmdParams params = new CmdParams();
 
         //  Debug
@@ -1874,7 +1934,7 @@ public class Form {
             params.custQtxn = false;
         }
         else {
-            QLog.l().logQUser().debug("    --> CheYea!  Checkbox is not null");
+            QLog.l().logQUser().debug("    --> Yea!  Checkbox is not null");
             boolean Quick = QuickTxn.isChecked();
             QLog.l().logQUser()
                     .debug("    --> Checkbox found. It is: " + (Quick ? "Checked" : "Not checked"));
