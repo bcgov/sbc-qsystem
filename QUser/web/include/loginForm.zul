@@ -90,7 +90,7 @@
                             onClick="@command('logout')"/>
                     <separator  bar="true"/>
                     <checkbox id="QuickTxnId" label="Quick Txn Counter" sclass="login-text QuickTxnClass"
-                              onCheck="@command('QuickTxnChecked')"/>
+                              onCheck="@command('QuickTxnCSRChecked')"/>
                 </div>
             </vbox>
                 

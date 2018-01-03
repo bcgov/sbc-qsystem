@@ -516,7 +516,7 @@ public class Form {
 
     @Command
     @NotifyChange(value = { "user" })
-    public void QuickTxnChecked() {
+    public void QuickTxnCSRChecked() {
         /*
         boolean quick = true;
         QLog.l().logQUser().debug("--> Start: QuickTxnChecked");
