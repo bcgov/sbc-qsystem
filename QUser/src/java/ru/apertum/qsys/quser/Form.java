@@ -517,29 +517,21 @@ public class Form {
     @Command
     @NotifyChange(value = { "user" })
     public void QuickTxnCSRChecked() {
-        /*
-        boolean quick = true;
-        QLog.l().logQUser().debug("--> Start: QuickTxnChecked");
-        QUser quser = user.getUser();
-        QLog.l().logQUser().debug("    --> User: " + quser.getName());
-        QLog.l().logQUser().debug("    --> Old user quick value: " + quser.getQuickTxn());
-        QLog.l().logQUser().debug("    --> New debug statement");
-        
-        QLog.l().logQUser().debug("    --> Quick checkbox value: " + quick);
-        */
 
-        QUser quser = user.getUser();
-        boolean quick = !quser.getQuickTxn();
-        quser.setQuickTxn(quick);
-        String strQuick = "Default value";
-        strQuick = quick ? "Yes" : "No";
-        QLog.l().logQUser().debug("    --> CSR is Quick Transaction? " + strQuick);
+        //  Debug
+        QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
 
-        /*
-        QLog.l().logQUser().debug("    --> New user quick value: " + quser.getQuickTxn());
-        
-        QLog.l().logQUser().debug("--> End:   QuickTxnChecked");
-        */
+        //  Get user, quick transaction flag, then reset it.
+        QUser quser = user.getUser();
+        boolean save = quser.getQuickTxn();
+        quser.setQuickTxn(!save);
+
+        //  More debug.
+        QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
+        QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
+        QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
+        QLog.l().logQUser().debug("==> End: QuickTxnChecked");
+
     }
 
     @Command

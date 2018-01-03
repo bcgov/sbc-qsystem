@@ -1,4 +1,4 @@
-/*
+﻿/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -512,30 +512,19 @@ public class Form {
     @Command
     @NotifyChange(value = { "user" })
     public void QuickTxnChecked() {
-        /*
-        boolean quick = true;
-        QUser quser = user.getUser();
-        QLog.l().logQUser().debug("    --> User: " + quser.getName());
-        QLog.l().logQUser().debug("    --> Old user quick value: " + quser.getQuickTxn());
-        QLog.l().logQUser().debug("    --> New debug statement");
-        
-        QLog.l().logQUser().debug("    --> Quick checkbox value: " + quick);
-        */
 
+        //  Debug
         QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
-        QUser quser = user.getUser();
-        QLog.l().logQUser().debug("    --> Quick start value: " + quser.getQuickTxn() ? "Yes"
-                : "No");
-        boolean quick = !quser.getQuickTxn();
-        quser.setQuickTxn(quick);
-        QLog.l().logQUser().debug("    --> New value you want: " + quick ? "Yes" : "No");
-        QLog.l().logQUser().debug("    --> What got set: " + quser.getQuickTxn() ? "Yes" : "No");
 
-        /*
-        QLog.l().logQUser().debug("    --> New user quick value: " + quser.getQuickTxn());
-        
-        QLog.l().logQUser().debug("--> End:   QuickTxnChecked");
-        */
+        //  Get user, quick transaction flag, then reset it.
+        QUser quser = user.getUser();
+        boolean save = quser.getQuickTxn();
+        quser.setQuickTxn(!save);
+
+        //  More debug.
+        QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
+        QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
+        QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
         QLog.l().logQUser().debug("==> End: QuickTxnChecked");
     }
 
