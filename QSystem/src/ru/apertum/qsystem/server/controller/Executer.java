@@ -274,18 +274,13 @@ public final class Executer {
             //переключение на кастомера при параллельном приеме, должен приехать customerID
             // switch to the custodian with parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
-                final QCustomer parallelCust = user.getParallelCustomers()
-                    .get(cmdParams.customerId);
+                final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
                 if (parallelCust == null) {
-                    QLog.l().logger()
-                        .error("PARALLEL: User have no Customer for switching by customer ID=\""
-                            + cmdParams.customerId + "\"");
+                    QLog.l().logger().error("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
                 } else {
                     user.setCustomer(parallelCust);
-                    QLog.l().logger().error(
-                        "Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust
-                            .getFullNumber()
-                            + "\"");
+                    QLog.l().logger()
+                        .error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
             // вот над этим пациентом

@@ -71,6 +71,10 @@ public class QUserList extends ATListModel<QUser> {
         Spring.getInstance().getHt().saveOrUpdateAll(getItems());
     }
 
+    public void refresh() {
+        setItems(load());
+    }
+
     private static class QUserListHolder {
 
         private static final QUserList INSTANCE = new QUserList();

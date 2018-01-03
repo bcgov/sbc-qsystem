@@ -75,9 +75,6 @@
                 <vlayout sclass="blue-background" height="100px" width="1200px">
                     <div>
                         <hbox width="80%">
-                          <button sclass="act-button" style="margin-left: 22px; margin-top: 18px;" label="Throw Exception" onClick='throw new NullPointerException("Unknown Value")' height="38px" width="158px">
-                          </button>
-
                           <button sclass="act-button bdd-invite" style="margin-left: 22px; margin-top: 18px;" label="${c:l('invite_client')}" visible="@load(fmodel.getCFMSType())" disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')" id="btn_invite" height="38px" width="158px">
                             </button>   
 

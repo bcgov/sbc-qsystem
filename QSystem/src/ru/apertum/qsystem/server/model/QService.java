@@ -942,8 +942,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         }
         QLog.l().logQUser().debug(customer.getPriority());
         if (!getCustomers().add(customer)) {
-            throw new ServerException(
-                "Невозможно добавить нового кастомера в хранилище кастомеров.");
+            throw new ServerException("Невозможно добавить нового кастомера в хранилище кастомеров.");
         }
 
         // поддержка расширяемости плагинами/ определим куда влез клиент
@@ -970,8 +969,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
             }
         }
         // поддержка расширяемости плагинами
-        for (final ICustomerChangePosition event : ServiceLoader
-            .load(ICustomerChangePosition.class)) {
+        for (final ICustomerChangePosition event : ServiceLoader.load(ICustomerChangePosition.class)) {
             QLog.l().logger().info("Вызов SPI расширения. Описание: " + event.getDescription());
             event.insert(customer, before, after);
         }

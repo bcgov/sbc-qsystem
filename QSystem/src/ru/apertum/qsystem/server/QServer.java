@@ -39,6 +39,14 @@ import java.util.ServiceLoader;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.impl.StdSchedulerFactory;
 import ru.apertum.qsystem.About;
 import ru.apertum.qsystem.client.Locales;
 import ru.apertum.qsystem.client.forms.FAbout;
@@ -58,6 +66,7 @@ import ru.apertum.qsystem.reports.model.QReportsList;
 import ru.apertum.qsystem.reports.model.WebServer;
 import ru.apertum.qsystem.server.controller.Executer;
 import ru.apertum.qsystem.server.http.JettyRunner;
+import ru.apertum.qsystem.server.jobs.QRefreshJob;
 import ru.apertum.qsystem.server.model.QService;
 import ru.apertum.qsystem.server.model.QServiceTree;
 import ru.apertum.qsystem.server.model.QUser;
@@ -375,6 +384,7 @@ public class QServer extends Thread {
             final QService service = QServiceTree.getInstance().getById(cust.getService().getId());
             if (service == null) {
                 QLog.l().logQUser().debug("null... next");
+                continue;
             }
 
             service.setCountPerDay(cust.getService().getCountPerDay());
@@ -398,15 +408,34 @@ public class QServer extends Thread {
 
             QLog.l().logQUser().debug("setState: " + cust.getStateIn());
             Integer state = cust.getStateIn();
-            cust.setState(state);
+            cust.setStateWithoutSave(state);
 
             QLog.l().logQUser().debug("Adding customer to serviceTree");
-            QServiceTree.getInstance().getById(cust.getService().getId())
-                .addCustomer(cust);
+            QServiceTree.getInstance().getById(cust.getService().getId()).addCustomer(cust);
         }
 
         QLog.l().logQUser().debug("Refreshing postponed list");
         QPostponedList.getInstance().loadPostponedList(new LinkedList<QCustomer>());
+
+        //Set a job to refresh every two minutes the necessary lists and tree caches
+        JobDetail job = JobBuilder.newJob(QRefreshJob.class)
+            .withIdentity("OfficeRefreshJob", "group1").build();
+
+        Trigger trigger = TriggerBuilder
+            .newTrigger()
+            .withIdentity("refreshQSystemLists", "group1")
+            .withSchedule(CronScheduleBuilder.cronSchedule("*/15 * * * * ?"))
+            .build();
+
+        try {
+            QLog.l().logQUser().info("Starting schedule for refresh");
+            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+            scheduler.start();
+            scheduler.scheduleJob(job, trigger);
+            QLog.l().logQUser().info("Success");
+        } catch(SchedulerException e) {
+            QLog.l().logQUser().warn("Error scheduling refresh", e);
+        }
 
         return;
     }

@@ -1,6 +1,6 @@
-<window title="Error ${requestScope['javax.servlet.error.status_code']}: ${requestScope['javax.servlet.error.exception_type']}" width="400px" border="normal" mode="modal" closable="true">
+<window title="Unexpected Error (${requestScope['javax.servlet.error.status_code']}): ${requestScope['javax.servlet.error.exception_type']}" width="400px" border="normal" mode="modal" closable="true">
     <vbox>
-        The application encountered an error: ${requestScope['javax.servlet.error.message']}
+        The application encountered an unexpected error. If the error continues, please try logging out and back in.
         <hbox style="margin-left:auto; margin-right:auto">
             <button label="Continue" onClick="spaceOwner.detach()"/>
             <button label="Reload" onClick="Executions.sendRedirect(null)"/>

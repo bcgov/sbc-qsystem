@@ -66,6 +66,10 @@ public class QServiceTree extends ATreeModel<QService> {
         Spring.getInstance().getHt().saveOrUpdateAll(getNodes());
     }
 
+    public void rebuildTree() {
+        createTree();
+    }
+
     private static class QServiceTreeHolder {
 
         private static final QServiceTree INSTANCE = new QServiceTree();
