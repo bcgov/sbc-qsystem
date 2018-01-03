@@ -51,6 +51,10 @@ public abstract class ATListModel<T extends IidGetter> extends
         return items;
     }
 
+    public void setItems(LinkedList<T> items) {
+        this.items = items;
+    }
+
     public T getById(long id) throws ServerException {
         for (T item : items) {
             if (id == item.getId()) {

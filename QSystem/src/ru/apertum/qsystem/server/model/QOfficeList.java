@@ -43,6 +43,10 @@ public class QOfficeList extends ATListModel<QOffice> {
         Spring.getInstance().getHt().saveOrUpdateAll(getItems());
     }
 
+    public void refresh() {
+        setItems(load());
+    }
+
     private static class QOfficeListHolder {
 
         private static final QOfficeList INSTANCE = new QOfficeList();

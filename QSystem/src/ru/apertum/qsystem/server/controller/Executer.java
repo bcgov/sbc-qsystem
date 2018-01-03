@@ -274,18 +274,13 @@ public final class Executer {
             //переключение на кастомера при параллельном приеме, должен приехать customerID
             // switch to the custodian with parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
-                final QCustomer parallelCust = user.getParallelCustomers()
-                    .get(cmdParams.customerId);
+                final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
                 if (parallelCust == null) {
-                    QLog.l().logger()
-                        .error("PARALLEL: User have no Customer for switching by customer ID=\""
-                            + cmdParams.customerId + "\"");
+                    QLog.l().logger().error("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
                 } else {
                     user.setCustomer(parallelCust);
-                    QLog.l().logger().error(
-                        "Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust
-                            .getFullNumber()
-                            + "\"");
+                    QLog.l().logger()
+                        .error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
             // вот над этим пациентом
@@ -300,8 +295,7 @@ public final class Executer {
 //            customer.setPostponPeriod(cmdParams.postponedPeriod);
             customer.setPostponPeriod(0);
             // если отложили бессрочно и поставили галку, то можно видеть только отложенному
-            customer
-                .setIsMine(cmdParams.isMine != null && cmdParams.isMine ? cmdParams.userId : null);
+            customer.setIsMine(cmdParams.isMine != null && cmdParams.isMine ? cmdParams.userId : null);
             // в этом случае завершаем с пациентом
             //"все что хирург забыл в вас - в пул отложенных"
             // но сначала обозначим результат работы юзера с кастомером, если такой результат найдется в списке результатов

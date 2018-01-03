@@ -466,7 +466,6 @@ public class QUser implements IidGetter, Serializable {
      */
     @Transient
     public QPlanServiceList getPlanServiceList() {
-        QLog.l().logQUser().debug("getPlanServiceList");
         return planServiceList;
     }
 
@@ -619,9 +618,7 @@ public class QUser implements IidGetter, Serializable {
             if (getCustomer().getStartTime() != null) {
                 getCustomer().setStartTime(null);
             }
-            parallelCustomers.remove(
-                getCustomer()
-                    .getId()); // он же в толпе параллельных :: He is in a crowd of parallel
+            parallelCustomers.remove(getCustomer().getId()); // он же в толпе параллельных :: He is in a crowd of parallel
         } else {
             // иначе кастомеру, определившимуся к юзеру, надо поставить признак работы с опред. юзером.
             //Otherwise, a custom defined to the user, you must put the sign of work with opred. User.
