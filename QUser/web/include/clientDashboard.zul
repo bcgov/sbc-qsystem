@@ -53,7 +53,7 @@
                         </listhead>
                         <template name="model" var="customerList">
                             <listitem context="servicesListPopup">
-                                <listcell label="@load(customerList.getTempQuickTxn())" />
+                                <listcell label="@load(customerList.getStringQuickTxn())" />
                                 <listcell label="@load(customerList.standTimeinHHMMSS())" />
                                 <listcell label="@load(customerList.getFullNumber())" />
                                 <listcell label="@load(customerList.getAddedBy())"/>
@@ -111,7 +111,7 @@
                                 <!--
                                 <listcell label="Yes" visible="@load(fmodel.login)"/>
                                 -->
-                                <listcell label="@load(pCust.getTempQuickTxn())" visible="@load(fmodel.login)"/>
+                                <listcell label="@load(pCust.getStringQuickTxn())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.standTimeinHHMMSS())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getFullNumber())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getAddedBy())" visible="@load(fmodel.login)"/>

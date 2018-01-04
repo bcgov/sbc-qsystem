@@ -781,6 +781,11 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
 
     @Transient
+    public String getStringQuickTxn() {
+        return (getTempQuickTxn() ? "Yes" : "No");
+    }
+
+    @Transient
     public String getAddedBy() {
         return addedBy;
     }
