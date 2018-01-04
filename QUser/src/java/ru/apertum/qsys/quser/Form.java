@@ -1384,7 +1384,7 @@ public class Form {
         QLog.l().logQUser().debug("==> Start: addTicketScreen");
 
         //  Get quick transaction check box.
-        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow.getFellow("CustQuickTxnId");
+        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow.getFellow("QuickTxnCust");
 
         // Remove previous comments and categories searched
         this.refreshAddWindow();
@@ -1922,7 +1922,7 @@ public class Form {
 
         //  Add whether the transaction is a quick transaction or not.
         Checkbox QuickTxn = (Checkbox) addTicketDailogWindow
-                .getFellow("CustQuickTxnId");
+                .getFellow("QuickTxnCust");
 
         if (QuickTxn == null) {
             QLog.l().logQUser().debug("    --> Bad news.  Checkbox could not be found");

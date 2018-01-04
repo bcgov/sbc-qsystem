@@ -2612,9 +2612,13 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
+            QLog.l().logQUser().debug("==> Start: Task.process(CmdParams, String, byte[])");
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
+
+            QLog.l().logQUser().debug("    --> parms QTxn: " + (cmdParams.custQtxn ? "Yes" : "No"));
             this.cmdParams = cmdParams;
+            QLog.l().logQUser().debug("==> End: Task.process(CmdParams, String, byte[])");
             return new JsonRPC20OK();
         }
 
@@ -2636,10 +2640,12 @@ public final class Executer {
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP,
             QCustomer customer) {
+            QLog.l().logQUser().debug("==> Start: Task.process(CmdParams, String, byte[], QCustomer)");
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
             this.cmdParams = cmdParams;
             this.customerCreated = customer;
+            QLog.l().logQUser().debug("==> End: Task.process(CmdParams, String, byte[], QCustomer)");
             return new JsonRPC20OK();
         }
     }
@@ -2659,7 +2665,7 @@ public final class Executer {
 
         @Override
         public RpcStandInService process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("AddCustomerTask");
+            QLog.l().logQUser().debug("==> Start: AddCustomerTask.process(CmdParams, String, byte[])");
             super.process(cmdParams, ipAdress, IP);
             final QService service = QServiceTree.getInstance().getById(cmdParams.serviceId);
             final QCustomer customer;
@@ -2718,6 +2724,10 @@ public final class Executer {
                 customer.setUser(user);
                 QLog.l().logQUser().debug("Set");
 
+                //  Add quick txn or not.
+                customer.setTempQuickTxn(cmdParams.custQtxn);
+                QLog.l().logQUser().debug("    --> Customer QTxn: " + (customer.getTempQuickTxn() ? "Yes" : "No"));
+
                 //добавим нового пользователя
                 // add a new user
                 (service.getLink() != null ? service.getLink() : service).addCustomer(customer);
@@ -2758,6 +2768,9 @@ public final class Executer {
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
+
+            QLog.l().logQUser().debug("==> End: AddCustomerTask.process(CmdParams, String, byte[])");
+
             return new RpcStandInService(customer);
         }
     }
