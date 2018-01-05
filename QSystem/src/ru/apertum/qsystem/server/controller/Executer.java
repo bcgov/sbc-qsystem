@@ -839,7 +839,7 @@ public final class Executer {
         private final HashSet<QUser> usrs = new HashSet<>();
 
         private void invite(final QUser user, final boolean isFirst) {
-            QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER invite");
+            QLog.l().logQUser().debug("==> Start: Task(InvNextCust).invite()");
             if (usrs.contains(user)) {
                 return;
             }
@@ -849,8 +849,9 @@ public final class Executer {
             mr.isFrst = isFirst;
             final Thread t = new Thread(mr);
             t.setDaemon(true);
-            QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER starting");
+            QLog.l().logQUser().debug("    --> Starting MyRun thread");
             t.start();
+            QLog.l().logQUser().debug("==> End: Task(InvNextCust).invite()");
         }
 
         /**
@@ -860,7 +861,7 @@ public final class Executer {
         @Override
         synchronized public RpcInviteCustomer process(CmdParams cmdParams, String ipAdress,
             byte[] IP) {
-            QLog.l().logQUser().debug("inviteCustomerTask RPC");
+            QLog.l().logQUser().debug("==> Start: Task(InvNextCust).process()");
             super.process(cmdParams, ipAdress, IP);
             // Определить из какой очереди надо выбрать кастомера.
             // Пока без учета коэфициента.
@@ -871,6 +872,9 @@ public final class Executer {
 
             //  CM:  Get the user that invited the customer.
             final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
+
+            //  CM:  Display info about CSR.
+            QLog.l().logQUser().debug("    --> CSR: " + user.getName() + "; Quick: " + user.getQuickTxn());
 
             //  CM: If user has a customer with state of invited, or invited secondary, a recall? 
             final boolean isRecall = user.getCustomer() != null && (
@@ -963,7 +967,7 @@ public final class Executer {
                         //  CM:  the first customer wanting this service in this office.
                         final QCustomer cust = serv
                             .peekCustomerByOffice(user.getOffice()); // первый в этой очереди
-                        QLog.l().logQUser().debug("TASK_InvNxtCust next customer wanting service: " + cust);
+                        QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust);
                         // если очередь пуста
 
                         //  If no customer wanting current service, current office, look at next service.
@@ -971,6 +975,9 @@ public final class Executer {
                             continue;
                         }
                         // учтем приоритетность кастомеров и приоритетность очередей для юзера в которые они стоят
+
+                        //  CM:  Display info abut the customer.
+                        QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust + "; Quick: " + cust.getStringQuickTxn());
 
                         //  Get the priority of the current service.
                         final Integer prior = plan.getCoefficient();
@@ -987,7 +994,7 @@ public final class Executer {
                     }
 
                     //  By the time you get here, you should have the next customer in line, if there is one.
-                    QLog.l().logQUser().debug("Customer: " + customer);
+                    QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
                     //Найденного самого первого из первых кастомера переносим на хранение юзеру, при этом удалив его из общей очереди.
                     // Случай, когда всех разобрали, но вызов сделан
                     //При приглашении очередного клиента пользователем очереди оказались пустые.
@@ -1086,6 +1093,9 @@ public final class Executer {
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
+
+            QLog.l().logQUser().debug("==> End: Task(InvNextCust).process()");
+
             return new RpcInviteCustomer(customer);
         }
 
