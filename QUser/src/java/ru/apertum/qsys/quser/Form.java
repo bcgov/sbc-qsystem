@@ -1043,7 +1043,7 @@ public class Form {
      * }
      * 
      * 
-     * 
+     * CM:  Possible implementation of the Q.Txn feature
      * 
      *  keep the old inviteCustomerNow, but have it take a parameter of pickedCustomer
      *  

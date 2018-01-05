@@ -868,7 +868,11 @@ public final class Executer {
             // Determine from which queue you need to select a customizer.
             // So far without taking into account the coefficient.
             // To do this, we look at the first custodians in all queues and look for the first among the first.
+
+            //  CM:  Get the user that invited the customer.
             final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
+
+            //  CM: If user has a customer with state of invited, or invited secondary, a recall? 
             final boolean isRecall = user.getCustomer() != null && (
                 CustomerState.STATE_INVITED.equals(user.getCustomer().getState())
                     || CustomerState.STATE_INVITED_SECONDARY.equals(user.getCustomer().getState()));
@@ -942,42 +946,75 @@ public final class Executer {
                     }
                 }
 
+                //  CM:  No customer yet.
                 if (customer == null) {
+
+                    //  CM:  Loop through all services the user (CSR) can offer?
+                    //  CM:  Judging from number of times loop executes, might be
+                    //  CM:  looping through all services all offices offer.
                     for (QPlanService plan : user.getPlanServices()) {
+
+                        //  CM:  Get the next service, only for services user (CSR) can offer? 
                         final QService serv = QServiceTree.getInstance()
                             .getById(plan.getService().getId()); // очередная очередь
-                        QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER peekCustomer");
+                        QLog.l().logQUser().debug("TASK_InvNxtCust peekCustomer, Service: " + serv.getName());
+
+                        //  CM:  Loop through all custs, all offices, wanting this service, return
+                        //  CM:  the first customer wanting this service in this office.
                         final QCustomer cust = serv
                             .peekCustomerByOffice(user.getOffice()); // первый в этой очереди
-                        QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER isRecall: " + cust);
+                        QLog.l().logQUser().debug("TASK_InvNxtCust next customer wanting service: " + cust);
                         // если очередь пуста
+
+                        //  If no customer wanting current service, current office, look at next service.
                         if (cust == null) {
                             continue;
                         }
                         // учтем приоритетность кастомеров и приоритетность очередей для юзера в которые они стоят
+
+                        //  Get the priority of the current service.
                         final Integer prior = plan.getCoefficient();
-                        QLog.l().logQUser().debug("Co-efficient: " + prior);
+                        QLog.l().logQUser().debug("Service Co-efficient: " + prior + "; servPriority: " + servPriority);
+
+                        //  CM:  First time through this loop, any found customer will be set to be next customer.
+                        //  CM:  Next time through, found cust will be set next cust if they have been waiting longer,
+                        //  CM:  or if they have a higher priority.
                         if (prior > servPriority || (prior == servPriority && customer != null
                             && customer.compareTo(cust) == 1)) {
                             servPriority = prior;
                             customer = cust;
                         }
                     }
+
+                    //  By the time you get here, you should have the next customer in line, if there is one.
                     QLog.l().logQUser().debug("Customer: " + customer);
                     //Найденного самого первого из первых кастомера переносим на хранение юзеру, при этом удалив его из общей очереди.
                     // Случай, когда всех разобрали, но вызов сделан
                     //При приглашении очередного клиента пользователем очереди оказались пустые.
+
+                    //  If no next customer in line, return.
                     if (customer == null) {
                         QLog.l().logQUser().debug("Customer null");
                         return new RpcInviteCustomer(null);
                     }
+
+                    //  CM:  There is a customer.
                     QLog.l().logQUser().debug("Getting customer");
+
+                    //  CM:  Again, every office polled for the given service (not all services this time).
+                    //  CM:  Only people wanting given service in CSR office selected.
+                    //  CM:  The polCustomerByOffice same as peekCustomerByOffice, except pol
+                    //  CM:  attempts to remove the customer from the queue.
                     customer = QServiceTree.getInstance()
                         .getById(customer.getService().getId())
                         .polCustomerByOffice(user.getOffice());
+
+                    //  CM:  This should return the same customer as from peekCustomerByOffice.
                     QLog.l().logQUser().debug("Found him: " + customer);
+
+                    //  CM:  This appears to be unlinking customer from service???  Loop through all services.
                     for (QService service : QServiceTree.getInstance().getNodes()) {
-                        QLog.l().logQUser().debug("TLooping for service: " + service);
+                        QLog.l().logQUser().debug("Looping for service: " + service);
                         for (QCustomer c : service.getClients()) {
                             QLog.l().logQUser().debug("Looping through service clients");
                             if (c.getId() == customer.getId()) {
@@ -1039,6 +1076,7 @@ public final class Executer {
                     == 1) { // услуга требует вызова :: The service requires a call
                     // звук
                     // Должно высветитьсяна основном табло
+                    //  CM:  Finally, call the customer.
                     invite(user, true);
                 }
                 //разослать оповещение о том, что посетителя вызвали, состояние очереди изменилось

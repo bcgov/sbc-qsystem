@@ -1037,13 +1037,17 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
 
     public QCustomer peekCustomerByOffice(QOffice office) {
         QLog.l().logQUser().debug("peekCustomerByOffice: " + office);
+
+        //  CM:  Get a list of all customers wanting this service.
         PriorityQueue<QCustomer> customers = getCustomers();
         QCustomer customer = null;
 
+        //  CM:  Loop through all customers to see if they are in the office input.   
         for (Iterator<QCustomer> itr = customers.iterator(); itr.hasNext(); ) {
             final QCustomer cust = itr.next();
             QLog.l().logQUser().debug("Polling customer: " + cust);
             QLog.l().logQUser().debug("  Office: " + cust.getOffice());
+            QLog.l().logQUser().debug(" Service: " + cust.getService().name);
             if (cust.getOffice().equals(office)) {
                 customer = cust;
                 break;
@@ -1075,6 +1079,10 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     }
 
     public QCustomer polCustomerByOffice(QOffice office) {
+
+        //  CM:  NOTE:  First part of this code is identical to peekCustomerByOffice code.
+        //  CM:  peekCustomerByOffice finds the next customer.  This routine finds next
+        //  CM:  customer and then removes them from the queue.
         QLog.l().logQUser().debug("polCustomerByOffice: " + office);
         PriorityQueue<QCustomer> customers = getCustomers();
         QCustomer customer = null;
@@ -1089,17 +1097,36 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
             }
         }
 
+        //  CM:  Code from here on is additional to the peekCustomerByOffice code.
         if (customer != null) {
+
+            //  CM:  This gets executed, when customer is not null.
+            QLog.l().logQUser().debug("Cust not null: " + customer.getName() + "; Comments: " + customer.getTempComments());
+            int Count = 0;
+
             // поддержка расширяемости плагинами
+            //  CM:  However, this DOES NOT appear to remove any customers, as debug never gets called.
             for (final ICustomerChangePosition event : ServiceLoader
                 .load(ICustomerChangePosition.class)) {
-                QLog.l().logQUser().debug("Removing user out of the queue");
+                QLog.l().logQUser().debug("Removing customer out of the queue");
                 event.remove(customer);
+                Count++;
+            }
+
+            //  CM:  This does get called, indicating there are no events in the ServiceLoader.load()
+            if (Count == 0) {
+                QLog.l().logQUser().debug("It appears customer not removed from event queue");
             }
         }
 
+        //  CM:  This appears to have no effect.  Size of clients before/after call is identical.
+        int BeforeClear = clients.size();
         clients.clear();
+        int AfterClear = clients.size();
         clients.addAll(getCustomers());
+        int AfterAdd = clients.size();
+        QLog.l().logQUser().debug("Clients before clear: " + BeforeClear + "; after clear: " + AfterClear + "; after add: " + AfterAdd);
+
         return customer;
     }
 
