@@ -192,10 +192,16 @@ public class AnnotationSessionFactoryBean implements Action {
             } else {
                 driver = "com.mysql.jdbc.Driver";
                 name = System.getenv("MYSQL_DATABASE");
-                url = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + name;
+                String replication = System.getenv("MYSQL_REPLICATION");
+
+                if ("1".equals(replication)) {
+                    url = "jdbc:mysql:replication://" + System.getenv("MYSQL_MASTER_SERVICE")
+                        + "," + System.getenv("MYSQL_SLAVE_SERVICE") + "/" + name + "? allowMasterDownConnections=true";
+                } else {
+                    url = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + name;
+                }
                 user = System.getenv("MYSQL_USER");
                 password = System.getenv("MYSQL_PASSWORD");
-                name = System.getenv("MYSQL_DATABASE");
             }
             flag = false;
             QLog.l().logger().warn("DB server '" + name + " driver=" + driver + "' url=" + url);
