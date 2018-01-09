@@ -413,7 +413,7 @@ public class QServer extends Thread {
             QLog.l().logQUser().debug("Adding customer to serviceTree");
             QServiceTree.getInstance().getById(cust.getService().getId()).addCustomer(cust);
         }
-
+/*
         QLog.l().logQUser().debug("Refreshing postponed list");
         QPostponedList.getInstance().loadPostponedList(new LinkedList<QCustomer>());
 
@@ -424,7 +424,7 @@ public class QServer extends Thread {
         Trigger trigger = TriggerBuilder
             .newTrigger()
             .withIdentity("refreshQSystemLists", "group1")
-            .withSchedule(CronScheduleBuilder.cronSchedule("*/15 * * * * ?"))
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 * * * * ?""))
             .build();
 
         try {
@@ -436,6 +436,7 @@ public class QServer extends Thread {
         } catch(SchedulerException e) {
             QLog.l().logQUser().warn("Error scheduling refresh", e);
         }
+*/
 
         return;
     }
