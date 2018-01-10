@@ -1057,6 +1057,33 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         return customer;
     }
 
+    public PriorityQueue<QCustomer> peekAllCustomerByOffice(QOffice office) {
+
+        //  Debug.
+        QLog.l().logQUser().debug("==> Start: peekAllCustomerByOffice: " + office);
+
+        //  CM:  Init vars of all customers wanting this service, and those in input office.
+        PriorityQueue<QCustomer> customers = getCustomers();
+        PriorityQueue<QCustomer> custHere = new PriorityQueue<QCustomer>();
+        QCustomer customer = null;
+
+        //  CM:  Loop through all customers to see if they are in the office input.   
+        for (Iterator<QCustomer> itr = customers.iterator(); itr.hasNext();) {
+            final QCustomer cust = itr.next();
+            QLog.l().logQUser().debug("Polling customer: " + cust);
+            QLog.l().logQUser().debug("  Office: " + cust.getOffice());
+            QLog.l().logQUser().debug(" Service: " + cust.getService().name);
+            if (cust.getOffice().equals(office)) {
+                custHere.add(cust);
+            }
+        }
+
+        //  Debug.
+        QLog.l().logQUser().debug("==> End: peekAllCustomerByOffice: " + office + "; Customers: " + custHere.size());
+
+        return custHere;
+    }
+
     /**
      * Получить и удалить. может вернуть null при неудаче
      *

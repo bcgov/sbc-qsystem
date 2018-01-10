@@ -24,6 +24,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.locks.Lock;
@@ -953,6 +954,9 @@ public final class Executer {
                 //  CM:  No customer yet.
                 if (customer == null) {
 
+                    //  CM:  New code to get all customers in an office.
+                    final PriorityQueue<QCustomer> custAll = new PriorityQueue<QCustomer>();
+
                     //  CM:  Loop through all services the user (CSR) can offer?
                     //  CM:  Judging from number of times loop executes, might be
                     //  CM:  looping through all services all offices offer.
@@ -962,6 +966,10 @@ public final class Executer {
                         final QService serv = QServiceTree.getInstance()
                             .getById(plan.getService().getId()); // очередная очередь
                         QLog.l().logQUser().debug("TASK_InvNxtCust peekCustomer, Service: " + serv.getName());
+
+                        //  CM:  New code, get all customers (not just one) wanting service in office.
+                        final PriorityQueue<QCustomer> custSvc = serv.peekAllCustomerByOffice(user.getOffice());
+                        custAll.addAll(custSvc);
 
                         //  CM:  Loop through all custs, all offices, wanting this service, return
                         //  CM:  the first customer wanting this service in this office.
@@ -992,6 +1000,9 @@ public final class Executer {
                             customer = cust;
                         }
                     }
+
+                    //  CM:  Debug code for now.
+                    QLog.l().logQUser().debug("    --> Total In Queue: " + custAll.size());
 
                     //  By the time you get here, you should have the next customer in line, if there is one.
                     QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
@@ -2653,9 +2664,16 @@ public final class Executer {
         protected QCustomer customerCreated;
 
         public Task(String name) {
+
+            //  Debug
+            QLog.l().logQUser().debug("==> Start: Task(" + name + "); Count before = " + tasks.size());
+
             this.name = name;
             final Task tk = this;
             tasks.put(name, tk);
+
+            //  Debug
+            QLog.l().logQUser().debug("==> End: Task(" + name + "); Count after = " + tasks.size());
         }
 
         @Override
