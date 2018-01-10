@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,18 +31,22 @@ public class QOffice implements IidGetter, Serializable {
     @SerializedName("id")
     @Column(name = "id")
     private Long id;
+
     @Expose
     @SerializedName("name")
     @Column(name = "name")
     private String name;
+
     @Expose
     @Column(name = "smartboard_type")
     @SerializedName("smartboard_type")
     private String smartboard_type;
+
     @Column(name = "deleted")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deleted;
-    @ManyToMany(mappedBy = "offices")
+
+    @ManyToMany(mappedBy = "offices", fetch = FetchType.LAZY)
     private Set<QService> services = new HashSet<>();
 
     public QOffice() {

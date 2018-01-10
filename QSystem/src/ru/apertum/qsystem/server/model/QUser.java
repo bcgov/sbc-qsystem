@@ -470,8 +470,7 @@ public class QUser implements IidGetter, Serializable {
     }
 
     public boolean hasService(long serviceId) {
-        return planServices.stream()
-            .anyMatch((qPlanService) -> (serviceId == qPlanService.getService().getId()));
+        return planServices.stream().anyMatch((qPlanService) -> (serviceId == qPlanService.getService().getId()));
     }
 
     public boolean hasService(QService service) {

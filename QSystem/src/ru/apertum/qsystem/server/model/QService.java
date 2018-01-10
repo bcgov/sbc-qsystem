@@ -344,21 +344,26 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     @SerializedName("parentId")
     @Column(name = "prent_id")
     private Long parentId;
+
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "link_service_id")
     private QService link;
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     private QSchedule schedule;
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "calendar_id")
     private QCalendar calendar;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "services_id")
     @Expose
     @SerializedName("langs")
     private Set<QServiceLang> langs = new HashSet<>();
-    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
         name = "services_offices",
         joinColumns = {@JoinColumn(name = "service_id")},

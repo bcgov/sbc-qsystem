@@ -23,6 +23,8 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.zkoss.bind.BindUtils;
+import org.zkoss.bind.Binder;
+import org.zkoss.bind.DefaultBinder;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -723,6 +725,8 @@ public class Form {
         }
 
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
     }
 
     @Command
@@ -740,8 +744,7 @@ public class Form {
         Messagebox.show("Do you want to remove the client?", "Remove", new Messagebox.Button[]{
                 Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION,
             (Messagebox.ClickEvent t) -> {
-                QLog.l().logQUser()
-                    .debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
+                QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
                 if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
                     final CmdParams params = new CmdParams();
 
@@ -758,6 +761,8 @@ public class Form {
                     
                     setKeyRegim(KEYS_MAY_INVITE);
                     service_list.setModel(service_list.getModel());
+                    refreshListServices();
+                    service_list.invalidate();
 
                     BindUtils.postNotifyChange(null, null, Form.this, "*");
                     serveCustomerDialogWindow.setVisible(false);
@@ -781,6 +786,8 @@ public class Form {
         
         setKeyRegim(KEYS_STARTED);
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
     }
 
@@ -825,12 +832,13 @@ public class Form {
 //        QUser quser = QUserList.getInstance().getById(params.userId);
 //        quser.setCurrentComments(params.comments);
 
-        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE)
-            .process(params, "", new byte[4]);
+        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE).process(params, "", new byte[4]);
 
         customer = null;
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
         serveCustomerDialogWindow.setVisible(false);
     }
 
@@ -885,6 +893,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             QLog.l().logQUser().debug("\n\nTEST LIST: " + service_list.getModel() + "\n\n");
             serveCustomerDialogWindow.setVisible(false);
         }
@@ -980,6 +990,8 @@ public class Form {
         
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
 
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         serveCustomerDialogWindow.setVisible(false);
@@ -1028,6 +1040,8 @@ public class Form {
         customer = null;
 
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
 
         Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
         customer = user.getUser().getCustomer();
@@ -1208,8 +1222,7 @@ public class Form {
 
     public LinkedList<QCustomer> getPostponList() {
 //        QLog.l().logger().debug("getPostponList");
-        LinkedList<QCustomer> postponedCustomers = QPostponedList.getInstance()
-            .getPostponedCustomers();
+        LinkedList<QCustomer> postponedCustomers = QPostponedList.getInstance().getPostponedCustomers();
         postponedCustomers = filterPostponedCustomersByUser(postponedCustomers);
         return postponedCustomers;
     }
@@ -1637,6 +1650,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             addTicketDailogWindow.setVisible(false);
 
             //Reset the combobox to default value/placeHolder
@@ -1678,6 +1693,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
 
             this.invite();
             this.begin();
@@ -1699,24 +1716,28 @@ public class Form {
     }
 
     @Command
+    @NotifyChange(value = {"postponList", "customer", "btnsDisabled"})
     public void closeAddToQueueDialog() {
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
-                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
-                    Messagebox.EXCLAMATION);
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
 
-            final CmdParams params = this
-                .paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
 
+            QLog.l().logQUser().debug("addToQueue");
             this.addToQueue(params);
+            QLog.l().logQUser().debug("Done");
 
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
 
             addTicketDailogWindow.setVisible(false);
+
+            refreshListServices();
+            service_list.invalidate();
         }
     }
 
@@ -1804,6 +1825,8 @@ public class Form {
             Executer.getInstance().getTasks().get(Uses.TASK_CHANGE_SERVICE).process(params, "", new byte[4]);
 
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             addTicketDailogWindow.setVisible(false);
             customer.setChannels(params.new_channels);
             customer.setChannelsIndex(params.new_channels_Index);
@@ -1834,6 +1857,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             addTicketDailogWindow.setVisible(false);
 
             this.invite();
@@ -1869,6 +1894,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             addTicketDailogWindow.setVisible(false);
             serveCustomerDialogWindow.setVisible(false);
         }

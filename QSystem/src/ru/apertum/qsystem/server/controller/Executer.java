@@ -2659,16 +2659,21 @@ public final class Executer {
             final QCustomer customer;
             Long userId = cmdParams.userId;
 
-            List<QUser> users = Spring.getInstance().getHt()
-                .findByCriteria(DetachedCriteria.forClass(QUser.class)
-                    .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
-                    .add(Property.forName("id").eq(userId)));
+            QUser user = new QUser();
+            Boolean foundUser = Boolean.FALSE;
 
-            if (users.size() != 1) {
+            for (QUser u : QUserList.getInstance().getItems()) {
+                if (u.getId() == userId) {
+                    user = u;
+                    foundUser = Boolean.TRUE;
+                    break;
+                }
+            }
+
+            if (!foundUser) {
                 throw new ServerException("Error obtaining userId " + userId + " from cmdParams");
             }
 
-            QUser user = users.get(0);
             QLog.l().logQUser().debug(user);
             QOffice userOffice = user.getOffice();
 
@@ -2708,9 +2713,7 @@ public final class Executer {
                 customer.setChannels(cmdParams.channels);
                 customer.setChannelsIndex(cmdParams.channelsIndex);
                 customer.setOffice(userOffice);
-                QLog.l().logQUser().debug("setUser");
                 customer.setUser(user);
-                QLog.l().logQUser().debug("Set");
 
                 //добавим нового пользователя
                 // add a new user
@@ -2721,9 +2724,7 @@ public final class Executer {
                 QLog.l().logQUser().debug("setState");
                 customer.setState(CustomerState.STATE_WAIT);
             } catch (Exception ex) {
-                throw new ServerException(
-                    "Ошибка при постановке клиента в очередь ::: Error placing the client in the queue :",
-                    ex);
+                throw new ServerException("Ошибка при постановке клиента в очередь ::: Error placing the client in the queue :", ex);
             } finally {
                 CLIENT_TASK_LOCK.unlock();
             }
