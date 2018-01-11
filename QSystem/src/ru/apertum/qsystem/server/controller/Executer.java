@@ -1090,6 +1090,12 @@ public final class Executer {
                         QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
                     }
 
+                    //  CM:  Set customer to be QTxn selection, not original selection.
+                    //  CM:  Strangeness going on.
+                    QLog.l().logQUser().debug("    --> Before switch: Cust=" + customer + "; Next = " + nextCust);
+                    customer = nextCust;
+                    QLog.l().logQUser().debug("    --> After switch:  Cust=" + customer + "; Next = " + nextCust);
+
                     //  By the time you get here, you should have the next customer in line, if there is one.
                     QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
                     //Найденного самого первого из первых кастомера переносим на хранение юзеру, при этом удалив его из общей очереди.
@@ -1109,9 +1115,15 @@ public final class Executer {
                     //  CM:  Only people wanting given service in CSR office selected.
                     //  CM:  The polCustomerByOffice same as peekCustomerByOffice, except pol
                     //  CM:  attempts to remove the customer from the queue.
-                    customer = QServiceTree.getInstance()
-                        .getById(customer.getService().getId())
-                        .polCustomerByOffice(user.getOffice());
+                    // customer = QServiceTree.getInstance()
+                    //    .getById(customer.getService().getId())
+                    //     .polCustomerByOffice(user.getOffice());
+
+                    //  CM:  Don't use original find/then act on found customer code.
+                    //  CM:  Instead, call new code to act on already selected customer.
+                    //polCustomerSelected(QCustomer customer)
+                    customer = QServiceTree.getInstance().getById(customer.getService().getId()).polCustomerSelected(customer);
+                    QLog.l().logQUser().debug("    --> After polCustSelect:  Cust=" + customer);
 
                     //  CM:  This should return the same customer as from peekCustomerByOffice.
                     QLog.l().logQUser().debug("Found him: " + customer);

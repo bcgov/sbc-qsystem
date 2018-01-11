@@ -1157,6 +1157,47 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         return customer;
     }
 
+    public QCustomer polCustomerSelected(QCustomer customer) {
+
+        //  Debug
+        QLog.l().logQUser().debug("==> Start polCustSel");
+
+        //  CM:  NOTE!!  This code identical to last part of polCustomerByOffice.
+        //  CM:  Only difference is this routine doesn't search for a customer.
+        //  CM:  It already knows the customer to be served.
+        if (customer != null) {
+
+            //  CM:  This gets executed, when customer is not null.
+            QLog.l().logQUser().debug("    --> Cust not null: " + customer.getName() + "; Comments: " + customer.getTempComments());
+            int Count = 0;
+
+            // поддержка расширяемости плагинами
+            //  CM:  However, this DOES NOT appear to remove any customers, as debug never gets called.
+            for (final ICustomerChangePosition event : ServiceLoader.load(ICustomerChangePosition.class)) {
+                QLog.l().logQUser().debug("    --> Removing customer out of the queue");
+                event.remove(customer);
+                Count++;
+            }
+
+            //  CM:  This does get called, indicating there are no events in the ServiceLoader.load()
+            if (Count == 0) {
+                QLog.l().logQUser().debug("    --> It appears customer not removed from event queue");
+            }
+        }
+
+        //  CM:  This appears to have no effect.  Size of clients before/after call is identical.
+        int BeforeClear = clients.size();
+        clients.clear();
+        int AfterClear = clients.size();
+        clients.addAll(getCustomers());
+        int AfterAdd = clients.size();
+        QLog.l().logQUser().debug("    --> Clients before clear: " + BeforeClear + "; after clear: " + AfterClear + "; after add: " + AfterAdd);
+
+        QLog.l().logQUser().debug("==> End polCustSel");
+
+        return customer;
+    }
+
     /**
      * Удалить любого в очереди кастомера. Remove any in the queue of the customizer.
      *
