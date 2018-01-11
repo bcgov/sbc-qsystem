@@ -1036,7 +1036,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     }
 
     public QCustomer peekCustomerByOffice(QOffice office) {
-        QLog.l().logQUser().debug("peekCustomerByOffice: " + office);
+        //QLog.l().logQUser().debug("peekCustomerByOffice: " + office);
 
         //  CM:  Get a list of all customers wanting this service.
         PriorityQueue<QCustomer> customers = getCustomers();
@@ -1045,9 +1045,9 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         //  CM:  Loop through all customers to see if they are in the office input.   
         for (Iterator<QCustomer> itr = customers.iterator(); itr.hasNext(); ) {
             final QCustomer cust = itr.next();
-            QLog.l().logQUser().debug("Polling customer: " + cust);
-            QLog.l().logQUser().debug("  Office: " + cust.getOffice());
-            QLog.l().logQUser().debug(" Service: " + cust.getService().name);
+            //  QLog.l().logQUser().debug("Polling customer: " + cust);
+            // QLog.l().logQUser().debug("  Office: " + cust.getOffice());
+            // QLog.l().logQUser().debug(" Service: " + cust.getService().name);
             if (cust.getOffice().equals(office)) {
                 customer = cust;
                 break;
@@ -1070,9 +1070,9 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         //  CM:  Loop through all customers to see if they are in the office input.   
         for (Iterator<QCustomer> itr = customers.iterator(); itr.hasNext();) {
             final QCustomer cust = itr.next();
-            QLog.l().logQUser().debug("Polling customer: " + cust);
-            QLog.l().logQUser().debug("  Office: " + cust.getOffice());
-            QLog.l().logQUser().debug(" Service: " + cust.getService().name);
+            //QLog.l().logQUser().debug("Polling customer: " + cust);
+            //QLog.l().logQUser().debug("  Office: " + cust.getOffice());
+            //QLog.l().logQUser().debug(" Service: " + cust.getService().name);
             if (cust.getOffice().equals(office)) {
                 custHere.add(cust);
             }

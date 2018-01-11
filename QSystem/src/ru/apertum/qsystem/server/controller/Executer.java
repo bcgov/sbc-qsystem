@@ -965,7 +965,7 @@ public final class Executer {
                         //  CM:  Get the next service, only for services user (CSR) can offer? 
                         final QService serv = QServiceTree.getInstance()
                             .getById(plan.getService().getId()); // очередная очередь
-                        QLog.l().logQUser().debug("TASK_InvNxtCust peekCustomer, Service: " + serv.getName());
+                        //QLog.l().logQUser().debug("TASK_InvNxtCust peekCustomer, Service: " + serv.getName());
 
                         //  CM:  New code, get all customers (not just one) wanting service in office.
                         final PriorityQueue<QCustomer> custSvc = serv.peekAllCustomerByOffice(user.getOffice());
@@ -975,7 +975,7 @@ public final class Executer {
                         //  CM:  the first customer wanting this service in this office.
                         final QCustomer cust = serv
                             .peekCustomerByOffice(user.getOffice()); // первый в этой очереди
-                        QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust);
+                        //QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust);
                         // если очередь пуста
 
                         //  If no customer wanting current service, current office, look at next service.
@@ -985,11 +985,11 @@ public final class Executer {
                         // учтем приоритетность кастомеров и приоритетность очередей для юзера в которые они стоят
 
                         //  CM:  Display info abut the customer.
-                        QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust + "; Quick: " + cust.getStringQuickTxn());
+                        //QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust + "; Quick: " + cust.getStringQuickTxn());
 
                         //  Get the priority of the current service.
                         final Integer prior = plan.getCoefficient();
-                        QLog.l().logQUser().debug("Service Co-efficient: " + prior + "; servPriority: " + servPriority);
+                        //QLog.l().logQUser().debug("Service Co-efficient: " + prior + "; servPriority: " + servPriority);
 
                         //  CM:  First time through this loop, any found customer will be set to be next customer.
                         //  CM:  Next time through, found cust will be set next cust if they have been waiting longer,
@@ -1003,6 +1003,92 @@ public final class Executer {
 
                     //  CM:  Debug code for now.
                     QLog.l().logQUser().debug("    --> Total In Queue: " + custAll.size());
+
+                    /*
+                     *  (1) Get CSR State
+                     *  (2) Set NewCust = null
+                     *  (3)   Loop through all custAll, if a Q.Txn match, select, if longer in queue, replace
+                     *  (4) If NewCust still null
+                     *  (5)   Loop through all custAll, select, if longer in queue, replace
+                     *  (6) If NewCust still null, no person in line
+                     * 
+                     * 
+                     */
+                    
+                    //  CM:  Get whether user is q quick txn CSR or not.
+                    boolean userQuick = user.getQuickTxn();
+                    
+                    //  CM:  Initialize nextCust to be null.
+                    QCustomer nextCust = null;
+
+                    //  Loop through all customers, looking for a match.
+                    for (QCustomer custHere : custAll) {
+
+                        //  Debug:
+                        QLog.l().logQUser().debug("    --> Cust: custHere " + custHere + "; QTxn: " + custHere.getStringQuickTxn());
+
+                        //  CM:  Look for a Quick Txn match. 
+                        if (custHere.getTempQuickTxn() == userQuick) {
+                            
+                            //  CM:  You have a match.  If no next customer, take this one in line.
+                            if (nextCust == null) {
+                                nextCust = custHere;
+                                QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                            }
+                            
+                            //  CM:  You have a match, and a tentative next customer.  See who is next.
+                            //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
+                            else {
+
+                                //  Compare customers.
+                                QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+
+                                //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
+                                if (nextCust.compareTo(custHere) == 1) {
+                                    nextCust = custHere;
+                                    QLog.l().logQUser().debug("        --> Text next chosen: " + nextCust);
+                                }
+                            }
+                        }
+                    }
+
+                    //  CM:  If nextCust is null, no customer in the queue matched USER QuickTxn state.
+                    if (nextCust == null) {
+
+                        //  Debug
+                        QLog.l().logQUser().debug("    --> No Q.Txn match, ignoring Q.Txn state");
+
+                        //  CM:  Pick next customer, regardless of QuickTxn state.
+                        for (QCustomer custHere : custAll) {
+
+                            //  CM:  If no next customer, take the first customer in the list.
+                            if (nextCust == null) {
+                                nextCust = custHere;
+                                QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                            }
+                            
+                            //  CM:  You have a tentative next customer.  See who is next.
+                            //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
+                            else {
+
+                                //  Compare customers.
+                                QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+
+                                if (nextCust.compareTo(custHere) == 1) {
+                                    nextCust = custHere;
+                                    QLog.l().logQUser().debug("        --> Text next chosen: " + nextCust);
+                                }
+                            }
+                        }
+                    }
+                    
+                    //  Debug
+                    if (nextCust == null) {
+                        QLog.l().logQUser().debug("    --> QTxn method next customer: None, no customer in queue");
+                    }
+                    else {
+                        QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
+                    }
 
                     //  By the time you get here, you should have the next customer in line, if there is one.
                     QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
@@ -1032,9 +1118,9 @@ public final class Executer {
 
                     //  CM:  This appears to be unlinking customer from service???  Loop through all services.
                     for (QService service : QServiceTree.getInstance().getNodes()) {
-                        QLog.l().logQUser().debug("Looping for service: " + service);
+                        //QLog.l().logQUser().debug("Looping for service: " + service);
                         for (QCustomer c : service.getClients()) {
-                            QLog.l().logQUser().debug("Looping through service clients");
+                            //QLog.l().logQUser().debug("Looping through service clients");
                             if (c.getId() == customer.getId()) {
                                 QLog.l().logQUser().debug("Remove customer from service list");
                                 service.removeCustomer(c);
@@ -2666,14 +2752,14 @@ public final class Executer {
         public Task(String name) {
 
             //  Debug
-            QLog.l().logQUser().debug("==> Start: Task(" + name + "); Count before = " + tasks.size());
+            //QLog.l().logQUser().debug("==> Start: Task(" + name + "); Count before = " + tasks.size());
 
             this.name = name;
             final Task tk = this;
             tasks.put(name, tk);
 
             //  Debug
-            QLog.l().logQUser().debug("==> End: Task(" + name + "); Count after = " + tasks.size());
+            //QLog.l().logQUser().debug("==> End: Task(" + name + "); Count after = " + tasks.size());
         }
 
         @Override
