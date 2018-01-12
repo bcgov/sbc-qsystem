@@ -409,6 +409,7 @@ public class QServer extends Thread {
             QLog.l().logQUser().debug("setState: " + cust.getStateIn());
             Integer state = cust.getStateIn();
             cust.setStateWithoutSave(state);
+            cust.setAddedBy(cust.getUser().getName());
 
             QLog.l().logQUser().debug("Adding customer to serviceTree");
             if (cust.getStateIn() == 1 ||cust.getStateIn() == 2 || cust.getStateIn() == 3) {
