@@ -3,22 +3,27 @@
 <zk xmlns="http://www.zkoss.org/2005/zul">
 
   <window id="addTicketDialog"
-            title="Search Screen"
-            border="normal"
-            width="480px"
-            position="center,center" closable="true"
-            onClose="self.visible = false; event.stopPropagation();"
-            action="show: slideDown;hide: slideUp">
+          title="Search Screen"
+          border="normal"
+          width="480px"
+          position="center,center" closable="true"
+          onClose="self.visible = false; event.stopPropagation();"
+          action="show: slideDown;hide: slideUp">
     <caption label="" image="/resources/img/logo32.png" />
     <div style="margin:10px 10px 10px 10px;">
+
       <vlayout>
+      
+        <!--  NOTE!!  Below is the layout for reception offices -->
         <vlayout visible="@load(fmodel.officeType eq 'reception')">
           <label value="${c:l('comments')}"/>
-          <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+          <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2"
+                   value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
 
           <label value="Channels:"/>
           <div width="30%">
-            <combobox id="reception_Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+            <combobox id="reception_Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false"
+                      hflex="1" style="" onSelect="@command('DetermineChannels')"  >
               <!-- visible="@load(fmodel.addWindowButtons[0])" -->
               <!-- @load(fmodel.CheckCombobox()) -->
               <attribute name="onCreate">self.setSelectedIndex(0);</attribute>
@@ -35,19 +40,27 @@
           </div>
         </vlayout>
 
+        <!--  This layout is visible for both types of office -->
         <label value="Type Service here" width="150px" />
         <hbox>
           <vbox>
-            <textbox id="typeservices" sclass="bdd-input-search" focus="true" onCreate="self.focus()" onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px" tabindex="2"/>
+            <textbox id="typeservices" sclass="bdd-input-search" focus="true" onCreate="self.focus()"
+                     onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px"
+                     tabindex="2"/>
           </vbox>
           <vbox>
-            <combobox sclass="bdd-input-category" id="cboFmCompress" onChanging="@command('changingCategory', v=event.value)" onChange="@command('changeCategory')"  selectedItem="@bind(fmodel.pickedMainService)" style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2" model="@load(fmodel.categories)">
+            <combobox sclass="bdd-input-category" id="cboFmCompress"
+                      onChanging="@command('changingCategory', v=event.value)"
+                      onChange="@command('changeCategory')"  selectedItem="@bind(fmodel.pickedMainService)"
+                      style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2"
+                      model="@load(fmodel.categories)">
               <comboitem label="@load(each)"/>
             </combobox>
           </vbox>
         </hbox>
         <div style="margin:10px 10px 10px 10px;"></div>
-        <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)" width="100%" height="250px">
+        <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)"
+                 width="100%" height="250px">
           <listhead>
             <listheader label="Service" align="left"/>
             <listheader label="Category" align="left" />
@@ -67,10 +80,13 @@
             </listitem>
           </template>
         </listbox>
+        
+        <!--  NOTE!!  Below is the layout for non-reception offices. --> 
         <vlayout visible="@load(fmodel.officeType eq 'non-reception')">
           <label value="Channels:" />
           <div width="30%">
-            <combobox id="general_Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false" hflex="1" style="" onSelect="@command('DetermineChannels')"  >
+            <combobox id="general_Channels_options" sclass="bdd-channels-options" readonly="true" autodrop="false"
+                      hflex="1" style="" onSelect="@command('DetermineChannels')"  >
               <!-- visible="@load(fmodel.addWindowButtons[0])" -->
               <!-- @load(fmodel.CheckCombobox()) -->
               <attribute name="onCreate">self.setSelectedIndex(0);</attribute>
@@ -87,29 +103,41 @@
           </div>
           <div style="margin:10px 10px 10px 5px;"></div>
           <label value="${c:l('comments')}"/>
-          <textbox id="general_ticket_comments" rows="5" hflex="1" tabindex="2" value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+          <textbox id="general_ticket_comments" rows="5" hflex="1" tabindex="2"
+                   value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
         </vlayout>
+        
+        <!--  This layout is for both types of offices -->
         <div style="float:right; margin:1px 0px 0px 0px;">
           <hbox>
             <!-- combo box for channels options -->
             <!-- <label value="Channels"/> -->
             <!-- visible="@load(fmodel.addWindowButtons[0])" -->
             <!--Add to Queue and serve-->
-            <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px" label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')" visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
-            <button sclass= "bdd-begin-service" id="addAndServeBtn" hflex="min" width="100px" label="Begin service" onClick="@command('closeAddAndServeDialog')" visible="@load(fmodel.addWindowButtons[0])"/>
+            <checkbox id="QuickTxnCust" label="Quick Txn" />
+            <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px"
+                    label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')"
+                    visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
+            <button sclass= "bdd-begin-service" id="addAndServeBtn" hflex="min" width="100px"
+                    label="Begin service" onClick="@command('closeAddAndServeDialog')"
+                    visible="@load(fmodel.addWindowButtons[0])"/>
 
             <!--Change Service-->
-            <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}" onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
+            <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}"
+                    onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
 
             <!--Add Next Service-->
-            <button sclass="bdd-apply" id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
+            <button sclass="bdd-apply" id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}"
+                    onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
 
             <!--Redirect / Back to Queue-->
             <!--No longer exist-->
-            <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}" onClick="@command('closeRedirectDialog')" visible="@load(fmodel.addWindowButtons[3])"/>
+            <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}"
+                    onClick="@command('closeRedirectDialog')" visible="@load(fmodel.addWindowButtons[3])"/>
 
             <!--Cancel Button For all Windows-->
-            <button sclass="bdd-cancel-service" id="closeAddTicketBtn" hflex="min" width="100px" label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
+            <button sclass="bdd-cancel-service" id="closeAddTicketBtn" hflex="min" width="100px"
+                    label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
           </hbox>
         </div>
       </vlayout>

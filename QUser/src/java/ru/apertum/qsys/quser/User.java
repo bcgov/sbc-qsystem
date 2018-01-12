@@ -23,6 +23,7 @@ public class User {
     private LinkedList<QCustomer> customerList = new LinkedList<>();
     private Date customerWelcomeTime;
     private boolean GABoard = false;
+    private boolean QuickTxn = false;
 
     public String l(String resName) {
         return Labels.getLabel(resName);
@@ -60,6 +61,14 @@ public class User {
 
     public void setGABoard(boolean ga) {
         this.GABoard = ga;
+    }
+
+    public boolean getQuickTxn() {
+        return QuickTxn;
+    }
+
+    public void setQuickTxn(boolean txn) {
+        this.QuickTxn = txn;
     }
 
     public String getPassword() {
