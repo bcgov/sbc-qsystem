@@ -1,0 +1,6 @@
+ALTER TABLE `clients` 
+ADD COLUMN `quick_txn` TINYINT(1)  NOT NULL DEFAULT '0';
+
+ALTER TABLE `users` 
+ADD COLUMN `quick_txn` TINYINT(1)  NOT NULL DEFAULT '0';
+

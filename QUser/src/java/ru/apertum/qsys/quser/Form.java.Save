@@ -1,14 +1,9 @@
-/*
+﻿/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package ru.apertum.qsys.quser;
-
-import static ru.apertum.qsystem.client.forms.FClient.KEYS_INVITED;
-import static ru.apertum.qsystem.client.forms.FClient.KEYS_MAY_INVITE;
-import static ru.apertum.qsystem.client.forms.FClient.KEYS_OFF;
-import static ru.apertum.qsystem.client.forms.FClient.KEYS_STARTED;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -516,7 +511,7 @@ public class Form {
 
     @Command
     @NotifyChange(value = { "user" })
-    public void QuickTxnCSRChecked() {
+    public void QuickTxnChecked() {
 
         //  Debug
         QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
@@ -531,7 +526,6 @@ public class Form {
         QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
         QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
         QLog.l().logQUser().debug("==> End: QuickTxnChecked");
-
     }
 
     @Command
@@ -1043,7 +1037,7 @@ public class Form {
      * }
      * 
      * 
-     * CM:  Possible implementation of the Q.Txn feature
+     * 
      * 
      *  keep the old inviteCustomerNow, but have it take a parameter of pickedCustomer
      *  
@@ -1091,7 +1085,8 @@ public class Form {
 
         service_list.setModel(service_list.getModel());
 
-        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
+        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
+                .process(params, "", new byte[4]);
         customer = user.getUser().getCustomer();
 
         setKeyRegim(KEYS_INVITED);
@@ -1169,10 +1164,12 @@ public class Form {
     public void refreshListServices() {
         if (isLogin()) {
             // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
-            UsersInside.getInstance().getUsersInside().put(user.getName() + user.getPassword(), new Date().getTime());
+            UsersInside.getInstance().getUsersInside()
+                    .put(user.getName() + user.getPassword(), new Date().getTime());
             // тут поддержание сессии как залогинившегося юзера в СУО Here the maintenance of the session as a logged user in the MSA
             QSessions.getInstance()
-                    .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
+                    .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(),
+                            Sessions.getCurrent().getRemoteAddr().getBytes());
 
             final StringBuilder st = new StringBuilder();
             int number = user.getPlan().size();
@@ -1192,13 +1189,13 @@ public class Form {
         }
     }
 
-//    @Command
-//    public void refreshQuser(){
-//        final Session sess = Sessions.getCurrent();
-//        if (sess==null) {
-//            Executions.getCurrent().sendRedirect("");
-//        }
-//    }
+    // @Command
+    // public void refreshQuser(){
+    // final Session sess = Sessions.getCurrent();
+    // if (sess==null) {
+    // Executions.getCurrent().sendRedirect("");
+    // }
+    // }
 
     @Command
     public void closePostponeCustomerDialog() {
@@ -1213,9 +1210,12 @@ public class Form {
     public void OKPostponeCustomerDialog() {
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
-        params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
+        params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox"))
+                .getSelectedIndex() * 5;
         params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
-        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON).process(params, "", new byte[4]);
+
+        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON)
+                .process(params, "", new byte[4]);
         customer = null;
 
         QUser quser = QUserList.getInstance().getById(params.userId);
@@ -1231,6 +1231,7 @@ public class Form {
 
     @Command
     public void DetermineChannels() {
+
         if (getCFMSType()) {
             int channelIndex = ((Combobox) addTicketDailogWindow
                     .getFellow("reception_Channels_options")).getSelectedIndex() + 1;
@@ -1377,7 +1378,7 @@ public class Form {
         QLog.l().logQUser().debug("==> Start: addTicketScreen");
 
         //  Get quick transaction check box.
-        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow.getFellow("QuickTxnCust");
+        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow.getFellow("CustQuickTxnId");
 
         // Remove previous comments and categories searched
         this.refreshAddWindow();
@@ -1915,7 +1916,7 @@ public class Form {
 
         //  Add whether the transaction is a quick transaction or not.
         Checkbox QuickTxn = (Checkbox) addTicketDailogWindow
-                .getFellow("QuickTxnCust");
+                .getFellow("CustQuickTxnId");
 
         if (QuickTxn == null) {
             QLog.l().logQUser().debug("    --> Bad news.  Checkbox could not be found");
