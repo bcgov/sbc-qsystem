@@ -24,6 +24,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.locks.Lock;
@@ -831,7 +832,7 @@ public final class Executer {
         private final HashSet<QUser> usrs = new HashSet<>();
 
         private void invite(final QUser user, final boolean isFirst) {
-            QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER invite");
+            QLog.l().logQUser().debug("==> Start: Task(InvNextCust).invite()");
             if (usrs.contains(user)) {
                 return;
             }
@@ -841,8 +842,9 @@ public final class Executer {
             mr.isFrst = isFirst;
             final Thread t = new Thread(mr);
             t.setDaemon(true);
-            QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER starting");
+            QLog.l().logQUser().debug("    --> Starting MyRun thread");
             t.start();
+            QLog.l().logQUser().debug("==> End: Task(InvNextCust).invite()");
         }
 
         /**
@@ -852,7 +854,7 @@ public final class Executer {
         @Override
         synchronized public RpcInviteCustomer process(CmdParams cmdParams, String ipAdress,
             byte[] IP) {
-            QLog.l().logQUser().debug("inviteCustomerTask RPC");
+            QLog.l().logQUser().debug("==> Start: Task(InvNextCust).process()");
             super.process(cmdParams, ipAdress, IP);
             // Определить из какой очереди надо выбрать кастомера.
             // Пока без учета коэфициента.
@@ -860,7 +862,14 @@ public final class Executer {
             // Determine from which queue you need to select a customizer.
             // So far without taking into account the coefficient.
             // To do this, we look at the first custodians in all queues and look for the first among the first.
+
+            //  CM:  Get the user that invited the customer.
             final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
+
+            //  CM:  Display info about CSR.
+            QLog.l().logQUser().debug("    --> CSR: " + user.getName() + "; Quick: " + user.getQuickTxn());
+
+            //  CM: If user has a customer with state of invited, or invited secondary, a recall? 
             final boolean isRecall = user.getCustomer() != null && (
                 CustomerState.STATE_INVITED.equals(user.getCustomer().getState())
                     || CustomerState.STATE_INVITED_SECONDARY.equals(user.getCustomer().getState()));
@@ -934,44 +943,188 @@ public final class Executer {
                     }
                 }
 
+                //  CM:  No customer yet.
                 if (customer == null) {
+
+                    //  CM:  New code to get all customers in an office.
+                    final PriorityQueue<QCustomer> custAll = new PriorityQueue<QCustomer>();
+
+                    //  CM:  Loop through all services the user (CSR) can offer?
+                    //  CM:  Judging from number of times loop executes, might be
+                    //  CM:  looping through all services all offices offer.
                     for (QPlanService plan : user.getPlanServices()) {
+
+                        //  CM:  Get the next service, only for services user (CSR) can offer? 
                         final QService serv = QServiceTree.getInstance()
                             .getById(plan.getService().getId()); // очередная очередь
-                        QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER peekCustomer");
+                        //QLog.l().logQUser().debug("TASK_InvNxtCust peekCustomer, Service: " + serv.getName());
+
+                        //  CM:  New code, get all customers (not just one) wanting service in office.
+                        final PriorityQueue<QCustomer> custSvc = serv.peekAllCustomerByOffice(user.getOffice());
+                        custAll.addAll(custSvc);
+
+                        //  CM:  Loop through all custs, all offices, wanting this service, return
+                        //  CM:  the first customer wanting this service in this office.
                         final QCustomer cust = serv
                             .peekCustomerByOffice(user.getOffice()); // первый в этой очереди
-                        QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER isRecall: " + cust);
+                        //QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust);
                         // если очередь пуста
+
+                        //  If no customer wanting current service, current office, look at next service.
                         if (cust == null) {
                             continue;
                         }
                         // учтем приоритетность кастомеров и приоритетность очередей для юзера в которые они стоят
+
+                        //  CM:  Display info abut the customer.
+                        //QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust + "; Quick: " + cust.getStringQuickTxn());
+
+                        //  Get the priority of the current service.
                         final Integer prior = plan.getCoefficient();
-                        QLog.l().logQUser().debug("Co-efficient: " + prior);
+                        //QLog.l().logQUser().debug("Service Co-efficient: " + prior + "; servPriority: " + servPriority);
+
+                        //  CM:  First time through this loop, any found customer will be set to be next customer.
+                        //  CM:  Next time through, found cust will be set next cust if they have been waiting longer,
+                        //  CM:  or if they have a higher priority.
                         if (prior > servPriority || (prior == servPriority && customer != null
                             && customer.compareTo(cust) == 1)) {
                             servPriority = prior;
                             customer = cust;
                         }
                     }
-                    QLog.l().logQUser().debug("Customer: " + customer);
+
+                    //  CM:  Debug code for now.
+                    QLog.l().logQUser().debug("    --> Total In Queue: " + custAll.size());
+
+                    /*
+                     *  (1) Get CSR State
+                     *  (2) Set NewCust = null
+                     *  (3)   Loop through all custAll, if a Q.Txn match, select, if longer in queue, replace
+                     *  (4) If NewCust still null
+                     *  (5)   Loop through all custAll, select, if longer in queue, replace
+                     *  (6) If NewCust still null, no person in line
+                     * 
+                     * 
+                     */
+                    
+                    //  CM:  Get whether user is q quick txn CSR or not.
+                    boolean userQuick = user.getQuickTxn();
+                    
+                    //  CM:  Initialize nextCust to be null.
+                    QCustomer nextCust = null;
+
+                    //  Loop through all customers, looking for a match.
+                    for (QCustomer custHere : custAll) {
+
+                        //  Debug:
+                        QLog.l().logQUser().debug("    --> Cust: custHere " + custHere + "; QTxn: " + custHere.getStringQuickTxn());
+
+                        //  CM:  Look for a Quick Txn match. 
+                        if (custHere.getTempQuickTxn() == userQuick) {
+                            
+                            //  CM:  You have a match.  If no next customer, take this one in line.
+                            if (nextCust == null) {
+                                nextCust = custHere;
+                                QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                            }
+                            
+                            //  CM:  You have a match, and a tentative next customer.  See who is next.
+                            //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
+                            else {
+
+                                //  Compare customers.
+                                QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+
+                                //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
+                                if (nextCust.compareTo(custHere) == 1) {
+                                    nextCust = custHere;
+                                    QLog.l().logQUser().debug("        --> Text next chosen: " + nextCust);
+                                }
+                            }
+                        }
+                    }
+
+                    //  CM:  If nextCust is null, no customer in the queue matched USER QuickTxn state.
+                    if (nextCust == null) {
+
+                        //  Debug
+                        QLog.l().logQUser().debug("    --> No Q.Txn match, ignoring Q.Txn state");
+
+                        //  CM:  Pick next customer, regardless of QuickTxn state.
+                        for (QCustomer custHere : custAll) {
+
+                            //  CM:  If no next customer, take the first customer in the list.
+                            if (nextCust == null) {
+                                nextCust = custHere;
+                                QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                            }
+                            
+                            //  CM:  You have a tentative next customer.  See who is next.
+                            //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
+                            else {
+
+                                //  Compare customers.
+                                QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+
+                                if (nextCust.compareTo(custHere) == 1) {
+                                    nextCust = custHere;
+                                    QLog.l().logQUser().debug("        --> Text next chosen: " + nextCust);
+                                }
+                            }
+                        }
+                    }
+                    
+                    //  Debug
+                    if (nextCust == null) {
+                        QLog.l().logQUser().debug("    --> QTxn method next customer: None, no customer in queue");
+                    }
+                    else {
+                        QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
+                    }
+
+                    //  CM:  Set customer to be QTxn selection, not original selection.
+                    //  CM:  Strangeness going on.
+                    QLog.l().logQUser().debug("    --> Before switch: Cust=" + customer + "; Next = " + nextCust);
+                    customer = nextCust;
+                    QLog.l().logQUser().debug("    --> After switch:  Cust=" + customer + "; Next = " + nextCust);
+
+                    //  By the time you get here, you should have the next customer in line, if there is one.
+                    QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
                     //Найденного самого первого из первых кастомера переносим на хранение юзеру, при этом удалив его из общей очереди.
                     // Случай, когда всех разобрали, но вызов сделан
                     //При приглашении очередного клиента пользователем очереди оказались пустые.
+
+                    //  If no next customer in line, return.
                     if (customer == null) {
                         QLog.l().logQUser().debug("Customer null");
                         return new RpcInviteCustomer(null);
                     }
+
+                    //  CM:  There is a customer.
                     QLog.l().logQUser().debug("Getting customer");
-                    customer = QServiceTree.getInstance()
-                        .getById(customer.getService().getId())
-                        .polCustomerByOffice(user.getOffice());
+
+                    //  CM:  Again, every office polled for the given service (not all services this time).
+                    //  CM:  Only people wanting given service in CSR office selected.
+                    //  CM:  The polCustomerByOffice same as peekCustomerByOffice, except pol
+                    //  CM:  attempts to remove the customer from the queue.
+                    // customer = QServiceTree.getInstance()
+                    //    .getById(customer.getService().getId())
+                    //     .polCustomerByOffice(user.getOffice());
+
+                    //  CM:  Don't use original find/then act on found customer code.
+                    //  CM:  Instead, call new code to act on already selected customer.
+                    //polCustomerSelected(QCustomer customer)
+                    customer = QServiceTree.getInstance().getById(customer.getService().getId()).polCustomerSelected(customer);
+                    QLog.l().logQUser().debug("    --> After polCustSelect:  Cust=" + customer);
+
+                    //  CM:  This should return the same customer as from peekCustomerByOffice.
                     QLog.l().logQUser().debug("Found him: " + customer);
+
+                    //  CM:  This appears to be unlinking customer from service???  Loop through all services.
                     for (QService service : QServiceTree.getInstance().getNodes()) {
-                        QLog.l().logQUser().debug("TLooping for service: " + service);
+                        //QLog.l().logQUser().debug("Looping for service: " + service);
                         for (QCustomer c : service.getClients()) {
-                            QLog.l().logQUser().debug("Looping through service clients");
+                            //QLog.l().logQUser().debug("Looping through service clients");
                             if (c.getId() == customer.getId()) {
                                 QLog.l().logQUser().debug("Remove customer from service list");
                                 service.removeCustomer(c);
@@ -1031,6 +1184,7 @@ public final class Executer {
                     == 1) { // услуга требует вызова :: The service requires a call
                     // звук
                     // Должно высветитьсяна основном табло
+                    //  CM:  Finally, call the customer.
                     invite(user, true);
                 }
                 //разослать оповещение о том, что посетителя вызвали, состояние очереди изменилось
@@ -1040,6 +1194,9 @@ public final class Executer {
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
+
+            QLog.l().logQUser().debug("==> End: Task(InvNextCust).process()");
+
             return new RpcInviteCustomer(customer);
         }
 
@@ -2597,16 +2754,27 @@ public final class Executer {
         protected QCustomer customerCreated;
 
         public Task(String name) {
+
+            //  Debug
+            //QLog.l().logQUser().debug("==> Start: Task(" + name + "); Count before = " + tasks.size());
+
             this.name = name;
             final Task tk = this;
             tasks.put(name, tk);
+
+            //  Debug
+            //QLog.l().logQUser().debug("==> End: Task(" + name + "); Count after = " + tasks.size());
         }
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
+            QLog.l().logQUser().debug("==> Start: Task.process(CmdParams, String, byte[])");
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
+
+            QLog.l().logQUser().debug("    --> parms QTxn: " + (cmdParams.custQtxn ? "Yes" : "No"));
             this.cmdParams = cmdParams;
+            QLog.l().logQUser().debug("==> End: Task.process(CmdParams, String, byte[])");
             return new JsonRPC20OK();
         }
 
@@ -2628,10 +2796,12 @@ public final class Executer {
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP,
             QCustomer customer) {
+            QLog.l().logQUser().debug("==> Start: Task.process(CmdParams, String, byte[], QCustomer)");
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
             this.cmdParams = cmdParams;
             this.customerCreated = customer;
+            QLog.l().logQUser().debug("==> End: Task.process(CmdParams, String, byte[], QCustomer)");
             return new JsonRPC20OK();
         }
     }
@@ -2651,7 +2821,7 @@ public final class Executer {
 
         @Override
         public RpcStandInService process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("AddCustomerTask");
+            QLog.l().logQUser().debug("==> Start: AddCustomerTask.process(CmdParams, String, byte[])");
             super.process(cmdParams, ipAdress, IP);
             final QService service = QServiceTree.getInstance().getById(cmdParams.serviceId);
             final QCustomer customer;
@@ -2700,6 +2870,10 @@ public final class Executer {
                 customer.setOffice(userOffice);
                 customer.setUser(user);
 
+                //  Add quick txn or not.
+                customer.setTempQuickTxn(cmdParams.custQtxn);
+                QLog.l().logQUser().debug("    --> Customer QTxn: " + (customer.getTempQuickTxn() ? "Yes" : "No"));
+
                 //добавим нового пользователя
                 // add a new user
                 (service.getLink() != null ? service.getLink() : service).addCustomer(customer);
@@ -2738,6 +2912,9 @@ public final class Executer {
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
+
+            QLog.l().logQUser().debug("==> End: AddCustomerTask.process(CmdParams, String, byte[])");
+
             return new RpcStandInService(customer);
         }
     }
