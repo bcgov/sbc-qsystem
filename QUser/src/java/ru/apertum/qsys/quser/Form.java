@@ -12,6 +12,7 @@ import static ru.apertum.qsystem.client.forms.FClient.KEYS_STARTED;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,6 +23,7 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.DefaultBinder;
@@ -1023,6 +1025,8 @@ public class Form {
     public void inviteCustomerNow() {
         // 1. Postpone the customer
         // 2. Pick the customer from Postponed list
+        Integer[] validStates = new Integer[] {1,2,3};
+        List<Integer> validInviteStates = Arrays.asList(validStates);
 
         if (pickedCustomer == null || keys_current == KEYS_INVITED || keys_current == KEYS_STARTED
             || keys_current == KEYS_OFF) {
@@ -1030,13 +1034,21 @@ public class Form {
         }
 
         final CmdParams params = new CmdParams();
+
+        QLog.l().logQUser().debug(pickedCustomer.getId());
+
+        if (!validInviteStates.contains(pickedCustomer.getStateIn())) {
+            Messagebox.show("Unable to invite selected customer. This usually means another user has already invited this customer", "Error inviting customer", Messagebox.OK, Messagebox.INFORMATION);
+            return;
+        }
+
         params.userId = user.getUser().getId();
         params.postponedPeriod = 0;
         params.customerId = pickedCustomer.getId();
         params.isMine = Boolean.TRUE;
         user.getUser().setCustomer(pickedCustomer);
-        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_SELECTED_CUSTOMER)
-            .process(params, "", new byte[4], pickedCustomer);
+
+        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_SELECTED_CUSTOMER).process(params, "", new byte[4], pickedCustomer);
         customer = null;
 
         service_list.setModel(service_list.getModel());

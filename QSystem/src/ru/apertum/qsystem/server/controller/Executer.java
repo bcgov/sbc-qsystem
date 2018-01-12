@@ -265,8 +265,7 @@ public final class Executer {
     final Task inviteSelectedCustomerTask = new Task(Uses.TASK_INVITE_SELECTED_CUSTOMER) {
 
         @Override
-        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP,
-            QCustomer pickedCustomer) {
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer pickedCustomer) {
             QLog.l().logQUser().debug("inviteSelectedCustomerTask");
             super.process(cmdParams, ipAdress, IP, pickedCustomer);
             // вот он все это творит ::: Here he is doing it all
@@ -279,8 +278,7 @@ public final class Executer {
                     QLog.l().logger().error("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
                 } else {
                     user.setCustomer(parallelCust);
-                    QLog.l().logger()
-                        .error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+                    QLog.l().logger().error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
             // вот над этим пациентом
@@ -2659,20 +2657,7 @@ public final class Executer {
             final QCustomer customer;
             Long userId = cmdParams.userId;
 
-            QUser user = new QUser();
-            Boolean foundUser = Boolean.FALSE;
-
-            for (QUser u : QUserList.getInstance().getItems()) {
-                if (u.getId() == userId) {
-                    user = u;
-                    foundUser = Boolean.TRUE;
-                    break;
-                }
-            }
-
-            if (!foundUser) {
-                throw new ServerException("Error obtaining userId " + userId + " from cmdParams");
-            }
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
 
             QLog.l().logQUser().debug(user);
             QOffice userOffice = user.getOffice();

@@ -211,6 +211,16 @@ public class QUser implements IidGetter, Serializable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj != null && obj instanceof QUser) {
+            final QUser o = (QUser) obj;
+            return (id == null ? o.getId() == null : id.equals(o.getId()));
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public String toString() {
         return getName();
     }
