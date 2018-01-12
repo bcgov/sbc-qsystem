@@ -411,7 +411,13 @@ public class QServer extends Thread {
             cust.setStateWithoutSave(state);
 
             QLog.l().logQUser().debug("Adding customer to serviceTree");
-            QServiceTree.getInstance().getById(cust.getService().getId()).addCustomer(cust);
+            if (cust.getStateIn() == 1 ||cust.getStateIn() == 2 || cust.getStateIn() == 3) {
+                QLog.l().logQUser().debug("Adding customer to serviceTree");
+                QServiceTree.getInstance().getById(cust.getService().getId()).addCustomer(cust);
+            } else {
+                QLog.l().logQUser().debug("Skip adding customer");
+            }
+
         }
 /*
         QLog.l().logQUser().debug("Refreshing postponed list");

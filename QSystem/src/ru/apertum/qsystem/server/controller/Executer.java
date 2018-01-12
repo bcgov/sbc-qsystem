@@ -265,8 +265,7 @@ public final class Executer {
     final Task inviteSelectedCustomerTask = new Task(Uses.TASK_INVITE_SELECTED_CUSTOMER) {
 
         @Override
-        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP,
-            QCustomer pickedCustomer) {
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer pickedCustomer) {
             QLog.l().logQUser().debug("inviteSelectedCustomerTask");
             super.process(cmdParams, ipAdress, IP, pickedCustomer);
             // вот он все это творит ::: Here he is doing it all
@@ -279,8 +278,7 @@ public final class Executer {
                     QLog.l().logger().error("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
                 } else {
                     user.setCustomer(parallelCust);
-                    QLog.l().logger()
-                        .error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
+                    QLog.l().logger().error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
             // вот над этим пациентом
@@ -2659,16 +2657,8 @@ public final class Executer {
             final QCustomer customer;
             Long userId = cmdParams.userId;
 
-            List<QUser> users = Spring.getInstance().getHt()
-                .findByCriteria(DetachedCriteria.forClass(QUser.class)
-                    .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
-                    .add(Property.forName("id").eq(userId)));
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
 
-            if (users.size() != 1) {
-                throw new ServerException("Error obtaining userId " + userId + " from cmdParams");
-            }
-
-            QUser user = users.get(0);
             QLog.l().logQUser().debug(user);
             QOffice userOffice = user.getOffice();
 
@@ -2708,9 +2698,7 @@ public final class Executer {
                 customer.setChannels(cmdParams.channels);
                 customer.setChannelsIndex(cmdParams.channelsIndex);
                 customer.setOffice(userOffice);
-                QLog.l().logQUser().debug("setUser");
                 customer.setUser(user);
-                QLog.l().logQUser().debug("Set");
 
                 //добавим нового пользователя
                 // add a new user
@@ -2721,9 +2709,7 @@ public final class Executer {
                 QLog.l().logQUser().debug("setState");
                 customer.setState(CustomerState.STATE_WAIT);
             } catch (Exception ex) {
-                throw new ServerException(
-                    "Ошибка при постановке клиента в очередь ::: Error placing the client in the queue :",
-                    ex);
+                throw new ServerException("Ошибка при постановке клиента в очередь ::: Error placing the client in the queue :", ex);
             } finally {
                 CLIENT_TASK_LOCK.unlock();
             }
