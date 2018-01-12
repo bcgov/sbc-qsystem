@@ -1,14 +1,9 @@
-/*
+﻿/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package ru.apertum.qsys.quser;
-
-import static ru.apertum.qsystem.client.forms.FClient.KEYS_INVITED;
-import static ru.apertum.qsystem.client.forms.FClient.KEYS_MAY_INVITE;
-import static ru.apertum.qsystem.client.forms.FClient.KEYS_OFF;
-import static ru.apertum.qsystem.client.forms.FClient.KEYS_STARTED;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -516,7 +511,7 @@ public class Form {
 
     @Command
     @NotifyChange(value = { "user" })
-    public void QuickTxnCSRChecked() {
+    public void QuickTxnChecked() {
 
         //  Debug
         QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
@@ -531,7 +526,6 @@ public class Form {
         QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
         QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
         QLog.l().logQUser().debug("==> End: QuickTxnChecked");
-
     }
 
     @Command
@@ -1043,7 +1037,7 @@ public class Form {
      * }
      * 
      * 
-     * CM:  Possible implementation of the Q.Txn feature
+     * 
      * 
      *  keep the old inviteCustomerNow, but have it take a parameter of pickedCustomer
      *  
@@ -1384,7 +1378,7 @@ public class Form {
         QLog.l().logQUser().debug("==> Start: addTicketScreen");
 
         //  Get quick transaction check box.
-        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow.getFellow("QuickTxnCust");
+        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow.getFellow("CustQuickTxnId");
 
         // Remove previous comments and categories searched
         this.refreshAddWindow();
@@ -1922,7 +1916,7 @@ public class Form {
 
         //  Add whether the transaction is a quick transaction or not.
         Checkbox QuickTxn = (Checkbox) addTicketDailogWindow
-                .getFellow("QuickTxnCust");
+                .getFellow("CustQuickTxnId");
 
         if (QuickTxn == null) {
             QLog.l().logQUser().debug("    --> Bad news.  Checkbox could not be found");

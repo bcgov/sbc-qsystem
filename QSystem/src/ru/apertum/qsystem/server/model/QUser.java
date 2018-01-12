@@ -16,14 +16,13 @@
  */
 package ru.apertum.qsystem.server.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,8 +36,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
+
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QLog;
 import ru.apertum.qsystem.common.exceptions.ServerException;
@@ -46,9 +50,8 @@ import ru.apertum.qsystem.common.model.QCustomer;
 import ru.apertum.qsystem.server.Spring;
 
 /**
- * Это пользователь. По большому счету роль и пользователь совпадают в системе. Класс пользователя
- * системы. This is the user. By and large, the role and user are the same in the system. Class of
- * the user of the system.
+ * Это пользователь. По большому счету роль и пользователь совпадают в системе. Класс пользователя системы. This is the user. By and large, the role and user
+ * are the same in the system. Class of the user of the system.
  *
  * @author Evgeniy Egorov
  */
@@ -58,20 +61,15 @@ public class QUser implements IidGetter, Serializable {
 
     private final LinkedList<QPlanService> forDel = new LinkedList<>();
     /**
-     * Может быть параллельный прием. Нужно хранить всех, кого вызвали. Текущий кастомер в работе
-     * остается как есть в customer, а толпа параллельных хранится тут. Будет происходить
-     * переключение на текущего в работу. Браться он будет отсюда. Переключиться можно быдет либо
-     * отдельной командой, либо указав ID кастомера для которого прислана команда на сервер. Вообще,
-     * это типа отложенных, но только не надо отдельно вызывать его, просто переключиться на него в
-     * customer на прямую и выполнить команду. На кого конкретно переключить приедет либо как ID в
-     * команде, либо отдельной командой. There may be a parallel reception. We need to keep everyone
-     * who was called. The current tool in the work remains as it is in the customer, and the crowd
-     * of parallel is stored      * Here. There will be a switch to the current job. He will fight
-     * from here. You can switch either by a separate command or by specifying an ID      * A
-     * customizer for which a command is sent to the server. In general, this is a type of pending,
-     * but just do not separately call it, just switch to it in      * Customer on a straight line
-     * and execute the command. On whom to specifically switch will come either as an ID in a team
-     * or as a separate team.
+     * Может быть параллельный прием. Нужно хранить всех, кого вызвали. Текущий кастомер в работе остается как есть в customer, а толпа параллельных хранится
+     * тут. Будет происходить переключение на текущего в работу. Браться он будет отсюда. Переключиться можно быдет либо отдельной командой, либо указав ID
+     * кастомера для которого прислана команда на сервер. Вообще, это типа отложенных, но только не надо отдельно вызывать его, просто переключиться на него в
+     * customer на прямую и выполнить команду. На кого конкретно переключить приедет либо как ID в команде, либо отдельной командой. There may be a parallel
+     * reception. We need to keep everyone who was called. The current tool in the work remains as it is in the customer, and the crowd of parallel is stored
+     *      * Here. There will be a switch to the current job. He will fight from here. You can switch either by a separate command or by specifying an ID
+     *      * A customizer for which a command is sent to the server. In general, this is a type of pending, but just do not separately call it, just switch to
+     * it in      * Customer on a straight line and execute the command. On whom to specifically switch will come either as an ID in a team or as a separate
+     * team.
      */
     private final LinkedHashMap<Long, QCustomer> parallelCustomers = new LinkedHashMap<>();
     /**
@@ -91,35 +89,39 @@ public class QUser implements IidGetter, Serializable {
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deleted;
     /**
-     * Удаленный или нет. Нельзя их из базы гасить чтоб констрейнты не поехали. 0 - удаленный 1 -
-     * действующий Только для БД. Remote or not. It is impossible to extinguish them from the
-     * database so that the contraints do not go. 0 - remote 1 - valid Only for the database.
+     * Удаленный или нет. Нельзя их из базы гасить чтоб констрейнты не поехали. 0 - удаленный 1 - действующий Только для БД. Remote or not. It is impossible to
+     * extinguish them from the database so that the contraints do not go. 0 - remote 1 - valid Only for the database.
      */
     @Expose
     @SerializedName("enable")
     private Integer enable = 1;
-    
-   //Andrew 
-    //Get the state of the user for GABoard - online/offline
+
+    // Andrew
+    // Get the state of the user for GABoard - online/offline
     @Expose
     @SerializedName("current_state")
     private boolean currentState = false;
-    
-    //Andrew 
-    //Get the state of the user for GABoard - online/offline
+
+    // Andrew
+    // Get the state of the user for GABoard - online/offline
     @Expose
     @SerializedName("current_service")
     private String currentService = "";
-    
-//    @Expose
-//    @SerializedName("current_comments")
-//    private String currentComments = "";
+
+    // @Expose
+    // @SerializedName("current_comments")
+    // private String currentComments = "";
     /**
      * Параметр доступа к администрированию системы. Parameter of access to system administration.
      */
     @Expose
     @SerializedName("is_admin")
     private Boolean adminAccess = false;
+
+    @Expose
+    @SerializedName("quick_txn")
+    private boolean quickTxn = false;
+
     /**
      * Параметр доступа к отчетам системы. Parameter of access to system reports.
      */
@@ -127,15 +129,14 @@ public class QUser implements IidGetter, Serializable {
     @SerializedName("is_report_access")
     private Boolean reportAccess = false;
     /**
-     * Параметр разрешения ведения парраллельного приема кустомеров. Parameter for allowing parallel
-     * parser reception of the handicap.
+     * Параметр разрешения ведения парраллельного приема кустомеров. Parameter for allowing parallel parser reception of the handicap.
      */
     @Expose
     @SerializedName("is_parallel")
     private Boolean parallelAccess = false;
     /**
-     * Пароль пользователя. В программе хранится открыто. В базе и xml зашифрован. User password.
-     * The program is stored openly. In the database and xml is encrypted
+     * Пароль пользователя. В программе хранится открыто. В базе и xml зашифрован. User password. The program is stored openly. In the database and xml is
+     * encrypted
      */
     @Expose
     @SerializedName("pass")
@@ -159,20 +160,18 @@ public class QUser implements IidGetter, Serializable {
     @SerializedName("point_ext")
     private String pointExt = "";
     /**
-     * текст для вывода на главное табло в шаблоны панели вызванного и третью колонку пользователя
-     * Text to display on the main display in the templates of the panel called and the third column
-     * of the user
+     * текст для вывода на главное табло в шаблоны панели вызванного и третью колонку пользователя Text to display on the main display in the templates of the
+     * panel called and the third column of the user
      */
     @Expose
     @SerializedName("tablo_text")
     private String tabloText = "";
     /**
-     * Множество услуг, которые обрабатывает юзер. По наименованию услуги получаем Класс - описалово
-     * участия юзера в этой услуге/ Имя услуги - IProperty A lot of services that are processed by
-     * the user. By the name of the service we get Class - descriptive of the user's participation
-     * in this service / Service name - IProperty
+     * Множество услуг, которые обрабатывает юзер. По наименованию услуги получаем Класс - описалово участия юзера в этой услуге/ Имя услуги - IProperty A lot
+     * of services that are processed by the user. By the name of the service we get Class - descriptive of the user's participation in this service / Service
+     * name - IProperty
      */
-    //private QPlanServiceList serviceList = new QPlanServiceList();
+    // private QPlanServiceList serviceList = new QPlanServiceList();
     @Expose
     @SerializedName("plan")
     private List<QPlanService> planServices;
@@ -187,17 +186,13 @@ public class QUser implements IidGetter, Serializable {
     @SerializedName("services_cnt")
     private int servicesCnt = 0;
     /**
-     * Customer, который попал на обработку к этому юзеру. При вызове следующего, первый в очереди
-     * кастомер, выдерается из этой очереди совсем и попадает сюда. Сдесь он живет и переживает все
-     * интерпритации, которые с ним делает юзер. При редиректе в другую очередь юзером, данный
-     * кастомер отправляется в другую очередь, возможно, с другим приоритетом, а эта ссылка
-     * становится null.
+     * Customer, который попал на обработку к этому юзеру. При вызове следующего, первый в очереди кастомер, выдерается из этой очереди совсем и попадает сюда.
+     * Сдесь он живет и переживает все интерпритации, которые с ним делает юзер. При редиректе в другую очередь юзером, данный кастомер отправляется в другую
+     * очередь, возможно, с другим приоритетом, а эта ссылка становится null.
      *
-     * Customer, who got to the treatment for this user. When the next one is called, the first one
-     * in the queue is selected from this queue at all and gets here.      * He lives here and
-     * experiences all the interpretations that the user makes with him. When you redirect to
-     * another queue by the user, the given custom is sent to another      * Queue, possibly with a
-     * different priority, and this reference becomes null.
+     * Customer, who got to the treatment for this user. When the next one is called, the first one in the queue is selected from this queue at all and gets
+     * here.      * He lives here and experiences all the interpretations that the user makes with him. When you redirect to another queue by the user, the
+     * given custom is sent to another      * Queue, possibly with a different priority, and this reference becomes null.
      */
     private QCustomer customer = null;
     @Expose
@@ -226,10 +221,10 @@ public class QUser implements IidGetter, Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    
-//    public Long getOfficeId() {
-//        return this.getOffice().getId();
-//    }
+
+    // public Long getOfficeId() {
+    // return this.getOffice().getId();
+    // }
 
     public Date getDeleted() {
         return deleted;
@@ -247,22 +242,32 @@ public class QUser implements IidGetter, Serializable {
     public void setEnable(Integer enable) {
         this.enable = enable;
     }
-    
+
+    @Column(name = "quick_txn")
+    public boolean getQuickTxn() {
+        return quickTxn;
+    }
+
+    public void setQuickTxn(boolean txn) {
+        this.quickTxn = txn;
+    }
+
     @Column(name = "current_state")
     public boolean getCurrentState() {
         return currentState;
     }
-    
-    //Andrew
-    public String ConvertCurrentState(){
+
+    // Andrew
+    public String ConvertCurrentState() {
         // Instead of showing true/false, showing online/offline on board
-        if (getCurrentState()){
+        if (getCurrentState()) {
             return "online";
-        }else{
+        }
+        else {
             return "offline";
         }
     }
-    
+
     public void setCurrentState(boolean state) {
         this.currentState = state;
     }
@@ -271,43 +276,46 @@ public class QUser implements IidGetter, Serializable {
     public String getCurrentService() {
         return currentService;
     }
-    
+
     public void setCurrentService(String service) {
         this.currentService = service;
     }
-    
-//    @Column(name = "current_comments")
-    public String gCurrentComments() { 
-        if(getCustomer()!=null && this.getCustomer().getTempComments()!=null){
+
+    // @Column(name = "current_comments")
+    public String gCurrentComments() {
+        if (getCustomer() != null && this.getCustomer().getTempComments() != null) {
             return (this.getCustomer().getTempComments());
-        }else{
+        }
+        else {
             return "";
         }
-//        return currentComments;  
+        // return currentComments;
     }
-    
-    public String ServingTime(){
-        
-        if(getCurrentService()!=null && getCustomer()!=null && getCustomer().getStandTime()!=null){
-            Long ServingSec = (System.currentTimeMillis() - getCustomer().getStandTime().getTime()) / 1000  + 1;
-    
+
+    public String ServingTime() {
+
+        if (getCurrentService() != null && getCustomer() != null
+                && getCustomer().getStandTime() != null) {
+            Long ServingSec = (System.currentTimeMillis() - getCustomer().getStandTime().getTime())
+                    / 1000 + 1;
+
             long hours = ServingSec / 3600;
             long minutes = (ServingSec % 3600) / 60;
             long seconds = ServingSec % 60;
 
             String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-            return timeString; 
-        }else{
+            return timeString;
+        }
+        else {
             return "";
         }
 
     }
-    
-//    public void setCurrentComments(String Comments) {
-//        this.currentComments = Comments;
-//    }
-    
-    
+
+    // public void setCurrentComments(String Comments) {
+    // this.currentComments = Comments;
+    // }
+
     @Column(name = "admin_access")
     public Boolean getAdminAccess() {
         return adminAccess;
@@ -326,7 +334,7 @@ public class QUser implements IidGetter, Serializable {
         this.reportAccess = reportAccess;
     }
 
-    //@Transient
+    // @Transient
     @Column(name = "parallel_access")
     public Boolean getParallelAccess() {
         return parallelAccess;
@@ -367,9 +375,9 @@ public class QUser implements IidGetter, Serializable {
     public String getPoint() {
         return point;
     }
-    //******************************************************************************************************************
-    //******************************************************************************************************************
-    //************************************** Услуги юзера **************************************************************
+    // ******************************************************************************************************************
+    // ******************************************************************************************************************
+    // ************************************** Услуги юзера **************************************************************
 
     public void setPoint(String point) {
         this.point = point;
@@ -417,13 +425,15 @@ public class QUser implements IidGetter, Serializable {
         this.tabloText = tabloText;
     }
 
-    //@OneToMany(fetch = FetchType.EAGER)//setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).
+    // @OneToMany(fetch = FetchType.EAGER)//setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "user_id", insertable = false, nullable = false, updatable = false)
-    //MOSCOW
+    // MOSCOW
     @Fetch(FetchMode.SELECT)
-    // Это отсечение дублирования при джойне таблици, т.к. в QPlanService есть @OneToOne к QService, и в нем есть @OneToMany к QServiceLang - дублится по количеству переводов
-    //This is the truncation of the duplication when the table joins, since In QPlanService there is @OneToOne to QService, and there is @OneToMany to QServiceLang - it is duplicated by the number of translations.
+    // Это отсечение дублирования при джойне таблици, т.к. в QPlanService есть @OneToOne к QService, и в нем есть @OneToMany к QServiceLang - дублится по
+    // количеству переводов
+    // This is the truncation of the duplication when the table joins, since In QPlanService there is @OneToOne to QService, and there is @OneToMany to
+    // QServiceLang - it is duplicated by the number of translations.
     public List<QPlanService> getPlanServices() {
         return planServices;
     }
@@ -472,7 +482,7 @@ public class QUser implements IidGetter, Serializable {
 
     public boolean hasService(long serviceId) {
         return planServices.stream()
-            .anyMatch((qPlanService) -> (serviceId == qPlanService.getService().getId()));
+                .anyMatch((qPlanService) -> (serviceId == qPlanService.getService().getId()));
     }
 
     public boolean hasService(QService service) {
@@ -490,8 +500,7 @@ public class QUser implements IidGetter, Serializable {
     }
 
     /**
-     * Найти сервис из списка обслуживаемых юзером. Find a service from the list of users served by
-     * the user.
+     * Найти сервис из списка обслуживаемых юзером. Find a service from the list of users served by the user.
      *
      * @param serviceId id искомого сервиса
      */
@@ -502,7 +511,8 @@ public class QUser implements IidGetter, Serializable {
             }
         }
         throw new ServerException(
-            "Не найдена обрабатываемая услуга по ID \"" + serviceId + "\" у услуги c ID = " + id);
+                "Не найдена обрабатываемая услуга по ID \"" + serviceId + "\" у услуги c ID = "
+                        + id);
     }
 
     /**
@@ -526,8 +536,7 @@ public class QUser implements IidGetter, Serializable {
     }
 
     /**
-     * Добавить сервис в список обслуживаемых юзером использую параметры. Используется при
-     * добавлении на горячую.
+     * Добавить сервис в список обслуживаемых юзером использую параметры. Используется при добавлении на горячую.
      *
      * @param service добавляемый сервис.
      * @param coefficient приоритет обработки
@@ -553,7 +562,7 @@ public class QUser implements IidGetter, Serializable {
             }
         }
         throw new ServerException(
-            "Не найдена услуга по ID \"" + serviceId + "\" у услуги c ID = " + id);
+                "Не найдена услуга по ID \"" + serviceId + "\" у услуги c ID = " + id);
     }
 
     public QPlanService deletePlanService(QService service) {
@@ -563,11 +572,11 @@ public class QUser implements IidGetter, Serializable {
     public void savePlan() {
         final LinkedList<QPlanService> del = new LinkedList<>();
         forDel.stream().filter(
-            (qPlanService) -> (!QServiceTree.getInstance()
-                .hasById(qPlanService.getService().getId())))
-            .forEach((qPlanService) -> {
-                del.add(qPlanService);
-            });
+                (qPlanService) -> (!QServiceTree.getInstance()
+                        .hasById(qPlanService.getService().getId())))
+                .forEach((qPlanService) -> {
+                    del.add(qPlanService);
+                });
         forDel.removeAll(del);
         Spring.getInstance().getHt().deleteAll(forDel);
         forDel.clear();
@@ -592,14 +601,13 @@ public class QUser implements IidGetter, Serializable {
     }
 
     /**
-     * Назначить юзеру кастомера в работу. Типа текущий в работе. Если устанавливаем NULL, то это
-     * значить нужно замочить текущего, наверное закончили работать с ним.
+     * Назначить юзеру кастомера в работу. Типа текущий в работе. Если устанавливаем NULL, то это значить нужно замочить текущего, наверное закончили работать с
+     * ним.
      *
-     * Assign the user to the workbench. Type current in operation. If we set NULL, then it means to
-     * dunk the current one, probably finished working with      * Him.
+     * Assign the user to the workbench. Type current in operation. If we set NULL, then it means to dunk the current one, probably finished working with      *
+     * Him.
      *
-     * @param customer кастомер, который идет в рвботу, типа текущий. Может быть NULL для
-     * уничтожения текущего.
+     * @param customer кастомер, который идет в рвботу, типа текущий. Может быть NULL для уничтожения текущего.
      */
     public void setCustomer(QCustomer customer) {
         // небыло и не ставим :: Nebylo(was not) and do not put
@@ -620,11 +628,12 @@ public class QUser implements IidGetter, Serializable {
                 getCustomer().setStartTime(null);
             }
             parallelCustomers.remove(
-                getCustomer()
-                    .getId()); // он же в толпе параллельных :: He is in a crowd of parallel
-        } else {
+                    getCustomer()
+                            .getId()); // он же в толпе параллельных :: He is in a crowd of parallel
+        }
+        else {
             // иначе кастомеру, определившимуся к юзеру, надо поставить признак работы с опред. юзером.
-            //Otherwise, a custom defined to the user, you must put the sign of work with opred. User.
+            // Otherwise, a custom defined to the user, you must put the sign of work with opred. User.
             if (customer == null) {
                 throw new IllegalArgumentException("Customer is null! It is impossible!");
             }
@@ -636,9 +645,8 @@ public class QUser implements IidGetter, Serializable {
     }
 
     /**
-     * Это чтоб осталась инфа после завершения работ с кастомером. Нужно для нормативов и статистики
-     * сиюминутной This is to leave the infa after completing the work with the customizer. It is
-     * necessary for the standards and statistics of the momentary
+     * Это чтоб осталась инфа после завершения работ с кастомером. Нужно для нормативов и статистики сиюминутной This is to leave the infa after completing the
+     * work with the customizer. It is necessary for the standards and statistics of the momentary
      */
     public void finalizeCustomer() {
         shadow = new Shadow(customer);
@@ -646,9 +654,8 @@ public class QUser implements IidGetter, Serializable {
     }
 
     /**
-     * Это чтоб осталась инфа сразу после вызова кастомера. Нужно для нормативов и статистики
-     * сиюминутной This is to leave the infa immediately after the call of the custodian. It is
-     * necessary for the standards and statistics of the momentary
+     * Это чтоб осталась инфа сразу после вызова кастомера. Нужно для нормативов и статистики сиюминутной This is to leave the infa immediately after the call
+     * of the custodian. It is necessary for the standards and statistics of the momentary
      */
     public void initCustomer(QCustomer cust) {
         shadow = new Shadow(cust);
@@ -722,7 +729,8 @@ public class QUser implements IidGetter, Serializable {
             this.startTime = new Date();
             if (oldCostomer.getState() == null) {
                 customerState = CustomerState.STATE_INVITED;
-            } else {
+            }
+            else {
                 customerState = oldCostomer.getState();
             }
         }

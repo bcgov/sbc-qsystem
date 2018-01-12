@@ -17,8 +17,6 @@
  */
 package ru.apertum.qsystem.common.cmd;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -28,6 +26,10 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import ru.apertum.qsystem.server.model.QProperty;
 
 /**
@@ -105,12 +107,10 @@ public class CmdParams {
     public String new_channels;
     public String AAA;
     /**
-     * услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять
-     * списков. Первый это вольнопоследовательные услуги. Остальные четыре это
-     * зависимопоследовательные услуги, т.е. пока один не закончится на другой не переходить. Что
-     * такое элемент списка. Это тоже список. Первый элемент это та самая комплексная услуга(ID). А
-     * остальные это зависимости, т.е. если есть еще не оказанные услуги но назначенные, которые в
-     * зависимостях, то их надо оказать.
+     * услуги, в которые пытаемся встать. Требует уточнения что это за трехмерный массив. Это пять списков. Первый это вольнопоследовательные услуги. Остальные
+     * четыре это зависимопоследовательные услуги, т.е. пока один не закончится на другой не переходить. Что такое элемент списка. Это тоже список. Первый
+     * элемент это та самая комплексная услуга(ID). А остальные это зависимости, т.е. если есть еще не оказанные услуги но назначенные, которые в зависимостях,
+     * то их надо оказать.
      */
     @Expose
     @SerializedName("complex_id")
@@ -122,6 +122,10 @@ public class CmdParams {
     @SerializedName("properties")
     public List<QProperty> properties;
 
+    //  Quick Transaction flag
+    @Expose
+    @SerializedName("cust_qtxn")
+    public boolean custQtxn;
 
     public CmdParams() {
     }
@@ -175,7 +179,7 @@ public class CmdParams {
         try {
             for (Field field : fs) {
                 if (Modifier.isStatic(field.getModifiers()) && Modifier
-                    .isFinal(field.getModifiers())) {
+                        .isFinal(field.getModifiers())) {
                     continue;
                 }
 
@@ -192,8 +196,9 @@ public class CmdParams {
                         list.stream().forEach((object) -> {
                             try {
                                 sb.append(
-                                    URLEncoder.encode("{" + object.toString() + "}", "utf-8"));
-                            } catch (UnsupportedEncodingException ex) {
+                                        URLEncoder.encode("{" + object.toString() + "}", "utf-8"));
+                            }
+                            catch (UnsupportedEncodingException ex) {
                                 System.err.println(ex);
                             }
                         });
@@ -210,7 +215,7 @@ public class CmdParams {
                         break;
                     case "string":
                         sb.append("&").append(field.getName()).append("=")
-                            .append(URLEncoder.encode((String) field.get(this), "utf-8"));
+                                .append(URLEncoder.encode((String) field.get(this), "utf-8"));
                         break;
                     case "boolean":
                         sb.append("&").append(field.getName()).append("=").append(field.get(this));
@@ -225,7 +230,9 @@ public class CmdParams {
                         throw new AssertionError();
                 }
             }
-        } catch (IllegalArgumentException | IllegalAccessException | UnsupportedEncodingException ex) {
+        }
+        catch (IllegalArgumentException | IllegalAccessException
+                | UnsupportedEncodingException ex) {
             System.err.println(ex);
         }
 
@@ -245,7 +252,7 @@ public class CmdParams {
             try {
                 for (Field field : fs) {
                     if (Modifier.isStatic(field.getModifiers()) && Modifier
-                        .isFinal(field.getModifiers())) {
+                            .isFinal(field.getModifiers())) {
                         continue;
                     }
 
@@ -289,7 +296,9 @@ public class CmdParams {
                     }
 
                 }
-            } catch (IllegalArgumentException | IllegalAccessException | UnsupportedEncodingException ex) {
+            }
+            catch (IllegalArgumentException | IllegalAccessException
+                    | UnsupportedEncodingException ex) {
                 System.err.println(ex);
             }
 
