@@ -1089,7 +1089,9 @@ public final class Executer {
                     QLog.l().logQUser().debug("    --> After switch:  Cust=" + customer + "; Next = " + nextCust);
 
                     //  By the time you get here, you should have the next customer in line, if there is one.
-                    QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
+                    if (customer != null) {
+                        QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
+                    }
                     //Найденного самого первого из первых кастомера переносим на хранение юзеру, при этом удалив его из общей очереди.
                     // Случай, когда всех разобрали, но вызов сделан
                     //При приглашении очередного клиента пользователем очереди оказались пустые.
