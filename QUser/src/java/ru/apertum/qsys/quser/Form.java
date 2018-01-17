@@ -12,6 +12,7 @@ import static ru.apertum.qsystem.client.forms.FClient.KEYS_STARTED;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,6 +23,8 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.zkoss.bind.BindUtils;
+import org.zkoss.bind.Binder;
+import org.zkoss.bind.DefaultBinder;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -736,6 +739,8 @@ public class Form {
         }
 
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
 
         //  Debug
         QLog.l().logQUser().debug("==> End: invite");
@@ -753,14 +758,11 @@ public class Form {
     @NotifyChange(value = { "btnsDisabled", "customer" })
     public void kill() {
 
-        Messagebox.show("Do you want to remove the client?", "Remove", new Messagebox.Button[] {
-                Messagebox.Button.YES, Messagebox.Button.NO }, Messagebox.QUESTION,
+        Messagebox.show("Do you want to remove the client?", "Remove", new Messagebox.Button[]{
+                Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION,
                 (Messagebox.ClickEvent t) -> {
-                    QLog.l().logQUser()
-                            .debug("Kill by " + user.getName() + " customer "
-                                    + customer.getFullNumber());
-                    if (t.getButton() != null
-                            && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
+                    QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
+                    if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
                         final CmdParams params = new CmdParams();
 
                         params.userId = user.getUser().getId();
@@ -776,6 +778,8 @@ public class Form {
 
                         setKeyRegim(KEYS_MAY_INVITE);
                         service_list.setModel(service_list.getModel());
+                        refreshListServices();
+                        service_list.invalidate();
 
                         BindUtils.postNotifyChange(null, null, Form.this, "*");
                         serveCustomerDialogWindow.setVisible(false);
@@ -799,6 +803,8 @@ public class Form {
 
         setKeyRegim(KEYS_STARTED);
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
     }
 
@@ -845,12 +851,13 @@ public class Form {
         // QUser quser = QUserList.getInstance().getById(params.userId);
         // quser.setCurrentComments(params.comments);
 
-        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE)
-                .process(params, "", new byte[4]);
+        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE).process(params, "", new byte[4]);
 
         customer = null;
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
         serveCustomerDialogWindow.setVisible(false);
     }
 
@@ -908,6 +915,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             QLog.l().logQUser().debug("\n\nTEST LIST: " + service_list.getModel() + "\n\n");
             serveCustomerDialogWindow.setVisible(false);
         }
@@ -1007,6 +1016,8 @@ public class Form {
 
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
 
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         serveCustomerDialogWindow.setVisible(false);
@@ -1073,6 +1084,8 @@ public class Form {
     public void inviteCustomerNow() {
         // 1. Postpone the customer
         // 2. Pick the customer from Postponed list
+        Integer[] validStates = new Integer[] {1,2,3};
+        List<Integer> validInviteStates = Arrays.asList(validStates);
 
         if (pickedCustomer == null || keys_current == KEYS_INVITED || keys_current == KEYS_STARTED
                 || keys_current == KEYS_OFF) {
@@ -1080,19 +1093,28 @@ public class Form {
         }
 
         final CmdParams params = new CmdParams();
+
+        QLog.l().logQUser().debug(pickedCustomer.getId());
+
+        if (!validInviteStates.contains(pickedCustomer.getStateIn())) {
+            Messagebox.show("Unable to invite selected customer. This usually means another user has already invited this customer", "Error inviting customer", Messagebox.OK, Messagebox.INFORMATION);
+            return;
+        }
+
         params.userId = user.getUser().getId();
         params.postponedPeriod = 0;
         params.customerId = pickedCustomer.getId();
         params.isMine = Boolean.TRUE;
         user.getUser().setCustomer(pickedCustomer);
-        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_SELECTED_CUSTOMER)
-                .process(params, "", new byte[4], pickedCustomer);
+
+        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_SELECTED_CUSTOMER).process(params, "", new byte[4], pickedCustomer);
         customer = null;
 
         service_list.setModel(service_list.getModel());
+        refreshListServices();
+        service_list.invalidate();
 
-        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
-                .process(params, "", new byte[4]);
+        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
         customer = user.getUser().getCustomer();
 
         setKeyRegim(KEYS_INVITED);
@@ -1170,12 +1192,10 @@ public class Form {
     public void refreshListServices() {
         if (isLogin()) {
             // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
-            UsersInside.getInstance().getUsersInside()
-                    .put(user.getName() + user.getPassword(), new Date().getTime());
+            UsersInside.getInstance().getUsersInside().put(user.getName() + user.getPassword(), new Date().getTime());
             // тут поддержание сессии как залогинившегося юзера в СУО Here the maintenance of the session as a logged user in the MSA
             QSessions.getInstance()
-                    .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(),
-                            Sessions.getCurrent().getRemoteAddr().getBytes());
+                    .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
 
             final StringBuilder st = new StringBuilder();
             int number = user.getPlan().size();
@@ -1195,13 +1215,13 @@ public class Form {
         }
     }
 
-    // @Command
-    // public void refreshQuser(){
-    // final Session sess = Sessions.getCurrent();
-    // if (sess==null) {
-    // Executions.getCurrent().sendRedirect("");
-    // }
-    // }
+//    @Command
+//    public void refreshQuser(){
+//        final Session sess = Sessions.getCurrent();
+//        if (sess==null) {
+//            Executions.getCurrent().sendRedirect("");
+//        }
+//    }
 
     @Command
     public void closePostponeCustomerDialog() {
@@ -1216,12 +1236,9 @@ public class Form {
     public void OKPostponeCustomerDialog() {
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
-        params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox"))
-                .getSelectedIndex() * 5;
+        params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
         params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
-
-        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON)
-                .process(params, "", new byte[4]);
+        Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON).process(params, "", new byte[4]);
         customer = null;
 
         QUser quser = QUserList.getInstance().getById(params.userId);
@@ -1237,7 +1254,6 @@ public class Form {
 
     @Command
     public void DetermineChannels() {
-
         if (getCFMSType()) {
             int channelIndex = ((Combobox) addTicketDailogWindow
                     .getFellow("reception_Channels_options")).getSelectedIndex() + 1;
@@ -1273,9 +1289,8 @@ public class Form {
     }
 
     public LinkedList<QCustomer> getPostponList() {
-        // QLog.l().logger().debug("getPostponList");
-        LinkedList<QCustomer> postponedCustomers = QPostponedList.getInstance()
-                .getPostponedCustomers();
+//        QLog.l().logger().debug("getPostponList");
+        LinkedList<QCustomer> postponedCustomers = QPostponedList.getInstance().getPostponedCustomers();
         postponedCustomers = filterPostponedCustomersByUser(postponedCustomers);
         return postponedCustomers;
     }
@@ -1784,6 +1799,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             addTicketDailogWindow.setVisible(false);
 
             // Reset the combobox to default value/placeHolder
@@ -1826,6 +1843,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
 
             this.invite();
             this.begin();
@@ -1854,6 +1873,7 @@ public class Form {
     }
 
     @Command
+    @NotifyChange(value = {"postponList", "customer", "btnsDisabled"})
     public void closeAddToQueueDialog() {
 
         //  Debug
@@ -1861,24 +1881,27 @@ public class Form {
 
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
-                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
-                        Messagebox.EXCLAMATION);
+                Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
 
-            final CmdParams params = this
-                    .paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
 
             boolean Quick = params.custQtxn;
             QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
 
+            QLog.l().logQUser().debug("addToQueue");
             this.addToQueue(params);
+            QLog.l().logQUser().debug("Done");
 
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
 
             addTicketDailogWindow.setVisible(false);
+
+            refreshListServices();
+            service_list.invalidate();
         }
 
         //  Debug
@@ -2012,6 +2035,8 @@ public class Form {
                     new byte[4]);
 
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             addTicketDailogWindow.setVisible(false);
             customer.setChannels(params.new_channels);
             customer.setChannelsIndex(params.new_channels_Index);
@@ -2042,6 +2067,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             addTicketDailogWindow.setVisible(false);
 
             this.invite();
@@ -2080,6 +2107,8 @@ public class Form {
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
+            refreshListServices();
+            service_list.invalidate();
             addTicketDailogWindow.setVisible(false);
             serveCustomerDialogWindow.setVisible(false);
         }

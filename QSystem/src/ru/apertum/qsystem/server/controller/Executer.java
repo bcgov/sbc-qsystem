@@ -266,8 +266,7 @@ public final class Executer {
     final Task inviteSelectedCustomerTask = new Task(Uses.TASK_INVITE_SELECTED_CUSTOMER) {
 
         @Override
-        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP,
-            QCustomer pickedCustomer) {
+        public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP, QCustomer pickedCustomer) {
             QLog.l().logQUser().debug("inviteSelectedCustomerTask");
             super.process(cmdParams, ipAdress, IP, pickedCustomer);
             // вот он все это творит ::: Here he is doing it all
@@ -275,18 +274,12 @@ public final class Executer {
             //переключение на кастомера при параллельном приеме, должен приехать customerID
             // switch to the custodian with parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
-                final QCustomer parallelCust = user.getParallelCustomers()
-                    .get(cmdParams.customerId);
+                final QCustomer parallelCust = user.getParallelCustomers().get(cmdParams.customerId);
                 if (parallelCust == null) {
-                    QLog.l().logger()
-                        .error("PARALLEL: User have no Customer for switching by customer ID=\""
-                            + cmdParams.customerId + "\"");
+                    QLog.l().logger().error("PARALLEL: User have no Customer for switching by customer ID=\"" + cmdParams.customerId + "\"");
                 } else {
                     user.setCustomer(parallelCust);
-                    QLog.l().logger().error(
-                        "Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust
-                            .getFullNumber()
-                            + "\"");
+                    QLog.l().logger().error("Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust.getFullNumber() + "\"");
                 }
             }
             // вот над этим пациентом
@@ -301,8 +294,7 @@ public final class Executer {
 //            customer.setPostponPeriod(cmdParams.postponedPeriod);
             customer.setPostponPeriod(0);
             // если отложили бессрочно и поставили галку, то можно видеть только отложенному
-            customer
-                .setIsMine(cmdParams.isMine != null && cmdParams.isMine ? cmdParams.userId : null);
+            customer.setIsMine(cmdParams.isMine != null && cmdParams.isMine ? cmdParams.userId : null);
             // в этом случае завершаем с пациентом
             //"все что хирург забыл в вас - в пул отложенных"
             // но сначала обозначим результат работы юзера с кастомером, если такой результат найдется в списке результатов
@@ -2835,16 +2827,8 @@ public final class Executer {
             final QCustomer customer;
             Long userId = cmdParams.userId;
 
-            List<QUser> users = Spring.getInstance().getHt()
-                .findByCriteria(DetachedCriteria.forClass(QUser.class)
-                    .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
-                    .add(Property.forName("id").eq(userId)));
+            final QUser user = QUserList.getInstance().getById(cmdParams.userId);
 
-            if (users.size() != 1) {
-                throw new ServerException("Error obtaining userId " + userId + " from cmdParams");
-            }
-
-            QUser user = users.get(0);
             QLog.l().logQUser().debug(user);
             QOffice userOffice = user.getOffice();
 
@@ -2884,9 +2868,7 @@ public final class Executer {
                 customer.setChannels(cmdParams.channels);
                 customer.setChannelsIndex(cmdParams.channelsIndex);
                 customer.setOffice(userOffice);
-                QLog.l().logQUser().debug("setUser");
                 customer.setUser(user);
-                QLog.l().logQUser().debug("Set");
 
                 //  Add quick txn or not.
                 customer.setTempQuickTxn(cmdParams.custQtxn);
@@ -2901,9 +2883,7 @@ public final class Executer {
                 QLog.l().logQUser().debug("setState");
                 customer.setState(CustomerState.STATE_WAIT);
             } catch (Exception ex) {
-                throw new ServerException(
-                    "Ошибка при постановке клиента в очередь ::: Error placing the client in the queue :",
-                    ex);
+                throw new ServerException("Ошибка при постановке клиента в очередь ::: Error placing the client in the queue :", ex);
             } finally {
                 CLIENT_TASK_LOCK.unlock();
             }

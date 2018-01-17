@@ -85,6 +85,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @Expose
     @SerializedName("number")
     private Integer number;
+
     @Expose
     @SerializedName("stateIn")
     private Integer stateIn;
@@ -530,6 +531,60 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         }
         QLog.l().logQUser().debug(customerState);
         setState(customerState);
+    }
+
+    public void setStateWithoutSave(Integer state) {
+        CustomerState customerState = CustomerState.STATE_DEAD;
+
+        switch (state) {
+            case 0:
+                customerState = CustomerState.STATE_DEAD;
+                break;
+            case 1:
+                customerState = CustomerState.STATE_WAIT;
+                break;
+            case 2:
+                customerState = CustomerState.STATE_WAIT_AFTER_POSTPONED;
+                break;
+            case 3:
+                customerState = CustomerState.STATE_WAIT_COMPLEX_SERVICE;
+                break;
+            case 4:
+                customerState = CustomerState.STATE_INVITED;
+                break;
+            case 5:
+                customerState = CustomerState.STATE_INVITED_SECONDARY;
+                break;
+            case 6:
+                customerState = CustomerState.STATE_REDIRECT;
+                break;
+            case 7:
+                customerState = CustomerState.STATE_WORK;
+                break;
+            case 8:
+                customerState = CustomerState.STATE_WORK_SECONDARY;
+                break;
+            case 9:
+                customerState = CustomerState.STATE_BACK;
+                break;
+            case 10:
+                customerState = CustomerState.STATE_FINISH;
+                break;
+            case 11:
+                customerState = CustomerState.STATE_POSTPONED;
+                break;
+            case 12:
+                customerState = CustomerState.STATE_POSTPONED_REDIRECT;
+                break;
+            case 13:
+                customerState = CustomerState.STATE_INACCURATE_TIME;
+                break;
+            default:
+                customerState = CustomerState.STATE_DEAD;
+                break;
+        }
+
+        this.state = customerState;
     }
 
     @Transient

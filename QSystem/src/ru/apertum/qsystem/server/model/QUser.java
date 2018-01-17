@@ -206,6 +206,16 @@ public class QUser implements IidGetter, Serializable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj != null && obj instanceof QUser) {
+            final QUser o = (QUser) obj;
+            return (id == null ? o.getId() == null : id.equals(o.getId()));
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public String toString() {
         return getName();
     }
@@ -476,13 +486,11 @@ public class QUser implements IidGetter, Serializable {
      */
     @Transient
     public QPlanServiceList getPlanServiceList() {
-        QLog.l().logQUser().debug("getPlanServiceList");
         return planServiceList;
     }
 
     public boolean hasService(long serviceId) {
-        return planServices.stream()
-                .anyMatch((qPlanService) -> (serviceId == qPlanService.getService().getId()));
+        return planServices.stream().anyMatch((qPlanService) -> (serviceId == qPlanService.getService().getId()));
     }
 
     public boolean hasService(QService service) {
@@ -627,11 +635,9 @@ public class QUser implements IidGetter, Serializable {
             if (getCustomer().getStartTime() != null) {
                 getCustomer().setStartTime(null);
             }
-            parallelCustomers.remove(
-                    getCustomer()
-                            .getId()); // он же в толпе параллельных :: He is in a crowd of parallel
-        }
-        else {
+
+            parallelCustomers.remove(getCustomer().getId()); // он же в толпе параллельных :: He is in a crowd of parallel
+        } else {
             // иначе кастомеру, определившимуся к юзеру, надо поставить признак работы с опред. юзером.
             // Otherwise, a custom defined to the user, you must put the sign of work with opred. User.
             if (customer == null) {

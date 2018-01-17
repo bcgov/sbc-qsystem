@@ -106,11 +106,11 @@
             
             <div width="320px" style="background-color:White;">
             </div>     
-            
+
             <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Return to queue"
                     disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('ReturnedRedirect')"
                     visible="@load(fmodel.getCFMSType())" id="btn_redirect" height="38px" width="158px">
-            </button>  
+            </button>
             <!--<checkbox style="margin-top: 18px;" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
         </hbox>
         

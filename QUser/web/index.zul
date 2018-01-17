@@ -87,7 +87,7 @@
                                     label="${c:l('invite_client')}" visible="@load(fmodel.getCFMSType())"
                                     disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')"
                                     id="btn_invite" height="38px" width="158px">
-                            </button>   
+                            </button>
 
                             <button sclass="act-button bdd-serve-now" style="margin-left: 15px; margin-top: 18px;"
                                     label="Serve Now"
