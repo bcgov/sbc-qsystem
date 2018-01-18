@@ -4,7 +4,7 @@ class AuthModule extends Module {
 
     // loginForm.zul
     static content = {
-        loginUser { $("span", class: "bdd-usr").$("input") }
+        loginUser { $("input", class: "bdd-usr") }
         loginPass { $("input", class: "bdd-pwd") }
         loginButton { $("button", class:"login-button")[0] }
         logoutButton { $("button", class:"login-button")[1] }
