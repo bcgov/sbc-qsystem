@@ -97,6 +97,12 @@ import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
 
+//  CM:  Imports for MySQL stored procedure call using JDBC
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Types;
+import java.sql.CallableStatement;
+
 /**
  * Пул очередей. Пул очередей - главная структура управления очередями. В системе существуют
  * несколько очередей, например для оказания разных услуг. Пул получает XML-задания из сети,
@@ -746,9 +752,11 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("killCustomerTask");
+            QLog.l().logQUser().debug("==> Start: Task(KillNxtCust).process()");
             super.process(cmdParams, ipAdress, IP);
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
+            final Long CustId = user.getCustomer().getId();
+            int ReturnCode = -1;
             //переключение на кастомера при параллельном приеме, должен приехать customerID
             //Switching to a custodian in parallel reception, must arrive customerID
             if (cmdParams.customerId != null) {
@@ -766,11 +774,11 @@ public final class Executer {
                         .getFullNumber() + "\"");
                 }
             }
-            QLog.l().logger().error(
-                "УДАЛЕНИЕ: Удалили по неявке кастомера " + user.getCustomer().getPrefix() + "-"
-                    + user
-                    .getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data()
-                    + "\"");
+            //QLog.l().logger().error(
+            //    "УДАЛЕНИЕ: Удалили по неявке кастомера " + user.getCustomer().getPrefix() + "-"
+            //        + user
+            //        .getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data()
+            //        + "\"");
             QLog.l().logger().error(
                 "REMOVING: Customer was removing because of absence " + user.getCustomer()
                     .getPrefix()
@@ -816,11 +824,17 @@ public final class Executer {
                 //QServer.savePool();
                 //разослать оповещение о том, что посетитель откланен
                 // Должно подтереться основном табло
-                QLog.l().logQUser().debug("killCustomerTask MainBoard kill");
+                QLog.l().logQUser().debug("    --> MainBoard...killCustomer(user)");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
+
+            //  Call John's stored procedure.
+            CallStoredProcDone(CustId, "Customer left");
+
+            QLog.l().logQUser().debug("==> End: Task(KillNxtCust).process()");
+
             return new JsonRPC20OK();
         }
     };
@@ -1017,7 +1031,7 @@ public final class Executer {
                     for (QCustomer custHere : custAll) {
 
                         //  Debug:
-                        QLog.l().logQUser().debug("    --> Cust: custHere " + custHere + "; QTxn: " + custHere.getStringQuickTxn());
+                        //QLog.l().logQUser().debug("    --> Cust: custHere " + custHere + "; QTxn: " + custHere.getStringQuickTxn());
 
                         //  CM:  Look for a Quick Txn match. 
                         if (custHere.getTempQuickTxn() == userQuick) {
@@ -1025,7 +1039,7 @@ public final class Executer {
                             //  CM:  You have a match.  If no next customer, take this one in line.
                             if (nextCust == null) {
                                 nextCust = custHere;
-                                QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                                //QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
                             }
                             
                             //  CM:  You have a match, and a tentative next customer.  See who is next.
@@ -1033,12 +1047,12 @@ public final class Executer {
                             else {
 
                                 //  Compare customers.
-                                QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+                                //QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
 
                                 //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
                                 if (nextCust.compareTo(custHere) == 1) {
                                     nextCust = custHere;
-                                    QLog.l().logQUser().debug("        --> Text next chosen: " + nextCust);
+                                    //QLog.l().logQUser().debug("        --> Test next chosen: " + nextCust);
                                 }
                             }
                         }
@@ -1048,7 +1062,7 @@ public final class Executer {
                     if (nextCust == null) {
 
                         //  Debug
-                        QLog.l().logQUser().debug("    --> No Q.Txn match, ignoring Q.Txn state");
+                        // QLog.l().logQUser().debug("    --> No Q.Txn match, ignoring Q.Txn state");
 
                         //  CM:  Pick next customer, regardless of QuickTxn state.
                         for (QCustomer custHere : custAll) {
@@ -1056,7 +1070,7 @@ public final class Executer {
                             //  CM:  If no next customer, take the first customer in the list.
                             if (nextCust == null) {
                                 nextCust = custHere;
-                                QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                                // QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
                             }
                             
                             //  CM:  You have a tentative next customer.  See who is next.
@@ -1064,11 +1078,11 @@ public final class Executer {
                             else {
 
                                 //  Compare customers.
-                                QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+                                // QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
 
                                 if (nextCust.compareTo(custHere) == 1) {
                                     nextCust = custHere;
-                                    QLog.l().logQUser().debug("        --> Text next chosen: " + nextCust);
+                                    //QLog.l().logQUser().debug("        --> Test next chosen: " + nextCust);
                                 }
                             }
                         }
@@ -1076,21 +1090,21 @@ public final class Executer {
                     
                     //  Debug
                     if (nextCust == null) {
-                        QLog.l().logQUser().debug("    --> QTxn method next customer: None, no customer in queue");
+                        //QLog.l().logQUser().debug("    --> QTxn method next customer: None, no customer in queue");
                     }
                     else {
-                        QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
+                        //QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
                     }
 
                     //  CM:  Set customer to be QTxn selection, not original selection.
                     //  CM:  Strangeness going on.
-                    QLog.l().logQUser().debug("    --> Before switch: Cust=" + customer + "; Next = " + nextCust);
+                    //QLog.l().logQUser().debug("    --> Before switch: Cust=" + customer + "; Next = " + nextCust);
                     customer = nextCust;
-                    QLog.l().logQUser().debug("    --> After switch:  Cust=" + customer + "; Next = " + nextCust);
+                    //QLog.l().logQUser().debug("    --> After switch:  Cust=" + customer + "; Next = " + nextCust);
 
                     //  By the time you get here, you should have the next customer in line, if there is one.
                     if (customer != null) {
-                        QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
+                        //QLog.l().logQUser().debug("Customer: " + customer + "; Quick: " + customer.getStringQuickTxn());
                     }
                     //Найденного самого первого из первых кастомера переносим на хранение юзеру, при этом удалив его из общей очереди.
                     // Случай, когда всех разобрали, но вызов сделан
@@ -1098,12 +1112,12 @@ public final class Executer {
 
                     //  If no next customer in line, return.
                     if (customer == null) {
-                        QLog.l().logQUser().debug("Customer null");
+                        //QLog.l().logQUser().debug("Customer null");
                         return new RpcInviteCustomer(null);
                     }
 
                     //  CM:  There is a customer.
-                    QLog.l().logQUser().debug("Getting customer");
+                    //QLog.l().logQUser().debug("Getting customer");
 
                     //  CM:  Again, every office polled for the given service (not all services this time).
                     //  CM:  Only people wanting given service in CSR office selected.
@@ -1117,10 +1131,10 @@ public final class Executer {
                     //  CM:  Instead, call new code to act on already selected customer.
                     //polCustomerSelected(QCustomer customer)
                     customer = QServiceTree.getInstance().getById(customer.getService().getId()).polCustomerSelected(customer);
-                    QLog.l().logQUser().debug("    --> After polCustSelect:  Cust=" + customer);
+                    //QLog.l().logQUser().debug("    --> After polCustSelect:  Cust=" + customer);
 
                     //  CM:  This should return the same customer as from peekCustomerByOffice.
-                    QLog.l().logQUser().debug("Found him: " + customer);
+                    //QLog.l().logQUser().debug("Found him: " + customer);
 
                     //  CM:  This appears to be unlinking customer from service???  Loop through all services.
                     for (QService service : QServiceTree.getInstance().getNodes()) {
@@ -1128,14 +1142,14 @@ public final class Executer {
                         for (QCustomer c : service.getClients()) {
                             //QLog.l().logQUser().debug("Looping through service clients");
                             if (c.getId() == customer.getId()) {
-                                QLog.l().logQUser().debug("Remove customer from service list");
+                                // QLog.l().logQUser().debug("Remove customer from service list");
                                 service.removeCustomer(c);
                             }
                         }
                     }
-                    QLog.l().logQUser().debug("Done");
+                    //QLog.l().logQUser().debug("Done");
                     if (customer == null) {
-                        QLog.l().logQUser().debug("Customer null");
+                        //QLog.l().logQUser().debug("Customer null");
                         return new RpcInviteCustomer(null);
                     }
                 }
@@ -1197,7 +1211,7 @@ public final class Executer {
                 QLog.l().logger().error(ex);
             }
 
-            QLog.l().logQUser().debug("==> End: Task(InvNextCust).process()");
+            //QLog.l().logQUser().debug("==> End: Task(InvNextCust).process()");
 
             return new RpcInviteCustomer(customer);
         }
@@ -1209,7 +1223,7 @@ public final class Executer {
 
             @Override
             public void run() {
-                QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER run");
+                QLog.l().logQUser().debug("==> Start: MyRun.run() for Task: TASK_INVITE_NEXT_CUSTOMER");
                 final long delta =
                     System.currentTimeMillis() - user.getCustomer().getStandTime().getTime();
                 //System.out.println("################## " + QLog.l().getPauseFirst());
@@ -1233,12 +1247,14 @@ public final class Executer {
                         user.getPoint(),
                         isFrst);
                     // Должно высветитьсяна основном табло :: Must be highlighted on the main board
-                    QLog.l().logQUser().debug("inviteCustomerTask MainBoard inviteCustomer");
+                    QLog.l().logQUser().debug("    --> Before MainBoard...inviteCustomer(user, cust)");
                     MainBoard.getInstance().inviteCustomer(user, user.getCustomer());
 
 //                    QLog.l().logger().debug("CUSTOMER HEREERERERE  _inside loop\n\n" + user.getCustomer() + "\n\n\n");
                 }
                 usrs.remove(user);
+
+                QLog.l().logQUser().debug("==> End: MyRun.run() for Task: TASK_INVITE_NEXT_CUSTOMER");
             }
         }
     };
@@ -1249,7 +1265,7 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("getStartCustomerTask");
+            //QLog.l().logQUser().debug("==> Start: Task(TASK_START_CUSTOMER)");
             super.process(cmdParams, ipAdress, IP);
 
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -1261,11 +1277,13 @@ public final class Executer {
                 user.getCustomer().getState() == CustomerState.STATE_INVITED
                     ? CustomerState.STATE_WORK
                     : CustomerState.STATE_WORK_SECONDARY);
-            QLog.l().logQUser().debug("getStartCustomerTask MainBoard work");
+            //QLog.l().logQUser().debug("getStartCustomerTask MainBoard work");
             MainBoard.getInstance().workCustomer(user);
             // сохраняем состояния очередей.
 
             //QServer.savePool();
+
+            //QLog.l().logQUser().debug("==> End: Task(TASK_START_CUSTOMER)");
             return new JsonRPC20OK();
         }
     };
@@ -1494,7 +1512,7 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("getFinishCustomerTask");
+            QLog.l().logQUser().debug("==> Start: Task(TskFinCust).process()");
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -1508,20 +1526,22 @@ public final class Executer {
                             + cmdParams.customerId + "\"");
                 } else {
                     user.setCustomer(parallelCust);
-                    QLog.l().logger().debug(
-                        "Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust
-                            .getFullNumber()
-                            + "\"");
+                    //QLog.l().logger().debug(
+                    //    "Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust
+                    //        .getFullNumber()
+                    //        + "\"");
                 }
             }
             // вот над этим пациентом
             final QCustomer customer = user.getCustomer();
+            final Long CustId = customer.getId();
+            
             // комменты
             customer.setTempComments(cmdParams.textData);
             // надо посмотреть не требует ли этот кастомер возврата в какую либо очередь.
             final QService backSrv = user.getCustomer().getServiceForBack();
             if (backSrv != null) {
-                QLog.l().logger().debug("Требуется возврат после редиректа.");
+                //QLog.l().logger().debug("Требуется возврат после редиректа.");
                 // действия по завершению работы юзера над кастомером
                 customer.setFinishTime(new Date());
                 // кастомер переходит в состояние "возврата", тут еще и в базу скинется, если надо.
@@ -1540,11 +1560,11 @@ public final class Executer {
                 //рассылаем широковещетельно по UDP на определенный порт
                 Uses.sendUDPBroadcast(backSrv.getId().toString(),
                     ServerProps.getInstance().getProps().getClientPort());
-                QLog.l().logger().info(
-                    "Клиент \"" + user.getCustomer().getPrefix() + user.getCustomer().getNumber()
-                        + "\" возвращен к услуге \"" + backSrv.getName() + "\"");
+                //QLog.l().logger().info(
+                //    "Клиент \"" + user.getCustomer().getPrefix() + user.getCustomer().getNumber()
+                //        + "\" возвращен к услуге \"" + backSrv.getName() + "\"");
             } else {
-                QLog.l().logger().debug("В морг пациента.");
+                //QLog.l().logger().debug("В морг пациента.");
 
                 // в этом случае завершаем с пациентом
                 //"все что хирург забыл в вас - ваше"
@@ -1580,8 +1600,8 @@ public final class Executer {
                     len = customer.getComplexId().stream().map((li) -> li.size())
                         .reduce(len, Integer::sum);
                     if (len != 0) {
-                        QLog.l().logger()
-                            .debug("Дефолтная проводка по комплексным услугам. Омталось " + len);
+                        //QLog.l().logger()
+                        //    .debug("Дефолтная проводка по комплексным услугам. Омталось " + len);
                         Long serviceID = null;
                         for (LinkedList<LinkedList<Long>> ids : customer.getComplexId()) {
                             for (LinkedList<Long> id : ids) {
@@ -1605,9 +1625,9 @@ public final class Executer {
                     //рассылаем широковещетельно по UDP на определенный порт
                     Uses.sendUDPBroadcast(customer.getService().getId().toString(),
                         ServerProps.getInstance().getProps().getClientPort());
-                    QLog.l().logger().info("Клиент \"" + customer.getPrefix() + customer.getNumber()
-                        + "\" проведен по этапу к услуге \"" + customer.getService().getName()
-                        + "\"");
+                    //QLog.l().logger().info("Клиент \"" + customer.getPrefix() + customer.getNumber()
+                    //    + "\" проведен по этапу к услуге \"" + customer.getService().getName()
+                    //    + "\"");
                 }
             }
             try {
@@ -1616,14 +1636,83 @@ public final class Executer {
                 //QServer.savePool();
                 //разослать оповещение о том, что посетитель откланен
                 //рассылаем широковещетельно по UDP на определенный порт. Должно высветитьсяна основном табло
-                QLog.l().logQUser().debug("getFinishCustomerTask MainBoard kill");
+                QLog.l().logQUser().debug("    --> Before finish customer, MainBoard....killCustomer(user)");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
+
+            //  CM:  Call John's MySql stored procedure.
+            CallStoredProcDone(CustId, "Customer finished");
+
+            QLog.l().logQUser().debug("==> End: Task(TskFinCust).process()");
+
             return new RpcStandInService(customer);
         }
     };
+
+    void CallStoredProcDone(Long custId, String from) {
+
+        //  Debug.
+        QLog.l().logQUser().debug("==> Start: CallStoredProcDone(" + custId + ", " + from + ")");
+
+        //  CM:  Initialize variables.
+        int ReturnCode = -1;
+        String ErrorMsg = "You should not see this message.";
+
+        //  CM:  Calling John's MySql stored procedure.
+        try {
+            String MyDB = System.getenv("MYSQL_DATABASE");
+            String MyUser = System.getenv("MYSQL_USER");
+            String MyPw = System.getenv("MYSQL_PASSWORD");
+            String URL = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + MyDB + "?noAccessToProcedureBodies=true";
+            String Sql = "{call load_client_visit(?, ?)}";
+
+            //  CM:  See if you're getting the right info.
+            QLog.l().logQUser().debug("    --> Service: " + URL + "; DB: " + MyDB + "; User: " + MyUser + "; Pw: " + MyPw);
+            QLog.l().logQUser().debug("    --> Cust Id: " + custId + "; Sql: " + Sql);
+
+            Connection conn = DriverManager.getConnection(URL, MyUser, MyPw);
+            CallableStatement cStmt = conn.prepareCall(Sql);
+            cStmt.setLong(1, custId);
+            cStmt.setInt(2, ReturnCode);
+            cStmt.registerOutParameter(2, Types.INTEGER);
+            int RetBefore = ReturnCode;
+
+            //  The actual call statement.
+            cStmt.execute();
+
+            //  Try getting return code.
+            int RetCall = cStmt.getInt(2);
+
+            //  See what the return code was.
+            QLog.l().logQUser().debug("    --> Code before: " + RetBefore + "; RC var: " + ReturnCode + "; RC get: " + RetCall);
+            ReturnCode = RetCall;
+
+            //  See if an error or not.
+            if (ReturnCode == 0) {
+                ErrorMsg = "All OK.  No error.";
+            }
+            else {
+                ErrorMsg = "Stored procedure load_client_visit returned an error.";
+            }
+        }
+
+        //  CM:  Catch any error trying to call the stored procedure.
+        catch (Exception ex) {
+            QLog.l().logQUser().debug("    --> Exception: " + ex.getMessage());
+            ReturnCode = -2;
+            ErrorMsg = "Error trying to call load_client_visit stored procedure.";
+        }
+
+        //  CM:  If any error, handle it.
+        finally {
+            QLog.l().logQUser().debug("    --> Finally: Code =  " + ReturnCode + "; ErrMsg = " + ErrorMsg);
+        }
+
+        //  Debug.
+        QLog.l().logQUser().debug("==> End: CallStoredProcDone(" + custId + ", " + from + ")");
+    }
     /**
      * Переадресовать клиента к другой услуге. Forward the client to another service.
      */
@@ -2686,7 +2775,7 @@ public final class Executer {
     private Executer() {
         // поддержка расширяемости плагинами
         for (final ITask task : ServiceLoader.load(ITask.class)) {
-            QLog.l().logger().info("Load extra task: " + task.getDescription());
+            QLog.l().logger().info("Load extra task via tasks.put(): " + task.getDescription());
             try {
                 tasks.put(task.getName(), task);
             } catch (Throwable tr) {
@@ -2774,7 +2863,7 @@ public final class Executer {
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
 
-            QLog.l().logQUser().debug("    --> parms QTxn: " + (cmdParams.custQtxn ? "Yes" : "No"));
+            //QLog.l().logQUser().debug("    --> parms QTxn: " + (cmdParams.custQtxn ? "Yes" : "No"));
             this.cmdParams = cmdParams;
             QLog.l().logQUser().debug("==> End: Task.process(CmdParams, String, byte[])");
             return new JsonRPC20OK();
@@ -2823,7 +2912,7 @@ public final class Executer {
 
         @Override
         public RpcStandInService process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("==> Start: AddCustomerTask.process(CmdParams, String, byte[])");
+            //QLog.l().logQUser().debug("==> Start: AddCustomerTask.process(CmdParams, String, byte[])");
             super.process(cmdParams, ipAdress, IP);
             final QService service = QServiceTree.getInstance().getById(cmdParams.serviceId);
             final QCustomer customer;
@@ -2831,7 +2920,7 @@ public final class Executer {
 
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
 
-            QLog.l().logQUser().debug(user);
+            //QLog.l().logQUser().debug(user);
             QOffice userOffice = user.getOffice();
 
             // синхронизируем работу с клиентом
@@ -2874,7 +2963,7 @@ public final class Executer {
 
                 //  Add quick txn or not.
                 customer.setTempQuickTxn(cmdParams.custQtxn);
-                QLog.l().logQUser().debug("    --> Customer QTxn: " + (customer.getTempQuickTxn() ? "Yes" : "No"));
+                //QLog.l().logQUser().debug("    --> Customer QTxn: " + (customer.getTempQuickTxn() ? "Yes" : "No"));
 
                 //добавим нового пользователя
                 // add a new user
@@ -2882,7 +2971,7 @@ public final class Executer {
 
                 // Состояние у него "Стою, жду".
                 // His condition is "I'm standing, waiting."
-                QLog.l().logQUser().debug("setState");
+                //QLog.l().logQUser().debug("setState");
                 customer.setState(CustomerState.STATE_WAIT);
             } catch (Exception ex) {
                 throw new ServerException("Ошибка при постановке клиента в очередь ::: Error placing the client in the queue :", ex);
@@ -2909,13 +2998,13 @@ public final class Executer {
 
                 // Должно высветитьсяна основном табло в таблице ближайших
                 // Must be highlighted on the main scoreboard in the nearest table
-                QLog.l().logQUser().debug("AddCustomerTask MainBoard standIn");
+                //QLog.l().logQUser().debug("AddCustomerTask MainBoard standIn");
                 MainBoard.getInstance().customerStandIn(customer);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
 
-            QLog.l().logQUser().debug("==> End: AddCustomerTask.process(CmdParams, String, byte[])");
+            //QLog.l().logQUser().debug("==> End: AddCustomerTask.process(CmdParams, String, byte[])");
 
             return new RpcStandInService(customer);
         }

@@ -228,7 +228,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         id = new Date().getTime();
         setStandTime(new Date()); // действия по инициализации при постановке
         // все остальные всойства кастомера об услуге куда попал проставятся в самой услуге при помещении кастомера в нее
-        QLog.l().logger().debug("Создали кастомера с номером " + number);
+        //QLog.l().logger().debug("Создали кастомера с номером " + number);
     }
 
     @Id
@@ -315,8 +315,8 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
         switch (state) {
             case STATE_DEAD:
-                QLog.l().logger().debug("Статус: Кастомер с номером \"" + getPrefix() + getNumber()
-                        + "\" идет домой по неявке");
+                //QLog.l().logger().debug("Статус: Кастомер с номером \"" + getPrefix() + getNumber()
+                //        + "\" идет домой по неявке");
                 getUser().getPlanService(getService()).inkKilled();
                 // хер с ним, сохраним чтоб потом почекать неподошедших. сохраним кастомера в базе
                 // только финиш_тайм надо проставить, хер сним, и старт_тайм тоже, ядренбатон
@@ -324,25 +324,25 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 setFinishTime(new Date());
                 break;
             case STATE_WAIT:
-                QLog.l().logger().debug(
-                        "Статус: Кастомер пришел и ждет с номером \"" + getPrefix() + getNumber()
-                                + "\"");
+                //QLog.l().logger().debug(
+                //        "Статус: Кастомер пришел и ждет с номером \"" + getPrefix() + getNumber()
+                //                + "\"");
                 break;
             case STATE_WAIT_AFTER_POSTPONED:
-                QLog.l().logger().debug(
-                        "Статус: Кастомер был возвращен из отложенных по истечению времени и ждет с номером \""
-                                + getPrefix() + getNumber() + "\"");
+                //QLog.l().logger().debug(
+                //        "Статус: Кастомер был возвращен из отложенных по истечению времени и ждет с номером \""
+                //                + getPrefix() + getNumber() + "\"");
                 break;
             case STATE_WAIT_COMPLEX_SERVICE:
-                QLog.l().logger().debug(
-                        "Статус: Кастомер был опять поставлен в очередь т.к. услуга комплекстая и ждет с номером \""
-                                + getPrefix() + getNumber() + "\"");
+                //QLog.l().logger().debug(
+                //        "Статус: Кастомер был опять поставлен в очередь т.к. услуга комплекстая и ждет с номером \""
+                //                + getPrefix() + getNumber() + "\"");
                 break;
             case STATE_INVITED:
-                QLog.l().logger()
-                        .debug("Статус: Пригласили кастомера с номером \"" + getPrefix()
-                                + getNumber()
-                                + "\"");
+                //QLog.l().logger()
+                //        .debug("Статус: Пригласили кастомера с номером \"" + getPrefix()
+                //                + getNumber()
+                //                + "\"");
                 break;
             case STATE_INVITED_SECONDARY:
                 QLog.l().logger().debug(
@@ -361,10 +361,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 this.refreshQuantity();
                 break;
             case STATE_WORK:
-                QLog.l().logger()
-                        .debug("Начали работать с кастомером с номером \"" + getPrefix()
-                                + getNumber()
-                                + "\"");
+                //QLog.l().logger()
+                //        .debug("Начали работать с кастомером с номером \"" + getPrefix()
+                //                + getNumber()
+                //                + "\"");
                 getUser().getPlanService(getService())
                         .upWait(new Date().getTime() - getStandTime().getTime());
                 break;
@@ -456,7 +456,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             }
 
             Spring.getInstance().getHt().saveOrUpdate(this);
-            QLog.l().logQUser().info("Saved customer");
+            //QLog.l().logQUser().info("Saved customer");
             // костыль. Если кастомер оставил отзывы прежде чем попал в БД, т.е. во время работы еще с ним.
             // Crutch. If the customizer left a comment before getting into the database, ie. While working with him.
             if (resps.size() > 0) {
@@ -471,7 +471,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                             .toString(ex.getStackTrace()));
         }
         Spring.getInstance().getTxManager().commit(status);
-        QLog.l().logger().debug("Сохранили.");
+        //QLog.l().logger().debug("Сохранили.");
     }
 
     @Transient
@@ -656,9 +656,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         if (getPrefix() == null) {
             setPrefix(service.getPrefix());
         }
-        QLog.l().logger().debug(
-                "Клиента \"" + getFullNumber() + "\" поставили к услуге \"" + service.getName()
-                        + "\"");
+        //QLog.l().logger().debug(
+        //        "Клиента \"" + getFullNumber() + "\" поставили к услуге \"" + service.getName()
+        //                + "\"");
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -687,9 +687,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setUser(QUser user) {
         this.user = user;
-        QLog.l().logger().debug("Клиенту \"" + getPrefix() + getNumber() + (user == null
-                ? " юзера нету, еще он его не вызывал\""
-                : " опредилили юзера \"" + user.getName() + "\""));
+        //QLog.l().logger().debug("Клиенту \"" + getPrefix() + getNumber() + (user == null
+        //        ? " юзера нету, еще он его не вызывал\""
+        //        : " опредилили юзера \"" + user.getName() + "\""));
     }
 
     @Column(name = "service_prefix")
