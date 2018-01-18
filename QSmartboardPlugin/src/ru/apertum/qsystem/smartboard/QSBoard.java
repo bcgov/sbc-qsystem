@@ -32,7 +32,7 @@ import ru.apertum.qsystem.server.model.QUser;
 public class QSBoard extends AIndicatorBoard {
 
     public PrintRecords getPrintRecordsByOffice(QOffice office) {
-        QLog.l().logQUser().debug("QSBoard: getPrintRecordsByOffice");
+        //QLog.l().logQUser().debug("QSBoard: getPrintRecordsByOffice");
         if (office == null) {
             throw new UnsupportedOperationException("Office cannot be null");
         }
@@ -46,13 +46,13 @@ public class QSBoard extends AIndicatorBoard {
 
     @Override
     public Integer getLinesCount() {
-        QLog.l().logQUser().debug("QSBoard: getLinesCount");
-        QLog.l().logQUser().debug("getStackTrace");
+        //QLog.l().logQUser().debug("QSBoard: getLinesCount");
+        //QLog.l().logQUser().debug("getStackTrace");
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         for (int i = 1; i < elements.length; i++) {
             StackTraceElement s = elements[i];
-            QLog.l().logQUser().debug("\tat " + s.getClassName() + "." + s.getMethodName()
-                + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+            //QLog.l().logQUser().debug("\tat " + s.getClassName() + "." + s.getMethodName()
+            //    + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
         }
 
         return 0;
@@ -60,13 +60,13 @@ public class QSBoard extends AIndicatorBoard {
 
     @Override
     protected void showOnBoard(LinkedList<Record> records) {
-        QLog.l().logQUser().debug("QSBoard: showOnBoard");
-        QLog.l().logQUser().debug("getStackTrace");
+        //QLog.l().logQUser().debug("QSBoard: showOnBoard");
+        //QLog.l().logQUser().debug("getStackTrace");
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         for (int i = 1; i < elements.length; i++) {
             StackTraceElement s = elements[i];
-            QLog.l().logQUser().debug("\tat " + s.getClassName() + "." + s.getMethodName()
-                + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+            //QLog.l().logQUser().debug("\tat " + s.getClassName() + "." + s.getMethodName()
+            //    + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
         }
 
         return;
@@ -74,13 +74,13 @@ public class QSBoard extends AIndicatorBoard {
 
     @Override
     public synchronized void inviteCustomer(QUser user, QCustomer customer) {
-        QLog.l().logQUser().debug("QSBoard: inviteCustomer");
+        //QLog.l().logQUser().debug("QSBoard: inviteCustomer");
         super.inviteCustomer(user, customer);
 
         //Only set invited sound if the service is smartboard enabled
         QService service = customer.getService();
         if (!"Y".equals(service.getSmartboard())) {
-            QLog.l().logQUser().debug("Smartboard not enabled for service, return");
+            //QLog.l().logQUser().debug("Smartboard not enabled for service, return");
             return;
         }
         getPrintRecordsByOffice(user.getOffice()).setInvited(true);
@@ -88,17 +88,17 @@ public class QSBoard extends AIndicatorBoard {
 
     @Override
     public Integer getLinesCountForOffice(QOffice office) {
-        QLog.l().logQUser().debug("QSBoard: getLinesCountForOffice");
+        //QLog.l().logQUser().debug("QSBoard: getLinesCountForOffice");
 
         Integer c = getPrintRecordsByOffice(office).getLinesCount();
 
-        QLog.l().logQUser().debug("QSBoard: getLinesCountForOffice. Count: " + c);
+        //QLog.l().logQUser().debug("QSBoard: getLinesCountForOffice. Count: " + c);
 
         return c;
     }
 
     protected void showOnBoardForOffice(LinkedList<Record> records, QOffice office) {
-        QLog.l().logQUser().debug("QSBoard: showOnBoardForOffice");
+        //QLog.l().logQUser().debug("QSBoard: showOnBoardForOffice");
         getPrintRecordsByOffice(office).setRecords(records);
     }
 
@@ -109,13 +109,13 @@ public class QSBoard extends AIndicatorBoard {
     @Deprecated
     @Override
     protected void showToUser(Record record) {
-        QLog.l().logQUser().debug("QSBoard: showToUser");
+        //QLog.l().logQUser().debug("QSBoard: showToUser");
         System.out.println("Record");
     }
 
     @Override
     public void refresh() {
-        QLog.l().logQUser().debug("QSBoard: refresh");
+        //QLog.l().logQUser().debug("QSBoard: refresh");
         System.out.println("Refresh");
     }
 
