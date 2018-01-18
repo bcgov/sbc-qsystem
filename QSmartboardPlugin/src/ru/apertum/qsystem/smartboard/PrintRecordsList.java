@@ -24,7 +24,7 @@ public class PrintRecordsList extends AbstractListModel implements List {
         QOfficeList officeList = QOfficeList.getInstance();
 
         for (QOffice office : officeList.getItems()) {
-            QLog.l().logQUser().debug("Adding printRecords for office" + office);
+            // QLog.l().logQUser().debug("Adding printRecords for office" + office);
             PrintRecords pr = new PrintRecords(office);
 
             this.printRecords.add(pr);

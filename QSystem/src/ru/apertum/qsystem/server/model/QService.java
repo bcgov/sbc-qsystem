@@ -1063,7 +1063,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public PriorityQueue<QCustomer> peekAllCustomerByOffice(QOffice office) {
 
         //  Debug.
-        QLog.l().logQUser().debug("==> Start: peekAllCustomerByOffice: " + office);
+        // QLog.l().logQUser().debug("==> Start: peekAllCustomerByOffice: " + office);
 
         //  CM:  Init vars of all customers wanting this service, and those in input office.
         PriorityQueue<QCustomer> customers = getCustomers();
@@ -1082,7 +1082,10 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         }
 
         //  Debug.
-        QLog.l().logQUser().debug("==> End: peekAllCustomerByOffice: " + office + "; Customers: " + custHere.size());
+        // QLog.l().logQUser().debug("==> End: peekAllCustomerByOffice: " + office + "; Customers: " + custHere.size());
+        if (custHere.size() != 0) {
+            QLog.l().logQUser().debug("==> End: peekAllCustomerByOffice: " + office + "; Customers: " + custHere.size());
+        }
 
         return custHere;
     }
