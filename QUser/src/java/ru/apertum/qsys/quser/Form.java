@@ -761,7 +761,7 @@ public class Form {
         Messagebox.show("Do you want to remove the client?", "Remove", new Messagebox.Button[]{
                 Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION,
                 (Messagebox.ClickEvent t) -> {
-                    QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
+                    //QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
                     if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
                         final CmdParams params = new CmdParams();
 

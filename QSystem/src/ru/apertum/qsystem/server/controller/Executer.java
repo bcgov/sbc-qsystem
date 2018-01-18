@@ -779,12 +779,12 @@ public final class Executer {
             //        + user
             //        .getCustomer().getNumber() + " он ввел \"" + user.getCustomer().getInput_data()
             //        + "\"");
-            QLog.l().logger().error(
-                "REMOVING: Customer was removing because of absence " + user.getCustomer()
-                    .getPrefix()
-                    + "-" + user.getCustomer().getNumber() + " customer inputted \"" + user
-                    .getCustomer()
-                    .getInput_data() + "\"");
+            //QLog.l().logger().error(
+            //    "REMOVING: Customer was removing because of absence " + user.getCustomer()
+            //        .getPrefix()
+            //        + "-" + user.getCustomer().getNumber() + " customer inputted \"" + user
+            //        .getCustomer()
+            //        .getInput_data() + "\"");
             // Если кастомер имел что-то введенное на пункте регистрации, то удалить всех таких кастомеров с такими введеными данными
             // и отправить его в бан, ибо нехрен набирать кучу талонов и просирать очереди.
             // If the custodian had something entered at the registration point, then delete all such custodians with such entered data
@@ -881,7 +881,7 @@ public final class Executer {
             final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
 
             //  CM:  Display info about CSR.
-            QLog.l().logQUser().debug("    --> CSR: " + user.getName() + "; Quick: " + user.getQuickTxn());
+            //QLog.l().logQUser().debug("    --> CSR: " + user.getName() + "; Quick: " + user.getQuickTxn());
 
             //  CM: If user has a customer with state of invited, or invited secondary, a recall? 
             final boolean isRecall = user.getCustomer() != null && (
@@ -1008,7 +1008,7 @@ public final class Executer {
                     }
 
                     //  CM:  Debug code for now.
-                    QLog.l().logQUser().debug("    --> Total In Queue: " + custAll.size());
+                    //QLog.l().logQUser().debug("    --> Total In Queue: " + custAll.size());
 
                     /*
                      *  (1) Get CSR State
@@ -1669,8 +1669,8 @@ public final class Executer {
             String Sql = "{call load_client_visit(?, ?)}";
 
             //  CM:  See if you're getting the right info.
-            QLog.l().logQUser().debug("    --> Service: " + URL + "; DB: " + MyDB + "; User: " + MyUser + "; Pw: " + MyPw);
-            QLog.l().logQUser().debug("    --> Cust Id: " + custId + "; Sql: " + Sql);
+            //QLog.l().logQUser().debug("    --> Service: " + URL + "; DB: " + MyDB + "; User: " + MyUser + "; Pw: " + MyPw);
+            //QLog.l().logQUser().debug("    --> Cust Id: " + custId + "; Sql: " + Sql);
 
             Connection conn = DriverManager.getConnection(URL, MyUser, MyPw);
             CallableStatement cStmt = conn.prepareCall(Sql);
@@ -1686,7 +1686,7 @@ public final class Executer {
             int RetCall = cStmt.getInt(2);
 
             //  See what the return code was.
-            QLog.l().logQUser().debug("    --> Code before: " + RetBefore + "; RC var: " + ReturnCode + "; RC get: " + RetCall);
+            //QLog.l().logQUser().debug("    --> Code before: " + RetBefore + "; RC var: " + ReturnCode + "; RC get: " + RetCall);
             ReturnCode = RetCall;
 
             //  See if an error or not.

@@ -345,10 +345,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 //                + "\"");
                 break;
             case STATE_INVITED_SECONDARY:
-                QLog.l().logger().debug(
-                        "Статус: Пригласили повторно в цепочке обработки кастомера с номером \""
-                                + getPrefix()
-                                + getNumber() + "\"");
+                //QLog.l().logger().debug(
+                //        "Статус: Пригласили повторно в цепочке обработки кастомера с номером \""
+                //                + getPrefix()
+                //                + getNumber() + "\"");
                 break;
             case STATE_REDIRECT:
                 QLog.l().logger()
@@ -379,9 +379,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                         + "\" вернут в преднюю услугу");
                 break;
             case STATE_FINISH:
-                QLog.l().logger()
-                        .debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber()
-                                + "\" закончили работать");
+                //QLog.l().logger()
+                //        .debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber()
+                //                + "\" закончили работать");
                 getUser().getPlanService(getService())
                         .inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
@@ -670,12 +670,12 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setResult(QResult result) {
         this.result = result;
         if (result == null) {
-            QLog.l().logger().debug("Обозначать результат работы с кастомером не требуется");
+            //QLog.l().logger().debug("Обозначать результат работы с кастомером не требуется");
         }
         else {
-            QLog.l().logger()
-                    .debug("Обозначили результат работы с кастомером: \"" + result.getName()
-                            + "\"");
+            //QLog.l().logger()
+            //        .debug("Обозначили результат работы с кастомером: \"" + result.getName()
+            //                + "\"");
         }
     }
 
