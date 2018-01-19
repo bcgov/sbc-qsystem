@@ -23,10 +23,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-
-//  CM:  Temp.
-import java.util.Iterator;
-
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.List;
@@ -103,6 +99,14 @@ import ru.apertum.qsystem.server.model.schedule.QSchedule;
 
 //  CM:  For config info.
 import org.apache.commons.configuration2.FileBasedConfiguration;
+import java.util.Properties;
+import java.util.Enumeration;
+import java.util.Iterator;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.Message;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.InternetAddress;
 
 /**
  * Пул очередей. Пул очередей - главная структура управления очередями. В системе существуют
@@ -1503,8 +1507,10 @@ public final class Executer {
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
             QLog.l().logQUser().debug("==> Start: Task(FinishCust).process()");
 
-            //  Test of config info.
+            //  Test of config info.  Initialize variables.
             FileBasedConfiguration config = QConfig.cfg().getQsysProperties();
+            String currentKey = "";
+            String currentValue = "";
 
             Iterator<String> keys = config.getKeys();
 
@@ -1513,7 +1519,34 @@ public final class Executer {
             //    QLog.l().logger().debug("    --> Config key is: " + key);
             //}
             while (keys.hasNext()) {
-                QLog.l().logger().debug("    --> Config key is: " + keys.next());
+                currentKey = keys.next();
+                currentValue = config.getString(currentKey);
+                QLog.l().logger().debug("    --> Key: " + currentKey + "; Value: " + currentValue);
+            }
+
+            //  CM:  Try another way.  Note: No config.properties, so nothing here.
+            Properties props = new Properties();
+            props.put("mail.smtp.host", config.getString("SMTPServer"));
+            Enumeration propKeys = props.keys();
+            while (propKeys.hasMoreElements()) {
+                currentKey = (String) propKeys.nextElement();
+                currentValue = props.getProperty(currentKey);
+                QLog.l().logger().debug("    --> PKey: " + currentKey + "; PValue: " + currentValue);
+            }
+
+            //  CM:  Add some properties, try to send a message.
+            Session session = Session.getDefaultInstance(props, null);
+            session.setDebug(true);
+            Message msg = new MimeMessage(session);
+            try {
+                msg.setFrom(new InternetAddress(config.getString("Sender")));
+                msg.setRecipients(Message.RecipientType.TO, new InternetAddress[] { new InternetAddress(config.getString("Developers")) });
+                msg.setSubject("Error writing SBC-QSystem Statistics record for client " + 123);
+                msg.setText("Please fix as soon as possible.");
+                Transport.send(msg);
+            }
+            catch (Exception ex) {
+                QLog.l().logger().debug("    --> Email exception: " + ex.getMessage());
             }
 
             super.process(cmdParams, ipAdress, IP);
