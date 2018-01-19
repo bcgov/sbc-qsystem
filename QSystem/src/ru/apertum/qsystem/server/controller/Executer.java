@@ -23,6 +23,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+
+//  CM:  Temp.
+import java.util.Iterator;
+
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.List;
@@ -96,6 +100,9 @@ import ru.apertum.qsystem.server.model.response.QResponseTree;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
 import ru.apertum.qsystem.server.model.schedule.QSchedule;
+
+//  CM:  For config info.
+import org.apache.commons.configuration2.FileBasedConfiguration;
 
 /**
  * Пул очередей. Пул очередей - главная структура управления очередями. В системе существуют
@@ -1494,7 +1501,21 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("getFinishCustomerTask");
+            QLog.l().logQUser().debug("==> Start: Task(FinishCust).process()");
+
+            //  Test of config info.
+            FileBasedConfiguration config = QConfig.cfg().getQsysProperties();
+
+            Iterator<String> keys = config.getKeys();
+
+            //  xxx
+            //for (String key : keys) {
+            //    QLog.l().logger().debug("    --> Config key is: " + key);
+            //}
+            while (keys.hasNext()) {
+                QLog.l().logger().debug("    --> Config key is: " + keys.next());
+            }
+
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -1621,6 +1642,9 @@ public final class Executer {
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
             }
+
+            QLog.l().logQUser().debug("==> End: Task(FinishCust).process()");
+
             return new RpcStandInService(customer);
         }
     };
