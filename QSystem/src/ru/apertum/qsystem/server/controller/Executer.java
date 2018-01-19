@@ -1521,7 +1521,7 @@ public final class Executer {
             while (keys.hasNext()) {
                 currentKey = keys.next();
                 currentValue = config.getString(currentKey);
-                QLog.l().logger().debug("    --> Key: " + currentKey + "; Value: " + currentValue);
+                //QLog.l().logger().debug("    --> Key: " + currentKey + "; Value: " + currentValue);
             }
 
             //  CM:  Try another way.  Note: No config.properties, so nothing here.
@@ -1531,17 +1531,17 @@ public final class Executer {
             while (propKeys.hasMoreElements()) {
                 currentKey = (String) propKeys.nextElement();
                 currentValue = props.getProperty(currentKey);
-                QLog.l().logger().debug("    --> PKey: " + currentKey + "; PValue: " + currentValue);
+                //QLog.l().logger().debug("    --> PKey: " + currentKey + "; PValue: " + currentValue);
             }
 
             //  CM:  Add some properties, try to send a message.
             Session session = Session.getDefaultInstance(props, null);
-            session.setDebug(true);
+            //session.setDebug(true);
             Message msg = new MimeMessage(session);
             try {
                 msg.setFrom(new InternetAddress(config.getString("Sender")));
                 msg.setRecipients(Message.RecipientType.TO, new InternetAddress[] { new InternetAddress(config.getString("Developers")) });
-                msg.setSubject("Error writing SBC-QSystem Statistics record for client " + 123);
+                msg.setSubject("SBC-QSystem Error: Could not write summary statistics records for client " + 123);
                 msg.setText("Please fix as soon as possible.");
                 Transport.send(msg);
             }
