@@ -1530,21 +1530,6 @@ public final class Executer {
                 //QLog.l().logger().debug("    --> PKey: " + currentKey + "; PValue: " + currentValue);
             }
 
-            //  CM:  Add some properties, try to send a message.
-            Session session = Session.getDefaultInstance(props, null);
-            //session.setDebug(true);
-            Message msg = new MimeMessage(session);
-            try {
-                msg.setFrom(new InternetAddress(config.getString("Sender")));
-                msg.setRecipients(Message.RecipientType.TO, new InternetAddress[] { new InternetAddress(config.getString("Developers")) });
-                msg.setSubject("SBC-QSystem Error: Could not write summary statistics records for client " + 123);
-                msg.setText("Please fix as soon as possible.");
-                Transport.send(msg);
-            }
-            catch (Exception ex) {
-                QLog.l().logger().debug("    --> Email exception: " + ex.getMessage());
-            }
-
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -1570,6 +1555,26 @@ public final class Executer {
             customer.setTempComments(cmdParams.textData);
             // надо посмотреть не требует ли этот кастомер возврата в какую либо очередь.
             final QService backSrv = user.getCustomer().getServiceForBack();
+
+            //*************************************************************
+            //  CM:  Add some properties, try to send a message.
+            Session session = Session.getDefaultInstance(props, null);
+            //session.setDebug(true);
+            Message msg = new MimeMessage(session);
+            try {
+                msg.setFrom(new InternetAddress(config.getString("Sender")));
+                msg.setRecipients(Message.RecipientType.TO, new InternetAddress[] {
+                        new InternetAddress(config.getString("Developers")) });
+                msg.setSubject(
+                        "SBC-QSystem Error: Could not write summary statistics records for client "
+                                + customer.getId());
+                msg.setText("Please fix as soon as possible.");
+                Transport.send(msg);
+            }
+            catch (Exception ex) {
+                QLog.l().logger().debug("    --> Email exception: " + ex.getMessage());
+            }
+            //*****************************************************************
 
             //****************************************************
             //  CM:  xxx  Try slack message.
