@@ -1514,10 +1514,6 @@ public final class Executer {
 
             Iterator<String> keys = config.getKeys();
 
-            //  xxx
-            //for (String key : keys) {
-            //    QLog.l().logger().debug("    --> Config key is: " + key);
-            //}
             while (keys.hasNext()) {
                 currentKey = keys.next();
                 currentValue = config.getString(currentKey);
@@ -1548,6 +1544,10 @@ public final class Executer {
             catch (Exception ex) {
                 QLog.l().logger().debug("    --> Email exception: " + ex.getMessage());
             }
+
+            //  CM:  xxx  Try slack message.
+            String CSRIcon = ":information_desk_person:";
+            SlackApi api = new SlackApi();
 
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит

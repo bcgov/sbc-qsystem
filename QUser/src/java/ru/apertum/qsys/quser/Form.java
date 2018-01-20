@@ -441,6 +441,9 @@ public class Form {
         CSRIcon = ":information_desk_person:";
 
         // Call Slack Api to connect to address
+        //package ru.apertum.qsys.quser;
+        //import ru.apertum.qsystem.server.model.QUser;
+
         SlackApi api = new SlackApi(
                 "https://hooks.slack.com/services/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");
         // SlackMessage msg = null;
