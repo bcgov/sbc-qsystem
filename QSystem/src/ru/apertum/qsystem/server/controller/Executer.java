@@ -1545,10 +1545,6 @@ public final class Executer {
                 QLog.l().logger().debug("    --> Email exception: " + ex.getMessage());
             }
 
-            //  CM:  xxx  Try slack message.
-            String CSRIcon = ":information_desk_person:";
-            SlackApi api = new SlackApi();
-
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -1574,6 +1570,47 @@ public final class Executer {
             customer.setTempComments(cmdParams.textData);
             // надо посмотреть не требует ли этот кастомер возврата в какую либо очередь.
             final QService backSrv = user.getCustomer().getServiceForBack();
+
+            //****************************************************
+            //  CM:  xxx  Try slack message.
+            String CSRIcon = ":information_desk_person:";
+            String ReportMsg = "";
+            String ReportTicket = "";
+            String Username = "";
+            String BugMsg =
+                    "Test Msg Only! SBC-QSystem Error: Could not write summary statistics records for client "
+                            + customer.getId();
+
+            SlackApi api = new SlackApi(
+                    "https://hooks.slack.com/services/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");
+            // SlackMessage msg = null;
+            SlackMessage slackMsg = new SlackMessage(null);
+
+            if (user.getName() != null) {
+                Username = "CSR - " + user.getName();
+                if (user.getCustomer() != null) {
+                    ReportTicket = user.getCustomer().getName();
+                }
+                else {
+                    ReportTicket = "Ticket numebr is not provided";
+                }
+            }
+            else {
+                Username = "User is not logged in";
+            }
+
+            ReportMsg = ReportMsg + Username + "\n" + "Office Name: " + user.getOffice().getName()
+                    + "\n"
+                    + "Ticket Number: " + ReportTicket + "\n\n" + BugMsg + "\n";
+
+            slackMsg.setIcon(CSRIcon);
+            slackMsg.setText(ReportMsg);
+            slackMsg.setUsername(Username);
+            // api.SlackMessage.setIcon(":information_desk_person:");
+            api.call(slackMsg);
+
+            //***************************************************            
+
             if (backSrv != null) {
                 QLog.l().logger().debug("Требуется возврат после редиректа.");
                 // действия по завершению работы юзера над кастомером
