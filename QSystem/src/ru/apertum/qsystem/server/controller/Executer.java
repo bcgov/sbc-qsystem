@@ -2869,13 +2869,18 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("==> Start: Task.process(CmdParams, String, byte[])");
+            //QLog.l().logQUser().debug("==> Start: Task.process(CmdParams, String, byte[])");
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
 
-            QLog.l().logQUser().debug("    --> parms QTxn: " + (cmdParams.custQtxn ? "Yes" : "No"));
+            //            if ((cmdParams != null) && cmdParams.custQtxn) {
+            //                QLog.l().logQUser().debug("    --> parms QTxn: Yes");
+            //            }
+            //            else {
+            //                QLog.l().logQUser().debug("    --> parms QTxn: No");
+            //            }
             this.cmdParams = cmdParams;
-            QLog.l().logQUser().debug("==> End: Task.process(CmdParams, String, byte[])");
+            //QLog.l().logQUser().debug("==> End: Task.process(CmdParams, String, byte[])");
             return new JsonRPC20OK();
         }
 
