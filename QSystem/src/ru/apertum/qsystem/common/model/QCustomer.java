@@ -687,9 +687,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setUser(QUser user) {
         this.user = user;
-        //QLog.l().logger().debug("Клиенту \"" + getPrefix() + getNumber() + (user == null
-        //        ? " юзера нету, еще он его не вызывал\""
-        //        : " опредилили юзера \"" + user.getName() + "\""));
+        QLog.l().logger().debug("Клиенту \"" + getPrefix() + getNumber() + (user == null
+                ? " юзера нету, еще он его не вызывал\""
+                : " опредилили юзера \"" + user.getName() + "\""));
     }
 
     @Column(name = "service_prefix")
