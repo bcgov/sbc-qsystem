@@ -60,7 +60,8 @@
         </hbox>
         <div style="margin:10px 10px 10px 10px;"></div>
         <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)"
-                 width="100%" height="250px">
+                 width="100%" height="250px"
+                 onSelect="@command('serviceSelected')">
           <listhead>
             <listheader label="Service" align="left"/>
             <listheader label="Category" align="left" />
@@ -118,9 +119,11 @@
             <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px"
                     label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')"
                     visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
+                    
             <button sclass= "bdd-begin-service" id="addAndServeBtn" hflex="min" width="100px"
                     label="Begin service" onClick="@command('closeAddAndServeDialog')"
-                    visible="@load(fmodel.addWindowButtons[0])"/>
+                    visible="@load(fmodel.addWindowButtons[0])" />
+                    <!-- disabled="@bind(fmodel.isNoServiceSelected())"/> -->
 
             <!--Change Service-->
             <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}"
