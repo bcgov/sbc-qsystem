@@ -937,15 +937,15 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
      * @param customer это кастомер которого добавляем в очередь к услуге
      */
     public void addCustomer(QCustomer customer) {
-        QLog.l().logQUser().debug("addCustomer");
+        //QLog.l().logQUser().debug("addCustomer");
         if (customer.getPrefix() == null) {
-            QLog.l().logQUser().debug("Set Prefix");
+            //QLog.l().logQUser().debug("Set Prefix");
             customer.setPrefix(getPrefix());
         }
         if (customer == null) {
-            QLog.l().logQUser().debug("customer is null");
+            //QLog.l().logQUser().debug("customer is null");
         }
-        QLog.l().logQUser().debug(customer.getPriority());
+        //QLog.l().logQUser().debug(customer.getPriority());
         if (!getCustomers().add(customer)) {
             throw new ServerException("Невозможно добавить нового кастомера в хранилище кастомеров.");
         }
@@ -1063,7 +1063,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public PriorityQueue<QCustomer> peekAllCustomerByOffice(QOffice office) {
 
         //  Debug.
-        QLog.l().logQUser().debug("==> Start: peekAllCustomerByOffice: " + office);
+        // QLog.l().logQUser().debug("==> Start: peekAllCustomerByOffice: " + office);
 
         //  CM:  Init vars of all customers wanting this service, and those in input office.
         PriorityQueue<QCustomer> customers = getCustomers();
@@ -1082,7 +1082,10 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         }
 
         //  Debug.
-        QLog.l().logQUser().debug("==> End: peekAllCustomerByOffice: " + office + "; Customers: " + custHere.size());
+        // QLog.l().logQUser().debug("==> End: peekAllCustomerByOffice: " + office + "; Customers: " + custHere.size());
+        if (custHere.size() != 0) {
+            // QLog.l().logQUser().debug("==> End: peekAllCustomerByOffice: " + office + "; Customers: " + custHere.size());
+        }
 
         return custHere;
     }
@@ -1163,7 +1166,7 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
     public QCustomer polCustomerSelected(QCustomer customer) {
 
         //  Debug
-        QLog.l().logQUser().debug("==> Start polCustSel");
+        // QLog.l().logQUser().debug("==> Start polCustSel");
 
         //  CM:  NOTE!!  This code identical to last part of polCustomerByOffice.
         //  CM:  Only difference is this routine doesn't search for a customer.
@@ -1171,20 +1174,20 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         if (customer != null) {
 
             //  CM:  This gets executed, when customer is not null.
-            QLog.l().logQUser().debug("    --> Cust not null: " + customer.getName() + "; Comments: " + customer.getTempComments());
+            // QLog.l().logQUser().debug("    --> Cust not null: " + customer.getName() + "; Comments: " + customer.getTempComments());
             int Count = 0;
 
             // поддержка расширяемости плагинами
             //  CM:  However, this DOES NOT appear to remove any customers, as debug never gets called.
             for (final ICustomerChangePosition event : ServiceLoader.load(ICustomerChangePosition.class)) {
-                QLog.l().logQUser().debug("    --> Removing customer out of the queue");
+                // QLog.l().logQUser().debug("    --> Removing customer out of the queue");
                 event.remove(customer);
                 Count++;
             }
 
             //  CM:  This does get called, indicating there are no events in the ServiceLoader.load()
             if (Count == 0) {
-                QLog.l().logQUser().debug("    --> It appears customer not removed from event queue");
+                // QLog.l().logQUser().debug("    --> It appears customer not removed from event queue");
             }
         }
 
@@ -1194,9 +1197,9 @@ public class QService extends DefaultMutableTreeNode implements ITreeIdGetter, T
         int AfterClear = clients.size();
         clients.addAll(getCustomers());
         int AfterAdd = clients.size();
-        QLog.l().logQUser().debug("    --> Clients before clear: " + BeforeClear + "; after clear: " + AfterClear + "; after add: " + AfterAdd);
+        // QLog.l().logQUser().debug("    --> Clients before clear: " + BeforeClear + "; after clear: " + AfterClear + "; after add: " + AfterAdd);
 
-        QLog.l().logQUser().debug("==> End polCustSel");
+        // QLog.l().logQUser().debug("==> End polCustSel");
 
         return customer;
     }
