@@ -238,7 +238,7 @@ public class Form {
 
     @Init
     public void init() {
-        QLog.l().logQUser().debug("Loding page: init");
+        //QLog.l().logQUser().debug("Loding page: init");
         final Session sess = Sessions.getCurrent();
 
         final User userL = (User) sess.getAttribute("userForQUser");
@@ -252,7 +252,7 @@ public class Form {
      */
     @AfterCompose
     public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
-        QLog.l().logQUser().debug("Loding page: afterCompose");
+        //QLog.l().logQUser().debug("Loading page: afterCompose");
         Selectors.wireComponents(view, this, false);
     }
 
@@ -523,7 +523,7 @@ public class Form {
     public void QuickTxnCSRChecked() {
 
         //  Debug
-        QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
+        //QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
 
         //  Get user, quick transaction flag, then reset it.
         QUser quser = user.getUser();
@@ -531,10 +531,10 @@ public class Form {
         quser.setQuickTxn(!save);
 
         //  More debug.
-        QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
-        QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
-        QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
-        QLog.l().logQUser().debug("==> End: QuickTxnChecked");
+        //QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("==> End: QuickTxnChecked");
 
     }
 
@@ -802,7 +802,7 @@ public class Form {
         Messagebox.show("Do you want to remove the client?", "Remove", new Messagebox.Button[]{
                 Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION,
                 (Messagebox.ClickEvent t) -> {
-                    QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
+                    //QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
                     if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
                         final CmdParams params = new CmdParams();
 
@@ -1024,7 +1024,7 @@ public class Form {
     @NotifyChange(value = { "btnsDisabled", "customer" })
     public void finish() {
         QLog.l().logQUser()
-                .debug("Finish by " + user.getName() + " customer " + customer.getFullNumber());
+                .debug("==> Start: Finish CSR " + user.getName() + "; client " + customer.getFullNumber());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
@@ -1063,6 +1063,7 @@ public class Form {
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         serveCustomerDialogWindow.setVisible(false);
 
+        QLog.l().logQUser().debug("==> End: Finish");
     }
 
     public QCustomer getPickedCustomer() {
@@ -1085,41 +1086,6 @@ public class Form {
     // public void clickList(@BindingParam("st") String st) {
     public void clickListServices() {
     }
-
-    /*
-     * new function prepareInvite() {
-     *     look through service list.
-     *     set pickedCustomer = one that matches
-     *     Write a new function inviteCustomerNow
-     *      
-     * }
-     * 
-     * 
-     * CM:  Possible implementation of the Q.Txn feature
-     * 
-     *  keep the old inviteCustomerNow, but have it take a parameter of pickedCustomer
-     *  
-     *  write a new inviteCustomerNow, which takes no parameters, just like the old one.
-     *  It only has one line, it calls the old one with a parameter.
-     *  
-     *  
-     *  
-     *  public void inviteCustomerNew() {
-     *  
-     *    inviteCustomerOld(pickedCustomer);
-     *  }
-     *  
-     *  public void inviteCustomerOld(pickedCustomer) {
-     *  
-     *    all the old code
-     *  
-     *  }
-     *  
-     *  
-     *  Now, I can write a new function, which looks through the service list,
-     *  selects a customer, sets it to be pickedCustomer, and calls the function.
-     * 
-     */
 
     @Command
     public void inviteCustomerNow() {
@@ -1474,7 +1440,7 @@ public class Form {
 
         //  You are starting a new transaction.
         else {
-            //QLog.l().logQUser().debug("    -->  Customer of channel index is null");
+            // QLog.l().logQUser().debug("    -->  Customer of channel index is null");
 
             //  If no customer, set default quick txn to be false.            
             if (QuickTxn != null) {
@@ -1489,14 +1455,14 @@ public class Form {
             //        .debug("    --> Checkbox is: " + (isQuick ? "Checked" : "Not checked"));
         }
         else {
-            //QLog.l().logQUser().debug("    --> Bad news!  Could not find QuickTxn checkbox.");
+            //  QLog.l().logQUser().debug("    --> Bad news!  Could not find QuickTxn checkbox.");
         }
 
         addTicketDailogWindow.setVisible(true);
         addTicketDailogWindow.doModal();
 
         //  Debugging.
-        //QLog.l().logQUser().debug("==> End: addTicketScreen");
+        // QLog.l().logQUser().debug("==> End: addTicketScreen");
     }
 
     public void refreshAddWindow() {
@@ -1934,7 +1900,7 @@ public class Form {
     public void closeAddToQueueDialog() {
 
         //  Debug
-        QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
+        //QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
 
         //  Debug
         String testText = ((Textbox) addTicketDailogWindow
@@ -1952,11 +1918,11 @@ public class Form {
                     Boolean.FALSE);
 
             boolean Quick = params.custQtxn;
-            QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
+            //QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
 
-            QLog.l().logQUser().debug("addToQueue");
+            //QLog.l().logQUser().debug("addToQueue");
             this.addToQueue(params);
-            QLog.l().logQUser().debug("Done");
+            //QLog.l().logQUser().debug("Done");
 
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
@@ -1969,7 +1935,7 @@ public class Form {
         }
 
         //  Debug
-        QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
+        //QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
     }
 
     public void Sort() {
