@@ -47,15 +47,18 @@
         <hbox>
           <vbox>
             <textbox id="typeservices" sclass="bdd-input-search" focus="true" onCreate="self.focus()"
-                     onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px"
-                     tabindex="2"/>
+                     onChange="@command('doSearch')" instant="true" width="230px" tabindex="2" />
+                     <!--
+                     value="@bind(fmodel.filter)"/>
+                     -->
           </vbox>
           <vbox>
             <combobox sclass="bdd-input-category" id="cboFmCompress"
                       onChanging="@command('changingCategory', v=event.value)"
-                      onChange="@command('changeCategory')"  selectedItem="@bind(fmodel.pickedMainService)"
+                      onChange="@command('changeCategory')"
                       style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2"
-                      model="@load(fmodel.categories)">
+                      model="@load(fmodel.categories)"
+                      selectedItem="@bind(fmodel.pickedMainService)" >
               <comboitem label="@load(each)"/>
             </combobox>
           </vbox>

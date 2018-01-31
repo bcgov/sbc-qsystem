@@ -1679,6 +1679,11 @@ public class Form {
 
         //  CM:  If you start typing, clear the selected service.
         //EnableService(false);
+
+        //  CM:  Get the new filter string.
+        filter = ((Textbox) addTicketDailogWindow.getFellow("typeservices")).getText();
+
+        //  CM:  Reset the selected service. 
         pickedRedirectServ = null;
 
         listServices.clear();
