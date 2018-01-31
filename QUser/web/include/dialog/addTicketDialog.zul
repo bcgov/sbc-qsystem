@@ -17,8 +17,10 @@
         <!--  NOTE!!  Below is the layout for reception offices -->
         <vlayout visible="@load(fmodel.officeType eq 'reception')">
           <label value="${c:l('comments')}"/>
-          <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2"
+          <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2" />
+                   <!--
                    value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+                   -->
 
           <label value="Channels:"/>
           <div width="30%">
@@ -104,8 +106,10 @@
           </div>
           <div style="margin:10px 10px 10px 5px;"></div>
           <label value="${c:l('comments')}"/>
-          <textbox id="general_ticket_comments" rows="5" hflex="1" tabindex="2"
+          <textbox id="general_ticket_comments" rows="5" hflex="1" tabindex="2" />
+                   <!--
                    value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+                   -->
         </vlayout>
         
         <!--  This layout is for both types of offices -->
