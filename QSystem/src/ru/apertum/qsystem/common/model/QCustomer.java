@@ -351,10 +351,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 //                + getNumber() + "\"");
                 break;
             case STATE_REDIRECT:
-                QLog.l().logger()
-                        .debug("Статус: Кастомера редиректили с номером \"" + getPrefix()
-                                + getNumber()
-                                + "\"");
+                //                QLog.l().logger()
+                //                        .debug("Статус: Кастомера редиректили с номером \"" + getPrefix()
+                //                                + getNumber()
+                //                                + "\"");
                 getUser().getPlanService(getService())
                         .inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе
@@ -369,14 +369,14 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                         .upWait(new Date().getTime() - getStandTime().getTime());
                 break;
             case STATE_WORK_SECONDARY:
-                QLog.l().logger().debug(
-                        "Статус: Далее по цепочки начали работать с кастомером с номером \""
-                                + getPrefix()
-                                + getNumber() + "\"");
+                //                QLog.l().logger().debug(
+                //                        "Статус: Далее по цепочки начали работать с кастомером с номером \""
+                //                                + getPrefix()
+                //                                + getNumber() + "\"");
                 break;
             case STATE_BACK:
-                QLog.l().logger().debug("Статус: Кастомер с номером \"" + getPrefix() + getNumber()
-                        + "\" вернут в преднюю услугу");
+                //                QLog.l().logger().debug("Статус: Кастомер с номером \"" + getPrefix() + getNumber()
+                //                        + "\" вернут в преднюю услугу");
                 break;
             case STATE_FINISH:
                 //QLog.l().logger()
@@ -387,24 +387,24 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 // сохраним кастомера в базе :: Keep the customizer in the database
                 break;
             case STATE_POSTPONED:
-                QLog.l().logger().debug("Кастомер с номером \"" + getPrefix() + getNumber()
-                        + "\" идет ждать в список отложенных");
+                //                QLog.l().logger().debug("Кастомер с номером \"" + getPrefix() + getNumber()
+                //                        + "\" идет ждать в список отложенных");
                 getUser().getPlanService(getService())
                         .inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
                 break;
             case STATE_POSTPONED_REDIRECT:
-                QLog.l().logger().debug("Customer to postpone prefix \"" + getPrefix() + getNumber()
-                        + "\" идет ждать в список отложенных");
+                //                QLog.l().logger().debug("Customer to postpone prefix \"" + getPrefix() + getNumber()
+                //                        + "\" идет ждать в список отложенных");
                 startTime = standTime;
                 getUser().getPlanService(getService())
                         .inkWorked(new Date().getTime() - getStartTime().getTime());
                 // сохраним кастомера в базе :: Keep the customizer in the database
                 break;
             case STATE_INACCURATE_TIME:
-                QLog.l().logger()
-                        .debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber()
-                                + "\" закончили работать");
+                //                QLog.l().logger()
+                //                        .debug("Статус: С кастомером с номером \"" + getPrefix() + getNumber()
+                //                                + "\" закончили работать");
                 getUser().getPlanService(getService())
                         .inkWorked(new Date().getTime() - getStartTime().getTime());
                 break;
@@ -451,7 +451,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
             List<Integer> finishStates = Arrays.asList(0, 10, 13);
             if (finishStates.contains(getStateIn())) {
-                QLog.l().logQUser().info("Client is in finish state, clear comments...");
+                // QLog.l().logQUser().info("Client is in finish state, clear comments...");
                 setTempComments("");
             }
 
@@ -687,9 +687,12 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setUser(QUser user) {
         this.user = user;
-        QLog.l().logger().debug("Клиенту \"" + getPrefix() + getNumber() + (user == null
-                ? " юзера нету, еще он его не вызывал\""
-                : " опредилили юзера \"" + user.getName() + "\""));
+        String msg = "Клиенту \"" + getPrefix() + getNumber() + (user == null
+                ? " юзера нету, еще он его не вызывал\"" : " опредилили юзера \"" + user.getName()
+                        + "\"");
+        //        QLog.l().logger().debug("Клиенту \"" + getPrefix() + getNumber() + (user == null
+        //                ? " юзера нету, еще он его не вызывал\""
+        //                : " опредилили юзера \"" + user.getName() + "\""));
     }
 
     @Column(name = "service_prefix")
@@ -822,6 +825,8 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     }
 
     public void setTempComments(String tempComments) {
+        //        QLog.l().logger().debug(">>> Cust comments: Old=" + this.tempComments + "; New="
+        //                + tempComments);
         this.tempComments = tempComments;
         //        QLog.l().logQUser().debug("\n\nIN CUSTOMER Postponed!!:\n" + this.tempComments + "\n\n\n");
     }
