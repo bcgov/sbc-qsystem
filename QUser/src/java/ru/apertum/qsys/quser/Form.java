@@ -1590,7 +1590,7 @@ public class Form {
         List<QService> requiredServices = null;
 
         if (getPickedMainService() == null) {
-            QLog.l().logQUser().debug("null category was selected");
+            //QLog.l().logQUser().debug("null category was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1603,11 +1603,11 @@ public class Form {
                                                                     .toLowerCase()))
                                     && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
-            QLog.l().logQUser().debug("The getvalue() returns : \n");
+            //QLog.l().logQUser().debug("The getvalue() returns :");
 
         }
         else {
-            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            //QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1641,7 +1641,7 @@ public class Form {
         List<QService> requiredServices = null;
 
         if (getPickedMainService() == null) {
-            QLog.l().logQUser().debug("null category was selected");
+            //QLog.l().logQUser().debug("null category was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1655,7 +1655,7 @@ public class Form {
                     .collect(Collectors.toList());
         }
         else {
-            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            //QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
