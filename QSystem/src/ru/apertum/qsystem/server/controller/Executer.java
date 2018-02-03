@@ -141,6 +141,66 @@ public final class Executer {
      *
      * @return
      */
+
+    //  CM:  This variable sets the states in which a customer can be called.
+    //  CM:  Used to prevent two CSRs calling the same customer at the same time.
+    private static List<Integer> validInviteStates = Arrays.asList(1, 2, 3, 11);
+
+    //  CM:  This method checks to ensure a customer is in a state where they can be called.
+    //  CM:  Used to prevent two CSRs calling the same customer at the same time.
+    public boolean CustomerCanBeCalled(QCustomer potentialCustomer, Object[] msg,
+            String calledFrom) {
+
+        //  Assume the customer cannot be called.
+        boolean okToCall = false;
+        String custName = "";
+
+        //  CM:  Debug.
+        if (potentialCustomer == null) {
+            //QLog.l().logger().debug("==> Start: CanCall - Potential Customer is null");
+            custName = "Does not exist";
+        }
+
+        //  If potential customer not null, it's possible they could be called.
+        if (potentialCustomer != null) {
+
+            //  Determine whether the customer is in a valid state to be called.
+            okToCall = (validInviteStates.contains(potentialCustomer.getStateIn()));
+
+            //  Debug.
+            QLog.l().logger().debug("    --> From: " + calledFrom + "; State: "
+                    + potentialCustomer.getStateIn()
+                    + "; CallOK: " + okToCall);
+            String pcOffice = (potentialCustomer.getOffice() == null ? "Null" : potentialCustomer
+                    .getOffice().getName());
+            String pcService = (potentialCustomer.getService() == null ? "Null" : potentialCustomer
+                    .getService().getName());
+            custName = potentialCustomer.getName();
+            String pcCSR = (potentialCustomer.getUser() == null ? "Unknown" : potentialCustomer
+                    .getUser().getName());
+
+            QLog.l().logger().debug("    --> O: " + pcOffice + "; CSR: " + pcCSR + "; Cust: "
+                    + custName
+                    + "; Svc: "
+                    + pcService);
+
+            //  CM:  Set a return message.
+            if (okToCall) {
+                msg[0] = "OK to call customer " + custName;
+            }
+            else {
+                msg[0] = "Cannot call customer " + custName + ". They are likely being served by "
+                        + pcCSR;
+            }
+        }
+
+        //  CM:  Debug.
+        //QLog.l().logger().debug("==> End: CanCall");
+
+        //  Return the result.
+        return okToCall;
+    }
+
     final Task addCustomerTaskComplex = new Task(Uses.TASK_STAND_COMPLEX) {
 
         @Override
@@ -868,7 +928,7 @@ public final class Executer {
         @Override
         synchronized public RpcInviteCustomer process(CmdParams cmdParams, String ipAdress,
             byte[] IP) {
-            //QLog.l().logQUser().debug("==> Start: Task(InvNextCust).process()");
+            QLog.l().logQUser().debug("==> Start: Task(InvNextCust).process()");
             super.process(cmdParams, ipAdress, IP);
             // Определить из какой очереди надо выбрать кастомера.
             // Пока без учета коэфициента.
@@ -879,6 +939,7 @@ public final class Executer {
 
             //  CM:  Get the user that invited the customer.
             final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
+            QLog.l().logQUser().debug("--> CSR: " + user.getName());
 
             //  CM:  Display info about CSR.
             //QLog.l().logQUser().debug("    --> CSR: " + user.getName() + "; Quick: " + user.getQuickTxn());
@@ -891,13 +952,13 @@ public final class Executer {
             // есть ли у юзера вызванный кастомер? Тогда поторный вызов
             // Does the user have a called customizer? Then the puerile challenge
             if (isRecall) {
-                QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER isRecall");
+                //QLog.l().logQUser().debug("TASK_INVITE_NEXT_CUSTOMER isRecall");
                 user.getCustomer().upRecallCount(); // еще один повторный вызов
-                QLog.l().logger().debug(
-                    "Повторный вызов " + user.getCustomer().getRecallCount() + " кастомера №" + user
-                        .getCustomer().getPrefix() + user.getCustomer().getNumber()
-                        + " пользователем "
-                        + cmdParams.userId);
+                //                QLog.l().logger().debug(
+                //                    "Повторный вызов " + user.getCustomer().getRecallCount() + " кастомера №" + user
+                //                        .getCustomer().getPrefix() + user.getCustomer().getNumber()
+                //                        + " пользователем "
+                //                        + cmdParams.userId);
 
                 if (ServerProps.getInstance().getProps().getLimitRecall() != 0
                     && user.getCustomer().getRecallCount() > ServerProps.getInstance().getProps()
@@ -1113,6 +1174,12 @@ public final class Executer {
                     //  If no next customer in line, return.
                     if (customer == null) {
                         //QLog.l().logQUser().debug("Customer null");
+                        return new RpcInviteCustomer(null);
+                    }
+
+                    //  CM:  If the customer is already being served, return.
+                    Object[] msg = { "" };
+                    if (!CustomerCanBeCalled(customer, msg, "Invite")) {
                         return new RpcInviteCustomer(null);
                     }
 
@@ -1348,7 +1415,7 @@ public final class Executer {
     final Task customerReturnQueueTask = new Task(Uses.TASK_CUSTOMER_RETURN_QUEUE) {
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("customerReturnQueueTask");
+            //QLog.l().logQUser().debug("customerReturnQueueTask");
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит ::: Here he is doing it all
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -1408,7 +1475,7 @@ public final class Executer {
 
                 // Должно высветитьсяна основном табло в таблице ближайших
                 // Must be highlighted on the main scoreboard in the nearest table
-                QLog.l().logQUser().debug("customerReturnQueueTask MainBoard standInf");
+                //QLog.l().logQUser().debug("customerReturnQueueTask MainBoard standInf");
                 MainBoard.getInstance().customerStandIn(customer);
             } catch (Throwable t) {
                 QLog.l().logger().error("return to queue error", t);
@@ -1423,7 +1490,7 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("customerToPostponeTask");
+            //QLog.l().logQUser().debug("customerToPostponeTask");
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит ::: Here he is doing it all
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -1473,7 +1540,7 @@ public final class Executer {
                 Uses.sendUDPBroadcast(Uses.TASK_REFRESH_POSTPONED_POOL,
                     ServerProps.getInstance().getProps().getClientPort());
                 //рассылаем широковещетельно по UDP на определенный порт. Должно высветитьсяна основном табло
-                QLog.l().logQUser().debug("customerToPostponeTask MainBoard kill");
+                //QLog.l().logQUser().debug("customerToPostponeTask MainBoard kill");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Throwable t) {
                 QLog.l().logger().error("Загнулось под конец.", t);
