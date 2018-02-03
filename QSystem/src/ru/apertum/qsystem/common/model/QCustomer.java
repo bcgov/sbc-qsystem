@@ -632,7 +632,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             }
         }
         if (resultCmp == 0) {
-            QLog.l().logger().warn("Клиенты не могут быть равны.");
+            //QLog.l().logger().warn("Клиенты не могут быть равны.");
             resultCmp = -1;
         }
         return resultCmp;
