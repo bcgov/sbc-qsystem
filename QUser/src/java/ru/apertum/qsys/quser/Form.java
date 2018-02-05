@@ -78,9 +78,8 @@ import ru.apertum.qsystem.server.model.results.QResultList;
  */
 public class Form {
 
-    private static QCustomer pickedPostponed;
-    private final LinkedList<QCustomer> postponList = QPostponedList.getInstance()
-            .getPostponedCustomers();
+    private QCustomer pickedPostponed;
+    private final LinkedList<QCustomer> postponList = QPostponedList.getInstance().getPostponedCustomers();
     private final LinkedList<QResult> resultList = QResultList.getInstance().getItems();
     // ********************************************************************************************************************************************
     // ** Перенаправление Redirection
@@ -668,7 +667,6 @@ public class Form {
         //  User wants to enable service.
         //QLog.l().logger().debug("==> EnableService(" + enable + ")");
 
-        //        // xxxx
         //        Button myAdd = (Button) addTicketDailogWindow.getFellow("addAndServeBtn");
         //        if (myAdd != null) {
         //            //QLog.l().logger().debug("    --> Begin button found!!!");
@@ -679,7 +677,6 @@ public class Form {
         //        }
     }
 
-    //    //  xxx  Delete if not needed.
     //    @NotifyChange(value = { "pickedRedirectServ" })
     //    public boolean isNoServiceSelected() {
     //
@@ -697,7 +694,6 @@ public class Form {
     //
     @Command
     public void serviceSelected() {
-        //xxx
         //QLog.l().logQUser().debug("==> Start: logQUser for serviceSelected");
         //QLog.l().logger().debug("--> Start: logger for serviceSelected");
         //EnableService(true);
@@ -866,8 +862,8 @@ public class Form {
 
     @Command
     public void postpone() {
-        QLog.l().logQUser()
-                .debug("Postpone by " + user.getName() + " customer " + customer.getFullNumber());
+        //        QLog.l().logQUser()
+        //                .debug("Postpone by " + user.getName() + " customer " + customer.getFullNumber());
         postponeCustomerDialog.setVisible(true);
         postponeCustomerDialog.doModal();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -1092,8 +1088,6 @@ public class Form {
     public void inviteCustomerNow() {
         // 1. Postpone the customer
         // 2. Pick the customer from Postponed list
-        Integer[] validStates = new Integer[] {1,2,3};
-        List<Integer> validInviteStates = Arrays.asList(validStates);
 
         if (pickedCustomer == null || keys_current == KEYS_INVITED || keys_current == KEYS_STARTED
                 || keys_current == KEYS_OFF) {
@@ -1102,10 +1096,14 @@ public class Form {
 
         final CmdParams params = new CmdParams();
 
-        //QLog.l().logQUser().debug(pickedCustomer.getId());
 
-        if (!validInviteStates.contains(pickedCustomer.getStateIn())) {
-            Messagebox.show("Unable to invite selected customer. This usually means another user has already invited this customer", "Error inviting customer", Messagebox.OK, Messagebox.INFORMATION);
+        //  New "customer already picked" test.
+        Object[] msg = { "" };
+        if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedCustomer, msg,
+                "WaitQ")) {
+            Messagebox.show(msg[0].toString(), "Error picking customer from wait queue",
+                    Messagebox.OK,
+                Messagebox.INFORMATION);
             return;
         }
 
@@ -1340,19 +1338,46 @@ public class Form {
 
     @Command
     public void clickListPostponedInvite() {
+
+        //  CM:  Ensure pickedPostponed isn't null.
         if (user.getPlan().isEmpty() || pickedPostponed == null) {
             return;
         }
+
+        //  CM:  Make sure the customer picked hasn't already been picked by someone else.
+        Object[] msg = { "" };
+        if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg,
+                "HoldQ")) {
+            Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
+                    Messagebox.OK,
+                    Messagebox.INFORMATION);
+            return;
+        }
+
         Messagebox.show("Do you want to invite citizen " + pickedPostponed.getFullNumber() + " ?",
                 l("inviting_client"), new Messagebox.Button[] {
                         Messagebox.Button.YES, Messagebox.Button.NO },
                 Messagebox.QUESTION,
                 (Messagebox.ClickEvent t) -> {
-                    QLog.l().logQUser().debug(
-                            "Invite postponed by " + user.getName() + " citizen " + pickedPostponed
-                                    .getFullNumber());
-                    if (t.getButton() != null
-                            && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
+
+                    if ((user != null) && (pickedPostponed != null)) {
+                        //                    QLog.l().logQUser().debug(
+                        //                            "Invite postponed by " + user.getName() + " citizen " + pickedPostponed
+                        //                                    .getFullNumber());
+                    }
+
+                    //  CM:  Only proceed if you can still call the customer.
+                    if ((t.getButton() != null)
+                            && (t.getButton().compareTo(Messagebox.Button.YES) == 0)
+                            && ((boolean) Executer.getInstance().CustomerCanBeCalled(
+                                    pickedPostponed, msg, "HoldQ(2)"))) {
+
+                        //  CM:  Display current customer.
+                        //                        QLog.l().logQUser().debug("--> In Invite(Yes) - Picked customer: "
+                        //                                + pickedPostponed.getName() + "; StateStr: " + pickedPostponed
+                        //                                        .currentStateIn() + "; StateInt: " + pickedPostponed
+                        //                                                .getStateIn());
+
                         final CmdParams params = new CmdParams();
                         // @param userId id юзера который вызывает The user who causes
                         // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
@@ -1371,13 +1396,35 @@ public class Form {
 
                         this.addServeScreen();
                         this.begin();
-
-                        pickedPostponed = null;
                     }
                     else {
-                        pickedPostponed = null;
+
+                        //  CM:  Display current customer.
+                        //                        QLog.l().logQUser().debug("--> In Invite(Yes) - Picked customer: "
+                        //                                + pickedPostponed.getName() + "; StateStr: " + pickedPostponed
+                        //                                        .currentStateIn() + "; StateInt: " + pickedPostponed
+                        //                                                .getStateIn());
+
+                        //  CM:  Another CSR served the customer.
+                        Messagebox.show(
+                                msg[0].toString(),
+                                "Error picking customer from hold queue",
+                                Messagebox.OK,
+                                Messagebox.INFORMATION);
                     }
+
+                    //  CM:  Whether served or not, set customer to be null.
+                    pickedPostponed = null;
                 });
+
+        //  CM:  See what pickedPostponed is.
+        if (pickedPostponed == null) {
+            //QLog.l().logQUser().debug("--> End pick postponed: Picked customer is null");
+        }
+        else {
+            //            QLog.l().logQUser().debug("--> End pick postponed: Picked customer: " + pickedPostponed
+            //                    .getName());
+        }
     }
 
     public TreeServices getTreeServs() {
@@ -1590,7 +1637,7 @@ public class Form {
         List<QService> requiredServices = null;
 
         if (getPickedMainService() == null) {
-            QLog.l().logQUser().debug("null category was selected");
+            //QLog.l().logQUser().debug("null category was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1603,11 +1650,11 @@ public class Form {
                                                                     .toLowerCase()))
                                     && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
-            QLog.l().logQUser().debug("The getvalue() returns : \n");
+            //QLog.l().logQUser().debug("The getvalue() returns :");
 
         }
         else {
-            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            //QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1641,7 +1688,7 @@ public class Form {
         List<QService> requiredServices = null;
 
         if (getPickedMainService() == null) {
-            QLog.l().logQUser().debug("null category was selected");
+            //QLog.l().logQUser().debug("null category was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1655,7 +1702,7 @@ public class Form {
                     .collect(Collectors.toList());
         }
         else {
-            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            //QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -2112,14 +2159,14 @@ public class Form {
     public void closeAddAndServeDialog() {
 
         //  Debug
-        QLog.l().logQUser().debug("==> Start: closeAddAndServeDialog");
+        //QLog.l().logQUser().debug("==> Start: closeAddAndServeDialog");
 
         if (pickedRedirectServ != null) {
 
             //  CM:  Debug.
             //QCustomer cust = pickedRedirectServ.getCustomer();
-            QLog.l().logQUser().debug("    --> pickedRedirectServ not null, Name: "
-                    + pickedRedirectServ.getName());
+            //            QLog.l().logQUser().debug("    --> pickedRedirectServ not null, Name: "
+            //                    + pickedRedirectServ.getName());
             //QLog.l().logQUser().debug("    --> Customer: " + cust.getFullNumber());
 
             if (!pickedRedirectServ.isLeaf()) {
@@ -2151,11 +2198,11 @@ public class Form {
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
         else {
-            QLog.l().logQUser().debug("    --> pickedRedirectServ is null");
+            //QLog.l().logQUser().debug("    --> pickedRedirectServ is null");
         }
 
         //  Debug
-        QLog.l().logQUser().debug("==> End: closeAddAndServeDialog");
+        //QLog.l().logQUser().debug("==> End: closeAddAndServeDialog");
     }
 
     @Command
