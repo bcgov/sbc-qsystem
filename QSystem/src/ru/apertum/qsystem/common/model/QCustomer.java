@@ -631,10 +631,13 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                 resultCmp = 1;
             }
         }
+
         if (resultCmp == 0) {
-            QLog.l().logger().warn("Клиенты не могут быть равны.");
+            //QLog.l().logger().warn("Customers cannot be equal!!  This should never happen.");
+            //QLog.l().logger().debug("--> Customer priority/time equal.  Identical customer?");
             resultCmp = -1;
         }
+
         return resultCmp;
     }
 
