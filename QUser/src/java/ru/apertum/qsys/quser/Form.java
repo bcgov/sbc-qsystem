@@ -79,8 +79,7 @@ import ru.apertum.qsystem.server.model.results.QResultList;
 public class Form {
 
     private QCustomer pickedPostponed;
-    private final LinkedList<QCustomer> postponList = QPostponedList.getInstance()
-            .getPostponedCustomers();
+    private final LinkedList<QCustomer> postponList = QPostponedList.getInstance().getPostponedCustomers();
     private final LinkedList<QResult> resultList = QResultList.getInstance().getItems();
     // ********************************************************************************************************************************************
     // ** Перенаправление Redirection

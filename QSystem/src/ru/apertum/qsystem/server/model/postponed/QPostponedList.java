@@ -115,6 +115,7 @@ public class QPostponedList extends DefaultListModel {
 
         for (QCustomer cust : dbCustomers_postponed) {
             QLog.l().logQUser().debug("addCustomer: " + cust);
+            cust.setAddedBy(cust.getUser().getName());
             addElement(cust);
         }
 
@@ -126,6 +127,7 @@ public class QPostponedList extends DefaultListModel {
 
         for (QCustomer cust : dbCustomers_redirect) {
             QLog.l().logQUser().debug("addCustomer: " + cust);
+            cust.setAddedBy(cust.getUser().getName());
             addElement(cust);
         }
         return this;
