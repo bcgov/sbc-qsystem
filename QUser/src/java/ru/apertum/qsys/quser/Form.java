@@ -668,7 +668,6 @@ public class Form {
         //  User wants to enable service.
         //QLog.l().logger().debug("==> EnableService(" + enable + ")");
 
-        //        // xxxx
         //        Button myAdd = (Button) addTicketDailogWindow.getFellow("addAndServeBtn");
         //        if (myAdd != null) {
         //            //QLog.l().logger().debug("    --> Begin button found!!!");
@@ -679,7 +678,6 @@ public class Form {
         //        }
     }
 
-    //    //  xxx  Delete if not needed.
     //    @NotifyChange(value = { "pickedRedirectServ" })
     //    public boolean isNoServiceSelected() {
     //
@@ -697,7 +695,6 @@ public class Form {
     //
     @Command
     public void serviceSelected() {
-        //xxx
         //QLog.l().logQUser().debug("==> Start: logQUser for serviceSelected");
         //QLog.l().logger().debug("--> Start: logger for serviceSelected");
         //EnableService(true);
