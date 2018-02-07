@@ -761,6 +761,13 @@ public class Form {
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
+        //  CM:  Set user's customer to be null.  Avoid recall errors when
+        //       two CSRs click invite at same time, AFTER returning customer to queue.
+//        QUser tempUser = user.getUser();
+//        Long myId = user.getUser().getId();
+//        Long myId2 = tempUser.getId();
+//        tempUser.setCustomer(null);
+        
         // QLog.l().logQUser().debug("\n\n\n\nBEFORE INTO EXCECUTE \n\n\n\n\n");
         final RpcInviteCustomer result = (RpcInviteCustomer) Executer.getInstance().getTasks()
                 .get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
