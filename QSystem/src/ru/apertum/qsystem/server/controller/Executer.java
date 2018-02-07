@@ -1783,7 +1783,9 @@ public final class Executer {
 
         //  CM:  Initialize variables.
         int ReturnCode = -1;
+        int sqlErrorNo = -2;
         String ErrorMsg = "You should not see this message.";
+        String ProcMsg = "You should not see this either.";
 
         //  CM:  Calling John's MySql stored procedure.
         try {
@@ -1791,7 +1793,7 @@ public final class Executer {
             String MyUser = System.getenv("MYSQL_USER");
             String MyPw = System.getenv("MYSQL_PASSWORD");
             String URL = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + MyDB + "?noAccessToProcedureBodies=true";
-            String Sql = "{call load_client_visit(?, ?)}";
+            String Sql = "{call load_client_visit(?, ?, ?, ?)}";
 
             //  CM:  See if you're getting the right info.
             //QLog.l().logQUser().debug("    --> Service: " + URL + "; DB: " + MyDB + "; User: " + MyUser + "; Pw: " + MyPw);
@@ -1801,7 +1803,11 @@ public final class Executer {
             CallableStatement cStmt = conn.prepareCall(Sql);
             cStmt.setLong(1, custId);
             cStmt.setInt(2, ReturnCode);
+            cStmt.setInt(3, sqlErrorNo);
+            cStmt.setString(4, ProcMsg);
             cStmt.registerOutParameter(2, Types.INTEGER);
+            cStmt.registerOutParameter(3, Types.INTEGER);
+            cStmt.registerOutParameter(4, Types.VARCHAR);
             int RetBefore = ReturnCode;
 
             //  The actual call statement.
@@ -1837,6 +1843,8 @@ public final class Executer {
 
         //  Debug.
         //QLog.l().logQUser().debug("==> End: CallStoredProcDone(" + custId + ", " + from + ")");
+        QLog.l().logQUser().debug("==> StoreProc CustId: " + custId.toString() + "; RC: "
+                + ReturnCode + "; SqlC: " + sqlErrorNo + "; RM: " + ProcMsg);
     }
     /**
      * Переадресовать клиента к другой услуге. Forward the client to another service.
