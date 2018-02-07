@@ -285,16 +285,16 @@ Declare v_finished_visit boolean default False;
 Declare v_finished_transaction boolean default False;
 
 Declare get_client cursor for
- select distinct client_id from qsystem.statistic a
+ select distinct client_id from statistic a
    where client_id = p_client_id
-   and client_id in (select client_id from qsystem.statistic
+   and client_id in (select client_id from statistic
                       where
                       client_id = a.client_id and
                       state_in in (0,10,13))
    order by id;
 
 Declare get_client_service cursor for
- select distinct client_id, service_id from qsystem.statistic a
+ select distinct client_id, service_id from statistic a
    where client_id = v_client_id
    order by client_id;
 
@@ -310,6 +310,8 @@ Begin
 End;
 
 set p_return_code = 0;
+set p_mysql_errno = 0;
+set p_mysql_errtext = ' ';
 set v_finished_visit = False;
 open get_client;
 Begin
