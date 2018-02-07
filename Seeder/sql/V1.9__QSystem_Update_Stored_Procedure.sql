@@ -150,11 +150,6 @@ Declare v_wait_interval int(5) default 30;
 Declare v_time_interval int(5) default 5;
 Declare v_found_ind boolean default TRUE;
 
-DECLARE CONTINUE HANDLER for NOT FOUND
-Begin
-  set v_found_ind = false;
-End;
-
 Begin
 set v_reception_id = null;
 set v_reception_name = null;
@@ -169,6 +164,11 @@ select user_id, b.name
   and get_office_type(a.office_id)='R'
   and a.id = (select min(id) from statistic where client_id = a.client_id)
   and b.id = a.user_id;
+End;
+
+Begin
+DECLARE CONTINUE HANDLER for NOT FOUND
+  set v_found_ind = false;
 
 select user_id, user_start_time, channels, service_id, get_program_name(service_id), trim(b.name), get_service_quantity(client_id, service_id),
 get_service_quantity(client_id, null), b.prent_id, client_welcome_time, c.name, get_service_transaction(service_id)
