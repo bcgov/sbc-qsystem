@@ -147,7 +147,7 @@ public final class Executer {
 
     //  CM:  This variable sets the states in which a customer can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
-    private static List<Integer> validInviteStates = Arrays.asList(1, 2, 3, 11);
+    private static List<Integer> validInviteStates = Arrays.asList(1, 2, 3, 6, 11);
 
     //  CM:  This method checks to ensure a customer is in a state where they can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
