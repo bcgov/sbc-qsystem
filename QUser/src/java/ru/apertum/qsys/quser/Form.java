@@ -73,6 +73,15 @@ import ru.apertum.qsystem.server.model.postponed.QPostponedList;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
 
+//  CM:  To read offices.
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
+import ru.apertum.qsystem.server.Spring;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Evgeniy Egorov
  */
@@ -112,6 +121,8 @@ public class Form {
     public String officeType = "non-reception";
     public LinkedList<QUser> userList = new LinkedList<>();
     public LinkedList<QUser> userListbyOffice = new LinkedList<>();
+    private static HashMap<Long, Long> inviteTimes = new HashMap<Long, Long>();
+
     // Main service page
     @Wire("#incClientDashboard #client_north")
     North clientDashboardNorth;
@@ -237,12 +248,38 @@ public class Form {
 
     @Init
     public void init() {
-        //QLog.l().logQUser().debug("Loding page: init");
+        QLog.l().logQUser().debug("==> Loading page: init");
         final Session sess = Sessions.getCurrent();
-
         final User userL = (User) sess.getAttribute("userForQUser");
         setKeyRegimForUser(userL);
         setCFMSAttributes();
+
+        //QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
+        
+        //  CM:  If invite times not set yet, initialize them.
+        if (inviteTimes.size() == 0) {
+
+            QLog.l().logQUser().debug("    --> Invite times not loaded yet.  Loading now ...");
+            
+            //  Read a list of all offices.
+            List<QOffice> offices = Spring.getInstance().getHt().findByCriteria(
+                    DetachedCriteria.forClass(QOffice.class)
+                        .add(Property.forName("deleted").isNull())
+                        .setFetchMode("services", FetchMode.EAGER)
+                        .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))
+                );
+
+            //  Create last invite time for each office.
+            for (QOffice office : offices) {
+                inviteTimes.put(office.getId(), System.currentTimeMillis());
+            }
+
+//            for (HashMap.Entry<Long, Long> inviteInfo : inviteTimes.entrySet()) {
+//                QLog.l().logQUser().debug("    --> Office: " + inviteInfo.getKey() + "; Time: " + inviteInfo.getValue());
+//            }
+        }
+        
+        QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
     }
 
     /**
@@ -756,11 +793,41 @@ public class Form {
     @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
     //@NotifyChange(value = { "btnsDisabled", "avaitColumn" })
     public void invite() {
+        
+        //  CM:  See if small time has elapsed since last CSR in this office clicked invite.
+        //  CM:  Kludge to prevent two CSRs calling the same citizen.
+        Long officeId = user.getUser().getOffice().getId();
+        Long lastTime = inviteTimes.get(officeId);
+        Long currentTime = System.currentTimeMillis();
 
+        //QLog.l().logQUser().debug("==> Invite: Off: " + officeId + "; Curr: " + currentTime + "; Last: " + lastTime);
+        
+        //  CM:  If less than 1 second since last invite in this office, wait.
+        if ((currentTime - lastTime) < 1000) {
+            QLog.l().logQUser().debug("    --> Have to wait ...");
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            }
+            catch(InterruptedException ex) {
+                QLog.l().logQUser().debug("    --> Waiting interrupted.");
+            }
+            //QLog.l().logQUser().debug("    --> OK, good to go.");
+        }
+        
+        //  CM:  Update the time of the last invite for this office.
+        inviteTimes.put(officeId, currentTime);
+        
         //QLog.l().logQUser().debug("==> Start: invite - Invite by " + user.getName());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
+        //  CM:  Set user's customer to be null.  Avoid recall errors when
+        //       two CSRs click invite at same time, AFTER returning customer to queue.
+//        QUser tempUser = user.getUser();
+//        Long myId = user.getUser().getId();
+//        Long myId2 = tempUser.getId();
+//        tempUser.setCustomer(null);
+        
         // QLog.l().logQUser().debug("\n\n\n\nBEFORE INTO EXCECUTE \n\n\n\n\n");
         final RpcInviteCustomer result = (RpcInviteCustomer) Executer.getInstance().getTasks()
                 .get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
