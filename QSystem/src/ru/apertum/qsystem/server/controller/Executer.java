@@ -147,7 +147,7 @@ public final class Executer {
 
     //  CM:  This variable sets the states in which a customer can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
-    private static List<Integer> validInviteStates = Arrays.asList(1, 2, 3, 11);
+    private static List<Integer> validInviteStates = Arrays.asList(1, 2, 3, 6, 11);
 
     //  CM:  This method checks to ensure a customer is in a state where they can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
@@ -171,21 +171,21 @@ public final class Executer {
             okToCall = (validInviteStates.contains(potentialCustomer.getStateIn()));
 
             //  Debug.
-            //            QLog.l().logger().debug("    --> From: " + calledFrom + "; State: "
-            //                    + potentialCustomer.getStateIn()
-            //                    + "; CallOK: " + okToCall);
-            //            String pcOffice = (potentialCustomer.getOffice() == null ? "Null" : potentialCustomer
-            //                    .getOffice().getName());
-            //            String pcService = (potentialCustomer.getService() == null ? "Null" : potentialCustomer
-            //                    .getService().getName());
+            QLog.l().logger().debug("    --> From: " + calledFrom + "; State: "
+                    + potentialCustomer.getStateIn()
+                    + "; CallOK: " + okToCall);
+            String pcOffice = (potentialCustomer.getOffice() == null ? "Null" : potentialCustomer
+                    .getOffice().getName());
+            String pcService = (potentialCustomer.getService() == null ? "Null" : potentialCustomer
+                    .getService().getName());
             custName = potentialCustomer.getName();
             String pcCSR = (potentialCustomer.getUser() == null ? "Unknown" : potentialCustomer
                     .getUser().getName());
 
-            //            QLog.l().logger().debug("    --> O: " + pcOffice + "; CSR: " + pcCSR + "; Cust: "
-            //                    + custName
-            //                    + "; Svc: "
-            //                    + pcService);
+            QLog.l().logger().debug("    --> O: " + pcOffice + "; CSR: " + pcCSR + "; Cust: "
+                    + custName
+                    + "; Svc: "
+                    + pcService);
 
             //  CM:  Set a return message.
             if (okToCall) {
@@ -943,7 +943,8 @@ public final class Executer {
         @Override
         synchronized public RpcInviteCustomer process(CmdParams cmdParams, String ipAdress,
             byte[] IP) {
-            //            QLog.l().logQUser().debug("==> Start: Task(InvNextCust).process()");
+            //QLog.l().logQUser().debug("==> Start: Task(InvNextCust).process()");
+
             super.process(cmdParams, ipAdress, IP);
             // Определить из какой очереди надо выбрать кастомера.
             // Пока без учета коэфициента.
@@ -954,19 +955,29 @@ public final class Executer {
 
             //  CM:  Get the user that invited the customer.
             final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
-            //QLog.l().logQUser().debug("--> CSR: " + user.getName());
+            QLog.l().logQUser().debug("--> Ini: " + user.getName());
+            if (user.getCustomer() != null) {
+                QCustomer tempCust = user.getCustomer();
+                QLog.l().logger().debug("    --> Cust: " + tempCust.getName() + "; Svc: " + tempCust
+                        .getService().getName());
+
+                //                QLog.l().logQUser().debug("    --> CSR Id: " + user.getId()
+                //                        + "; Param CSR Id: " + cmdParams.userId);
+                //
+                //                QLog.l().logQUser().debug("    --> CSR CustId: " + user.getCustomer().getId()
+                //                        + "; Param CustId: " + cmdParams.customerId);
+                //
+                //                QLog.l().logQUser().debug("    --> Cust: " + user.getCustomer().getName()
+                //                        + "; Svc: " + user.getCustomer().getService().getName());
+            }
+            else {
+                QLog.l().logQUser().debug("    --> Customer is null");
+            }
 
             //  CM:  Display info about CSR.
             //QLog.l().logQUser().debug("    --> CSR: " + user.getName() + "; Quick: " + user.getQuickTxn());
 
             //QLog.l().logQUser().debug("    --> Checking if customer already served by another CSR");
-
-            if (user.getCustomer() != null) {
-                Object[] msg = { "" };
-                if (!CustomerCanBeCalled(user.getCustomer(), msg, "Invite")) {
-                    return new RpcInviteCustomer(null);
-                }
-            }
 
             //  CM: If user has a customer with state of invited, or invited secondary, a recall? 
             final boolean isRecall = user.getCustomer() != null && (
@@ -977,7 +988,9 @@ public final class Executer {
             // Does the user have a called customizer? Then the puerile challenge
             if (isRecall) {
 
-                QLog.l().logQUser().debug("    --> Is Recall");
+                QLog.l().logQUser().debug("    --> Is Recall: CSR: " + user.getName() + "; Cust: "
+                        + user.getCustomer().getName() + "; CustCSR: " + user.getCustomer()
+                                .getUser().getName());
                 user.getCustomer().upRecallCount(); // еще один повторный вызов
                 //                QLog.l().logger().debug(
                 //                    "Повторный вызов " + user.getCustomer().getRecallCount() + " кастомера №" + user
@@ -990,8 +1003,7 @@ public final class Executer {
                     .getLimitRecall()) {
                     QLog.l().logger().debug(
                             "Customer called too many times: " + user.getCustomer()
-                            .getPrefix() + user
-                                            .getCustomer().getNumber() + " CSR Id: "
+                                    .getPrefix() + user.getCustomer().getNumber() + " CSR Id: "
                                     + cmdParams.userId);
                     //Удалим по неявки :: Delete for no show
                     killCustomerTask.process(cmdParams, ipAdress, IP);
@@ -999,7 +1011,23 @@ public final class Executer {
                     // кастомер переходит в состояние в котором был в такое и переходит.
                     // The customizer goes into a state in which he was in this and goes.
 
-                    QLog.l().logQUser().debug("    --> Able to recall the customer");
+                    //  CM:  ONLY if the current CSR unequal to the serving CSR (serving CSR
+                    //       didn't double click Invite), ensure another CSR not serving
+                    //       the current customer.
+                    if (user.getName() != user.getCustomer().getUser().getName()) {
+                        Object[] msg = { "" };
+                        if (!CustomerCanBeCalled(user.getCustomer(), msg, "Invite")) {
+                            QLog.l().logQUser().debug(
+                                    "    --> Trying to recall, served by someone else");
+
+                            //  CM:  Reset current CSR's customer to be null.
+                            user.setCustomer(null);
+                            return new RpcInviteCustomer(null);
+                        }
+                    }
+
+                    QLog.l().logQUser().debug("    --> Recall: CSR: " + user.getName()
+                            + "; CustCSR: " + user.getCustomer().getUser().getName());
                     user.getCustomer().setState(user.getCustomer().getState());
 
                     // просигналим звуком
@@ -1205,10 +1233,16 @@ public final class Executer {
                     
                     //  Debug
                     if (custToServe == null) {
-                        //QLog.l().logQUser().debug("    --> QTxn method next customer: None, no customer in queue");
+                        QLog.l().logQUser().debug(
+                                "--> No customer found to serve (likely none in queue)");
                     }
                     else {
                         //QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
+                        //  By the time you get here, you should have the next customer in line, if there is one.
+                        customer = custToServe;
+                        QLog.l().logger().debug("--> Srv CSR: " + user.getName() + "; Cust: "
+                                + customer
+                                        .getName() + "; Svc: " + customer.getService().getName());
                     }
 
                     //  CM:  Set customer to be QTxn selection, not original selection.
@@ -1295,9 +1329,13 @@ public final class Executer {
             // ставим время вызова
             customer.setCallTime(new Date());
             // кастомер переходит в состояние "приглашенности"
-            customer.setState(
-                customer.getState() == CustomerState.STATE_WAIT ? CustomerState.STATE_INVITED
-                    : CustomerState.STATE_INVITED_SECONDARY);
+            CustomerState currentState = customer.getState();
+            CustomerState newState = currentState == CustomerState.STATE_WAIT
+                    ? CustomerState.STATE_INVITED : CustomerState.STATE_INVITED_SECONDARY;
+            //            customer.setState(
+            //                customer.getState() == CustomerState.STATE_WAIT ? CustomerState.STATE_INVITED
+            //                    : CustomerState.STATE_INVITED_SECONDARY);
+            customer.setState(newState);
             // set Customer Invite Time
             customer.setInviteTime(new Date());
 
@@ -1518,6 +1556,10 @@ public final class Executer {
             customer.setState(CustomerState.STATE_WAIT);
 
             try {
+
+                //  CM:  Do not persist last customer when returning customer to wait queue.
+                user.setCustomer(null);//бобик сдох но медалька осталось, отправляем в пулл
+                customer.setUser(null);
 //                user.setCustomer(null);//бобик сдох но медалька осталось, отправляем в пулл
 //                customer.setUser(null);
 //                QPostponedList.getInstance().addElement(customer);
