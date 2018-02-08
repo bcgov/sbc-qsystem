@@ -102,12 +102,19 @@ import org.apache.commons.configuration2.FileBasedConfiguration;
 import java.util.Properties;
 import java.util.Enumeration;
 import java.util.Iterator;
+
 //  CM:  For emailing
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
+
+//  CM:  For slack messages.
+import ru.apertum.qsystem.server.controller.SlackApi;
+import ru.apertum.qsystem.server.controller.SlackException;
+import ru.apertum.qsystem.server.controller.SlackMessage;
+
 //  CM:  Imports for MySQL stored procedure call using JDBC
 import java.sql.Connection;
 import java.sql.DriverManager;
