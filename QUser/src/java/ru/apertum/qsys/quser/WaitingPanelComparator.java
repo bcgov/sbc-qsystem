@@ -38,7 +38,7 @@ public class WaitingPanelComparator implements Comparator<Object>, Serializable 
         QCustomer customer2 = (QCustomer) o2;
         switch (type) {
             case 1: // Ticket Time
-                return customer1.standTimeinHHMMSS().compareTo(customer2.standTimeinHHMMSS()) * (asc
+                return customer1.getStandTime().compareTo(customer2.getStandTime()) * (asc
                     ? 1
                     : -1);
             case 2: // Ticket Number
