@@ -64,7 +64,7 @@
                             </listitem>
                         </template>
                     </listbox>
-                    <timer id="timer_service_list" delay="3000" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
+                    <timer id="timer_service_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
                 </panelchildren>
                 <!-- Это окно для выора приоритета -->
             </panel>

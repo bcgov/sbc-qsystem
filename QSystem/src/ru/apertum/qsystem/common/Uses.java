@@ -77,11 +77,11 @@ import ru.apertum.qsystem.common.exceptions.ServerException;
 import ru.apertum.qsystem.server.ServerProps;
 
 /**
- * @author Evgeniy Egorov Сдесь находятся константы и общеиспользуемые конструкции
+ * @author Evgeniy Egorov Ð¡Ð´ÐµÑ�ÑŒ Ð½Ð°Ñ…Ð¾Ð´Ñ�Ñ‚Ñ�Ñ� ÐºÐ¾Ð½Ñ�Ñ‚Ð°Ð½Ñ‚Ñ‹ Ð¸ Ð¾Ð±Ñ‰ÐµÐ¸Ñ�Ð¿Ð¾Ð»ÑŒÐ·ÑƒÐµÐ¼Ñ‹Ðµ ÐºÐ¾Ð½Ñ�Ñ‚Ñ€ÑƒÐºÑ†Ð¸Ð¸
  */
 public final class Uses {
 
-    // значения приоритета "очередника"
+    // Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ� Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð° "Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð½Ð¸ÐºÐ°"
     public static final int PRIORITY_LOW = 0;
     public static final int PRIORITY_NORMAL = 1;
     public static final int PRIORITY_HI = 2;
@@ -89,7 +89,7 @@ public final class Uses {
     public static final int[] PRIORITYS = {PRIORITY_LOW, PRIORITY_NORMAL, PRIORITY_HI,
         PRIORITY_VIP};
     public static final String PROPERTIES_FILE = "config/qsystem.properties";
-    // значения приоритета обрабатываемых услуг для юзера
+    // Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ� Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð° Ð¾Ð±Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÐ¼Ñ‹Ñ… ÑƒÑ�Ð»ÑƒÐ³ Ð´Ð»Ñ� ÑŽÐ·ÐµÑ€Ð°
     // public static final int SERVICE_EXCLUDE = -1;
     public static final int SERVICE_REMAINS = 0;
     public static final int SERVICE_NORMAL = 1;
@@ -97,106 +97,106 @@ public final class Uses {
     //public static final int[] SERVICE_PRIORITYS = {SERVICE_EXCLUDE, SERVICE_REMAINS, SERVICE_NORMAL, SERVICE_VIP};
     public static final LinkedHashMap<Integer, String> COEFF_WORD = new LinkedHashMap<>();
     // Naming tags and attributes in XML statistics protocols
-    public static final String TAG_REP_STATISTIC = "Statistics";//"Статистика";
-    public static final String TAG_REP_PARAM_COUNT = "Denominator";//"Знаменатель";
-    public static final String TAG_REP_PARAM_AVG = "Average";//"Среднее";
-    public static final String TAG_REP_RECORD = "Recording";//"Запись";
-    public static final String TAG_REP_SERVICE_WORKED = "Serviced on a Service";//"ОбслуженоПоУслуге";
-    public static final String TAG_REP_SERVICE_WAIT = "Waiting for Service";//"ОжидаютПоУслуге";
-    public static final String TAG_REP_SERVICE_AVG_WORK = "Servicing Services";//"СрВрОбслуживанияПоУслуге";
-    public static final String TAG_REP_SERVICE_AVG_WAIT = "WAITING FOR SERVICE";//"СрВрОжиданияПоУслуге";
-    public static final String TAG_REP_SERVICE_KILLED = "Declined on the Service";//"ОтклоненныхПоУслуге";
-    public static final String TAG_REP_USER_WORKED = "Served by User";//"ОбслуженоПользователем";
-    public static final String TAG_REP_USER_AVG_WORK = "User Service";//"СрВрОбслуживанияПользователем";
-    public static final String TAG_REP_USER_KILLED = "Declined by User";//"ОтклоненныхПользователем";
-    public static final String TAG_REP_WORKED = "Served";//"Обслуженных";
-    public static final String TAG_REP_AVG_TIME_WORK = "Maintenance";//"СрВрОбслуживания";
-    public static final String TAG_REP_KILLED = "Disapproved";//"Отклоненных";
+    public static final String TAG_REP_STATISTIC = "Statistics";//"Ð¡Ñ‚Ð°Ñ‚Ð¸Ñ�Ñ‚Ð¸ÐºÐ°";
+    public static final String TAG_REP_PARAM_COUNT = "Denominator";//"Ð—Ð½Ð°Ð¼ÐµÐ½Ð°Ñ‚ÐµÐ»ÑŒ";
+    public static final String TAG_REP_PARAM_AVG = "Average";//"Ð¡Ñ€ÐµÐ´Ð½ÐµÐµ";
+    public static final String TAG_REP_RECORD = "Recording";//"Ð—Ð°Ð¿Ð¸Ñ�ÑŒ";
+    public static final String TAG_REP_SERVICE_WORKED = "Serviced on a Service";//"ÐžÐ±Ñ�Ð»ÑƒÐ¶ÐµÐ½Ð¾ÐŸÐ¾Ð£Ñ�Ð»ÑƒÐ³Ðµ";
+    public static final String TAG_REP_SERVICE_WAIT = "Waiting for Service";//"ÐžÐ¶Ð¸Ð´Ð°ÑŽÑ‚ÐŸÐ¾Ð£Ñ�Ð»ÑƒÐ³Ðµ";
+    public static final String TAG_REP_SERVICE_AVG_WORK = "Servicing Services";//"Ð¡Ñ€Ð’Ñ€ÐžÐ±Ñ�Ð»ÑƒÐ¶Ð¸Ð²Ð°Ð½Ð¸Ñ�ÐŸÐ¾Ð£Ñ�Ð»ÑƒÐ³Ðµ";
+    public static final String TAG_REP_SERVICE_AVG_WAIT = "WAITING FOR SERVICE";//"Ð¡Ñ€Ð’Ñ€ÐžÐ¶Ð¸Ð´Ð°Ð½Ð¸Ñ�ÐŸÐ¾Ð£Ñ�Ð»ÑƒÐ³Ðµ";
+    public static final String TAG_REP_SERVICE_KILLED = "Declined on the Service";//"ÐžÑ‚ÐºÐ»Ð¾Ð½ÐµÐ½Ð½Ñ‹Ñ…ÐŸÐ¾Ð£Ñ�Ð»ÑƒÐ³Ðµ";
+    public static final String TAG_REP_USER_WORKED = "Served by User";//"ÐžÐ±Ñ�Ð»ÑƒÐ¶ÐµÐ½Ð¾ÐŸÐ¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÐµÐ¼";
+    public static final String TAG_REP_USER_AVG_WORK = "User Service";//"Ð¡Ñ€Ð’Ñ€ÐžÐ±Ñ�Ð»ÑƒÐ¶Ð¸Ð²Ð°Ð½Ð¸Ñ�ÐŸÐ¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÐµÐ¼";
+    public static final String TAG_REP_USER_KILLED = "Declined by User";//"ÐžÑ‚ÐºÐ»Ð¾Ð½ÐµÐ½Ð½Ñ‹Ñ…ÐŸÐ¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÐµÐ¼";
+    public static final String TAG_REP_WORKED = "Served";//"ÐžÐ±Ñ�Ð»ÑƒÐ¶ÐµÐ½Ð½Ñ‹Ñ…";
+    public static final String TAG_REP_AVG_TIME_WORK = "Maintenance";//"Ð¡Ñ€Ð’Ñ€ÐžÐ±Ñ�Ð»ÑƒÐ¶Ð¸Ð²Ð°Ð½Ð¸Ñ�";
+    public static final String TAG_REP_KILLED = "Disapproved";//"ÐžÑ‚ÐºÐ»Ð¾Ð½ÐµÐ½Ð½Ñ‹Ñ…";
     // Tags and attribute names of the setup file
-    public static final String TAG_PROP_SERVICES = "The services";//"Услуги";
-    public static final String TAG_PROP_SERVICE = "Service";//"Услуга";
-    public static final String TAG_PROP_NAME = "Name";//"Наименование";
-    public static final String TAG_PROP_DESCRIPTION = "Description";//"Описание";
-    public static final String TAG_PROP_PREFIX = "Prefix";//"Префикс";
-    public static final String TAG_PROP_ADVANCE_LIMIT = "Limit";//"Лимит";
-    public static final String TAG_PROP_ADVANCE_PERIOD_LIMIT = "Limit Prior Records In Days";//"ЛимитПредвЗаписиВДнях";
-    public static final String TAG_PROP_USERS = "Members List";//"Пользователи";
-    public static final String TAG_PROP_USER = "User";//"Пользователь";
-    public static final String TAG_PROP_PASSWORD = "Password";//"Пароль";
-    public static final String TAG_PROP_OWN_SERVS = "Services Provided";//"ОказываемыеУслуги";
-    public static final String TAG_PROP_OWN_SRV = "The Service";//"ОказываемаяУслуга";
-    public static final String TAG_PROP_KOEF = "Coefficient of Participation";//"КоэффициентУчастия";
-    public static final String TAG_PROP_CONNECTION = "Net";//"Сеть";
-    public static final String TAG_PROP_SERV_PORT = "Port Server";//"ПортСервера";
-    public static final String TAG_PROP_WEB_SERV_PORT = "Port Web Server";//"ПортВебСервера";
-    public static final String TAG_PROP_CLIENT_PORT = "Port Customer";//"ПортКлиента";
-    public static final String TAG_PROP_SERV_ADDRESS = "Server Address";//"АдресСервера";
-    public static final String TAG_PROP_CLIENT_ADDRESS = "Customer Address";//"АдресКлиента";
-    public static final String TAG_PROP_STATUS = "Status";//"Статус";
-    public static final String TAG_PROP_START_TIME = "Start Time";//"ВремяНачалаРаботы";
-    public static final String TAG_PROP_FINISH_TIME = "Completion Time";//"ВремяЗавершенияРаботы";
-    public static final String TAG_PROP_VERSION = "Configuration Warehouse Version";//"ВерсияХранилищаКонфигурации";
-    public static final String TAG_PROP_INPUT_REQUIRED = "Requirement for Client Data";//"ТребованиеКлиентскихДанных";
-    public static final String TAG_PROP_INPUT_CAPTION = "Data Entry Form Header";//"ЗаголовокФормыВводаКлДанных";
-    public static final String TAG_PROP_RESULT_REQUIRED = "Requirement of Work Results";//"ТребованиеРезультатаРаботы";
+    public static final String TAG_PROP_SERVICES = "The services";//"Ð£Ñ�Ð»ÑƒÐ³Ð¸";
+    public static final String TAG_PROP_SERVICE = "Service";//"Ð£Ñ�Ð»ÑƒÐ³Ð°";
+    public static final String TAG_PROP_NAME = "Name";//"Ð�Ð°Ð¸Ð¼ÐµÐ½Ð¾Ð²Ð°Ð½Ð¸Ðµ";
+    public static final String TAG_PROP_DESCRIPTION = "Description";//"ÐžÐ¿Ð¸Ñ�Ð°Ð½Ð¸Ðµ";
+    public static final String TAG_PROP_PREFIX = "Prefix";//"ÐŸÑ€ÐµÑ„Ð¸ÐºÑ�";
+    public static final String TAG_PROP_ADVANCE_LIMIT = "Limit";//"Ð›Ð¸Ð¼Ð¸Ñ‚";
+    public static final String TAG_PROP_ADVANCE_PERIOD_LIMIT = "Limit Prior Records In Days";//"Ð›Ð¸Ð¼Ð¸Ñ‚ÐŸÑ€ÐµÐ´Ð²Ð—Ð°Ð¿Ð¸Ñ�Ð¸Ð’Ð”Ð½Ñ�Ñ…";
+    public static final String TAG_PROP_USERS = "Members List";//"ÐŸÐ¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ð¸";
+    public static final String TAG_PROP_USER = "User";//"ÐŸÐ¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ";
+    public static final String TAG_PROP_PASSWORD = "Password";//"ÐŸÐ°Ñ€Ð¾Ð»ÑŒ";
+    public static final String TAG_PROP_OWN_SERVS = "Services Provided";//"ÐžÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÐ¼Ñ‹ÐµÐ£Ñ�Ð»ÑƒÐ³Ð¸";
+    public static final String TAG_PROP_OWN_SRV = "The Service";//"ÐžÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÐ¼Ð°Ñ�Ð£Ñ�Ð»ÑƒÐ³Ð°";
+    public static final String TAG_PROP_KOEF = "Coefficient of Participation";//"ÐšÐ¾Ñ�Ñ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð£Ñ‡Ð°Ñ�Ñ‚Ð¸Ñ�";
+    public static final String TAG_PROP_CONNECTION = "Net";//"Ð¡ÐµÑ‚ÑŒ";
+    public static final String TAG_PROP_SERV_PORT = "Port Server";//"ÐŸÐ¾Ñ€Ñ‚Ð¡ÐµÑ€Ð²ÐµÑ€Ð°";
+    public static final String TAG_PROP_WEB_SERV_PORT = "Port Web Server";//"ÐŸÐ¾Ñ€Ñ‚Ð’ÐµÐ±Ð¡ÐµÑ€Ð²ÐµÑ€Ð°";
+    public static final String TAG_PROP_CLIENT_PORT = "Port Customer";//"ÐŸÐ¾Ñ€Ñ‚ÐšÐ»Ð¸ÐµÐ½Ñ‚Ð°";
+    public static final String TAG_PROP_SERV_ADDRESS = "Server Address";//"Ð�Ð´Ñ€ÐµÑ�Ð¡ÐµÑ€Ð²ÐµÑ€Ð°";
+    public static final String TAG_PROP_CLIENT_ADDRESS = "Customer Address";//"Ð�Ð´Ñ€ÐµÑ�ÐšÐ»Ð¸ÐµÐ½Ñ‚Ð°";
+    public static final String TAG_PROP_STATUS = "Status";//"Ð¡Ñ‚Ð°Ñ‚ÑƒÑ�";
+    public static final String TAG_PROP_START_TIME = "Start Time";//"Ð’Ñ€ÐµÐ¼Ñ�Ð�Ð°Ñ‡Ð°Ð»Ð°Ð Ð°Ð±Ð¾Ñ‚Ñ‹";
+    public static final String TAG_PROP_FINISH_TIME = "Completion Time";//"Ð’Ñ€ÐµÐ¼Ñ�Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸Ñ�Ð Ð°Ð±Ð¾Ñ‚Ñ‹";
+    public static final String TAG_PROP_VERSION = "Configuration Warehouse Version";//"Ð’ÐµÑ€Ñ�Ð¸Ñ�Ð¥Ñ€Ð°Ð½Ð¸Ð»Ð¸Ñ‰Ð°ÐšÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†Ð¸Ð¸";
+    public static final String TAG_PROP_INPUT_REQUIRED = "Requirement for Client Data";//"Ð¢Ñ€ÐµÐ±Ð¾Ð²Ð°Ð½Ð¸ÐµÐšÐ»Ð¸ÐµÐ½Ñ‚Ñ�ÐºÐ¸Ñ…Ð”Ð°Ð½Ð½Ñ‹Ñ…";
+    public static final String TAG_PROP_INPUT_CAPTION = "Data Entry Form Header";//"Ð—Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾ÐºÐ¤Ð¾Ñ€Ð¼Ñ‹Ð’Ð²Ð¾Ð´Ð°ÐšÐ»Ð”Ð°Ð½Ð½Ñ‹Ñ…";
+    public static final String TAG_PROP_RESULT_REQUIRED = "Requirement of Work Results";//"Ð¢Ñ€ÐµÐ±Ð¾Ð²Ð°Ð½Ð¸ÐµÐ ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚Ð°Ð Ð°Ð±Ð¾Ñ‚Ñ‹";
     // Tags and attribute names of the configuration files of the main scoreboard
-    public static final String TAG_BOARD_PROPS = "Options"; //"Параметры";
-    public static final String TAG_BOARD_PROP = "Parameter"; //"Параметер";
-    public static final String TAG_BOARD_NAME = "Name"; //"Наименование";
-    public static final String TAG_BOARD_VALUE = "Value"; //"Значение";
-    public static final String TAG_BOARD_TYPE = "Type"; //"Тип";
+    public static final String TAG_BOARD_PROPS = "Options"; //"ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹";
+    public static final String TAG_BOARD_PROP = "Parameter"; //"ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚ÐµÑ€";
+    public static final String TAG_BOARD_NAME = "Name"; //"Ð�Ð°Ð¸Ð¼ÐµÐ½Ð¾Ð²Ð°Ð½Ð¸Ðµ";
+    public static final String TAG_BOARD_VALUE = "Value"; //"Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ";
+    public static final String TAG_BOARD_TYPE = "Type"; //"Ð¢Ð¸Ð¿";
     public static final String TAG_BOARD_READ_ONLY = "ReadOnly";
-    // имена параметров для табло
+    // Ð¸Ð¼ÐµÐ½Ð° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ð´Ð»Ñ� Ñ‚Ð°Ð±Ð»Ð¾
     // Parameter names for the scoreboard
     public static final String TAG_BOARD_FRACTAL = "Fractal";//"Fractal";
-    public static final String TAG_BOARD_MONITOR = "Additional monitor number for the scoreboard";//"Номер дополнительного монитора для табло";
-    public static final String TAG_BOARD_LINES_COUNT = "Number of lines on the scoreboard";//"Количество строк на табло";
-    public static final String TAG_BOARD_COLS_COUNT = "Number of columns on the scoreboard";//"Количество столбцов на табло";
-    public static final String TAG_BOARD_DELAY_VISIBLE = "Minimum display time on the scoreboard";//"Минимальное время индикации на табло";
-    public static final String TAG_BOARD_FON_IMG = "Background image";//"Фоновое изображение";
-    public static final String TAG_BOARD_FONT_SIZE = "Font size";//"Размер шрифта";
-    public static final String TAG_BOARD_FONT_COLOR = "Font Color";//"Цвет шрифта";
-    public static final String TAG_BOARD_PANEL_SIZE = "The size";//"Размер";
-    public static final String TAG_BOARD_RUNNING_TEXT = "Running text";//"Бегущий текст";
-    public static final String TAG_BOARD_VIDEO_FILE = "Video file";//"Видеофайл";
+    public static final String TAG_BOARD_MONITOR = "Additional monitor number for the scoreboard";//"Ð�Ð¾Ð¼ÐµÑ€ Ð´Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾Ð³Ð¾ Ð¼Ð¾Ð½Ð¸Ñ‚Ð¾Ñ€Ð° Ð´Ð»Ñ� Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TAG_BOARD_LINES_COUNT = "Number of lines on the scoreboard";//"ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑ�Ñ‚Ð²Ð¾ Ñ�Ñ‚Ñ€Ð¾Ðº Ð½Ð° Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TAG_BOARD_COLS_COUNT = "Number of columns on the scoreboard";//"ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑ�Ñ‚Ð²Ð¾ Ñ�Ñ‚Ð¾Ð»Ð±Ñ†Ð¾Ð² Ð½Ð° Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TAG_BOARD_DELAY_VISIBLE = "Minimum display time on the scoreboard";//"ÐœÐ¸Ð½Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ� Ð¸Ð½Ð´Ð¸ÐºÐ°Ñ†Ð¸Ð¸ Ð½Ð° Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TAG_BOARD_FON_IMG = "Background image";//"Ð¤Ð¾Ð½Ð¾Ð²Ð¾Ðµ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ";
+    public static final String TAG_BOARD_FONT_SIZE = "Font size";//"Ð Ð°Ð·Ð¼ÐµÑ€ ÑˆÑ€Ð¸Ñ„Ñ‚Ð°";
+    public static final String TAG_BOARD_FONT_COLOR = "Font Color";//"Ð¦Ð²ÐµÑ‚ ÑˆÑ€Ð¸Ñ„Ñ‚Ð°";
+    public static final String TAG_BOARD_PANEL_SIZE = "The size";//"Ð Ð°Ð·Ð¼ÐµÑ€";
+    public static final String TAG_BOARD_RUNNING_TEXT = "Running text";//"Ð‘ÐµÐ³ÑƒÑ‰Ð¸Ð¹ Ñ‚ÐµÐºÑ�Ñ‚";
+    public static final String TAG_BOARD_VIDEO_FILE = "Video file";//"Ð’Ð¸Ð´ÐµÐ¾Ñ„Ð°Ð¹Ð»";
     public static final String TAG_BOARD_VISIBLE_PANEL = "Visible";//"visible";
-    public static final String TAG_BOARD_SPEED_TEXT = "Speed ​​of the running text";//"Скорость бегущего текста";
-    public static final String TAG_BOARD_GRID_NEXT_COLS = "Columns table footprint";//"Колонки табл след";
-    public static final String TAG_BOARD_GRID_NEXT_ROWS = "Rows of footprints";//"Строки табл след";
-    public static final String TAG_BOARD_SIMPLE_DATE = "Simple date";//"Простая дата";
-    public static final String TAG_BOARD_GRID_NEXT = "The following table";//"Таблица следующих";
-    public static final String TAG_BOARD_FON_COLOR = "Background color";//"Цвет фона";
-    public static final String TAG_BOARD_FONT_SIZE_CAPTION = "Header font size";//"Размер шрифта заголовка";
+    public static final String TAG_BOARD_SPEED_TEXT = "Speed â€‹â€‹of the running text";//"Ð¡ÐºÐ¾Ñ€Ð¾Ñ�Ñ‚ÑŒ Ð±ÐµÐ³ÑƒÑ‰ÐµÐ³Ð¾ Ñ‚ÐµÐºÑ�Ñ‚Ð°";
+    public static final String TAG_BOARD_GRID_NEXT_COLS = "Columns table footprint";//"ÐšÐ¾Ð»Ð¾Ð½ÐºÐ¸ Ñ‚Ð°Ð±Ð» Ñ�Ð»ÐµÐ´";
+    public static final String TAG_BOARD_GRID_NEXT_ROWS = "Rows of footprints";//"Ð¡Ñ‚Ñ€Ð¾ÐºÐ¸ Ñ‚Ð°Ð±Ð» Ñ�Ð»ÐµÐ´";
+    public static final String TAG_BOARD_SIMPLE_DATE = "Simple date";//"ÐŸÑ€Ð¾Ñ�Ñ‚Ð°Ñ� Ð´Ð°Ñ‚Ð°";
+    public static final String TAG_BOARD_GRID_NEXT = "The following table";//"Ð¢Ð°Ð±Ð»Ð¸Ñ†Ð° Ñ�Ð»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ñ…";
+    public static final String TAG_BOARD_FON_COLOR = "Background color";//"Ð¦Ð²ÐµÑ‚ Ñ„Ð¾Ð½Ð°";
+    public static final String TAG_BOARD_FONT_SIZE_CAPTION = "Header font size";//"Ð Ð°Ð·Ð¼ÐµÑ€ ÑˆÑ€Ð¸Ñ„Ñ‚Ð° Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐ°";
     public static final String TAG_BOARD_FONT_NAME = "Font name";//"Font name";
-    public static final String TAG_BOARD_FONT_SIZE_LINE = "The font size of the lines";//"Размер шрифта строк";
-    public static final String TAG_BOARD_FONT_COLOR_CAPTION = "Header font color";//"Цвет шрифта заголовка";
-    public static final String TAG_BOARD_FONT_COLOR_LEFT = "The font color of the left column";//"Цвет шрифта левого столбца";
-    public static final String TAG_BOARD_FONT_COLOR_RIGHT = "The font color of the right column";//"Цвет шрифта правого столбца";
-    public static final String TAG_BOARD_FONT_COLOR_LINE = "Color of the line of the score line";//"Цвет надписи строки табло";
-    public static final String TAG_BOARD_LINE_BORDER = "Rim Edging";//"Окантовка строк";
-    public static final String TAG_BOARD_LINE_DELIMITER = "Column separator";//"Разделитель столбцов";
+    public static final String TAG_BOARD_FONT_SIZE_LINE = "The font size of the lines";//"Ð Ð°Ð·Ð¼ÐµÑ€ ÑˆÑ€Ð¸Ñ„Ñ‚Ð° Ñ�Ñ‚Ñ€Ð¾Ðº";
+    public static final String TAG_BOARD_FONT_COLOR_CAPTION = "Header font color";//"Ð¦Ð²ÐµÑ‚ ÑˆÑ€Ð¸Ñ„Ñ‚Ð° Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐ°";
+    public static final String TAG_BOARD_FONT_COLOR_LEFT = "The font color of the left column";//"Ð¦Ð²ÐµÑ‚ ÑˆÑ€Ð¸Ñ„Ñ‚Ð° Ð»ÐµÐ²Ð¾Ð³Ð¾ Ñ�Ñ‚Ð¾Ð»Ð±Ñ†Ð°";
+    public static final String TAG_BOARD_FONT_COLOR_RIGHT = "The font color of the right column";//"Ð¦Ð²ÐµÑ‚ ÑˆÑ€Ð¸Ñ„Ñ‚Ð° Ð¿Ñ€Ð°Ð²Ð¾Ð³Ð¾ Ñ�Ñ‚Ð¾Ð»Ð±Ñ†Ð°";
+    public static final String TAG_BOARD_FONT_COLOR_LINE = "Color of the line of the score line";//"Ð¦Ð²ÐµÑ‚ Ð½Ð°Ð´Ð¿Ð¸Ñ�Ð¸ Ñ�Ñ‚Ñ€Ð¾ÐºÐ¸ Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TAG_BOARD_LINE_BORDER = "Rim Edging";//"ÐžÐºÐ°Ð½Ñ‚Ð¾Ð²ÐºÐ° Ñ�Ñ‚Ñ€Ð¾Ðº";
+    public static final String TAG_BOARD_LINE_DELIMITER = "Column separator";//"Ð Ð°Ð·Ð´ÐµÐ»Ð¸Ñ‚ÐµÐ»ÑŒ Ñ�Ñ‚Ð¾Ð»Ð±Ñ†Ð¾Ð²";
     public static final String TAG_BOARD_LEFT_PIC = "Left column pic";//"Left column pic";
     public static final String TAG_BOARD_RIGHT_PIC = "Right column pic";//"Right column pic";
     public static final String TAG_BOARD_EXT_PIC = "Ext column pic";//"Ext column pic";
-    public static final String TAG_BOARD_LEFT_CAPTION = "Header of the left column";//"Заголовок левого столбца";
-    public static final String TAG_BOARD_RIGHT_CAPTION = "Title of the right column";//"Заголовок правого столбца";
-    public static final String TAG_BOARD_EXT_CAPTION = "Additional column header";//"Заголовок дополнительного столбца";
-    public static final String TAG_BOARD_EXT_POSITION = "The order of the additional column";//"Порядок дополнительного столбца";
-    public static final String TAG_BOARD_GRID_NEXT_CAPTION = "The title of the following table";//"Заголовок таблицы следующих";
-    public static final String TAG_BOARD_GRID_NEXT_FRAME_BORDER = "The table of the following";//"Рамка таблицы следующих";
-    public static final String TAG_BOARD_LINE_COLOR = "Border color of the score line";//"Цвет рамки строки табло";
-    public static final String TAG_BOARD_LINE_CAPTION = "The inscription of the score line";//"Надпись строки табло";
-    public static final String TAG_BOARD_CALL_PANEL = "The panel called";//"Панель вызванного";
-    public static final String TAG_BOARD_CALL_PANEL_BACKGROUND = "Picture of the panel called";//"Картинка панели вызванного";
-    public static final String TAG_BOARD_CALL_PANEL_X = "Panel called-X";//"Панель вызванного-X";
-    public static final String TAG_BOARD_CALL_PANEL_Y = "Panel called-Y";//"Панель вызванного-Y";
-    public static final String TAG_BOARD_CALL_PANEL_WIDTH = "Panel called-width";//"Панель вызванного-ширина";
-    public static final String TAG_BOARD_CALL_PANEL_HEIGHT = "Panel called-height";//"Панель вызванного-высота";
-    public static final String TAG_BOARD_CALL_PANEL_DELAY = "Call panel-show time";//"Панель вызванного-время показа сек";
-    public static final String TAG_BOARD_CALL_PANEL_TEMPLATE = "The panel of the called-text html + ###";//"Панель вызванного-текст html+###";
-    // имена тегов-разделов для табло
+    public static final String TAG_BOARD_LEFT_CAPTION = "Header of the left column";//"Ð—Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº Ð»ÐµÐ²Ð¾Ð³Ð¾ Ñ�Ñ‚Ð¾Ð»Ð±Ñ†Ð°";
+    public static final String TAG_BOARD_RIGHT_CAPTION = "Title of the right column";//"Ð—Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº Ð¿Ñ€Ð°Ð²Ð¾Ð³Ð¾ Ñ�Ñ‚Ð¾Ð»Ð±Ñ†Ð°";
+    public static final String TAG_BOARD_EXT_CAPTION = "Additional column header";//"Ð—Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº Ð´Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾Ð³Ð¾ Ñ�Ñ‚Ð¾Ð»Ð±Ñ†Ð°";
+    public static final String TAG_BOARD_EXT_POSITION = "The order of the additional column";//"ÐŸÐ¾Ñ€Ñ�Ð´Ð¾Ðº Ð´Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾Ð³Ð¾ Ñ�Ñ‚Ð¾Ð»Ð±Ñ†Ð°";
+    public static final String TAG_BOARD_GRID_NEXT_CAPTION = "The title of the following table";//"Ð—Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ñ�Ð»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ñ…";
+    public static final String TAG_BOARD_GRID_NEXT_FRAME_BORDER = "The table of the following";//"Ð Ð°Ð¼ÐºÐ° Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ñ�Ð»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ñ…";
+    public static final String TAG_BOARD_LINE_COLOR = "Border color of the score line";//"Ð¦Ð²ÐµÑ‚ Ñ€Ð°Ð¼ÐºÐ¸ Ñ�Ñ‚Ñ€Ð¾ÐºÐ¸ Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TAG_BOARD_LINE_CAPTION = "The inscription of the score line";//"Ð�Ð°Ð´Ð¿Ð¸Ñ�ÑŒ Ñ�Ñ‚Ñ€Ð¾ÐºÐ¸ Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TAG_BOARD_CALL_PANEL = "The panel called";//"ÐŸÐ°Ð½ÐµÐ»ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾";
+    public static final String TAG_BOARD_CALL_PANEL_BACKGROUND = "Picture of the panel called";//"ÐšÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ° Ð¿Ð°Ð½ÐµÐ»Ð¸ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾";
+    public static final String TAG_BOARD_CALL_PANEL_X = "Panel called-X";//"ÐŸÐ°Ð½ÐµÐ»ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾-X";
+    public static final String TAG_BOARD_CALL_PANEL_Y = "Panel called-Y";//"ÐŸÐ°Ð½ÐµÐ»ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾-Y";
+    public static final String TAG_BOARD_CALL_PANEL_WIDTH = "Panel called-width";//"ÐŸÐ°Ð½ÐµÐ»ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾-ÑˆÐ¸Ñ€Ð¸Ð½Ð°";
+    public static final String TAG_BOARD_CALL_PANEL_HEIGHT = "Panel called-height";//"ÐŸÐ°Ð½ÐµÐ»ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾-Ð²Ñ‹Ñ�Ð¾Ñ‚Ð°";
+    public static final String TAG_BOARD_CALL_PANEL_DELAY = "Call panel-show time";//"ÐŸÐ°Ð½ÐµÐ»ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾-Ð²Ñ€ÐµÐ¼Ñ� Ð¿Ð¾ÐºÐ°Ð·Ð° Ñ�ÐµÐº";
+    public static final String TAG_BOARD_CALL_PANEL_TEMPLATE = "The panel of the called-text html + ###";//"ÐŸÐ°Ð½ÐµÐ»ÑŒ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð½Ð¾Ð³Ð¾-Ñ‚ÐµÐºÑ�Ñ‚ html+###";
+    // Ð¸Ð¼ÐµÐ½Ð° Ñ‚ÐµÐ³Ð¾Ð²-Ñ€Ð°Ð·Ð´ÐµÐ»Ð¾Ð² Ð´Ð»Ñ� Ñ‚Ð°Ð±Ð»Ð¾
     // Names of tag-sections for the scoreboard
-    //имена тегов-разделов для табло
+    //Ð¸Ð¼ÐµÐ½Ð° Ñ‚ÐµÐ³Ð¾Ð²-Ñ€Ð°Ð·Ð´ÐµÐ»Ð¾Ð² Ð´Ð»Ñ� Ñ‚Ð°Ð±Ð»Ð¾
     public static final String TAG_BOARD = "Board";
     public static final String TAG_BOARD_MAIN = "Main";
     public static final String TAG_BOARD_TOP = "Top";
@@ -204,118 +204,118 @@ public final class Uses {
     public static final String TAG_BOARD_BOTTOM_2 = "Bottom2";
     public static final String TAG_BOARD_LEFT = "Left";
     public static final String TAG_BOARD_RIGHT = "Right";
-    // Наименования параметров конфигурационных файлов главных табло
+    // Ð�Ð°Ð¸Ð¼ÐµÐ½Ð¾Ð²Ð°Ð½Ð¸Ñ� Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² ÐºÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ñ… Ñ„Ð°Ð¹Ð»Ð¾Ð² Ð³Ð»Ð°Ð²Ð½Ñ‹Ñ… Ñ‚Ð°Ð±Ð»Ð¾
     // Names of parameters of configuration files of the main scoreboard
-    public static final String BOARD_VALUE_PAUSE = "The time of the presence of a record on the scoreboard";//"Время присутствия записи на табло";
-    public static final String BOARD_ADRESS_MAIN_BOARD = "Address of the main board of the system";// "Адрес главного табло системы";
+    public static final String BOARD_VALUE_PAUSE = "The time of the presence of a record on the scoreboard";//"Ð’Ñ€ÐµÐ¼Ñ� Ð¿Ñ€Ð¸Ñ�ÑƒÑ‚Ñ�Ñ‚Ð²Ð¸Ñ� Ð·Ð°Ð¿Ð¸Ñ�Ð¸ Ð½Ð° Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String BOARD_ADRESS_MAIN_BOARD = "Address of the main board of the system";// "Ð�Ð´Ñ€ÐµÑ� Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ñ‚Ð°Ð±Ð»Ð¾ Ñ�Ð¸Ñ�Ñ‚ÐµÐ¼Ñ‹";
     public static final int BOARD_TYPE_INT = 1;
     public static final int BOARD_TYPE_DOUBLE = 2;
     public static final int BOARD_TYPE_STR = 3;
     public static final int BOARD_TYPE_BOOL = 4;
-    // Наименования заданий
-    public static final String TASK_FOR_ALL_SITE = "Для всех сайтов домена";
-    public static final String TASK_STAND_IN = "Поставить в очередь";
-    public static final String TASK_STAND_COMPLEX = "Поставить в несколько очередей";
-    public static final String TASK_ADVANCE_STAND_IN = "Поставить в очередь предварительно";
-    public static final String TASK_ADVANCE_CHECK_AND_STAND = "Поставить предварительно записанного";
-    public static final String TASK_REMOVE_ADVANCE_CUSTOMER = "Удалить предварительно записанного";
-    public static final String TASK_REDIRECT_CUSTOMER = "Переадресовать клиента к другой услуге";
-    public static final String TASK_GET_SERVICES = "Получить перечень услуг";
-    public static final String TASK_ABOUT_SERVICE = "Получить описание услуги";
-    public static final String TASK_GET_SERVICE_CONSISANCY = "Получить очередь услуги";
-    public static final String TASK_ABOUT_SERVICE_PERSON_LIMIT = "Получить возможность встать с этими данными";
-    public static final String TASK_GET_SERVICE_PREINFO = "Получить информацию по услуге";
-    public static final String TASK_GET_INFO_PRINT = "Получить информацию для печати";
-    public static final String TASK_GET_USERS = "Получить перечень пользователей";
-    public static final String TASK_GET_SELF = "Получить описание пользователя";
-    public static final String TASK_GET_SELF_SERVICES = "Получить состояние очередей";
-    public static final String TASK_GET_POSTPONED_POOL = "Получить состояние пула отложенных";
-    public static final String TASK_GET_BAN_LIST = "Получить список забаненых";
-    public static final String TASK_INVITE_POSTPONED = "Вызвать отложенного из пула отложенных";
-    public static final String TASK_GET_SELF_SERVICES_CHECK = "Получить состояние очередей с проверкой";
-    public static final String TASK_INVITE_NEXT_CUSTOMER = "Получить следующего клиента";
-    public static final String TASK_KILL_NEXT_CUSTOMER = "Удалить следующего клиента";
-    public static final String TASK_CUSTOMER_TO_POSTPON = "Клиента в пул отложенных";
-    public static final String TASK_POSTPON_CHANGE_STATUS = "Сменить статус отложенному";
-    public static final String TASK_START_CUSTOMER = "Начать работу с клиентом";
-    public static final String TASK_FINISH_CUSTOMER = "Закончить работу с клиентом";
-    public static final String TASK_I_AM_LIVE = "Я горец!";
+    // Ð�Ð°Ð¸Ð¼ÐµÐ½Ð¾Ð²Ð°Ð½Ð¸Ñ� Ð·Ð°Ð´Ð°Ð½Ð¸Ð¹
+    public static final String TASK_FOR_ALL_SITE = "Ð”Ð»Ñ� Ð²Ñ�ÐµÑ… Ñ�Ð°Ð¹Ñ‚Ð¾Ð² Ð´Ð¾Ð¼ÐµÐ½Ð°";
+    public static final String TASK_STAND_IN = "ÐŸÐ¾Ñ�Ñ‚Ð°Ð²Ð¸Ñ‚ÑŒ Ð² Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ";
+    public static final String TASK_STAND_COMPLEX = "ÐŸÐ¾Ñ�Ñ‚Ð°Ð²Ð¸Ñ‚ÑŒ Ð² Ð½ÐµÑ�ÐºÐ¾Ð»ÑŒÐºÐ¾ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÐµÐ¹";
+    public static final String TASK_ADVANCE_STAND_IN = "ÐŸÐ¾Ñ�Ñ‚Ð°Ð²Ð¸Ñ‚ÑŒ Ð² Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ Ð¿Ñ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾";
+    public static final String TASK_ADVANCE_CHECK_AND_STAND = "ÐŸÐ¾Ñ�Ñ‚Ð°Ð²Ð¸Ñ‚ÑŒ Ð¿Ñ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ð·Ð°Ð¿Ð¸Ñ�Ð°Ð½Ð½Ð¾Ð³Ð¾";
+    public static final String TASK_REMOVE_ADVANCE_CUSTOMER = "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¿Ñ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ð·Ð°Ð¿Ð¸Ñ�Ð°Ð½Ð½Ð¾Ð³Ð¾";
+    public static final String TASK_REDIRECT_CUSTOMER = "ÐŸÐµÑ€ÐµÐ°Ð´Ñ€ÐµÑ�Ð¾Ð²Ð°Ñ‚ÑŒ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð° Ðº Ð´Ñ€ÑƒÐ³Ð¾Ð¹ ÑƒÑ�Ð»ÑƒÐ³Ðµ";
+    public static final String TASK_GET_SERVICES = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÐµÑ‡ÐµÐ½ÑŒ ÑƒÑ�Ð»ÑƒÐ³";
+    public static final String TASK_ABOUT_SERVICE = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¾Ð¿Ð¸Ñ�Ð°Ð½Ð¸Ðµ ÑƒÑ�Ð»ÑƒÐ³Ð¸";
+    public static final String TASK_GET_SERVICE_CONSISANCY = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ ÑƒÑ�Ð»ÑƒÐ³Ð¸";
+    public static final String TASK_ABOUT_SERVICE_PERSON_LIMIT = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾Ñ�Ñ‚ÑŒ Ð²Ñ�Ñ‚Ð°Ñ‚ÑŒ Ñ� Ñ�Ñ‚Ð¸Ð¼Ð¸ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸";
+    public static final String TASK_GET_SERVICE_PREINFO = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ Ð¿Ð¾ ÑƒÑ�Ð»ÑƒÐ³Ðµ";
+    public static final String TASK_GET_INFO_PRINT = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ Ð´Ð»Ñ� Ð¿ÐµÑ‡Ð°Ñ‚Ð¸";
+    public static final String TASK_GET_USERS = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÐµÑ‡ÐµÐ½ÑŒ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÐµÐ¹";
+    public static final String TASK_GET_SELF = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¾Ð¿Ð¸Ñ�Ð°Ð½Ð¸Ðµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ�";
+    public static final String TASK_GET_SELF_SERVICES = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ð½Ð¸Ðµ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÐµÐ¹";
+    public static final String TASK_GET_POSTPONED_POOL = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ð½Ð¸Ðµ Ð¿ÑƒÐ»Ð° Ð¾Ñ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ñ‹Ñ…";
+    public static final String TASK_GET_BAN_LIST = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ�Ð¿Ð¸Ñ�Ð¾Ðº Ð·Ð°Ð±Ð°Ð½ÐµÐ½Ñ‹Ñ…";
+    public static final String TASK_INVITE_POSTPONED = "Ð’Ñ‹Ð·Ð²Ð°Ñ‚ÑŒ Ð¾Ñ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ð¾Ð³Ð¾ Ð¸Ð· Ð¿ÑƒÐ»Ð° Ð¾Ñ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ñ‹Ñ…";
+    public static final String TASK_GET_SELF_SERVICES_CHECK = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ð½Ð¸Ðµ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÐµÐ¹ Ñ� Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ¾Ð¹";
+    public static final String TASK_INVITE_NEXT_CUSTOMER = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ�Ð»ÐµÐ´ÑƒÑŽÑ‰ÐµÐ³Ð¾ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð°";
+    public static final String TASK_KILL_NEXT_CUSTOMER = "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ñ�Ð»ÐµÐ´ÑƒÑŽÑ‰ÐµÐ³Ð¾ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð°";
+    public static final String TASK_CUSTOMER_TO_POSTPON = "ÐšÐ»Ð¸ÐµÐ½Ñ‚Ð° Ð² Ð¿ÑƒÐ» Ð¾Ñ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ñ‹Ñ…";
+    public static final String TASK_POSTPON_CHANGE_STATUS = "Ð¡Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ñ�Ñ‚Ð°Ñ‚ÑƒÑ� Ð¾Ñ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ð¾Ð¼Ñƒ";
+    public static final String TASK_START_CUSTOMER = "Ð�Ð°Ñ‡Ð°Ñ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ñ� ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð¾Ð¼";
+    public static final String TASK_FINISH_CUSTOMER = "Ð—Ð°ÐºÐ¾Ð½Ñ‡Ð¸Ñ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ñ� ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð¾Ð¼";
+    public static final String TASK_I_AM_LIVE = "Ð¯ Ð³Ð¾Ñ€ÐµÑ†!";
     public static final String TASK_RESTART = "RESTART";
-    public static final String TASK_RESTART_MAIN_TABLO = "Рестарт главного твбло";
+    public static final String TASK_RESTART_MAIN_TABLO = "Ð ÐµÑ�Ñ‚Ð°Ñ€Ñ‚ Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ñ‚Ð²Ð±Ð»Ð¾";
     public static final String TASK_REFRESH_POSTPONED_POOL = "NEW_POSTPONED_NOW";
-    public static final String TASK_SERVER_STATE = "Получить состояние сервера";
-    public static final String TASK_SET_SERVICE_FIRE = "Добавить услугу на горячую";
-    public static final String TASK_DELETE_SERVICE_FIRE = "Удалить услугу на горячую";    // Наименования отчетов, сдесь писать исключительно маленькими латинскими буквами без пробелов
-    public static final String TASK_GET_BOARD_CONFIG = "Получить конфигурацию табло";
-    public static final String TASK_SAVE_BOARD_CONFIG = "Сохранить конфигурацию табло";
-    public static final String TASK_GET_GRID_OF_WEEK = "Получить недельную предварительную таблицу";
-    public static final String TASK_GET_GRID_OF_DAY = "Получить дневную предварительную таблицу";
-    public static final String TASK_GET_INFO_TREE = "Получить информационное дерево";
-    public static final String TASK_GET_RESULTS_LIST = "Получить получение списка возможных результатов";
-    public static final String TASK_GET_RESPONSE_LIST = "Получить список отзывов";
-    public static final String TASK_SET_RESPONSE_ANSWER = "Оставить отзыв";
+    public static final String TASK_SERVER_STATE = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ð½Ð¸Ðµ Ñ�ÐµÑ€Ð²ÐµÑ€Ð°";
+    public static final String TASK_SET_SERVICE_FIRE = "Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÑƒÑ�Ð»ÑƒÐ³Ñƒ Ð½Ð° Ð³Ð¾Ñ€Ñ�Ñ‡ÑƒÑŽ";
+    public static final String TASK_DELETE_SERVICE_FIRE = "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ ÑƒÑ�Ð»ÑƒÐ³Ñƒ Ð½Ð° Ð³Ð¾Ñ€Ñ�Ñ‡ÑƒÑŽ";    // Ð�Ð°Ð¸Ð¼ÐµÐ½Ð¾Ð²Ð°Ð½Ð¸Ñ� Ð¾Ñ‚Ñ‡ÐµÑ‚Ð¾Ð², Ñ�Ð´ÐµÑ�ÑŒ Ð¿Ð¸Ñ�Ð°Ñ‚ÑŒ Ð¸Ñ�ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ð¼Ð°Ð»ÐµÐ½ÑŒÐºÐ¸Ð¼Ð¸ Ð»Ð°Ñ‚Ð¸Ð½Ñ�ÐºÐ¸Ð¼Ð¸ Ð±ÑƒÐºÐ²Ð°Ð¼Ð¸ Ð±ÐµÐ· Ð¿Ñ€Ð¾Ð±ÐµÐ»Ð¾Ð²
+    public static final String TASK_GET_BOARD_CONFIG = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†Ð¸ÑŽ Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TASK_SAVE_BOARD_CONFIG = "Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ ÐºÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†Ð¸ÑŽ Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TASK_GET_GRID_OF_WEEK = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð½ÐµÐ´ÐµÐ»ÑŒÐ½ÑƒÑŽ Ð¿Ñ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½ÑƒÑŽ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ";
+    public static final String TASK_GET_GRID_OF_DAY = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð´Ð½ÐµÐ²Ð½ÑƒÑŽ Ð¿Ñ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½ÑƒÑŽ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ";
+    public static final String TASK_GET_INFO_TREE = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¾Ð½Ð½Ð¾Ðµ Ð´ÐµÑ€ÐµÐ²Ð¾";
+    public static final String TASK_GET_RESULTS_LIST = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ðµ Ñ�Ð¿Ð¸Ñ�ÐºÐ° Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ñ‹Ñ… Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚Ð¾Ð²";
+    public static final String TASK_GET_RESPONSE_LIST = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ�Ð¿Ð¸Ñ�Ð¾Ðº Ð¾Ñ‚Ð·Ñ‹Ð²Ð¾Ð²";
+    public static final String TASK_SET_RESPONSE_ANSWER = "ÐžÑ�Ñ‚Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ñ‚Ð·Ñ‹Ð²";
     public static final String REPORT_CURRENT_USERS = "current_users";
     public static final String REPORT_CURRENT_SERVICES = "current_services";
-    public static final String TASK_GET_CLIENT_AUTHORIZATION = "Идентифицировать клиента";
-    public static final String TASK_SET_CUSTOMER_PRIORITY = "Изменить приоритет";
-    public static final String TASK_CHECK_CUSTOMER_NUMBER = "Проверить номер";
-    public static final String TASK_CHANGE_FLEX_PRIORITY = "Изменить гибкий приоритет";
-    public static final String TASK_CHANGE_RUNNING_TEXT_ON_BOARD = "Изменить бегущий текст на табло";
-    public static final String TASK_CHANGE_TEMP_AVAILABLE_SERVICE = "Изменить временную доступность";
-    public static final String TASK_GET_STANDARDS = "Получить нормативы";
-    public static final String TASK_SET_BUSSY = "Перерыв оператора";
-    public static final String TASK_GET_PROPERTIES = "Все параметры из БД";
-    public static final String TASK_SAVE_PROPERTIES = "Сохранить все параметры в БД";
-    public static final String TASK_INIT_PROPERTIES = "Создать все параметры в БД";
+    public static final String TASK_GET_CLIENT_AUTHORIZATION = "Ð˜Ð´ÐµÐ½Ñ‚Ð¸Ñ„Ð¸Ñ†Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð°";
+    public static final String TASK_SET_CUSTOMER_PRIORITY = "Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚";
+    public static final String TASK_CHECK_CUSTOMER_NUMBER = "ÐŸÑ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ð½Ð¾Ð¼ÐµÑ€";
+    public static final String TASK_CHANGE_FLEX_PRIORITY = "Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð³Ð¸Ð±ÐºÐ¸Ð¹ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚";
+    public static final String TASK_CHANGE_RUNNING_TEXT_ON_BOARD = "Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð±ÐµÐ³ÑƒÑ‰Ð¸Ð¹ Ñ‚ÐµÐºÑ�Ñ‚ Ð½Ð° Ñ‚Ð°Ð±Ð»Ð¾";
+    public static final String TASK_CHANGE_TEMP_AVAILABLE_SERVICE = "Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½ÑƒÑŽ Ð´Ð¾Ñ�Ñ‚ÑƒÐ¿Ð½Ð¾Ñ�Ñ‚ÑŒ";
+    public static final String TASK_GET_STANDARDS = "ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð½Ð¾Ñ€Ð¼Ð°Ñ‚Ð¸Ð²Ñ‹";
+    public static final String TASK_SET_BUSSY = "ÐŸÐµÑ€ÐµÑ€Ñ‹Ð² Ð¾Ð¿ÐµÑ€Ð°Ñ‚Ð¾Ñ€Ð°";
+    public static final String TASK_GET_PROPERTIES = "Ð’Ñ�Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð¸Ð· Ð‘Ð”";
+    public static final String TASK_SAVE_PROPERTIES = "Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ Ð²Ñ�Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð² Ð‘Ð”";
+    public static final String TASK_INIT_PROPERTIES = "Ð¡Ð¾Ð·Ð´Ð°Ñ‚ÑŒ Ð²Ñ�Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð² Ð‘Ð”";
     public static final String TASK_SERVE_CUSTOMER = "serve_customer";
     public static final String TASK_INVITE_SELECTED_CUSTOMER = "Invite selected customer";
     public static final String TASK_CHANGE_SERVICE = "Change the service of the customer";
     public static final String TASK_CUSTOMER_RETURN_QUEUE = "Return the same customer to queue";
-    // Формат отчетов
+    // Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð¾Ñ‚Ñ‡ÐµÑ‚Ð¾Ð²
     public static final String REPORT_FORMAT_HTML = "html";
     public static final String REPORT_FORMAT_RTF = "rtf";
     public static final String REPORT_FORMAT_PDF = "pdf";
     public static final String REPORT_FORMAT_XLSX = "xlsx";
     public static final String REPORT_FORMAT_CSV = "csv";
-    // Якорь для списка аналитических отчетов
+    // Ð¯ÐºÐ¾Ñ€ÑŒ Ð´Ð»Ñ� Ñ�Ð¿Ð¸Ñ�ÐºÐ° Ð°Ð½Ð°Ð»Ð¸Ñ‚Ð¸Ñ‡ÐµÑ�ÐºÐ¸Ñ… Ð¾Ñ‚Ñ‡ÐµÑ‚Ð¾Ð²
     public static final String ANCHOR_REPORT_LIST = "<tr><td><center>#REPORT_LIST_ANCHOR#</center></td></tr>";
     public static final String ANCHOR_DATA_FOR_REPORT = "#DATA_FOR_REPORT#";
     public static final String ANCHOR_ERROR_INPUT_DATA = "#ERROR_INPUT_DATA#";
     public static final String ANCHOR_USERS_FOR_REPORT = "#USERS_LIST_ANCHOR#";
     public static final String ANCHOR_PROJECT_NAME_FOR_REPORT = "#PROJECT_NAME_ANCHOR#";
     public static final String ANCHOR_COOCIES = "#COOCIES_ANCHOR#";
-    // Задания для пункта регистрации
+    // Ð—Ð°Ð´Ð°Ð½Ð¸Ñ� Ð´Ð»Ñ� Ð¿ÑƒÐ½ÐºÑ‚Ð° Ñ€ÐµÐ³Ð¸Ñ�Ñ‚Ñ€Ð°Ñ†Ð¸Ð¸
     public static final String WELCOME_LOCK = "#WELCOME_LOCK#";
     public static final String WELCOME_UNLOCK = "#WELCOME_UNLOCK#";
     public static final String WELCOME_OFF = "#WELCOME_OFF#";
     public static final String WELCOME_REINIT = "#WELCOME_REINIT#";
     public final static String[] RUSSIAN_MONAT = {
-        "Января",
-        "Февраля",
-        "Марта",
-        "Апреля",
-        "Мая",
-        "Июня",
-        "Июля",
-        "Августа",
-        "Сентября",
-        "Октября",
-        "Ноября",
-        "Декабря"
+        "Ð¯Ð½Ð²Ð°Ñ€Ñ�",
+        "Ð¤ÐµÐ²Ñ€Ð°Ð»Ñ�",
+        "ÐœÐ°Ñ€Ñ‚Ð°",
+        "Ð�Ð¿Ñ€ÐµÐ»Ñ�",
+        "ÐœÐ°Ñ�",
+        "Ð˜ÑŽÐ½Ñ�",
+        "Ð˜ÑŽÐ»Ñ�",
+        "Ð�Ð²Ð³ÑƒÑ�Ñ‚Ð°",
+        "Ð¡ÐµÐ½Ñ‚Ñ�Ð±Ñ€Ñ�",
+        "ÐžÐºÑ‚Ñ�Ð±Ñ€Ñ�",
+        "Ð�Ð¾Ñ�Ð±Ñ€Ñ�",
+        "Ð”ÐµÐºÐ°Ð±Ñ€Ñ�"
     };
     public final static String[] UKRAINIAN_MONAT = {
-        "Січня",
-        "Лютого",
-        "Березня",
-        "Квітня",
-        "Травня",
-        "Червня",
-        "Липня",
-        "Серпня",
-        "Вересня",
-        "Жовтня",
-        "Листопада",
-        "Грудня"
+        "Ð¡Ñ–Ñ‡Ð½Ñ�",
+        "Ð›ÑŽÑ‚Ð¾Ð³Ð¾",
+        "Ð‘ÐµÑ€ÐµÐ·Ð½Ñ�",
+        "ÐšÐ²Ñ–Ñ‚Ð½Ñ�",
+        "Ð¢Ñ€Ð°Ð²Ð½Ñ�",
+        "Ð§ÐµÑ€Ð²Ð½Ñ�",
+        "Ð›Ð¸Ð¿Ð½Ñ�",
+        "Ð¡ÐµÑ€Ð¿Ð½Ñ�",
+        "Ð’ÐµÑ€ÐµÑ�Ð½Ñ�",
+        "Ð–Ð¾Ð²Ñ‚Ð½Ñ�",
+        "Ð›Ð¸Ñ�Ñ‚Ð¾Ð¿Ð°Ð´Ð°",
+        "Ð“Ñ€ÑƒÐ´Ð½Ñ�"
     };
     public final static String[] AZERBAIJAN_MONAT = {"Yanvar",
         "Fevral",
@@ -330,79 +330,79 @@ public final class Uses {
         "Noyabr",
         "Dekabr"};
     /**
-     * Формат даты
+     * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹
      */
     public static final String DATE_FORMAT = "dd.MM.yyyy HH:mm:ss";
     /**
-     * Формат даты без времени
+     * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹ Ð±ÐµÐ· Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸
      */
     public static final String DATE_FORMAT_ONLY = "dd.MM.yyyy";
     /**
-     * Формат даты.
+     * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹.
      */
     public final static DateFormat FORMAT_HH_MM = new SimpleDateFormat("HH:mm");
     /**
-     * Формат даты.
+     * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹.
      */
     public final static DateFormat FORMAT_HH_MM_SS = new SimpleDateFormat("hh:mm:ss aa");
     /**
-     * Формат даты.
+     * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹.
      */
     public final static DateFormat FORMAT_DD_MM_YYYY = new SimpleDateFormat(DATE_FORMAT_ONLY);
     /**
-     * Формат даты.
+     * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹.
      */
     public final static DateFormat FORMAT_DD_MM_YYYY_TIME = new SimpleDateFormat(DATE_FORMAT);
     /**
-     * Формат даты./2009-01-26 16:10:41
+     * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹./2009-01-26 16:10:41
      */
     public final static DateFormat FORMAT_FOR_REP = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     /**
-     * Формат даты./2009-01-26 16:10
+     * Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚ Ð´Ð°Ñ‚Ñ‹./2009-01-26 16:10
      */
     public final static DateFormat FORMAT_FOR_TRANS = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     /**
-     * Временная папка для файлов сохранения состояния для помехоустойчивости
+     * Ð’Ñ€ÐµÐ¼ÐµÐ½Ð½Ð°Ñ� Ð¿Ð°Ð¿ÐºÐ° Ð´Ð»Ñ� Ñ„Ð°Ð¹Ð»Ð¾Ð² Ñ�Ð¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ� Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ð½Ð¸Ñ� Ð´Ð»Ñ� Ð¿Ð¾Ð¼ÐµÑ…Ð¾ÑƒÑ�Ñ‚Ð¾Ð¹Ñ‡Ð¸Ð²Ð¾Ñ�Ñ‚Ð¸
      */
     public static final String TEMP_FOLDER = "temp";
     /**
-     * временный файл сохранения состояния для помехоустойчивости
+     * Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¹ Ñ„Ð°Ð¹Ð» Ñ�Ð¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ� Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ð½Ð¸Ñ� Ð´Ð»Ñ� Ð¿Ð¾Ð¼ÐµÑ…Ð¾ÑƒÑ�Ñ‚Ð¾Ð¹Ñ‡Ð¸Ð²Ð¾Ñ�Ñ‚Ð¸
      */
     public static final String TEMP_STATE_FILE = "temp.json";
     /**
-     * временный файл сохранения конфигурации комплексных услуг
+     * Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¹ Ñ„Ð°Ð¹Ð» Ñ�Ð¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ� ÐºÐ¾Ð½Ñ„Ð¸Ð³ÑƒÑ€Ð°Ñ†Ð¸Ð¸ ÐºÐ¾Ð¼Ð¿Ð»ÐµÐºÑ�Ð½Ñ‹Ñ… ÑƒÑ�Ð»ÑƒÐ³
      */
     public static final String TEMP_COMPLEX_FILE = "complex.json";
     /**
-     * временный файл сохранения текущей статистики для помехоустойчивости
+     * Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¹ Ñ„Ð°Ð¹Ð» Ñ�Ð¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ� Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¹ Ñ�Ñ‚Ð°Ñ‚Ð¸Ñ�Ñ‚Ð¸ÐºÐ¸ Ð´Ð»Ñ� Ð¿Ð¾Ð¼ÐµÑ…Ð¾ÑƒÑ�Ñ‚Ð¾Ð¹Ñ‡Ð¸Ð²Ð¾Ñ�Ñ‚Ð¸
      */
     public static final String TEMP_STATATISTIC_FILE = "temp_statistic.xml";
     /**
-     * Задержка перед возвратом в корень меню при вопросе "Желаете встать в очередь?" когда в
-     * очереди более трех человек.
+     * Ð—Ð°Ð´ÐµÑ€Ð¶ÐºÐ° Ð¿ÐµÑ€ÐµÐ´ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‚Ð¾Ð¼ Ð² ÐºÐ¾Ñ€ÐµÐ½ÑŒ Ð¼ÐµÐ½ÑŽ Ð¿Ñ€Ð¸ Ð²Ð¾Ð¿Ñ€Ð¾Ñ�Ðµ "Ð–ÐµÐ»Ð°ÐµÑ‚Ðµ Ð²Ñ�Ñ‚Ð°Ñ‚ÑŒ Ð² Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ?" ÐºÐ¾Ð³Ð´Ð° Ð²
+     * Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸ Ð±Ð¾Ð»ÐµÐµ Ñ‚Ñ€ÐµÑ… Ñ‡ÐµÐ»Ð¾Ð²ÐµÐº.
      */
     public static final int DELAY_BACK_TO_ROOT = 10000;
     /**
-     * Задержка перед проверкой блокирования пункта регистрации
+     * Ð—Ð°Ð´ÐµÑ€Ð¶ÐºÐ° Ð¿ÐµÑ€ÐµÐ´ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ¾Ð¹ Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ� Ð¿ÑƒÐ½ÐºÑ‚Ð° Ñ€ÐµÐ³Ð¸Ñ�Ñ‚Ñ€Ð°Ñ†Ð¸Ð¸
      */
     public static final int DELAY_CHECK_TO_LOCK = 55000;
     /**
-     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не
-     * обрабатывается ни одним пользователем
+     * ÐšÐ¾Ð½Ñ�Ñ‚Ð°Ð½Ñ‚Ð° Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‚Ð° Ð² Ð¿ÑƒÐ½ÐºÑ‚ Ñ€ÐµÐ³Ð¸Ñ�Ñ‚Ñ€Ð°Ñ†Ð¸Ð¸ ÐºÐ¾Ð»-Ð²Ð¾ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð¾Ð² Ð² Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸, Ð² Ñ�Ð»ÑƒÑ‡Ð°Ðµ ÐµÑ�Ð»Ð¸ ÑƒÑ�Ð»ÑƒÐ³Ð° Ð½Ðµ
+     * Ð¾Ð±Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÑ‚Ñ�Ñ� Ð½Ð¸ Ð¾Ð´Ð½Ð¸Ð¼ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÐµÐ¼
      */
     public static final int LOCK_INT = 1000000000;
     /**
-     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не
-     * оказывается учитывая расписание
+     * ÐšÐ¾Ð½Ñ�Ñ‚Ð°Ð½Ñ‚Ð° Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‚Ð° Ð² Ð¿ÑƒÐ½ÐºÑ‚ Ñ€ÐµÐ³Ð¸Ñ�Ñ‚Ñ€Ð°Ñ†Ð¸Ð¸ ÐºÐ¾Ð»-Ð²Ð¾ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð¾Ð² Ð² Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸, Ð² Ñ�Ð»ÑƒÑ‡Ð°Ðµ ÐµÑ�Ð»Ð¸ ÑƒÑ�Ð»ÑƒÐ³Ð° Ð½Ðµ
+     * Ð¾ÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÑ‚Ñ�Ñ� ÑƒÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ñ� Ñ€Ð°Ñ�Ð¿Ð¸Ñ�Ð°Ð½Ð¸Ðµ
      */
     public static final int LOCK_FREE_INT = 1000000011;
     /**
-     * Константа возврата в пункт регистрации кол-во клиентов в очереди, в случае если услуга не
-     * оказывается учитывая ограничение посещений в день и лимит достигнут
+     * ÐšÐ¾Ð½Ñ�Ñ‚Ð°Ð½Ñ‚Ð° Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‚Ð° Ð² Ð¿ÑƒÐ½ÐºÑ‚ Ñ€ÐµÐ³Ð¸Ñ�Ñ‚Ñ€Ð°Ñ†Ð¸Ð¸ ÐºÐ¾Ð»-Ð²Ð¾ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð¾Ð² Ð² Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸, Ð² Ñ�Ð»ÑƒÑ‡Ð°Ðµ ÐµÑ�Ð»Ð¸ ÑƒÑ�Ð»ÑƒÐ³Ð° Ð½Ðµ
+     * Ð¾ÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÑ‚Ñ�Ñ� ÑƒÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ñ� Ð¾Ð³Ñ€Ð°Ð½Ð¸Ñ‡ÐµÐ½Ð¸Ðµ Ð¿Ð¾Ñ�ÐµÑ‰ÐµÐ½Ð¸Ð¹ Ð² Ð´ÐµÐ½ÑŒ Ð¸ Ð»Ð¸Ð¼Ð¸Ñ‚ Ð´Ð¾Ñ�Ñ‚Ð¸Ð³Ð½ÑƒÑ‚
      */
     public static final int LOCK_PER_DAY_INT = 1000000022;
     /**
-     * Вопрос о живости
+     * Ð’Ð¾Ð¿Ñ€Ð¾Ñ� Ð¾ Ð¶Ð¸Ð²Ð¾Ñ�Ñ‚Ð¸
      */
     public static final String HOW_DO_YOU_DO = "do you live?";
     /**
@@ -419,7 +419,7 @@ public final class Uses {
 
     static {
         /**
-         * Инициализация
+         * Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ�
          */
         GraphicsDevice[] screenDevices = null;
         try {
@@ -492,12 +492,12 @@ public final class Uses {
     }
 
     /**
-     * Рекурентный формирователь для public static ArrayList elements(Element root, String
+     * Ð ÐµÐºÑƒÑ€ÐµÐ½Ñ‚Ð½Ñ‹Ð¹ Ñ„Ð¾Ñ€Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ Ð´Ð»Ñ� public static ArrayList elements(Element root, String
      * tagName).
      *
-     * @param list массив элементов
-     * @param el корневой элемент ветви
-     * @param tagName имя искомых узлов
+     * @param list Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð²
+     * @param el ÐºÐ¾Ñ€Ð½ÐµÐ²Ð¾Ð¹ Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð²ÐµÑ‚Ð²Ð¸
+     * @param tagName Ð¸Ð¼Ñ� Ð¸Ñ�ÐºÐ¾Ð¼Ñ‹Ñ… ÑƒÐ·Ð»Ð¾Ð²
      */
     private static void getList(ArrayList list, Element el, String tagName) {
         list.addAll(el.elements(tagName));
@@ -507,11 +507,11 @@ public final class Uses {
     }
 
     /**
-     * Возвращает массив эолементов с определенным именем из ветви
+     * Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð¾Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ñ� Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð½Ñ‹Ð¼ Ð¸Ð¼ÐµÐ½ÐµÐ¼ Ð¸Ð· Ð²ÐµÑ‚Ð²Ð¸
      *
-     * @param root корневой элемент ветви
-     * @param tagName имя искомых узлов
-     * @return массив элементов
+     * @param root ÐºÐ¾Ñ€Ð½ÐµÐ²Ð¾Ð¹ Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð²ÐµÑ‚Ð²Ð¸
+     * @param tagName Ð¸Ð¼Ñ� Ð¸Ñ�ÐºÐ¾Ð¼Ñ‹Ñ… ÑƒÐ·Ð»Ð¾Ð²
+     * @return Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð²
      */
     public static ArrayList<Element> elements(Element root, String tagName) {
         ArrayList<Element> list = new ArrayList<>();
@@ -521,12 +521,12 @@ public final class Uses {
     }
 
     /**
-     * Рекурентный формирователь для public static ArrayList elementsByAttr(...).
+     * Ð ÐµÐºÑƒÑ€ÐµÐ½Ñ‚Ð½Ñ‹Ð¹ Ñ„Ð¾Ñ€Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ Ð´Ð»Ñ� public static ArrayList elementsByAttr(...).
      *
-     * @param list массив элементов
-     * @param el корневой элемент ветви
-     * @param attrName имя искомых атрибутов
-     * @param attrValue значение атрибута
+     * @param list Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð²
+     * @param el ÐºÐ¾Ñ€Ð½ÐµÐ²Ð¾Ð¹ Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð²ÐµÑ‚Ð²Ð¸
+     * @param attrName Ð¸Ð¼Ñ� Ð¸Ñ�ÐºÐ¾Ð¼Ñ‹Ñ… Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚Ð¾Ð²
+     * @param attrValue Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚Ð°
      */
     private static void getList(ArrayList list, Element el, String attrName, String attrValue) {
         if (attrValue.equals(el.attributeValue(attrName))) {
@@ -538,12 +538,12 @@ public final class Uses {
     }
 
     /**
-     * Возвращает массив эолементов с определенным значением атрибута из ветви
+     * Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð¾Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ñ� Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð½Ñ‹Ð¼ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚Ð° Ð¸Ð· Ð²ÐµÑ‚Ð²Ð¸
      *
-     * @param root корневой элемент ветви
-     * @param attrName имя искомых атрибутов
-     * @param attrValue значение атрибута
-     * @return массив элементов
+     * @param root ÐºÐ¾Ñ€Ð½ÐµÐ²Ð¾Ð¹ Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð²ÐµÑ‚Ð²Ð¸
+     * @param attrName Ð¸Ð¼Ñ� Ð¸Ñ�ÐºÐ¾Ð¼Ñ‹Ñ… Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚Ð¾Ð²
+     * @param attrValue Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚Ð°
+     * @return Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð²
      */
     public static ArrayList<Element> elementsByAttr(Element root, String attrName,
         String attrValue) {
@@ -554,11 +554,11 @@ public final class Uses {
     }
 
     /**
-     * Рекурентный формирователь для public static ArrayList elementsByAttr(...).
+     * Ð ÐµÐºÑƒÑ€ÐµÐ½Ñ‚Ð½Ñ‹Ð¹ Ñ„Ð¾Ñ€Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ Ð´Ð»Ñ� public static ArrayList elementsByAttr(...).
      *
-     * @param list массив элементов
-     * @param el корневой элемент ветви
-     * @param text значение CData
+     * @param list Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð²
+     * @param el ÐºÐ¾Ñ€Ð½ÐµÐ²Ð¾Ð¹ Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð²ÐµÑ‚Ð²Ð¸
+     * @param text Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ CData
      */
     private static void getListCData(ArrayList list, Element el, String text) {
         if (text.equals(el.getTextTrim())) {
@@ -570,11 +570,11 @@ public final class Uses {
     }
 
     /**
-     * Возвращает массив эолементов с определенным значением CData из ветви
+     * Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð¾Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ñ� Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð½Ñ‹Ð¼ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸ÐµÐ¼ CData Ð¸Ð· Ð²ÐµÑ‚Ð²Ð¸
      *
-     * @param root корневой элемент ветви
-     * @param text текст в CData в xml-узле
-     * @return массив элементов
+     * @param root ÐºÐ¾Ñ€Ð½ÐµÐ²Ð¾Ð¹ Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð²ÐµÑ‚Ð²Ð¸
+     * @param text Ñ‚ÐµÐºÑ�Ñ‚ Ð² CData Ð² xml-ÑƒÐ·Ð»Ðµ
+     * @return Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð²
      */
     public static ArrayList<Element> elementsByCData(Element root, String text) {
         ArrayList<Element> list = new ArrayList<>();
@@ -584,9 +584,9 @@ public final class Uses {
     }
 
     /**
-     * Получение адреса из строчки.
+     * ÐŸÐ¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ðµ Ð°Ð´Ñ€ÐµÑ�Ð° Ð¸Ð· Ñ�Ñ‚Ñ€Ð¾Ñ‡ÐºÐ¸.
      *
-     * @param adress строчка типа "125.256.214.854" или "rambler.ru"
+     * @param adress Ñ�Ñ‚Ñ€Ð¾Ñ‡ÐºÐ° Ñ‚Ð¸Ð¿Ð° "125.256.214.854" Ð¸Ð»Ð¸ "rambler.ru"
      * @return InetAddress
      */
     public static InetAddress getInetAddress(String adress) {
@@ -600,17 +600,17 @@ public final class Uses {
     }
 
     /**
-     * Послать сообщение по UDP
+     * ÐŸÐ¾Ñ�Ð»Ð°Ñ‚ÑŒ Ñ�Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð¿Ð¾ UDP
      *
-     * @param message текст посылаемого сообщения
-     * @param address адрес получателя. Если адрес "255.255.255.255", то рассылка будет
-     * широковещательной.
-     * @param port порт получателя
+     * @param message Ñ‚ÐµÐºÑ�Ñ‚ Ð¿Ð¾Ñ�Ñ‹Ð»Ð°ÐµÐ¼Ð¾Ð³Ð¾ Ñ�Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ�
+     * @param address Ð°Ð´Ñ€ÐµÑ� Ð¿Ð¾Ð»ÑƒÑ‡Ð°Ñ‚ÐµÐ»Ñ�. Ð•Ñ�Ð»Ð¸ Ð°Ð´Ñ€ÐµÑ� "255.255.255.255", Ñ‚Ð¾ Ñ€Ð°Ñ�Ñ�Ñ‹Ð»ÐºÐ° Ð±ÑƒÐ´ÐµÑ‚
+     * ÑˆÐ¸Ñ€Ð¾ÐºÐ¾Ð²ÐµÑ‰Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾Ð¹.
+     * @param port Ð¿Ð¾Ñ€Ñ‚ Ð¿Ð¾Ð»ÑƒÑ‡Ð°Ñ‚ÐµÐ»Ñ�
      */
     public static void sendUDPMessage(String message, InetAddress address, int port) {
-        QLog.l().logger().trace(
-            "Отправка UDP сообшение \"" + message + "\" по адресу \"" + address.getHostAddress()
-                + "\" на порт \"" + port + "\"");
+//        QLog.l().logger().trace(
+//            " UDP  \"" + message + "\"  \"" + address.getHostAddress()
+//                + "\"  \"" + port + "\"");
         final DatagramSocket socket;
         final byte mess_b[] = message.getBytes();
         final DatagramPacket packet = new DatagramPacket(mess_b, mess_b.length, address, port);
@@ -629,10 +629,10 @@ public final class Uses {
     }
 
     /**
-     * Послать сообщение по UDP широковещательно
+     * ÐŸÐ¾Ñ�Ð»Ð°Ñ‚ÑŒ Ñ�Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð¿Ð¾ UDP ÑˆÐ¸Ñ€Ð¾ÐºÐ¾Ð²ÐµÑ‰Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾
      *
-     * @param message текст посылаемого сообщения
-     * @param port порт получателя
+     * @param message Ñ‚ÐµÐºÑ�Ñ‚ Ð¿Ð¾Ñ�Ñ‹Ð»Ð°ÐµÐ¼Ð¾Ð³Ð¾ Ñ�Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ�
+     * @param port Ð¿Ð¾Ñ€Ñ‚ Ð¿Ð¾Ð»ÑƒÑ‡Ð°Ñ‚ÐµÐ»Ñ�
      */
     public static void sendUDPBroadcast(String message, int port) {
         try {
@@ -643,25 +643,25 @@ public final class Uses {
     }
 
     /**
-     * Загрузка ресурса из jar-файла
+     * Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ñ€ÐµÑ�ÑƒÑ€Ñ�Ð° Ð¸Ð· jar-Ñ„Ð°Ð¹Ð»Ð°
      *
-     * @param o - класс, нужен для получения ресурса
-     * @param resourceName путь к ресурсу в jar-файле
-     * @return массив байт, содержащий ресурс
+     * @param o - ÐºÐ»Ð°Ñ�Ñ�, Ð½ÑƒÐ¶ÐµÐ½ Ð´Ð»Ñ� Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ñ� Ñ€ÐµÑ�ÑƒÑ€Ñ�Ð°
+     * @param resourceName Ð¿ÑƒÑ‚ÑŒ Ðº Ñ€ÐµÑ�ÑƒÑ€Ñ�Ñƒ Ð² jar-Ñ„Ð°Ð¹Ð»Ðµ
+     * @return Ð¼Ð°Ñ�Ñ�Ð¸Ð² Ð±Ð°Ð¹Ñ‚, Ñ�Ð¾Ð´ÐµÑ€Ð¶Ð°Ñ‰Ð¸Ð¹ Ñ€ÐµÑ�ÑƒÑ€Ñ�
      */
     public static byte[] readResource(Object o, String resourceName) throws IOException {
-        // Выдаем ресурс  "/ru/apertum/qsystem/reports/web/name.jpg"
+        // Ð’Ñ‹Ð´Ð°ÐµÐ¼ Ñ€ÐµÑ�ÑƒÑ€Ñ�  "/ru/apertum/qsystem/reports/web/name.jpg"
         final InputStream inStream = o.getClass().getResourceAsStream(resourceName);
         return readInputStream(inStream);
     }
 
     /**
-     * грузит картинку из файла или ресурсов. Если Параметр пустой, то возвращает null.
+     * Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÑƒ Ð¸Ð· Ñ„Ð°Ð¹Ð»Ð° Ð¸Ð»Ð¸ Ñ€ÐµÑ�ÑƒÑ€Ñ�Ð¾Ð². Ð•Ñ�Ð»Ð¸ ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€ Ð¿ÑƒÑ�Ñ‚Ð¾Ð¹, Ñ‚Ð¾ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ null.
      *
-     * @param o Объект для загрузки ресурса из jar, чаще всего класс в котором понадобилась эта
-     * картинка.
-     * @param resourceName путь к ресурсу или файлу картинки. Может быть пустым.
-     * @param defaultResourceName Если нифайла ни ресурса не найдется, то загрузится этот ресурс
+     * @param o ÐžÐ±ÑŠÐµÐºÑ‚ Ð´Ð»Ñ� Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ¸ Ñ€ÐµÑ�ÑƒÑ€Ñ�Ð° Ð¸Ð· jar, Ñ‡Ð°Ñ‰Ðµ Ð²Ñ�ÐµÐ³Ð¾ ÐºÐ»Ð°Ñ�Ñ� Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ Ð¿Ð¾Ð½Ð°Ð´Ð¾Ð±Ð¸Ð»Ð°Ñ�ÑŒ Ñ�Ñ‚Ð°
+     * ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ°.
+     * @param resourceName Ð¿ÑƒÑ‚ÑŒ Ðº Ñ€ÐµÑ�ÑƒÑ€Ñ�Ñƒ Ð¸Ð»Ð¸ Ñ„Ð°Ð¹Ð»Ñƒ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸. ÐœÐ¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¿ÑƒÑ�Ñ‚Ñ‹Ð¼.
+     * @param defaultResourceName Ð•Ñ�Ð»Ð¸ Ð½Ð¸Ñ„Ð°Ð¹Ð»Ð° Ð½Ð¸ Ñ€ÐµÑ�ÑƒÑ€Ñ�Ð° Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÑ‚Ñ�Ñ�, Ñ‚Ð¾ Ð·Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚Ñ�Ñ� Ñ�Ñ‚Ð¾Ñ‚ Ñ€ÐµÑ�ÑƒÑ€Ñ�
      */
     public static Image loadImage(Object o, String resourceName, String defaultResourceName) {
         if ("".equals(resourceName)) {
@@ -686,7 +686,7 @@ public final class Uses {
                     }
                     if (o.getClass().getResourceAsStream(defaultResourceName) == null) {
                         QLog.l().logger().error(
-                            "При загрузки ресурса не нашлось ни файла, ни ресурса, НИ ДЕФОЛТНОГО РЕСУРСА \""
+                            "ÐŸÑ€Ð¸ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ¸ Ñ€ÐµÑ�ÑƒÑ€Ñ�Ð° Ð½Ðµ Ð½Ð°ÑˆÐ»Ð¾Ñ�ÑŒ Ð½Ð¸ Ñ„Ð°Ð¹Ð»Ð°, Ð½Ð¸ Ñ€ÐµÑ�ÑƒÑ€Ñ�Ð°, Ð�Ð˜ Ð”Ð•Ð¤ÐžÐ›Ð¢Ð�ÐžÐ“Ðž Ð Ð•Ð¡Ð£Ð Ð¡Ð� \""
                                 + defaultResourceName + "\"");
                         return new BufferedImage(2000, 2000, BufferedImage.TYPE_INT_RGB);
                     }
@@ -712,11 +712,11 @@ public final class Uses {
     }
 
     /**
-     * Для чтения байт из потока. не применять для потока связанного с сокетом.
+     * Ð”Ð»Ñ� Ñ‡Ñ‚ÐµÐ½Ð¸Ñ� Ð±Ð°Ð¹Ñ‚ Ð¸Ð· Ð¿Ð¾Ñ‚Ð¾ÐºÐ°. Ð½Ðµ Ð¿Ñ€Ð¸Ð¼ÐµÐ½Ñ�Ñ‚ÑŒ Ð´Ð»Ñ� Ð¿Ð¾Ñ‚Ð¾ÐºÐ° Ñ�Ð²Ñ�Ð·Ð°Ð½Ð½Ð¾Ð³Ð¾ Ñ� Ñ�Ð¾ÐºÐµÑ‚Ð¾Ð¼.
      * readSocketInputStream(InputStream stream)
      *
-     * @param stream из него читаем
-     * @return byte[] результат
+     * @param stream Ð¸Ð· Ð½ÐµÐ³Ð¾ Ñ‡Ð¸Ñ‚Ð°ÐµÐ¼
+     * @return byte[] Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
      */
     public static byte[] readInputStream(InputStream stream) throws IOException {
         final byte[] result;
@@ -727,22 +727,22 @@ public final class Uses {
     }
 
     /**
-     * Округление до нескольких знаков после запятой.
+     * ÐžÐºÑ€ÑƒÐ³Ð»ÐµÐ½Ð¸Ðµ Ð´Ð¾ Ð½ÐµÑ�ÐºÐ¾Ð»ÑŒÐºÐ¸Ñ… Ð·Ð½Ð°ÐºÐ¾Ð² Ð¿Ð¾Ñ�Ð»Ðµ Ð·Ð°Ð¿Ñ�Ñ‚Ð¾Ð¹.
      *
-     * @return Готовое обрезанное дробное число.
+     * @return Ð“Ð¾Ñ‚Ð¾Ð²Ð¾Ðµ Ð¾Ð±Ñ€ÐµÐ·Ð°Ð½Ð½Ð¾Ðµ Ð´Ñ€Ð¾Ð±Ð½Ð¾Ðµ Ñ‡Ð¸Ñ�Ð»Ð¾.
      */
     public static double roundAs(double value, int scale) {
         return new BigDecimal(value).setScale(scale, RoundingMode.UP).doubleValue();
     }
 
     /**
-     * Вызывает диалог выбора файла.
+     * Ð’Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ Ð´Ð¸Ð°Ð»Ð¾Ð³ Ð²Ñ‹Ð±Ð¾Ñ€Ð° Ñ„Ð°Ð¹Ð»Ð°.
      *
-     * @param parent Относительно чего показывать форму диалога.
-     * @param title Заголовок диалогового окна.
-     * @param description Описание фильтра, например "Файлы XML(*.xml)".
-     * @param extension Фильтр по расширению файлов, например "xml".
-     * @return Полное имя файла или null если не выбрали.
+     * @param parent ÐžÑ‚Ð½Ð¾Ñ�Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ñ‡ÐµÐ³Ð¾ Ð¿Ð¾ÐºÐ°Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ Ñ„Ð¾Ñ€Ð¼Ñƒ Ð´Ð¸Ð°Ð»Ð¾Ð³Ð°.
+     * @param title Ð—Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº Ð´Ð¸Ð°Ð»Ð¾Ð³Ð¾Ð²Ð¾Ð³Ð¾ Ð¾ÐºÐ½Ð°.
+     * @param description ÐžÐ¿Ð¸Ñ�Ð°Ð½Ð¸Ðµ Ñ„Ð¸Ð»ÑŒÑ‚Ñ€Ð°, Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€ "Ð¤Ð°Ð¹Ð»Ñ‹ XML(*.xml)".
+     * @param extension Ð¤Ð¸Ð»ÑŒÑ‚Ñ€ Ð¿Ð¾ Ñ€Ð°Ñ�ÑˆÐ¸Ñ€ÐµÐ½Ð¸ÑŽ Ñ„Ð°Ð¹Ð»Ð¾Ð², Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€ "xml".
+     * @return ÐŸÐ¾Ð»Ð½Ð¾Ðµ Ð¸Ð¼Ñ� Ñ„Ð°Ð¹Ð»Ð° Ð¸Ð»Ð¸ null ÐµÑ�Ð»Ð¸ Ð½Ðµ Ð²Ñ‹Ð±Ñ€Ð°Ð»Ð¸.
      */
     public static String getFileName(Component parent, String title, String description,
         String extension) {
@@ -763,9 +763,9 @@ public final class Uses {
     }
 
     /**
-     * Отцентирируем Окно по центру экрана
+     * ÐžÑ‚Ñ†ÐµÐ½Ñ‚Ð¸Ñ€Ð¸Ñ€ÑƒÐµÐ¼ ÐžÐºÐ½Ð¾ Ð¿Ð¾ Ñ†ÐµÐ½Ñ‚Ñ€Ñƒ Ñ�ÐºÑ€Ð°Ð½Ð°
      *
-     * @param component это окно и будем центрировать
+     * @param component Ñ�Ñ‚Ð¾ Ð¾ÐºÐ½Ð¾ Ð¸ Ð±ÑƒÐ´ÐµÐ¼ Ñ†ÐµÐ½Ñ‚Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ
      */
     public static void setLocation(JDialog component) {
         component.setLocationRelativeTo(null);
@@ -780,9 +780,9 @@ public final class Uses {
     }
 
     /**
-     * Растянем окно на весь экран
+     * Ð Ð°Ñ�Ñ‚Ñ�Ð½ÐµÐ¼ Ð¾ÐºÐ½Ð¾ Ð½Ð° Ð²ÐµÑ�ÑŒ Ñ�ÐºÑ€Ð°Ð½
      *
-     * @param component это окно и будем растягивать
+     * @param component Ñ�Ñ‚Ð¾ Ð¾ÐºÐ½Ð¾ Ð¸ Ð±ÑƒÐ´ÐµÐ¼ Ñ€Ð°Ñ�Ñ‚Ñ�Ð³Ð¸Ð²Ð°Ñ‚ÑŒ
      */
     public static void setFullSize(Component component) {
         component.setBounds(0, 0, firstMonitor.getDefaultConfiguration().getBounds().width,
@@ -790,13 +790,13 @@ public final class Uses {
     }
 
     /**
-     * Загрузка всех jar из папки в класспаф
+     * Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð²Ñ�ÐµÑ… jar Ð¸Ð· Ð¿Ð°Ð¿ÐºÐ¸ Ð² ÐºÐ»Ð°Ñ�Ñ�Ð¿Ð°Ñ„
      *
-     * @param folder из этой папки закрузим.
+     * @param folder Ð¸Ð· Ñ�Ñ‚Ð¾Ð¹ Ð¿Ð°Ð¿ÐºÐ¸ Ð·Ð°ÐºÑ€ÑƒÐ·Ð¸Ð¼.
      */
     public static void loadPlugins(String folder) {
-        // Загрузка плагинов из папки plugins
-        QLog.l().logger().info("Загрузка плагинов из папки plugins.");
+        // Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð¿Ð»Ð°Ð³Ð¸Ð½Ð¾Ð² Ð¸Ð· Ð¿Ð°Ð¿ÐºÐ¸ plugins
+        QLog.l().logger().info("Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð¿Ð»Ð°Ð³Ð¸Ð½Ð¾Ð² Ð¸Ð· Ð¿Ð°Ð¿ÐºÐ¸ plugins.");
         final File[] list = new File(folder)
             .listFiles((File dir, String name) -> name.toLowerCase().endsWith(".jar"));
         if (list != null && list.length != 0) {
@@ -818,7 +818,7 @@ public final class Uses {
     }
 
     /**
-     * Создание и показ сплэш-заставки с блокировкой запуска второй копии
+     * Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¸ Ð¿Ð¾ÐºÐ°Ð· Ñ�Ð¿Ð»Ñ�Ñˆ-Ð·Ð°Ñ�Ñ‚Ð°Ð²ÐºÐ¸ Ñ� Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²ÐºÐ¾Ð¹ Ð·Ð°Ð¿ÑƒÑ�ÐºÐ° Ð²Ñ‚Ð¾Ñ€Ð¾Ð¹ ÐºÐ¾Ð¿Ð¸Ð¸
      */
     public static void startSplashClient() {
         if (!QConfig.cfg().isTerminal()) {
@@ -833,7 +833,7 @@ public final class Uses {
     }
 
     /**
-     * Создание и показ сплэш-заставки с блокировкой запуска второй копии
+     * Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¸ Ð¿Ð¾ÐºÐ°Ð· Ñ�Ð¿Ð»Ñ�Ñˆ-Ð·Ð°Ñ�Ñ‚Ð°Ð²ÐºÐ¸ Ñ� Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²ÐºÐ¾Ð¹ Ð·Ð°Ð¿ÑƒÑ�ÐºÐ° Ð²Ñ‚Ð¾Ñ€Ð¾Ð¹ ÐºÐ¾Ð¿Ð¸Ð¸
      */
     public static void startSplash() {
         sh = true;
@@ -841,7 +841,7 @@ public final class Uses {
     }
 
     /**
-     * Создание и показ сплэш-заставки без блокировки запуска второй копии
+     * Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¸ Ð¿Ð¾ÐºÐ°Ð· Ñ�Ð¿Ð»Ñ�Ñˆ-Ð·Ð°Ñ�Ñ‚Ð°Ð²ÐºÐ¸ Ð±ÐµÐ· Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²ÐºÐ¸ Ð·Ð°Ð¿ÑƒÑ�ÐºÐ° Ð²Ñ‚Ð¾Ñ€Ð¾Ð¹ ÐºÐ¾Ð¿Ð¸Ð¸
      */
     public static void showSplash() {
         sh = true;
@@ -849,7 +849,7 @@ public final class Uses {
     }
 
     /**
-     * Скрытие сплэш-заставки
+     * Ð¡ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ Ñ�Ð¿Ð»Ñ�Ñˆ-Ð·Ð°Ñ�Ñ‚Ð°Ð²ÐºÐ¸
      */
     public static void closeSplash() {
         sh = false;
@@ -887,7 +887,7 @@ public final class Uses {
                 res = res.replace(tci + img + tci,
                     tci + f.toURI().toString().replace("file:/", "file:///") + tci);
             } else {
-                QLog.l().logger().error("Не найден файл \"" + img + "\" для HTML.");
+                QLog.l().logger().error("Ð�Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ñ„Ð°Ð¹Ð» \"" + img + "\" Ð´Ð»Ñ� HTML.");
             }
         }
         return res;
@@ -925,7 +925,7 @@ public final class Uses {
     }
 
     /**
-     * Класс заставки
+     * ÐšÐ»Ð°Ñ�Ñ� Ð·Ð°Ñ�Ñ‚Ð°Ð²ÐºÐ¸
      */
     private static class SplashScreen extends JFrame {
 
@@ -966,7 +966,7 @@ public final class Uses {
             } catch (IOException ex) {
                 System.err.println(ex);
             }
-            setTitle("Запуск QSystem");
+            setTitle("Ð—Ð°Ð¿ÑƒÑ�Ðº QSystem");
             setSize(imageIcon.getIconWidth(), imageIcon.getIconHeight());
             imageLabel.setIcon(imageIcon);
             imageLabel2.setIcon(imageIcon2);

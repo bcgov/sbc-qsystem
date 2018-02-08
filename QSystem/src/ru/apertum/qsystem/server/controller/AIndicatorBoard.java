@@ -53,7 +53,7 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
     private LinkedList<Record> oldList = new LinkedList<>();
 
     public AIndicatorBoard() {
-        QLog.l().logQUser().debug("Init AIndicatorBoard");
+        //QLog.l().logQUser().debug("Init AIndicatorBoard");
     }
     //***********************************************************************
     //*************** Работа с хранением строк ******************************
@@ -151,7 +151,7 @@ abstract public class AIndicatorBoard implements IIndicatorBoard {
 
         //Only set invited sound if the service is smartboard enabled
         if (!"Y".equals(service.getSmartboard())) {
-            QLog.l().logQUser().debug("Smartboard not enabled for service, return");
+            //QLog.l().logQUser().debug("Smartboard not enabled for service, return");
             return;
         }
 

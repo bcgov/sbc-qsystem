@@ -420,10 +420,10 @@ public class QServer extends Thread {
             }
 
         }
-/*
+
         QLog.l().logQUser().debug("Refreshing postponed list");
         QPostponedList.getInstance().loadPostponedList(new LinkedList<QCustomer>());
-
+/*
         //Set a job to refresh every two minutes the necessary lists and tree caches
         JobDetail job = JobBuilder.newJob(QRefreshJob.class)
             .withIdentity("OfficeRefreshJob", "group1").build();

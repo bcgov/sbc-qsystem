@@ -17,8 +17,10 @@
         <!--  NOTE!!  Below is the layout for reception offices -->
         <vlayout visible="@load(fmodel.officeType eq 'reception')">
           <label value="${c:l('comments')}"/>
-          <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2"
+          <textbox id="reception_ticket_comments" rows="5" hflex="1" tabindex="2" />
+                   <!--
                    value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+                   -->
 
           <label value="Channels:"/>
           <div width="30%">
@@ -45,22 +47,26 @@
         <hbox>
           <vbox>
             <textbox id="typeservices" sclass="bdd-input-search" focus="true" onCreate="self.focus()"
-                     onChange="@command('doSearch')" value="@bind(fmodel.filter)" instant="true" width="230px"
-                     tabindex="2"/>
+                     onChange="@command('doSearch')" instant="true" width="230px" tabindex="2" />
+                     <!--
+                     value="@bind(fmodel.filter)"/>
+                     -->
           </vbox>
           <vbox>
             <combobox sclass="bdd-input-category" id="cboFmCompress"
                       onChanging="@command('changingCategory', v=event.value)"
-                      onChange="@command('changeCategory')"  selectedItem="@bind(fmodel.pickedMainService)"
+                      onChange="@command('changeCategory')"
                       style="margin:0px 0px 0px 20px;" placeholder="Category" width="180px" tabindex="2"
-                      model="@load(fmodel.categories)">
+                      model="@load(fmodel.categories)"
+                      selectedItem="@bind(fmodel.pickedMainService)" >
               <comboitem label="@load(each)"/>
             </combobox>
           </vbox>
         </hbox>
         <div style="margin:10px 10px 10px 10px;"></div>
         <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)"
-                 width="100%" height="250px">
+                 width="100%" height="250px"
+                 onSelect="@command('serviceSelected')">
           <listhead>
             <listheader label="Service" align="left"/>
             <listheader label="Category" align="left" />
@@ -103,8 +109,10 @@
           </div>
           <div style="margin:10px 10px 10px 5px;"></div>
           <label value="${c:l('comments')}"/>
-          <textbox id="general_ticket_comments" rows="5" hflex="1" tabindex="2"
+          <textbox id="general_ticket_comments" rows="5" hflex="1" tabindex="2" />
+                   <!--
                    value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getTempComments()))"/>
+                   -->
         </vlayout>
         
         <!--  This layout is for both types of offices -->
@@ -118,9 +126,11 @@
             <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px"
                     label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')"
                     visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
+                    
             <button sclass= "bdd-begin-service" id="addAndServeBtn" hflex="min" width="100px"
                     label="Begin service" onClick="@command('closeAddAndServeDialog')"
-                    visible="@load(fmodel.addWindowButtons[0])"/>
+                    visible="@load(fmodel.addWindowButtons[0])" />
+                    <!-- disabled="@bind(fmodel.isNoServiceSelected())"/> -->
 
             <!--Change Service-->
             <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}"
