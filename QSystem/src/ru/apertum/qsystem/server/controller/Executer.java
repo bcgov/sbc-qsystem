@@ -1937,7 +1937,7 @@ public final class Executer {
         //        QLog.l().logQUser().debug("==> StoreProc CustId: " + custId.toString() + "; RC: "
         //                + ReturnCode + "; SqlC: " + sqlErrorNo + "; RM: " + ProcMsg);
 
-        QLog.l().logQUser().debug("    --> Error Message: " + UserMsg);
+        //QLog.l().logQUser().debug("    --> Error Message: " + UserMsg);
 
         //  CM:  Send a Slack message.
         if (ReturnCode != 0) {
