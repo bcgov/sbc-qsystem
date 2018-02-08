@@ -904,7 +904,7 @@ public final class Executer {
             }
 
             //  Call John's stored procedure.
-            CallStoredProcDone(CustId, "Customer left");
+            CallStoredProcDone(user, user.getCustomer(), CustId, "Customer left");
 
             QLog.l().logQUser().debug("==> End: Task(KillNxtCust).process()");
 
@@ -1692,29 +1692,6 @@ public final class Executer {
 
             QLog.l().logQUser().debug("==> Start: Task(FinishCust).process()");
 
-            //  Test of config info.  Initialize variables.
-            FileBasedConfiguration config = QConfig.cfg().getQsysProperties();
-            String currentKey = "";
-            String currentValue = "";
-
-            Iterator<String> keys = config.getKeys();
-
-            while (keys.hasNext()) {
-                currentKey = keys.next();
-                currentValue = config.getString(currentKey);
-                //QLog.l().logger().debug("    --> Key: " + currentKey + "; Value: " + currentValue);
-            }
-
-            //  CM:  Try another way.  Note: No config.properties, so nothing here.
-            Properties props = new Properties();
-            props.put("mail.smtp.host", config.getString("SMTPServer"));
-            Enumeration propKeys = props.keys();
-            while (propKeys.hasMoreElements()) {
-                currentKey = (String) propKeys.nextElement();
-                currentValue = props.getProperty(currentKey);
-                //QLog.l().logger().debug("    --> PKey: " + currentKey + "; PValue: " + currentValue);
-            }
-
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
@@ -1742,66 +1719,6 @@ public final class Executer {
             customer.setTempComments(cmdParams.textData);
             // надо посмотреть не требует ли этот кастомер возврата в какую либо очередь.
             final QService backSrv = user.getCustomer().getServiceForBack();
-
-            //*************************************************************
-            //  CM:  Add some properties, try to send a message.
-            Session session = Session.getDefaultInstance(props, null);
-            //session.setDebug(true);
-            Message msg = new MimeMessage(session);
-            try {
-                msg.setFrom(new InternetAddress(config.getString("Sender")));
-                msg.setRecipients(Message.RecipientType.TO, new InternetAddress[] {
-                        new InternetAddress(config.getString("Developers")) });
-                msg.setSubject(
-                        "SBC-QSystem Error: Could not write summary statistics records for client "
-                                + customer.getId());
-                msg.setText("Please fix as soon as possible.");
-                Transport.send(msg);
-            }
-            catch (Exception ex) {
-                QLog.l().logger().debug("    --> Email exception: " + ex.getMessage());
-            }
-            //*****************************************************************
-
-            //****************************************************
-            //  CM:  xxx  Try slack message.
-            String CSRIcon = ":information_desk_person:";
-            String ReportMsg = "";
-            String ReportTicket = "";
-            String Username = "";
-            String BugMsg =
-                    "Test Msg Only! SBC-QSystem Error: Could not write summary statistics records for client "
-                            + customer.getId();
-
-            SlackApi api = new SlackApi(
-                    "https://hooks.slack.com/services/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");
-            // SlackMessage msg = null;
-            SlackMessage slackMsg = new SlackMessage(null);
-
-            if (user.getName() != null) {
-                Username = "CSR - " + user.getName();
-                if (user.getCustomer() != null) {
-                    ReportTicket = user.getCustomer().getName();
-                }
-                else {
-                    ReportTicket = "Ticket numebr is not provided";
-                }
-            }
-            else {
-                Username = "User is not logged in";
-            }
-
-            ReportMsg = ReportMsg + Username + "\n" + "Office Name: " + user.getOffice().getName()
-                    + "\n"
-                    + "Ticket Number: " + ReportTicket + "\n\n" + BugMsg + "\n";
-
-            slackMsg.setIcon(CSRIcon);
-            slackMsg.setText(ReportMsg);
-            slackMsg.setUsername(Username);
-            // api.SlackMessage.setIcon(":information_desk_person:");
-            api.call(slackMsg);
-
-            //***************************************************            
 
             if (backSrv != null) {
                 //QLog.l().logger().debug("Требуется возврат после редиректа.");
@@ -1893,6 +1810,10 @@ public final class Executer {
                     //    + "\"");
                 }
             }
+
+            //  CM:  Save customer before setting to null.
+            QCustomer savedCustomer = customer;
+
             try {
                 user.setCustomer(null);//бобик сдох и медальки не осталось
                 // сохраняем состояния очередей.
@@ -1908,7 +1829,7 @@ public final class Executer {
             QLog.l().logQUser().debug("==> End: Task(FinishCust).process()");
 
             //  CM:  Call John's MySql stored procedure.
-            CallStoredProcDone(CustId, "Customer finished");
+            CallStoredProcDone(user, savedCustomer, CustId, "Customer finished");
 
             //QLog.l().logQUser().debug("==> End: Task(TskFinCust).process()");
 
@@ -1916,7 +1837,7 @@ public final class Executer {
         }
     };
 
-    void CallStoredProcDone(Long custId, String from) {
+    private void CallStoredProcDone(QUser user, QCustomer customer, Long custId, String from) {
 
         //  Debug.
         //QLog.l().logQUser().debug("==> Start: CallStoredProcDone(" + custId + ", " + from + ")");
@@ -1926,6 +1847,9 @@ public final class Executer {
         int sqlErrorNo = -2;
         String ErrorMsg = "You should not see this message.";
         String ProcMsg = "You should not see this either.";
+        String UserMsg = "";
+        String UserName = "User not logged in";
+        String TicketName = "Not known";
 
         //  CM:  Calling John's MySql stored procedure.
         try {
@@ -1948,7 +1872,6 @@ public final class Executer {
             cStmt.registerOutParameter(2, Types.INTEGER);
             cStmt.registerOutParameter(3, Types.INTEGER);
             cStmt.registerOutParameter(4, Types.VARCHAR);
-            int RetBefore = ReturnCode;
 
             //  The actual call statement.
             cStmt.execute();
@@ -1959,13 +1882,13 @@ public final class Executer {
             //  See what the return code was.
             //QLog.l().logQUser().debug("    --> Code before: " + RetBefore + "; RC var: " + ReturnCode + "; RC get: " + RetCall);
             ReturnCode = RetCall;
-
+            
             //  See if an error or not.
             if (ReturnCode == 0) {
                 ErrorMsg = "All OK.  No error.";
             }
             else {
-                ErrorMsg = "Stored procedure load_client_visit returned an error.";
+                ErrorMsg = "Error executing load_client_visit stored procedure.";
             }
         }
 
@@ -1981,11 +1904,121 @@ public final class Executer {
             //QLog.l().logQUser().debug("    --> Finally: Code =  " + ReturnCode + "; ErrMsg = " + ErrorMsg);
         }
 
+        //  CM:  Create standard error message.
+        if (user.getName() != null) {
+            UserName = user.getName();
+        }
+        if (customer != null) {
+            TicketName = customer.getName();
+        }
+
+        //  CM:  Test message only.
+        //ReturnCode = 999;
+
+        UserMsg = ErrorMsg
+                + "\nOffice Name: " + user.getOffice().getName()
+                + "\nCSR Name: " + UserName
+                + "\nTicket Number: " + TicketName
+                + "\nCustomer ID: " + custId.toString()
+                + "\nHappened When: " + from
+                + "\nStored Procedure Return Code: " + ReturnCode
+                + "\nMySql Error Code: " + sqlErrorNo
+                + "\nMySql Error Message:  " + ProcMsg;
+
         //  Debug.
         //QLog.l().logQUser().debug("==> End: CallStoredProcDone(" + custId + ", " + from + ")");
-        QLog.l().logQUser().debug("==> StoreProc CustId: " + custId.toString() + "; RC: "
-                + ReturnCode + "; SqlC: " + sqlErrorNo + "; RM: " + ProcMsg);
+        //        QLog.l().logQUser().debug("==> StoreProc CustId: " + custId.toString() + "; RC: "
+        //                + ReturnCode + "; SqlC: " + sqlErrorNo + "; RM: " + ProcMsg);
+
+        QLog.l().logQUser().debug("    --> Error Message: " + UserMsg);
+
+        //  CM:  Send a Slack message.
+        if (ReturnCode != 0) {
+            SendSlackMessage(user, customer, UserMsg);
+            //SendEmailMessage(user, customer, UserMsg);
+        }
     }
+
+    public void SendSlackMessage(QUser user, QCustomer customer, String errorMessage) {
+
+        //  CM:  xxx  Try slack message.
+        String CSRIcon = ":information_desk_person:";
+        //        String ReportMsg = "";
+        //        String ReportTicket = "";
+        String Username = "";
+        //        String BugMsg =
+        //                "Test Msg Only! SBC-QSystem Error: Could not write summary statistics records for client "
+        //                        + customer.getId();
+
+        SlackApi api = new SlackApi(
+                "https://hooks.slack.com/services/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");
+        // SlackMessage msg = null;
+        SlackMessage slackMsg = new SlackMessage(null);
+
+        if (user.getName() != null) {
+            Username = "CSR - " + user.getName();
+        }
+        else {
+            Username = "User is not logged in";
+        }
+
+        //        ReportMsg = ReportMsg + Username
+        //                + "\nOffice Name:    " + user.getOffice().getName()
+        //                + "\nTicket Number:  " + ReportTicket
+        //                + "\nUser Message:   " + BugMsg
+        //                + "\nSystem Message: " + errorMessage;
+
+        slackMsg.setIcon(CSRIcon);
+        slackMsg.setText(errorMessage);
+        slackMsg.setUsername(Username);
+        // api.SlackMessage.setIcon(":information_desk_person:");
+        api.call(slackMsg);
+    }
+
+    //    public void SendEmailMessage(QUser user, QCustomer customer, String errorMessage) {
+    //
+    //        //  Test of config info.  Initialize variables.
+    //        FileBasedConfiguration config = QConfig.cfg().getQsysProperties();
+    //        String currentKey = "";
+    //        String currentValue = "";
+    //
+    //        Iterator<String> keys = config.getKeys();
+    //
+    //        while (keys.hasNext()) {
+    //            currentKey = keys.next();
+    //            currentValue = config.getString(currentKey);
+    //            //QLog.l().logger().debug("    --> Key: " + currentKey + "; Value: " + currentValue);
+    //        }
+    //
+    //        //  CM:  Try another way.  Note: No config.properties, so nothing here.
+    //        Properties props = new Properties();
+    //        props.put("mail.smtp.host", config.getString("SMTPServer"));
+    //        Enumeration propKeys = props.keys();
+    //        while (propKeys.hasMoreElements()) {
+    //            currentKey = (String) propKeys.nextElement();
+    //            currentValue = props.getProperty(currentKey);
+    //            //QLog.l().logger().debug("    --> PKey: " + currentKey + "; PValue: " + currentValue);
+    //        }
+    //
+    //        //  CM:  Add some properties, try to send a message.
+    //        Session session = Session.getDefaultInstance(props, null);
+    //        //session.setDebug(true);
+    //        Message msg = new MimeMessage(session);
+    //        try {
+    //            msg.setFrom(new InternetAddress(config.getString("Sender")));
+    //            msg.setRecipients(Message.RecipientType.TO, new InternetAddress[] {
+    //                    new InternetAddress(config.getString("Developers")) });
+    //            msg.setSubject(
+    //                    "SBC-QSystem Error: Could not write summary statistics records for client "
+    //                            + customer.getId());
+    //            msg.setText(errorMessage);
+    //            Transport.send(msg);
+    //        }
+    //        catch (Exception ex) {
+    //            QLog.l().logger().debug("    --> Email exception: " + ex.getMessage());
+    //        }
+    //    }
+
     /**
      * Переадресовать клиента к другой услуге. Forward the client to another service.
      */
