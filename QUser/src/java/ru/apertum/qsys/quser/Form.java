@@ -73,6 +73,11 @@ import ru.apertum.qsystem.server.model.postponed.QPostponedList;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
 
+//  CM:  To send slack messages
+import ru.apertum.qsystem.server.controller.SlackApi;
+import ru.apertum.qsystem.server.controller.SlackException;
+import ru.apertum.qsystem.server.controller.SlackMessage;
+
 //  CM:  To read offices.
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
