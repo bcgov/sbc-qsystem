@@ -696,6 +696,9 @@ public class Form {
         if (quser == null) {
             return false;
         }
+        
+        //  Assume not a reception office.
+        checkCFMSType = false;
 
         String qsb = quser.getOffice().getSmartboardType();
         if (qsb.equalsIgnoreCase("callbyticket")) {
@@ -705,6 +708,12 @@ public class Form {
             checkCFMSType = true;
         }
         return checkCFMSType;
+    }
+    
+    public boolean isReceptionOffice() {
+        
+        //  Just call the getCFMSType function.  This fn has a better name.
+        return getCFMSType();
     }
 
     public void EnableService(boolean enable) {

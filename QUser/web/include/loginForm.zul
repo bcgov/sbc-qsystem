@@ -86,7 +86,8 @@
                             onClick="@command('logout')"/>
                     <separator  bar="true"/>
                     <checkbox id="QuickTxnCSR" label="Quick Txn Counter" sclass="login-text QuickTxnClass"
-                              onCheck="@command('QuickTxnCSRChecked')"/>
+                              onCheck="@command('QuickTxnCSRChecked')"
+                              visible="@load(fmodel.isReceptionOffice())" />
                 </div>
             </vbox>
                 

@@ -122,7 +122,7 @@
             <!-- <label value="Channels"/> -->
             <!-- visible="@load(fmodel.addWindowButtons[0])" -->
             <!--Add to Queue and serve-->
-            <checkbox id="QuickTxnCust" label="Quick Txn" />
+            <checkbox id="QuickTxnCust" label="Quick Txn" visible="@load(fmodel.isReceptionOffice())" />
             <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px"
                     label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')"
                     visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
