@@ -267,7 +267,7 @@ End;
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `get_service_quantity`;
+DROP FUNCTION IF EXISTS `get_service_quantity`;
 DELIMITER $$
 CREATE DEFINER=`root`@`%` FUNCTION `get_service_quantity`(p_client_id BIGINT, p_service_id bigint) RETURNS int(11)
 BEGIN
@@ -308,7 +308,7 @@ RETURN 1;
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `get_wait_time`;
+DROP FUNCTION IF EXISTS `get_wait_time`;
 DELIMITER $$
 CREATE DEFINER=`root`@`%` FUNCTION `get_wait_time`(p_client_id BIGINT, p_service_id bigint) RETURNS int(11)
 BEGIN
@@ -466,7 +466,7 @@ End;
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `get_service_time`;
+DROP FUNCTION IF EXISTS `get_service_time`;
 DELIMITER $$
 CREATE DEFINER=`root`@`%` FUNCTION `get_service_time`(p_client_id BIGINT, p_service_id bigint) RETURNS int(11)
 BEGIN
