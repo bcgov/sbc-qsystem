@@ -97,7 +97,8 @@
         <center border="none" hflex="true" autoscroll="true">
             <panel title="Citizens on hold" border="normal" height="100%">
                 <panelchildren>
-                    <listbox  id="postpone_list" model="@load(fmodel.postponList)" selectedItem="@bind(fmodel.pickedPostponed)" width="100%" height="100%" onClick="@command('clickListPostponedInvite')" vflex="max">
+                    <listbox  id="postpone_list" model="@load(fmodel.postponList)" selectedItem="@bind(fmodel.pickedPostponed)" width="100%" height="100%"
+                              onClick="@command('clickListPostponedInvite')" vflex="max">
                         <listhead>
                             <listheader label="Q.Txn" width="75px" sort="auto" align="center"  visible="@load(fmodel.isReceptionOffice())"/>
                             <listheader label="Time" width="100px" sort="auto" align="center"/>
