@@ -1884,11 +1884,12 @@ public final class Executer {
             cStmt.execute();
 
             //  Try getting return code.
-            int RetCall = cStmt.getInt(2);
+            ReturnCode = cStmt.getInt(2);
+            sqlErrorNo = cStmt.getInt(3);
+            ProcMsg = cStmt.getString(4);
 
             //  See what the return code was.
             //QLog.l().logQUser().debug("    --> Code before: " + RetBefore + "; RC var: " + ReturnCode + "; RC get: " + RetCall);
-            ReturnCode = RetCall;
             
             //  See if an error or not.
             if (ReturnCode == 0) {

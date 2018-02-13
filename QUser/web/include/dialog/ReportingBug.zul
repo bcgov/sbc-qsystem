@@ -43,8 +43,10 @@
             <textbox id="Reportbugs" rows="10" hflex="1" tabindex="2" value=""/>
             <hbox>
                 <button sclass= "bdd-submit-bug" id="SubmitBugBtn" hflex="min" width="100px" label="Submit"
+                        autodisable="self"
                         onClick="@command('SendingSlack')" visible="true"/>
                 <button sclass= "bdd-cancel-bug" id="CancelBtn" hflex="min" width="100px" label="${c:l('cancel')}"
+                        autodisable="self"
                         onClick="@command('CancelReporting')"/>
             </hbox>
 	    </vlayout>   

@@ -92,6 +92,7 @@
 
                             <button sclass="act-button bdd-serve-now" style="margin-left: 15px; margin-top: 18px;"
                                     label="Serve Now"
+                                    autodisable="self"
                                     visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])"
                                     onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
                             </button>
@@ -102,6 +103,7 @@
                             <button sclass="act-button bdd-add-citizen" style="margin-right: 30px; margin-top: 18px;"
                                     label="${c:l('add_client')}"
                                     disabled="@load(fmodel.btnsDisabled[6])"
+                                    autodisable="self"
                                     onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
                             </button>                    
                         </hbox>

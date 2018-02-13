@@ -42,6 +42,7 @@
         <!--  Just a div now.  No row.  Contains the login button -->
         <div style="margin:3px 0px 0px 0px;">
             <button sclass="login-button" width="120px" height="34px" id="btnSubmit" label="${c:l('enter')}"
+                    autodisable="self"
                     onClick="@command('login')"  tabindex="3"/>
             <label style="color: white;" class="error" value="@bind(login_msgs['name'])" />
         </div>
@@ -83,6 +84,7 @@
                     <label sclass="login-text" value="@load(fmodel.user.user.point)" />
                     <separator  bar="true"/>
                     <button sclass="login-button" width="120px" height="34px" label="${c:l('out')}"
+                            autodisable="self"
                             onClick="@command('logout')"/>
                     <separator  bar="true"/>
                     <checkbox id="QuickTxnCSR" label="Quick Txn Counter" sclass="login-text QuickTxnClass"

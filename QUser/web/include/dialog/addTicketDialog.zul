@@ -125,28 +125,34 @@
             <checkbox id="QuickTxnCust" label="Quick Txn" visible="@load(fmodel.isReceptionOffice())" />
             <button sclass="bdd-add-to-queue" id="addToQueueBtn" hflex="min" width="100px"
                     label="${c:l('add_to_queue')}" onClick="@command('closeAddToQueueDialog')"
+                    autodisable="self"
                     visible="@load(fmodel.addWindowButtons[0] and fmodel.getCFMSType())"/>
                     
             <button sclass= "bdd-begin-service" id="addAndServeBtn" hflex="min" width="100px"
                     label="Begin service" onClick="@command('closeAddAndServeDialog')"
+                    autodisable="self"
                     visible="@load(fmodel.addWindowButtons[0])" />
                     <!-- disabled="@bind(fmodel.isNoServiceSelected())"/> -->
 
             <!--Change Service-->
             <button id="OKChangeServiceBtn" hflex="min" width="100px" label="${c:l('change')}"
+                    autodisable="self"
                     onClick="@command('closeChangeServiceDialog')" visible="@load(fmodel.addWindowButtons[1])"/>
 
             <!--Add Next Service-->
             <button sclass="bdd-apply" id="OKAddNextServiceBtn" hflex="min" width="100px" label="${c:l('apply')}"
+                    autodisable="self"
                     onClick="@command('closeAddNextServiceDialog')" visible="@load(fmodel.addWindowButtons[2])"/>
 
             <!--Redirect / Back to Queue-->
             <!--No longer exist-->
             <button id="OKredirectBtn" hflex="min" width="100px" label="${c:l('apply')}"
+                    autodisable="self"
                     onClick="@command('closeRedirectDialog')" visible="@load(fmodel.addWindowButtons[3])"/>
 
             <!--Cancel Button For all Windows-->
             <button sclass="bdd-cancel-service" id="closeAddTicketBtn" hflex="min" width="100px"
+                    autodisable="self"
                     label="${c:l('cancel')}" onClick="addTicketDialog.visible = false; event.stopPropagation();"/>
           </hbox>
         </div>
