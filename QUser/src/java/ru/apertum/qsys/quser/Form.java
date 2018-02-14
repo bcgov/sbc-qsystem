@@ -811,6 +811,8 @@ public class Form {
     //@NotifyChange(value = { "btnsDisabled", "avaitColumn" })
     public void invite() {
         
+        Executer.getInstance().TrackUserClick("Invite", "FromTest", user.getUser(), user.getUser().getCustomer());
+        
         //  CM:  See if small time has elapsed since last CSR in this office clicked invite.
         //  CM:  Kludge to prevent two CSRs calling the same citizen.
         Long officeId = user.getUser().getOffice().getId();

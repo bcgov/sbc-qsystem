@@ -120,6 +120,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Types;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -161,6 +162,13 @@ public final class Executer {
      *
      * @return
      */
+
+    //  Info needed for JDBC calls.
+    private static String MyDB = System.getenv("MYSQL_DATABASE");
+    private static String MyUser = System.getenv("MYSQL_USER");
+    private static String MyPw = System.getenv("MYSQL_PASSWORD");
+    private static String URL = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + MyDB
+            + "?noAccessToProcedureBodies=true";
 
     //  CM:  This variable sets the states in which a customer can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
@@ -1857,21 +1865,19 @@ public final class Executer {
         String UserMsg = "";
         String UserName = "User not logged in";
         String TicketName = "Not known";
+        Connection conn = null;
+        CallableStatement cStmt = null;
 
         //  CM:  Calling John's MySql stored procedure.
         try {
-            String MyDB = System.getenv("MYSQL_DATABASE");
-            String MyUser = System.getenv("MYSQL_USER");
-            String MyPw = System.getenv("MYSQL_PASSWORD");
-            String URL = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + MyDB + "?noAccessToProcedureBodies=true";
             String Sql = "{call load_client_visit(?, ?, ?, ?)}";
 
             //  CM:  See if you're getting the right info.
             //QLog.l().logQUser().debug("    --> Service: " + URL + "; DB: " + MyDB + "; User: " + MyUser + "; Pw: " + MyPw);
             //QLog.l().logQUser().debug("    --> Cust Id: " + custId + "; Sql: " + Sql);
 
-            Connection conn = DriverManager.getConnection(URL, MyUser, MyPw);
-            CallableStatement cStmt = conn.prepareCall(Sql);
+            conn = DriverManager.getConnection(URL, MyUser, MyPw);
+            cStmt = conn.prepareCall(Sql);
             cStmt.setLong(1, custId);
             cStmt.setInt(2, ReturnCode);
             cStmt.setInt(3, sqlErrorNo);
@@ -1909,6 +1915,27 @@ public final class Executer {
 
         //  CM:  If any error, handle it.
         finally {
+            
+            //  Close the callable statement and connection.
+            if (cStmt != null) {
+                try {
+                    cStmt.close();
+                }
+                catch (Exception ex) {
+                    QLog.l().logQUser().debug("    --> Exception closing JDBC callable statement: "
+                            + ex.getMessage());
+                }
+            }
+            if (conn != null) {
+                try {
+                conn.close();
+                }
+                catch (Exception ex) {
+                    QLog.l().logQUser().debug("    --> Exception closing JDBC connection: " + ex
+                            .getMessage());
+                }
+            }
+            
             //QLog.l().logQUser().debug("    --> Finally: Code =  " + ReturnCode + "; ErrMsg = " + ErrorMsg);
         }
 
@@ -2030,6 +2057,56 @@ public final class Executer {
     public void TrackUserClick(String clickButton, String beforeAfter, QUser user,
             QCustomer customer) {
 
+        QLog.l().logQUser().debug("==> Start: Track action");
+
+        //  CM:  Create statement to insert values.
+        Connection conn = null;
+        PreparedStatement pStmt = null;
+
+        //  CM:  Calling John's MySql stored procedure.
+        try {
+            String Sql =
+                    "INSERT INTO trackactions (button_clicked, start_finish) values ('Invite', 'Neither')";
+            conn = DriverManager.getConnection(URL, MyUser, MyPw);
+            pStmt = conn.prepareStatement(Sql);
+
+            //  The actual statement.
+            pStmt.executeUpdate();
+            conn.commit();
+        }
+
+        //  CM:  Catch any error trying to call the stored procedure.
+        catch (Exception ex) {
+            QLog.l().logQUser().debug("    --> Exception tracking: " + ex.getMessage());
+        }
+
+        //  CM:  If any error, handle it.
+        finally {
+
+            //  Close the callable statement and connection.
+            if (pStmt != null) {
+                try {
+                    pStmt.close();
+                }
+                catch (Exception ex) {
+                    QLog.l().logQUser().debug(
+                            "    --> Exception closing JDBC track prepared statement: "
+                            + ex.getMessage());
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                }
+                catch (Exception ex) {
+                    QLog.l().logQUser().debug("    --> Exception closing JDBC track connection: "
+                            + ex
+                            .getMessage());
+                }
+            }
+
+            //QLog.l().logQUser().debug("    --> Finally: Code =  " + ReturnCode + "; ErrMsg = " + ErrorMsg);
+        }
     }
 
     /**
