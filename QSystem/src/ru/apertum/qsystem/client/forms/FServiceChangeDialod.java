@@ -27,6 +27,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.BevelBorder;
 import javax.swing.tree.TreeNode;
@@ -1722,7 +1723,8 @@ public class FServiceChangeDialod extends javax.swing.JDialog {
                     .addGap(18, 18, 18))
         );
 
-        jTabbedPane1.addTab("Map to Offices", jServiceOfficePanel);
+        JScrollPane panelPane = new JScrollPane(jServiceOfficePanel);
+        jTabbedPane1.addTab("Map to Offices", panelPane);
 
         checkBoxBackoffice.setText(resourceMap.getString("checkBoxBackoffice.text")); // NOI18N
         checkBoxBackoffice.setName("checkBoxBackoffice"); // NOI18N
