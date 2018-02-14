@@ -2027,6 +2027,11 @@ public final class Executer {
     //        }
     //    }
 
+    public void TrackUserClick(String clickButton, String beforeAfter, QUser user,
+            QCustomer customer) {
+
+    }
+
     /**
      * Переадресовать клиента к другой услуге. Forward the client to another service.
      */
