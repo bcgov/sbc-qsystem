@@ -58,6 +58,10 @@ public class QBoard extends GenericForwardComposer {
     public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
         String office_id = Executions.getCurrent().getParameter("office_id");
         Sessions.getCurrent().setAttribute("office_id", office_id);
+
+        //  CM:  Debug.
+        //QLog.l().logQUser().debug("==> Start: QBoard.afterCompose()");
+
         /*
          <!--div class="lineDivOdd" width="100%" height="14%" >
          <vbox id="str1a" width="100%" height="100%" pack="center" align="center">  </vbox>
@@ -244,11 +248,11 @@ public class QBoard extends GenericForwardComposer {
     }
 
     public boolean getBottomVisible() {
-        QLog.l().logQUser().debug(getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize());
-        QLog.l().logQUser().debug(checkPlugin() ? !"".equals(
-            getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
-                .replaceAll("0|%|(px)", ""))
-            : false);
+        //        QLog.l().logQUser().debug(getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize());
+        //        QLog.l().logQUser().debug(checkPlugin() ? !"".equals(
+        //            getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
+        //                .replaceAll("0|%|(px)", ""))
+        //            : false);
 
         return checkPlugin() ? !"".equals(
             getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
@@ -314,10 +318,17 @@ public class QBoard extends GenericForwardComposer {
     
     @Command
     public void refreshSmartBoard(){
+
+        QLog.l().logQUser().debug("==> Start: QBoard.refreshSmartBoard()");
+
         final Session sess = Sessions.getCurrent();
         if (sess==null) {
+            QLog.l().logQUser().debug("    --> Before redirect");
             Executions.getCurrent().sendRedirect("");
+            QLog.l().logQUser().debug("    --> After redirect");
         }
+
+        QLog.l().logQUser().debug("==> End: QBoard.refreshSmartBoard()");
     }
 
 //    public int getEstimatedTime() {
