@@ -94,7 +94,7 @@
                                     label="Serve Now"
                                     autodisable="self"
                                     visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])"
-                                    onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
+                                    onClick="@command('addServeScreenClick')" id="btn_screen" height="38px" width="158px">                        
                             </button>
 
                             <div width="320px" style="background-color:White;">
