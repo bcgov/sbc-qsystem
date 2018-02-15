@@ -446,8 +446,15 @@ public class Form {
 
     @Command
     public void ReportBug() {
+
+        //  CM:  Track start of reporting a bug.
+        Executer.getInstance().TrackUserClick("Feedback", "Before", user.getUser(), user.getUser().getCustomer());
+
         ReportingBugWindow.setVisible(true);
         ReportingBugWindow.doModal();
+
+        //  CM:  Track end of reporting a bug.
+        Executer.getInstance().TrackUserClick("Feedback", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     private Integer getSessionOfficeId() {
@@ -878,6 +885,15 @@ public class Form {
     }
 
     @Command
+    public void addServeScreenClick() {
+
+        //  CM:  Track the user's Serve Now click, then call the regular routine.
+        Executer.getInstance().TrackUserClick("Serve Now", "Before", user.getUser(), user.getUser().getCustomer());
+        this.addServeScreen();
+        Executer.getInstance().TrackUserClick("Serve Now", "After", user.getUser(), user.getUser().getCustomer());
+    }
+
+    @Command
     public void addServeScreen() {
         ((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox"))
                 .setChecked(false);
@@ -1056,6 +1072,10 @@ public class Form {
     @Command
     @NotifyChange(value = { "addWindowButtons" })
     public void addClient() {
+
+        //  CM:  Track start of Add Citizen
+        Executer.getInstance().TrackUserClick("Add Citizen", "Before", user.getUser(), user.getUser().getCustomer());
+
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
         addWindowButtons[0] = true;
@@ -1066,6 +1086,9 @@ public class Form {
         pickedRedirectServ = null;
         ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
         this.addTicketScreen(true);
+
+        //  CM:  Track end of Add Citizen
+        Executer.getInstance().TrackUserClick("Add Citizen", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
