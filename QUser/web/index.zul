@@ -85,7 +85,7 @@
                         <hbox width="80%">
                             <button sclass="act-button bdd-invite" style="margin-left: 22px; margin-top: 18px;"
                                     label="${c:l('invite_client')}" visible="@load(fmodel.getCFMSType())"
-                                    disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')"
+                                    disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('inviteClick')"
                                     autodisable="self"
                                     id="btn_invite" height="38px" width="158px">
                             </button>
