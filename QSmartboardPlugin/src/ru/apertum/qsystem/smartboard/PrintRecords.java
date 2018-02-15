@@ -56,7 +56,7 @@ public class PrintRecords {
     private boolean invited;
 
     public PrintRecords(QOffice office) {
-        //QLog.l().logQUser().debug("Creating print records");
+        // QLog.l().logQUser().debug("==> Creating print records");
         this.office = office;
         String qsb = "";
 
