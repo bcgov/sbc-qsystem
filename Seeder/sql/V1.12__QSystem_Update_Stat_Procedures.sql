@@ -1,7 +1,5 @@
 USE `qsystem`;
-/******************************************/
-/*  Create the GA Office transaction view */
-/******************************************/
+
 CREATE 
     ALGORITHM = UNDEFINED 
     DEFINER = `root`@`%` 
@@ -41,9 +39,6 @@ VIEW `qstatistic`.`ga_office_transactions` AS
 	where office <> 'Test Office'
 	;
 
-/******************************************/
-/*  Create the GA Office visits view      */
-/******************************************/
 CREATE 
     ALGORITHM = UNDEFINED 
     DEFINER = `root`@`127.0.0.1` 
@@ -91,12 +86,8 @@ VIEW `qstatistic`.`ga_office_visits` AS
         `qstatistic`.`visits`
 	where office <> 'Test Office'; 
 
-/*********************************************/
-/*  Create the get_service_quantity function */
-/*********************************************/
-DELIMITER $$
-
 DROP FUNCTION IF EXISTS `get_service_quantity`;
+DELIMITER $$
 CREATE DEFINER=`root`@`%` FUNCTION `get_service_quantity`(p_client_id BIGINT, p_service_id bigint) RETURNS int(11)
 BEGIN
 Declare v_service_quantity int(11) default 1;
@@ -128,11 +119,8 @@ RETURN 1;
 END$$
 DELIMITER ;
 
-/*********************************************/
-/*  Create the load_client_visit procedure   */
-/*********************************************/
-DELIMITER $$
 DROP PROCEDURE IF EXISTS `load_client_visit`;
+DELIMITER $$
 CREATE DEFINER=`root`@`%` PROCEDURE `load_client_visit`(in p_client_id BIGINT, out p_return_code INT, out p_mysql_errno int, out p_mysql_errtext varchar(2000))
 BEGIN
 Declare v_client_id Bigint;
