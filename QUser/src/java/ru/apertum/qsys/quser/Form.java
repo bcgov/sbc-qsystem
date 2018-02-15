@@ -1705,7 +1705,7 @@ public class Form {
             }
         }
         else {
-            QLog.l().logger().debug("Office is null");
+            //QLog.l().logger().debug("Office is null");
         }
 
         return customers;
