@@ -808,10 +808,17 @@ public class Form {
 
     @Command
     @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
-    //@NotifyChange(value = { "btnsDisabled", "avaitColumn" })
+    public void inviteClick() {
+
+        //  CM:  Track the user's click, then call standard invite routine.
+        Executer.getInstance().TrackUserClick("Invite", "Before", user.getUser(), user.getUser().getCustomer());
+        this.invite();
+        Executer.getInstance().TrackUserClick("Invite", "After", user.getUser(), user.getUser().getCustomer());
+    }
+    
+    @Command
+    @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
     public void invite() {
-        
-        Executer.getInstance().TrackUserClick("Invite", "FromTest", user.getUser(), user.getUser().getCustomer());
         
         //  CM:  See if small time has elapsed since last CSR in this office clicked invite.
         //  CM:  Kludge to prevent two CSRs calling the same citizen.
