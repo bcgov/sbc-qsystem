@@ -112,7 +112,7 @@
                 <hbox width="100%" style="padding: 1px;" pack="center" align="center">
                     <!-- Это форма для логирования, форма для показа залогированного пользователя -->
                     <!-- This is a form for logging, a form for displaying a logged user -->
-                    <include src="/include/loginForm.zul"/>
+                    <include id="incLoginForm" src="/include/loginForm.zul"/>
                 </hbox>
             </vbox>
         </north>
@@ -214,7 +214,7 @@
                 <div sclass="toolbar-items" width="120px" />
                 <hbox align="end">
                     <label style="cursor:pointer; text-decoration:underline; color:white; font-size:1.2em; font-weight:bold"
-                           value="Feedback" onClick="@command('ReportBug')" visible="true"
+                           value="Feedback" onClick="@command('ReportBugIndex')" visible="true"
                            tooltip="csrReports, position=end_before"/>    
                 </hbox>
                 <!-- label=   "version 0.2" -->
