@@ -120,8 +120,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Types;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
+//  CM:  For tracking.
+import java.sql.Timestamp;
 
 /**
  * Пул очередей. Пул очередей - главная структура управления очередями. В системе существуют
@@ -161,6 +165,17 @@ public final class Executer {
      *
      * @return
      */
+
+    //  Info needed for JDBC calls.
+    private static String MyDB = System.getenv("MYSQL_DATABASE");
+    private static String MyUser = System.getenv("MYSQL_USER");
+    private static String MyPw = System.getenv("MYSQL_PASSWORD");
+    private static String URL = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + MyDB
+            + "?noAccessToProcedureBodies=true";
+    private static String SqlInsertStatement =
+            "INSERT INTO trackactions (time_now, button_clicked, start_finish, office_id, " +
+                    "user_id, client_id, ticket, service_id, state_in, user_quick, client_quick) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     //  CM:  This variable sets the states in which a customer can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
@@ -1857,21 +1872,19 @@ public final class Executer {
         String UserMsg = "";
         String UserName = "User not logged in";
         String TicketName = "Not known";
+        Connection conn = null;
+        CallableStatement cStmt = null;
 
         //  CM:  Calling John's MySql stored procedure.
         try {
-            String MyDB = System.getenv("MYSQL_DATABASE");
-            String MyUser = System.getenv("MYSQL_USER");
-            String MyPw = System.getenv("MYSQL_PASSWORD");
-            String URL = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + MyDB + "?noAccessToProcedureBodies=true";
             String Sql = "{call load_client_visit(?, ?, ?, ?)}";
 
             //  CM:  See if you're getting the right info.
             //QLog.l().logQUser().debug("    --> Service: " + URL + "; DB: " + MyDB + "; User: " + MyUser + "; Pw: " + MyPw);
             //QLog.l().logQUser().debug("    --> Cust Id: " + custId + "; Sql: " + Sql);
 
-            Connection conn = DriverManager.getConnection(URL, MyUser, MyPw);
-            CallableStatement cStmt = conn.prepareCall(Sql);
+            conn = DriverManager.getConnection(URL, MyUser, MyPw);
+            cStmt = conn.prepareCall(Sql);
             cStmt.setLong(1, custId);
             cStmt.setInt(2, ReturnCode);
             cStmt.setInt(3, sqlErrorNo);
@@ -1909,6 +1922,27 @@ public final class Executer {
 
         //  CM:  If any error, handle it.
         finally {
+            
+            //  Close the callable statement and connection.
+            if (cStmt != null) {
+                try {
+                    cStmt.close();
+                }
+                catch (Exception ex) {
+                    QLog.l().logQUser().debug("    --> Exception closing JDBC callable statement: "
+                            + ex.getMessage());
+                }
+            }
+            if (conn != null) {
+                try {
+                conn.close();
+                }
+                catch (Exception ex) {
+                    QLog.l().logQUser().debug("    --> Exception closing JDBC connection: " + ex
+                            .getMessage());
+                }
+            }
+            
             //QLog.l().logQUser().debug("    --> Finally: Code =  " + ReturnCode + "; ErrMsg = " + ErrorMsg);
         }
 
@@ -1949,20 +1983,14 @@ public final class Executer {
 
     public void SendSlackMessage(QUser user, QCustomer customer, String errorMessage) {
 
-        //  CM:  xxx  Try slack message.
+        //  CM:  Set slack variables.
         String CSRIcon = ":information_desk_person:";
-        //        String ReportMsg = "";
-        //        String ReportTicket = "";
         String Username = "";
-        //        String BugMsg =
-        //                "Test Msg Only! SBC-QSystem Error: Could not write summary statistics records for client "
-        //                        + customer.getId();
-
         SlackApi api = new SlackApi(
                 "https://hooks.slack.com/services/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");
-        // SlackMessage msg = null;
         SlackMessage slackMsg = new SlackMessage(null);
 
+        //  Try and get user name.
         if (user.getName() != null) {
             Username = "CSR - " + user.getName();
         }
@@ -1970,16 +1998,9 @@ public final class Executer {
             Username = "User is not logged in";
         }
 
-        //        ReportMsg = ReportMsg + Username
-        //                + "\nOffice Name:    " + user.getOffice().getName()
-        //                + "\nTicket Number:  " + ReportTicket
-        //                + "\nUser Message:   " + BugMsg
-        //                + "\nSystem Message: " + errorMessage;
-
         slackMsg.setIcon(CSRIcon);
         slackMsg.setText(errorMessage);
         slackMsg.setUsername(Username);
-        // api.SlackMessage.setIcon(":information_desk_person:");
         api.call(slackMsg);
     }
 
@@ -2026,6 +2047,108 @@ public final class Executer {
     //            QLog.l().logger().debug("    --> Email exception: " + ex.getMessage());
     //        }
     //    }
+
+    public void TrackUserClick(String clickButton, String beforeAfter, QUser user,
+            QCustomer customer) {
+
+        //  CM:  Initialize variables.
+        Connection conn = null;
+        PreparedStatement pStmt = null;
+        DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+        Date dateNow = new Date();
+        String timeNow = df.format(dateNow);
+        Long officeId;
+        Long userId;
+        Boolean userQuick = false;
+        QCustomer cust = null;
+        if (user != null) {
+            officeId = user.getOffice().getId();
+            userId = user.getId();
+            userQuick = user.getQuickTxn();
+            cust = user.getCustomer();
+        }
+        else {
+            officeId = 0L;
+            userId = 0L;
+        }
+        Long custId = 0L;
+        String ticket = "";
+        Long serviceId = 0L;
+        Integer state = -1;
+        Boolean custQuick = false;
+        if (cust != null) {
+            custId = cust.getId();
+            ticket = cust.getPrefix() + Long.toString(cust.getNumber());
+            serviceId = cust.getService().getId();
+            state = cust.getStateIn();
+            custQuick = cust.getTempQuickTxn();
+        }
+
+        //  CM:  Debug.
+        //        QLog.l().logQUser().debug("==> Start Track: Time: " + timeNow + "; B: " + clickButton
+        //                + "; SF: " + beforeAfter + "; Off: " + officeId + "; Usr: " + userId + "; CId: "
+        //                + custId + "; T: " + ticket + "; SId: " + serviceId + "; State: " + state);
+
+        //  CM:  Try writing data to the database.
+        try {
+            //  CM:  Create connection, prepare statement.
+            conn = DriverManager.getConnection(URL, MyUser, MyPw);
+            pStmt = conn.prepareStatement(SqlInsertStatement);
+
+            //            private static String SqlInsertStatement =
+            //                    "INSERT INTO trackactions (time_now, button_clicked, start_finish, " +
+            //                            "office_id, user_id, client_id, ticket, service_id, state_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            //  CM:  Set parameters.
+            pStmt.setTimestamp(1, Timestamp.valueOf(timeNow));
+            pStmt.setString(2, clickButton);
+            pStmt.setString(3, beforeAfter);
+            pStmt.setLong(4, officeId);
+            pStmt.setLong(5, userId);
+            pStmt.setLong(6, custId);
+            pStmt.setString(7, ticket);
+            pStmt.setLong(8, serviceId);
+            pStmt.setInt(9, state);
+            pStmt.setBoolean(10, userQuick);
+            pStmt.setBoolean(11, custQuick);
+            pStmt.executeUpdate();
+            //  Autocommit seems to be on, can't call commmit.
+            //conn.commit();
+        }
+
+        //  CM:  Catch any error trying to call the stored procedure.
+        catch (Exception ex) {
+            QLog.l().logQUser().debug("    --> Exception tracking: " + ex.getMessage());
+        }
+
+        //  CM:  If any error, handle it.
+        finally {
+
+            //  Close the callable statement and connection.
+            if (pStmt != null) {
+                try {
+                    pStmt.close();
+                }
+                catch (Exception ex) {
+                    QLog.l().logQUser().debug(
+                            "    --> Exception closing JDBC track prepared statement: "
+                                    + ex.getMessage());
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                }
+                catch (Exception ex) {
+                    QLog.l().logQUser().debug("    --> Exception closing JDBC track connection: "
+                            + ex
+                                    .getMessage());
+                }
+            }
+
+            //QLog.l().logQUser().debug("    --> Finally: Code =  " + ReturnCode + "; ErrMsg = " + ErrorMsg);
+        }
+    }
 
     /**
      * Переадресовать клиента к другой услуге. Forward the client to another service.

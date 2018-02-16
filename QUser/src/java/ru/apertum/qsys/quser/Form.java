@@ -167,6 +167,10 @@ public class Form {
     @Wire("#incClientDashboard #incReportingBug #ReportingBug")
     Window ReportingBugWindow;
 
+    //  CM:  Login form, for checkbox.
+    @Wire("#incLoginForm #QuickTxnCSR")
+    Checkbox csrQuickTxn;
+    
     QService pickedMainService;
     @Wire
     private Textbox typeservices;
@@ -314,6 +318,9 @@ public class Form {
             "avaitColumn", "officeName", "userList", "currentState", "userListbyOffice" })
     public void login() {
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Login", "Before", user.getUser(), user.getUser().getCustomer());
+        
         Uses.userTimeZone = (TimeZone) Sessions.getCurrent()
                 .getAttribute("org.zkoss.web.preferred.timeZone");
         QLog.l().logQUser().debug("Login : " + user.getName());
@@ -343,6 +350,8 @@ public class Form {
         QUser quser = QUserList.getInstance().getById(userId);
         currentState = true;
         quser.setCurrentState(currentState);
+        csrQuickTxn.setChecked(false);
+        quser.setQuickTxn(csrQuickTxn.isChecked());
         if (quser != null) {
             officeName = user.getUser().getOffice().getName();
         }
@@ -362,6 +371,9 @@ public class Form {
         // GA_list.setModel(GA_list.getModel());
         // GA_list.getModel();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
+        
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Login", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
@@ -404,6 +416,11 @@ public class Form {
 
     @Command
     public void GABoard() {
+
+        //  CM:  Track start.
+        Executer.getInstance().TrackUserClick("GABoard", "Before", user.getUser(), user.getUser().getCustomer());
+
+        //  CM:  Regular GABoard code.
         GAManagementDialogWindow.setVisible(true);
         GAManagementDialogWindow.doModal();
         CheckGABoard = true;
@@ -413,8 +430,10 @@ public class Form {
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-
         // QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG: " + user.getGABoard() + "\n\n\n\n");
+
+        //  CM:  Track start.
+        Executer.getInstance().TrackUserClick("GABoard", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     // @ContextParam(ContextType.VIEW) Component comp
@@ -444,6 +463,26 @@ public class Form {
         QLog.l().logQUser().debug("==> End: closeGA");
     }
 
+    @Command
+    public void ReportBugIndex() {
+        
+        //  CM:  Track start, call regular ReportBug, track end.
+        //  CM:  Set variables depending on whether null or not.
+        QUser trackUser = null;
+        QCustomer trackCust = null;
+        if (user != null) {
+            trackUser = user.getUser();
+            
+            if (trackUser != null) {
+                trackCust = trackUser.getCustomer();
+            }
+        }
+            
+        Executer.getInstance().TrackUserClick("Feedback, Main Screen", "Before", trackUser, trackCust);
+        ReportBug();
+        Executer.getInstance().TrackUserClick("Feedback, Main Screen", "After", trackUser, trackCust);
+    }
+    
     @Command
     public void ReportBug() {
         ReportingBugWindow.setVisible(true);
@@ -566,13 +605,12 @@ public class Form {
     @NotifyChange(value = { "user" })
     public void QuickTxnCSRChecked() {
 
-        //  Debug
-        //QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("CSR QTxn", "Before", user.getUser(), user.getUser().getCustomer());
 
         //  Get user, quick transaction flag, then reset it.
         QUser quser = user.getUser();
-        boolean save = quser.getQuickTxn();
-        quser.setQuickTxn(!save);
+        quser.setQuickTxn(csrQuickTxn.isChecked());
 
         //  More debug.
         //QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
@@ -580,13 +618,19 @@ public class Form {
         //QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
         //QLog.l().logQUser().debug("==> End: QuickTxnChecked");
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("CSR QTxn", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
     @NotifyChange(value = { "btnsDisabled", "login", "user", "postponList", "customer",
             "avaitColumn", "officeName" })
     public void logout() {
-        QLog.l().logQUser().debug("Logout " + user.getName());
+
+        //  CM:  Track start.
+        Executer.getInstance().TrackUserClick("Logout", "Before", user.getUser(), user.getUser().getCustomer());
+        
+        //QLog.l().logQUser().debug("Logout " + user.getName());
 
         // Set all of the session parameters back to defaults
         setKeyRegim(KEYS_OFF);
@@ -599,7 +643,9 @@ public class Form {
 
         // Andrew - to change quser state for GABoard
         QUser quser = user.getUser();
+        quser.setQuickTxn(false);
         quser.setCurrentState(false);
+        csrQuickTxn.setChecked(false);
         // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getName() + "\n\n\n\n");
         // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getCurrentState() + "\n\n\n\n");
 
@@ -621,6 +667,9 @@ public class Form {
         clientDashboardNorth.setStyle(checkCFMSHidden);
         clientDashboardNorth.setSize(checkCFMSHeight);
         btn_invite.setVisible(false);
+
+        //  CM:  Track end.
+        Executer.getInstance().TrackUserClick("Logout", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     public LinkedList<QUser> getUsersForLogin() {
@@ -808,7 +857,16 @@ public class Form {
 
     @Command
     @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
-    //@NotifyChange(value = { "btnsDisabled", "avaitColumn" })
+    public void inviteClick() {
+
+        //  CM:  Track the user's click, then call standard invite routine.
+        Executer.getInstance().TrackUserClick("Invite", "Before", user.getUser(), user.getUser().getCustomer());
+        this.invite();
+        Executer.getInstance().TrackUserClick("Invite", "After", user.getUser(), user.getUser().getCustomer());
+    }
+    
+    @Command
+    @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
     public void invite() {
         
         //  CM:  See if small time has elapsed since last CSR in this office clicked invite.
@@ -866,6 +924,15 @@ public class Form {
 
         //  Debug
         //QLog.l().logQUser().debug("==> End: invite");
+    }
+
+    @Command
+    public void addServeScreenClick() {
+
+        //  CM:  Track the user's Serve Now click, then call the regular routine.
+        Executer.getInstance().TrackUserClick("Serve Now", "Before", user.getUser(), user.getUser().getCustomer());
+        this.addServeScreen();
+        Executer.getInstance().TrackUserClick("Serve Now", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
@@ -1047,6 +1114,10 @@ public class Form {
     @Command
     @NotifyChange(value = { "addWindowButtons" })
     public void addClient() {
+
+        //  CM:  Track start of Add Citizen
+        Executer.getInstance().TrackUserClick("Add Citizen", "Before", user.getUser(), user.getUser().getCustomer());
+
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
         addWindowButtons[0] = true;
@@ -1057,6 +1128,9 @@ public class Form {
         pickedRedirectServ = null;
         ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
         this.addTicketScreen(true);
+
+        //  CM:  Track end of Add Citizen
+        Executer.getInstance().TrackUserClick("Add Citizen", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
