@@ -173,8 +173,9 @@ public final class Executer {
     private static String URL = "jdbc:mysql://" + System.getenv("MYSQL_SERVICE") + "/" + MyDB
             + "?noAccessToProcedureBodies=true";
     private static String SqlInsertStatement =
-            "INSERT INTO trackactions (time_now, button_clicked, start_finish, " +
-                    "office_id, user_id, client_id, ticket, service_id, state_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "INSERT INTO trackactions (time_now, button_clicked, start_finish, office_id, " +
+                    "user_id, client_id, ticket, service_id, state_in, user_quick, client_quick) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     //  CM:  This variable sets the states in which a customer can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
@@ -2056,24 +2057,37 @@ public final class Executer {
         DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
         Date dateNow = new Date();
         String timeNow = df.format(dateNow);
-        Long officeId = user.getOffice().getId();
-        Long userId = user.getId();
+        Long officeId;
+        Long userId;
+        Boolean userQuick = false;
+        QCustomer cust = null;
+        if (user != null) {
+            officeId = user.getOffice().getId();
+            userId = user.getId();
+            userQuick = user.getQuickTxn();
+            cust = user.getCustomer();
+        }
+        else {
+            officeId = 0L;
+            userId = 0L;
+        }
         Long custId = 0L;
         String ticket = "";
         Long serviceId = 0L;
         Integer state = -1;
-        QCustomer cust = user.getCustomer();
+        Boolean custQuick = false;
         if (cust != null) {
             custId = cust.getId();
             ticket = cust.getPrefix() + Long.toString(cust.getNumber());
             serviceId = cust.getService().getId();
             state = cust.getStateIn();
+            custQuick = cust.getTempQuickTxn();
         }
 
         //  CM:  Debug.
-        QLog.l().logQUser().debug("==> Start Track: Time: " + timeNow + "; B: " + clickButton
-                + "; SF: " + beforeAfter + "; Off: " + officeId + "; Usr: " + userId + "; CId: "
-                + custId + "; T: " + ticket + "; SId: " + serviceId + "; State: " + state);
+        //        QLog.l().logQUser().debug("==> Start Track: Time: " + timeNow + "; B: " + clickButton
+        //                + "; SF: " + beforeAfter + "; Off: " + officeId + "; Usr: " + userId + "; CId: "
+        //                + custId + "; T: " + ticket + "; SId: " + serviceId + "; State: " + state);
 
         //  CM:  Try writing data to the database.
         try {
@@ -2095,6 +2109,8 @@ public final class Executer {
             pStmt.setString(7, ticket);
             pStmt.setLong(8, serviceId);
             pStmt.setInt(9, state);
+            pStmt.setBoolean(10, userQuick);
+            pStmt.setBoolean(11, custQuick);
             pStmt.executeUpdate();
             //  Autocommit seems to be on, can't call commmit.
             //conn.commit();
