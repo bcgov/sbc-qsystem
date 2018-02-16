@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.apertum.qsys.quser;
+package ru.apertum.qsystem.server.controller;
 
 /**
  *

@@ -109,6 +109,8 @@ public final class QConfig {
                 builder.setAutoSave(true);
                 config = builder.getConfiguration();
                 // config contains all properties read from the file
+               
+               
             } else {
                 this.config = new PropertiesConfiguration();
             }
@@ -256,6 +258,12 @@ public final class QConfig {
         return ConfigHolder.INSTANCE;
     }
 
+    //  CM:  Temporary, to try and get config info. 
+    public FileBasedConfiguration getQsysProperties() {
+        return config;
+    }
+    
+    
     /**
      * @param tp 0-сервер,1-клиент,2-приемная,3-админка,4-киоск,5-сервер хардварных кнопок
      */

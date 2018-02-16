@@ -96,11 +96,13 @@
         <hbox>
             <button sclass="act-button" style="margin-left: 22px; margin-top: 22px;" label="${c:l('begin')}"
                     disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('begin')"
+                    autodisable="self"
                     id="btn_start" height="38px" width="158px">
             </button>
 
             <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Citizen Left"
                     disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')"
+                    autodisable="self"
                     id="btn_kill" height="38px" width="158px">
             </button>     
             
@@ -109,6 +111,7 @@
 
             <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Return to queue"
                     disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('ReturnedRedirect')"
+                    autodisable="self"
                     visible="@load(fmodel.getCFMSType())" id="btn_redirect" height="38px" width="158px">
             </button>
             <!--<checkbox style="margin-top: 18px;" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
@@ -116,6 +119,7 @@
         
         <!--
         <button id="closeServeCustomerDialogBtn" hflex="1" label="close"
+                autodisable="self"
                 onClick="serveCustomerDialog.visible = false; event.stopPropagation();"/>
         -->
     </vlayout>
@@ -142,6 +146,7 @@
                              constraint="no empty, no negative" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client">
                     </textbox>
                     <button sclass="button-with-image" image="/resources/img/005_change_icon.png"
+                            autodisable="self"
                             onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
                     </button>
                 </row>
@@ -154,6 +159,7 @@
                 <!--
                 <button sclass="act-button" style="margin-left: 80px; margin-top: 10px;" label="${c:l('previous_services')}"
                         disabled="@load(fmodel.btnsDisabled[7])" onClick="@command('addNextService')"
+                        autodisable="self"
                         height="38px" width="158px">
                 </button>
                 -->
@@ -175,6 +181,7 @@
 
                 <button sclass="act-button bdd-add-next-service" style="margin-right: 70px; margin-top: 10px;"
                         label="${c:l('add_next_service')}" disabled="@load(fmodel.btnsDisabled[7])"
+                        autodisable="self"
                         onClick="@command('addNextService')" id="btn_add_next_service" height="38px" width="158px">
                 </button>
 
@@ -203,6 +210,7 @@
         <hbox width="80%" style="margin-top: 10px; margin-left: 160px; margin-bottom: 50px;">
             <button  sclass="act-button" style="margin-top: 12px;" label="Place on hold"
                      disabled="@load(fmodel.btnsDisabled[3])" onClick="@command('postpone')"
+                     autodisable="self"
                      id="btn_postpone" height="38px" width="158px">
             </button>
 
@@ -211,6 +219,7 @@
 
             <vbox style="margin-right: 20px; margin-top: 12px;" >
                 <button sclass="act-button" style="" label="Finish" disabled="@load(fmodel.btnsDisabled[5])"
+                        autodisable="self"
                         onClick="@command('finish')" id="btn_finish" height="38px" width="158px">
                 </button>
                 

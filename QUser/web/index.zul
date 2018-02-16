@@ -85,14 +85,16 @@
                         <hbox width="80%">
                             <button sclass="act-button bdd-invite" style="margin-left: 22px; margin-top: 18px;"
                                     label="${c:l('invite_client')}" visible="@load(fmodel.getCFMSType())"
-                                    disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('invite')"
+                                    disabled="@load(fmodel.btnsDisabled[0])" onClick="@command('inviteClick')"
+                                    autodisable="self"
                                     id="btn_invite" height="38px" width="158px">
                             </button>
 
                             <button sclass="act-button bdd-serve-now" style="margin-left: 15px; margin-top: 18px;"
                                     label="Serve Now"
+                                    autodisable="self"
                                     visible="@load(!fmodel.btnsDisabled[2] || !fmodel.btnsDisabled[4])"
-                                    onClick="@command('addServeScreen')" id="btn_screen" height="38px" width="158px">                        
+                                    onClick="@command('addServeScreenClick')" id="btn_screen" height="38px" width="158px">                        
                             </button>
 
                             <div width="320px" style="background-color:White;">
@@ -101,6 +103,7 @@
                             <button sclass="act-button bdd-add-citizen" style="margin-right: 30px; margin-top: 18px;"
                                     label="${c:l('add_client')}"
                                     disabled="@load(fmodel.btnsDisabled[6])"
+                                    autodisable="self"
                                     onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
                             </button>                    
                         </hbox>
@@ -109,7 +112,7 @@
                 <hbox width="100%" style="padding: 1px;" pack="center" align="center">
                     <!-- Это форма для логирования, форма для показа залогированного пользователя -->
                     <!-- This is a form for logging, a form for displaying a logged user -->
-                    <include src="/include/loginForm.zul"/>
+                    <include id="incLoginForm" src="/include/loginForm.zul"/>
                 </hbox>
             </vbox>
         </north>
@@ -211,7 +214,7 @@
                 <div sclass="toolbar-items" width="120px" />
                 <hbox align="end">
                     <label style="cursor:pointer; text-decoration:underline; color:white; font-size:1.2em; font-weight:bold"
-                           value="Feedback" onClick="@command('ReportBug')" visible="true"
+                           value="Feedback" onClick="@command('ReportBugIndex')" visible="true"
                            tooltip="csrReports, position=end_before"/>    
                 </hbox>
                 <!-- label=   "version 0.2" -->
