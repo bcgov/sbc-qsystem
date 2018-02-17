@@ -106,6 +106,14 @@
                                     autodisable="self"
                                     onClick="@command('addClient')" id="btn_add_client" height="38px" width="158px">
                             </button>                    
+
+                            <button sclass="act-button bdd-back-office" style="margin-right: 30px; margin-top: 18px;"
+                                    label="${c:l('back_office')}"
+                                    disabled="@load(fmodel.btnsDisabled[6])"
+                                    autodisable="self"
+                                    onClick="@command('backOffice')" id="btn_back_office" height="38px" width="158px">
+                            </button>                    
+
                         </hbox>
                     </div>
                 </vlayout>
