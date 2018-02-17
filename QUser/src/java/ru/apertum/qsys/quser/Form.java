@@ -1113,6 +1113,28 @@ public class Form {
 
     @Command
     @NotifyChange(value = { "addWindowButtons" })
+    public void backOffice() {
+
+        //  CM:  Track start of Add Citizen
+        Executer.getInstance().TrackUserClick("Back Office", "Before", user.getUser(), user.getUser().getCustomer());
+
+        //QLog.l().logQUser().debug("addClient");
+        user.setCustomerWelcomeTime(new Date());
+        addWindowButtons[0] = true;
+        addWindowButtons[1] = false;
+        addWindowButtons[2] = false;
+        addWindowButtons[3] = false;
+        // customer.setChannels(1);
+        pickedRedirectServ = null;
+        ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
+        this.addTicketScreen(true, true);
+
+        //  CM:  Track end of Add Citizen
+        Executer.getInstance().TrackUserClick("Back Office", "After", user.getUser(), user.getUser().getCustomer());
+    }
+
+    @Command
+    @NotifyChange(value = { "addWindowButtons" })
     public void addClient() {
 
         //  CM:  Track start of Add Citizen
@@ -1127,7 +1149,7 @@ public class Form {
         // customer.setChannels(1);
         pickedRedirectServ = null;
         ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
-        this.addTicketScreen(true);
+        this.addTicketScreen(true, false);
 
         //  CM:  Track end of Add Citizen
         Executer.getInstance().TrackUserClick("Add Citizen", "After", user.getUser(), user.getUser().getCustomer());
@@ -1145,7 +1167,7 @@ public class Form {
         addWindowButtons[3] = false;
         // refresh the service list. Remove the default service selection
         pickedRedirectServ = null;
-        this.addTicketScreen(false);
+        this.addTicketScreen(false, false);
     }
 
     @Command
@@ -1606,7 +1628,7 @@ public class Form {
     }
 
     @Command
-    public void addTicketScreen(boolean newCustomer) {
+    public void addTicketScreen(boolean newCustomer, boolean backOffice) {
 
         //  Debugging
         //QLog.l().logQUser().debug("==> Start: addTicketScreen");
@@ -1616,6 +1638,12 @@ public class Form {
         this.refreshAddWindow(newCustomer);
         //this.refreshChannels();
 
+        //  CM:  If a backoffice transaction, preselect this category.
+        if (backOffice) {
+            listServices = FilterServicesByCategory(true);
+            //((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("Back Office");
+        }
+        
         //  CM:  Make add ticket window visible, transfer control.
         addTicketDailogWindow.setVisible(true);
         addTicketDailogWindow.doModal();
@@ -1791,9 +1819,28 @@ public class Form {
 
         ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
 
+        listServices = FilterServicesByCategory(false);
+    }
+
+    private List<QService> FilterServicesByCategory(boolean BackOffice) {
+
+        //  CM:  Initialize variables.
+        List<QService> returnServices = null;
         LinkedList<QService> allServices = QServiceTree.getInstance().getNodes();
+        QService backOffice = null;
         List<QService> requiredServices = null;
 
+        //  CM:  If you are filtering by back office, find back office service, set it to be pickedMainService.
+        if (BackOffice) {
+            for (QService next : allServices) {
+                if ("back office".equals(next.getName().toLowerCase())) {
+                    setPickedMainService(next);
+                    break;
+                }
+            }
+        }
+
+        //  CM:  Continue on as normal.
         if (getPickedMainService() == null) {
             //QLog.l().logQUser().debug("null category was selected");
             requiredServices = allServices
@@ -1812,7 +1859,7 @@ public class Form {
 
         }
         else {
-            //QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            QLog.l().logQUser().debug("--> Category selected: " + pickedMainService.getName());
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1826,10 +1873,10 @@ public class Form {
                     .collect(Collectors.toList());
         }
 
-        listServices = filterServicesByUser(requiredServices);
-
+        returnServices = filterServicesByUser(requiredServices);
+        return returnServices;
     }
-
+    
     // Andrew
     // onChanging category updates the category searching algorithm, searching while typing
     @NotifyChange("listServices")
@@ -2236,7 +2283,7 @@ public class Form {
         addWindowButtons[2] = false;
         addWindowButtons[3] = false;
 
-        this.addTicketScreen(false);
+        this.addTicketScreen(false, false);
     }
 
     @Command
