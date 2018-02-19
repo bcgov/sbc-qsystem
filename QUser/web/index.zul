@@ -108,7 +108,7 @@
                             </button>                    
 
                             <button sclass="act-button bdd-back-office" style="margin-right: 30px; margin-top: 18px;"
-                                    label="${c:l('back_office')}"
+                                    label="${c:l('back_office_button')}"
                                     disabled="@load(fmodel.btnsDisabled[6])"
                                     autodisable="self"
                                     onClick="@command('backOffice')" id="btn_back_office" height="38px" width="158px">
