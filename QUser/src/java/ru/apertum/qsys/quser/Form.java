@@ -96,7 +96,7 @@ public class Form {
     private final LinkedList<QCustomer> postponList = QPostponedList.getInstance().getPostponedCustomers();
     private final LinkedList<QResult> resultList = QResultList.getInstance().getItems();
     // ********************************************************************************************************************************************
-    // ** Перенаправление Redirection
+    // ** ÐŸÐµÑ€ÐµÐ½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Redirection
     // ********************************************************************************************************************************************
     private final TreeServices treeServs = new TreeServices();
 
@@ -120,7 +120,7 @@ public class Form {
      */
 
     // *****************************************************
-    // **** Логин Login
+    // **** Ð›Ð¾Ð³Ð¸Ð½ Login
     // *****************************************************
     public LinkedList<String> prior_St = new LinkedList(Uses.get_COEFF_WORD().values());
     public String officeType = "non-reception";
@@ -137,15 +137,15 @@ public class Form {
     @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg")
     Window changeServicePriorityDialog;
     // ********************************************************************************************************************************************
-    // ** Отложенные Отложить посетителя Postponed Postpone visitor
+    // ** ÐžÑ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ñ‹Ðµ ÐžÑ‚Ð»Ð¾Ð¶Ð¸Ñ‚ÑŒ Ð¿Ð¾Ñ�ÐµÑ‚Ð¸Ñ‚ÐµÐ»Ñ� Postponed Postpone visitor
     // ********************************************************************************************************************************************
     @Wire("#incClientDashboard #incPostponeCustomerDialog #postponeDialog")
     Window postponeCustomerDialog;
-    // *** Диалоги изменения состояния и вызова лтложенных Dialogs for changing the state and calling ltalges
+    // *** Ð”Ð¸Ð°Ð»Ð¾Ð³Ð¸ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ� Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ð½Ð¸Ñ� Ð¸ Ð²Ñ‹Ð·Ð¾Ð²Ð° Ð»Ñ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ñ‹Ñ… Dialogs for changing the state and calling ltalges
     @Wire("#incClientDashboard #incChangePostponedStatusDialog #changePostponedStatusDialog")
     Window changePostponedStatusDialog;
     // *********************************************************************************************************
-    // **** Кнопки и их события Buttons and their events
+    // **** ÐšÐ½Ð¾Ð¿ÐºÐ¸ Ð¸ Ð¸Ñ… Ñ�Ð¾Ð±Ñ‹Ñ‚Ð¸Ñ� Buttons and their events
     // *********************************************************************************************************
     QService pickedRedirectServ;
     @Wire("#incClientDashboard #incGAManagementDialog #GAManagementDialog")
@@ -175,12 +175,12 @@ public class Form {
     @Wire
     private Textbox typeservices;
     /**
-     * Залогиневшейся юзер Logged user
+     * Ð—Ð°Ð»Ð¾Ð³Ð¸Ð½ÐµÐ²ÑˆÐµÐ¹Ñ�Ñ� ÑŽÐ·ÐµÑ€ Logged user
      */
     private User user = new User();
     private LinkedList<QService> PreviousList = new LinkedList<>();
     /**
-     * текущее состояние кнопок Current state of the buttons
+     * Ñ‚ÐµÐºÑƒÑ‰ÐµÐµ Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ð½Ð¸Ðµ ÐºÐ½Ð¾Ð¿Ð¾Ðº Current state of the buttons
      */
     private String keys_current = KEYS_OFF;
     private boolean[] btnsDisabled = new boolean[] { true, true, true, true, true, true, true, true,
@@ -292,7 +292,7 @@ public class Form {
     }
 
     /**
-     * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg") This is necessary to do
+     * Ð­Ñ‚Ð¾ Ð½ÑƒÐ¶Ð½Ð¾ Ñ‡Ñ‚Ð¾Ð± Ð´ÐµÐ»Ð°Ñ‚ÑŒ include Ð²Ð¾ view Ð¸ Ð¿Ð¾Ñ‚Ð¾Ð¼ Ñ�Ð²Ñ�Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg") This is necessary to do
      * include in the view and then bind
      */
     @AfterCompose
@@ -688,7 +688,7 @@ public class Form {
     }
 
     /**
-     * Механизм включения/отключения кнопок Button on / off mechanism
+     * ÐœÐµÑ…Ð°Ð½Ð¸Ð·Ð¼ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ�/Ð¾Ñ‚ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ� ÐºÐ½Ð¾Ð¿Ð¾Ðº Button on / off mechanism
      */
     public void setKeyRegim(String regim) {
         keys_current = regim;
@@ -1079,7 +1079,7 @@ public class Form {
             // quser.setCurrentComments(params.comments);
 
             final QUser redirectUser = QUserList.getInstance().getById(params.userId);
-            // переключение на кастомера при параллельном приеме, должен приехать customerID
+            // Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ð½Ð° ÐºÐ°Ñ�Ñ‚Ð¾Ð¼ÐµÑ€Ð° Ð¿Ñ€Ð¸ Ð¿Ð°Ñ€Ð°Ð»Ð»ÐµÐ»ÑŒÐ½Ð¾Ð¼ Ð¿Ñ€Ð¸ÐµÐ¼Ðµ, Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð¿Ñ€Ð¸ÐµÑ…Ð°Ñ‚ÑŒ customerID
             // switch to the custodian with parallel reception, must arrive customerID
             if (params.customerId != null) {
                 final QCustomer parallelCust = redirectUser.getParallelCustomers()
@@ -1093,7 +1093,7 @@ public class Form {
                 else {
                     redirectUser.setCustomer(parallelCust);
                     QLog.l().logger().debug(
-                            "Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust
+                            "Ð®Ð·ÐµÑ€ \"" + user + "\" Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð¸Ð»Ñ�Ñ� Ð½Ð° ÐºÐ°Ñ�Ñ‚Ð¾Ð¼ÐµÑ€Ð° \"" + parallelCust
                                     .getFullNumber()
                                     + "\"");
                 }
@@ -1212,8 +1212,8 @@ public class Form {
 
         final RpcStandInService res = (RpcStandInService) Executer.getInstance().getTasks()
                 .get(Uses.TASK_FINISH_CUSTOMER).process(params, "", new byte[4]);
-        // вернется кастомер и возможно он еще не домой а по списку услуг. Список определяется при старте кастомера в обработку специяльным юзером в
-        // регистратуре
+        // Ð²ÐµÑ€Ð½ÐµÑ‚Ñ�Ñ� ÐºÐ°Ñ�Ñ‚Ð¾Ð¼ÐµÑ€ Ð¸ Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾ Ð¾Ð½ ÐµÑ‰Ðµ Ð½Ðµ Ð´Ð¾Ð¼Ð¾Ð¹ Ð° Ð¿Ð¾ Ñ�Ð¿Ð¸Ñ�ÐºÑƒ ÑƒÑ�Ð»ÑƒÐ³. Ð¡Ð¿Ð¸Ñ�Ð¾Ðº Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ñ�ÐµÑ‚Ñ�Ñ� Ð¿Ñ€Ð¸ Ñ�Ñ‚Ð°Ñ€Ñ‚Ðµ ÐºÐ°Ñ�Ñ‚Ð¾Ð¼ÐµÑ€Ð° Ð² Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÑƒ Ñ�Ð¿ÐµÑ†Ð¸Ñ�Ð»ÑŒÐ½Ñ‹Ð¼ ÑŽÐ·ÐµÑ€Ð¾Ð¼ Ð²
+        // Ñ€ÐµÐ³Ð¸Ñ�Ñ‚Ñ€Ð°Ñ‚ÑƒÑ€Ðµ
         if (res.getResult() != null && res.getResult().getService() != null
                 && res.getResult().getState() == CustomerState.STATE_WAIT_COMPLEX_SERVICE) {
             Messagebox.show(
@@ -1269,9 +1269,14 @@ public class Form {
         // 1. Postpone the customer
         // 2. Pick the customer from Postponed list
 
+    	Executer.getInstance().TrackUserClick("Wait queue", "Before", user.getUser(), user.getUser().getCustomer());
+    	
+    	boolean stopProcessing = false;
+    	
         if (pickedCustomer == null || keys_current == KEYS_INVITED || keys_current == KEYS_STARTED
                 || keys_current == KEYS_OFF) {
-            return;
+            //return;
+        	stopProcessing = true;
         }
 
         final CmdParams params = new CmdParams();
@@ -1284,9 +1289,12 @@ public class Form {
             Messagebox.show(msg[0].toString(), "Error picking customer from wait queue",
                     Messagebox.OK,
                 Messagebox.INFORMATION);
-            return;
+            //return;
+            stopProcessing = true;
         }
 
+        if(stopProcessing==false){        
+        
         params.userId = user.getUser().getId();
         params.postponedPeriod = 0;
         params.customerId = pickedCustomer.getId();
@@ -1308,6 +1316,10 @@ public class Form {
         pickedRedirectServ = pickedCustomer.getService(); // for returning to queue use
         pickedCustomer = null; // TEST andrew //debug the clicking white space inviting problem
         this.addServeScreen();
+        
+        }
+        
+        Executer.getInstance().TrackUserClick("Wait queue", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     public LinkedList<String> getPrior_St() {
@@ -1376,10 +1388,11 @@ public class Form {
     @Command
     @NotifyChange(value = { "postponList", "avaitColumn" })
     public void refreshListServices() {
+    	    	    	
         if (isLogin()) {
-            // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
+            // Ñ‚ÑƒÑ‚ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶Ð°Ð½Ð¸Ðµ Ñ�ÐµÑ�Ñ�Ð¸Ð¸ ÐºÐ°Ðº Ð² Ð²ÐµÐ± Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ð¸ Here the maintenance of the session as a web application
             UsersInside.getInstance().getUsersInside().put(user.getName() + user.getPassword(), new Date().getTime());
-            // тут поддержание сессии как залогинившегося юзера в СУО Here the maintenance of the session as a logged user in the MSA
+            // Ñ‚ÑƒÑ‚ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶Ð°Ð½Ð¸Ðµ Ñ�ÐµÑ�Ñ�Ð¸Ð¸ ÐºÐ°Ðº Ð·Ð°Ð»Ð¾Ð³Ð¸Ð½Ð¸Ð²ÑˆÐµÐ³Ð¾Ñ�Ñ� ÑŽÐ·ÐµÑ€Ð° Ð² Ð¡Ð£Ðž Here the maintenance of the session as a logged user in the MSA
             QSessions.getInstance()
                     .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
 
@@ -1399,6 +1412,7 @@ public class Form {
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
         }
+              
     }
 
 //    @Command
@@ -1505,9 +1519,9 @@ public class Form {
     @NotifyChange(value = { "postponList" })
     public void closeChangePostponedStatusDialog() {
         final CmdParams params = new CmdParams();
-        // кому
+        // ÐºÐ¾Ð¼Ñƒ
         params.customerId = pickedPostponed.getId();
-        // на что
+        // Ð½Ð° Ñ‡Ñ‚Ð¾
         params.textData = ((Combobox) changePostponedStatusDialog.getFellow("pndResultBox"))
                 .getText();
         Executer.getInstance().getTasks().get(Uses.TASK_POSTPON_CHANGE_STATUS)
@@ -1519,9 +1533,14 @@ public class Form {
     @Command
     public void clickListPostponedInvite() {
 
+    	Executer.getInstance().TrackUserClick("Hold queue", "Before", user.getUser(), user.getUser().getCustomer());
+    	
+    	boolean stopProcessing = false;
+    	
         //  CM:  Ensure pickedPostponed isn't null.
         if (user.getPlan().isEmpty() || pickedPostponed == null) {
-            return;
+            //return;
+        	stopProcessing = true;        	
         }
 
         //  CM:  Make sure the customer picked hasn't already been picked by someone else.
@@ -1531,9 +1550,11 @@ public class Form {
             Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
                     Messagebox.OK,
                     Messagebox.INFORMATION);
-            return;
+            //return;
+            stopProcessing = true; 
         }
-
+        
+        if(stopProcessing == false) {
         Messagebox.show("Do you want to invite citizen " + pickedPostponed.getFullNumber() + " ?",
                 l("inviting_client"), new Messagebox.Button[] {
                         Messagebox.Button.YES, Messagebox.Button.NO },
@@ -1559,8 +1580,8 @@ public class Form {
                         //                                                .getStateIn());
 
                         final CmdParams params = new CmdParams();
-                        // @param userId id юзера который вызывает The user who causes
-                        // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
+                        // @param userId id ÑŽÐ·ÐµÑ€Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ The user who causes
+                        // @param id Ñ�Ñ‚Ð¾ ID ÐºÐ°Ñ�Ñ‚Ð¾Ð¼ÐµÑ€Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÐ¼ Ð¸Ð· Ð¿ÑƒÐ»Ð° Ð¾Ñ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ñ‹Ñ…, Ð¾Ð½Ð¾ ÐµÑ�Ñ‚ÑŒ Ñ‚.Ðº. Ñ� ÐºÐ°Ñ‡Ñ�Ñ‚Ð¾Ð¼ÐµÑ€Ð¾Ð¼ Ð´Ð°Ð²Ð½Ð¾ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÐ¼
                         // It is the ID of the caller which is called from the pool of deferred, it is because With a long-stroke tool we have been working for
                         // a long time
                         params.customerId = pickedPostponed.getId();
@@ -1605,6 +1626,9 @@ public class Form {
             //            QLog.l().logQUser().debug("--> End pick postponed: Picked customer: " + pickedPostponed
             //                    .getName());
         }
+        
+        }
+        Executer.getInstance().TrackUserClick("Hold queue", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     public TreeServices getTreeServs() {
