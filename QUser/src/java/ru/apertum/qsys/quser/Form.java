@@ -1664,18 +1664,8 @@ public class Form {
 
         //  CM:  If a backoffice transaction, preselect this category.
         if (backOffice) {
-            //  CM:  No longer filter back office services by back office category.
-            //  listServices = FilterServicesByCategory(true);
-            //((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("Back Office");
-            Combobox custChannel = (Combobox) addTicketDailogWindow.getFellow("reception_Channels_options");
-            //ComboItem backOffice = (ComboItem) custChannel.getItems.get(2);
-            custChannel.setSelectedIndex(2);
-//            if (custChannel != null) {
-//                QLog.l().logQUser().debug("==> Yea!!!  Channel combobox found.");
-//            }
-//            else {
-//                QLog.l().logQUser().debug("==> Ooops.  Channel combobox not found.");
-//            }
+            ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).setSelectedIndex(2);
+            ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).setSelectedIndex(2);
         }
         
         //  CM:  Make add ticket window visible, transfer control.
