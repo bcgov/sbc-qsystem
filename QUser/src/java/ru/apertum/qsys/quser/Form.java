@@ -1269,45 +1269,56 @@ public class Form {
         // 1. Postpone the customer
         // 2. Pick the customer from Postponed list
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Select Wait Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        
+        Boolean OkToContinue = true;
+
         if (pickedCustomer == null || keys_current == KEYS_INVITED || keys_current == KEYS_STARTED
                 || keys_current == KEYS_OFF) {
-            return;
+            OkToContinue = false;
         }
 
-        final CmdParams params = new CmdParams();
+        //  CM:  See if OK to continue.
+        if (OkToContinue) {
+            final CmdParams params = new CmdParams();
 
+            //  New "customer already picked" test.
+            Object[] msg = { "" };
+            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedCustomer, msg,
+                    "WaitQ")) {
+                Messagebox.show(msg[0].toString(), "Error picking customer from wait queue",
+                        Messagebox.OK,
+                    Messagebox.INFORMATION);
+            }
+            
+            else {
+                params.userId = user.getUser().getId();
+                params.postponedPeriod = 0;
+                params.customerId = pickedCustomer.getId();
+                params.isMine = Boolean.TRUE;
+                user.getUser().setCustomer(pickedCustomer);
 
-        //  New "customer already picked" test.
-        Object[] msg = { "" };
-        if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedCustomer, msg,
-                "WaitQ")) {
-            Messagebox.show(msg[0].toString(), "Error picking customer from wait queue",
-                    Messagebox.OK,
-                Messagebox.INFORMATION);
-            return;
+                Executer.getInstance().getTasks().get(Uses.TASK_INVITE_SELECTED_CUSTOMER).process(params, "", new byte[4], pickedCustomer);
+                customer = null;
+
+                service_list.setModel(service_list.getModel());
+                refreshListServices();
+                service_list.invalidate();
+
+                Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
+                customer = user.getUser().getCustomer();
+
+                setKeyRegim(KEYS_INVITED);
+                BindUtils.postNotifyChange(null, null, Form.this, "*");
+                pickedRedirectServ = pickedCustomer.getService(); // for returning to queue use
+                pickedCustomer = null; // TEST andrew //debug the clicking white space inviting problem
+                this.addServeScreen();
+            }
         }
-
-        params.userId = user.getUser().getId();
-        params.postponedPeriod = 0;
-        params.customerId = pickedCustomer.getId();
-        params.isMine = Boolean.TRUE;
-        user.getUser().setCustomer(pickedCustomer);
-
-        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_SELECTED_CUSTOMER).process(params, "", new byte[4], pickedCustomer);
-        customer = null;
-
-        service_list.setModel(service_list.getModel());
-        refreshListServices();
-        service_list.invalidate();
-
-        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
-        customer = user.getUser().getCustomer();
-
-        setKeyRegim(KEYS_INVITED);
-        BindUtils.postNotifyChange(null, null, Form.this, "*");
-        pickedRedirectServ = pickedCustomer.getService(); // for returning to queue use
-        pickedCustomer = null; // TEST andrew //debug the clicking white space inviting problem
-        this.addServeScreen();
+        
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Select Wait Queue", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     public LinkedList<String> getPrior_St() {
@@ -1519,92 +1530,83 @@ public class Form {
     @Command
     public void clickListPostponedInvite() {
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Select Hold Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        
+        //  CM:  Variable to see if OK to process.
+        Boolean OkToContinue = true;
+        
         //  CM:  Ensure pickedPostponed isn't null.
         if (user.getPlan().isEmpty() || pickedPostponed == null) {
-            return;
+            OkToContinue = false;
         }
 
         //  CM:  Make sure the customer picked hasn't already been picked by someone else.
-        Object[] msg = { "" };
-        if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg,
-                "HoldQ")) {
-            Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
-                    Messagebox.OK,
-                    Messagebox.INFORMATION);
-            return;
+        if (OkToContinue) {
+            Object[] msg = { "" };
+            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg,
+                    "HoldQ")) {
+                Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
+                        Messagebox.OK,
+                        Messagebox.INFORMATION);
+                OkToContinue = false;
+            }
         }
 
-        Messagebox.show("Do you want to invite citizen " + pickedPostponed.getFullNumber() + " ?",
-                l("inviting_client"), new Messagebox.Button[] {
-                        Messagebox.Button.YES, Messagebox.Button.NO },
-                Messagebox.QUESTION,
-                (Messagebox.ClickEvent t) -> {
+        if (OkToContinue) {
+            Messagebox.show("Do you want to invite citizen " + pickedPostponed.getFullNumber() + " ?",
+                    l("inviting_client"), new Messagebox.Button[] {
+                            Messagebox.Button.YES, Messagebox.Button.NO
+                    },
+                    Messagebox.QUESTION,
+                    (Messagebox.ClickEvent t) -> {
 
-                    if ((user != null) && (pickedPostponed != null)) {
-                        //                    QLog.l().logQUser().debug(
-                        //                            "Invite postponed by " + user.getName() + " citizen " + pickedPostponed
-                        //                                    .getFullNumber());
-                    }
+                        if ((user != null) && (pickedPostponed != null)) {
+                        }
 
-                    //  CM:  Only proceed if you can still call the customer.
-                    if ((t.getButton() != null)
-                            && (t.getButton().compareTo(Messagebox.Button.YES) == 0)
-                            && ((boolean) Executer.getInstance().CustomerCanBeCalled(
-                                    pickedPostponed, msg, "HoldQ(2)"))) {
+                        //  CM:  Only proceed if you can still call the customer.
+                        if ((t.getButton() != null)
+                                && (t.getButton().compareTo(Messagebox.Button.YES) == 0)
+                                && ((boolean) Executer.getInstance().CustomerCanBeCalled(
+                                        pickedPostponed, msg, "HoldQ(2)"))) {
 
-                        //  CM:  Display current customer.
-                        //                        QLog.l().logQUser().debug("--> In Invite(Yes) - Picked customer: "
-                        //                                + pickedPostponed.getName() + "; StateStr: " + pickedPostponed
-                        //                                        .currentStateIn() + "; StateInt: " + pickedPostponed
-                        //                                                .getStateIn());
+                            final CmdParams params = new CmdParams();
+                            // @param userId id юзера который вызывает The user who causes
+                            // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
+                            // It is the ID of the caller which is called from the pool of deferred, it is because With a long-stroke tool we have been working for
+                            // a long time
+                            params.customerId = pickedPostponed.getId();
+                            params.userId = user.getUser().getId();
+                            Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
+                                    .process(params, "", new byte[4]);
+                            customer = user.getUser().getCustomer();
 
-                        final CmdParams params = new CmdParams();
-                        // @param userId id юзера который вызывает The user who causes
-                        // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
-                        // It is the ID of the caller which is called from the pool of deferred, it is because With a long-stroke tool we have been working for
-                        // a long time
-                        params.customerId = pickedPostponed.getId();
-                        params.userId = user.getUser().getId();
-                        Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
-                                .process(params, "", new byte[4]);
-                        customer = user.getUser().getCustomer();
+                            setKeyRegim(KEYS_INVITED);
+                            BindUtils.postNotifyChange(null, null, Form.this, "postponList");
+                            BindUtils.postNotifyChange(null, null, Form.this, "customer");
+                            BindUtils.postNotifyChange(null, null, Form.this, "btnsDisabled");
 
-                        setKeyRegim(KEYS_INVITED);
-                        BindUtils.postNotifyChange(null, null, Form.this, "postponList");
-                        BindUtils.postNotifyChange(null, null, Form.this, "customer");
-                        BindUtils.postNotifyChange(null, null, Form.this, "btnsDisabled");
-
-                        this.addServeScreen();
-                        this.begin();
-                    }
-                    else {
-
-                        //  CM:  Display current customer.
-                        //                        QLog.l().logQUser().debug("--> In Invite(Yes) - Picked customer: "
-                        //                                + pickedPostponed.getName() + "; StateStr: " + pickedPostponed
-                        //                                        .currentStateIn() + "; StateInt: " + pickedPostponed
-                        //                                                .getStateIn());
-
-                        //  CM:  Another CSR served the customer.
-                        Messagebox.show(
-                                msg[0].toString(),
-                                "Error picking customer from hold queue",
-                                Messagebox.OK,
-                                Messagebox.INFORMATION);
-                    }
+                            this.addServeScreen();
+                            this.begin();
+                        }
+                        else {
+    
+                            //  CM:  Another CSR served the customer.
+                            Messagebox.show(
+                                    msg[0].toString(),
+                                    "Error picking customer from hold queue",
+                                    Messagebox.OK,
+                                    Messagebox.INFORMATION);
+                        }
 
                     //  CM:  Whether served or not, set customer to be null.
                     pickedPostponed = null;
-                });
+                }
+            );
+        }
 
-        //  CM:  See what pickedPostponed is.
-        if (pickedPostponed == null) {
-            //QLog.l().logQUser().debug("--> End pick postponed: Picked customer is null");
-        }
-        else {
-            //            QLog.l().logQUser().debug("--> End pick postponed: Picked customer: " + pickedPostponed
-            //                    .getName());
-        }
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Select Hold Queue", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     public TreeServices getTreeServs() {
@@ -2170,6 +2172,9 @@ public class Form {
     @NotifyChange(value = { "postponList", "btnsDisabled" })
     public void closeAddToQueueDialog() {
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Add to Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        
         //  Debug
         //QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
 
@@ -2182,31 +2187,35 @@ public class Form {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
-                return;
             }
+            else {
+            
+                final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
+                        Boolean.FALSE);
 
-            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
-                    Boolean.FALSE);
+                boolean Quick = params.custQtxn;
+                //QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
 
-            boolean Quick = params.custQtxn;
-            //QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
+                //QLog.l().logQUser().debug("addToQueue");
+                this.addToQueue(params);
+                //QLog.l().logQUser().debug("Done");
 
-            //QLog.l().logQUser().debug("addToQueue");
-            this.addToQueue(params);
-            //QLog.l().logQUser().debug("Done");
+                customer = null;
+                setKeyRegim(KEYS_MAY_INVITE);
+                service_list.setModel(service_list.getModel());
 
-            customer = null;
-            setKeyRegim(KEYS_MAY_INVITE);
-            service_list.setModel(service_list.getModel());
+                addTicketDailogWindow.setVisible(false);
 
-            addTicketDailogWindow.setVisible(false);
-
-            refreshListServices();
-            service_list.invalidate();
+                refreshListServices();
+                service_list.invalidate();
+            }
         }
 
         //  Debug
         //QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Add to Queue", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     public void Sort() {
@@ -2363,6 +2372,12 @@ public class Form {
     @Command
     public void closeAddAndServeDialog() {
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Begin Service", "Before", user.getUser(), user.getUser().getCustomer());
+
+        //  CM:  For early returns.
+        Boolean OkToContinue = true;
+        
         //  Debug
         //QLog.l().logQUser().debug("==> Start: closeAddAndServeDialog");
 
@@ -2377,30 +2392,32 @@ public class Form {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
-                return;
+                OkToContinue = false;
             }
 
-            if (!user.checkIfUserCanServe(pickedRedirectServ)) {
+            if (OkToContinue && (!user.checkIfUserCanServe(pickedRedirectServ))) {
                 Messagebox.show(user.getName()
                         + " doesn't have rights to serve citizens for this service. Try Add to Queue.",
                         "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
-                return;
+                OkToContinue = false;
             }
 
-            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
-            final RpcStandInService res = this.addToQueue(params);
-            customer = res.getResult();
+            if (OkToContinue) {
+                final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
+                final RpcStandInService res = this.addToQueue(params);
+                customer = res.getResult();
 
-            customer = null;
-            setKeyRegim(KEYS_MAY_INVITE);
-            service_list.setModel(service_list.getModel());
-            refreshListServices();
-            service_list.invalidate();
-            addTicketDailogWindow.setVisible(false);
+                customer = null;
+                setKeyRegim(KEYS_MAY_INVITE);
+                service_list.setModel(service_list.getModel());
+                refreshListServices();
+                service_list.invalidate();
+                addTicketDailogWindow.setVisible(false);
 
-            this.invite();
-            this.begin();
-            BindUtils.postNotifyChange(null, null, Form.this, "*");
+                this.invite();
+                this.begin();
+                BindUtils.postNotifyChange(null, null, Form.this, "*");
+            }
         }
         else {
             //QLog.l().logQUser().debug("    --> pickedRedirectServ is null");
@@ -2408,6 +2425,9 @@ public class Form {
 
         //  Debug
         //QLog.l().logQUser().debug("==> End: closeAddAndServeDialog");
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Begin Service", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
