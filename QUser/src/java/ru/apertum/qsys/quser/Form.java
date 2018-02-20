@@ -1535,6 +1535,7 @@ public class Form {
         
         //  CM:  Variable to see if OK to process.
         Boolean OkToContinue = true;
+        Object[] msg = { "" };
         
         //  CM:  Ensure pickedPostponed isn't null.
         if (user.getPlan().isEmpty() || pickedPostponed == null) {
@@ -1543,7 +1544,6 @@ public class Form {
 
         //  CM:  Make sure the customer picked hasn't already been picked by someone else.
         if (OkToContinue) {
-            Object[] msg = { "" };
             if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg,
                     "HoldQ")) {
                 Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
