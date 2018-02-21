@@ -67,15 +67,18 @@ var inter = setInterval(function () {
 	       if(disconnect){
 	         clearInterval(inter);
 	         //alert("Success on POST, but previous failure (disconnect is 1).  Reloading page.");
+	         console.log("Success on POST, but previous failure (disconnect is 1).  Reloading page.");
 	         window.location.replace(currentURL);
            }
 	       else {
              //alert("Success on POST, no previous failure (disconnect is 0).  Not reloading page.");
+	         console.log("Success on POST, no previous failure (disconnect is 0).  Not reloading page.");
 	       }
 	     },
 	     error: function()
 	     {
 	       //alert("No success on POST.  Setting disconnect to be 1.");
+		   console.log("No success on POST.  Setting disconnect to be 1.");
 	       disconnect = 1 ;
 	      }
 	   });
