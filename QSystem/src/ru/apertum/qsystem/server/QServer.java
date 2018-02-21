@@ -445,27 +445,6 @@ public class QServer extends Thread {
         }
 */
 
-        //Set a job to refresh every two minutes the necessary lists and tree caches
-        JobDetail job = JobBuilder.newJob(QRefreshJob.class)
-            .withIdentity("OfficeRefreshJob", "group1").build();
-
-        Trigger trigger = TriggerBuilder
-            .newTrigger()
-            .withIdentity("refreshQSystemLists", "group1")
-            .withSchedule(CronScheduleBuilder.cronSchedule("0 * * * * ?""))
-            .build();
-
-        try {
-            QLog.l().logQUser().info("Starting schedule for refresh");
-            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-            scheduler.start();
-            scheduler.scheduleJob(job, trigger);
-            QLog.l().logQUser().info("Success");
-        } catch(SchedulerException e) {
-            QLog.l().logQUser().warn("Error scheduling refresh", e);
-        }
-*/
-
         return;
     }
 
