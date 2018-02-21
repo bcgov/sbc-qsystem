@@ -56,29 +56,29 @@ public class PrintRecords {
     private boolean invited;
 
     public PrintRecords(QOffice office) {
-        QLog.l().logQUser().debug("Creating print records");
+        // QLog.l().logQUser().debug("==> Creating print records");
         this.office = office;
         String qsb = "";
 
         if (office != null) {
             qsb = office.getSmartboardType();
         }
-        QLog.l().logQUser().debug("qsb: " + qsb);
+        //QLog.l().logQUser().debug("qsb: " + qsb);
 
         if (qsb != null && !qsb.isEmpty()) {
             File f = new File("config/QSmartboardPlugin.properties");
             if (qsb.equalsIgnoreCase("callbyticket")) {
-                QLog.l().logQUser().debug("getting file callbyticket");
+                //QLog.l().logQUser().debug("getting file callbyticket");
                 f = new File("config/QSmartboardPlugin-original.properties");
             }
 
             if (qsb.equalsIgnoreCase("callbyname")) {
-                QLog.l().logQUser().debug("Getting file callbyname");
+                //QLog.l().logQUser().debug("Getting file callbyname");
                 f = new File("config/QSmartboardPlugin-name.properties");
             }
 
             if (f.exists()) {
-                QLog.l().logQUser().debug("File exists");
+                //QLog.l().logQUser().debug("File exists");
                 final FileInputStream inStream;
                 try {
                     inStream = new FileInputStream(f);

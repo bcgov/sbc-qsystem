@@ -73,14 +73,27 @@ import ru.apertum.qsystem.server.model.postponed.QPostponedList;
 import ru.apertum.qsystem.server.model.results.QResult;
 import ru.apertum.qsystem.server.model.results.QResultList;
 
+//  CM:  To send slack messages
+import ru.apertum.qsystem.server.controller.SlackApi;
+import ru.apertum.qsystem.server.controller.SlackException;
+import ru.apertum.qsystem.server.controller.SlackMessage;
+
+//  CM:  To read offices.
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Property;
+import ru.apertum.qsystem.server.Spring;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Evgeniy Egorov
  */
 public class Form {
 
-    private static QCustomer pickedPostponed;
-    private final LinkedList<QCustomer> postponList = QPostponedList.getInstance()
-            .getPostponedCustomers();
+    private QCustomer pickedPostponed;
+    private final LinkedList<QCustomer> postponList = QPostponedList.getInstance().getPostponedCustomers();
     private final LinkedList<QResult> resultList = QResultList.getInstance().getItems();
     // ********************************************************************************************************************************************
     // ** Перенаправление Redirection
@@ -113,6 +126,8 @@ public class Form {
     public String officeType = "non-reception";
     public LinkedList<QUser> userList = new LinkedList<>();
     public LinkedList<QUser> userListbyOffice = new LinkedList<>();
+    private static HashMap<Long, Long> inviteTimes = new HashMap<Long, Long>();
+
     // Main service page
     @Wire("#incClientDashboard #client_north")
     North clientDashboardNorth;
@@ -152,6 +167,10 @@ public class Form {
     @Wire("#incClientDashboard #incReportingBug #ReportingBug")
     Window ReportingBugWindow;
 
+    //  CM:  Login form, for checkbox.
+    @Wire("#incLoginForm #QuickTxnCSR")
+    Checkbox csrQuickTxn;
+    
     QService pickedMainService;
     @Wire
     private Textbox typeservices;
@@ -169,6 +188,7 @@ public class Form {
     private boolean[] addWindowButtons = new boolean[] { true, false, false, false };
     /* Add Hide Button if Not Receptionist Model */
     private boolean checkCFMSType = false;
+    //private boolean serviceSelected = false;
     private String checkCFMSHidden = "display: none;";
     private String checkCFMSHeight = "0%";
     private boolean checkCombo = false;
@@ -237,12 +257,38 @@ public class Form {
 
     @Init
     public void init() {
-        QLog.l().logQUser().debug("Loding page: init");
+        QLog.l().logQUser().debug("==> Loading page: init");
         final Session sess = Sessions.getCurrent();
-
         final User userL = (User) sess.getAttribute("userForQUser");
         setKeyRegimForUser(userL);
         setCFMSAttributes();
+
+        //QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
+        
+        //  CM:  If invite times not set yet, initialize them.
+        if (inviteTimes.size() == 0) {
+
+            QLog.l().logQUser().debug("    --> Invite times not loaded yet.  Loading now ...");
+            
+            //  Read a list of all offices.
+            List<QOffice> offices = Spring.getInstance().getHt().findByCriteria(
+                    DetachedCriteria.forClass(QOffice.class)
+                        .add(Property.forName("deleted").isNull())
+                        .setFetchMode("services", FetchMode.EAGER)
+                        .setResultTransformer((Criteria.DISTINCT_ROOT_ENTITY))
+                );
+
+            //  Create last invite time for each office.
+            for (QOffice office : offices) {
+                inviteTimes.put(office.getId(), System.currentTimeMillis());
+            }
+
+//            for (HashMap.Entry<Long, Long> inviteInfo : inviteTimes.entrySet()) {
+//                QLog.l().logQUser().debug("    --> Office: " + inviteInfo.getKey() + "; Time: " + inviteInfo.getValue());
+//            }
+        }
+        
+        QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
     }
 
     /**
@@ -251,7 +297,7 @@ public class Form {
      */
     @AfterCompose
     public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
-        QLog.l().logQUser().debug("Loding page: afterCompose");
+        //QLog.l().logQUser().debug("Loading page: afterCompose");
         Selectors.wireComponents(view, this, false);
     }
 
@@ -272,6 +318,9 @@ public class Form {
             "avaitColumn", "officeName", "userList", "currentState", "userListbyOffice" })
     public void login() {
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Login", "Before", user.getUser(), user.getUser().getCustomer());
+        
         Uses.userTimeZone = (TimeZone) Sessions.getCurrent()
                 .getAttribute("org.zkoss.web.preferred.timeZone");
         QLog.l().logQUser().debug("Login : " + user.getName());
@@ -301,6 +350,8 @@ public class Form {
         QUser quser = QUserList.getInstance().getById(userId);
         currentState = true;
         quser.setCurrentState(currentState);
+        csrQuickTxn.setChecked(false);
+        quser.setQuickTxn(csrQuickTxn.isChecked());
         if (quser != null) {
             officeName = user.getUser().getOffice().getName();
         }
@@ -320,6 +371,9 @@ public class Form {
         // GA_list.setModel(GA_list.getModel());
         // GA_list.getModel();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
+        
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Login", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
@@ -362,6 +416,11 @@ public class Form {
 
     @Command
     public void GABoard() {
+
+        //  CM:  Track start.
+        Executer.getInstance().TrackUserClick("GABoard", "Before", user.getUser(), user.getUser().getCustomer());
+
+        //  CM:  Regular GABoard code.
         GAManagementDialogWindow.setVisible(true);
         GAManagementDialogWindow.doModal();
         CheckGABoard = true;
@@ -371,8 +430,10 @@ public class Form {
         catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-
         // QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG: " + user.getGABoard() + "\n\n\n\n");
+
+        //  CM:  Track start.
+        Executer.getInstance().TrackUserClick("GABoard", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     // @ContextParam(ContextType.VIEW) Component comp
@@ -402,6 +463,26 @@ public class Form {
         QLog.l().logQUser().debug("==> End: closeGA");
     }
 
+    @Command
+    public void ReportBugIndex() {
+        
+        //  CM:  Track start, call regular ReportBug, track end.
+        //  CM:  Set variables depending on whether null or not.
+        QUser trackUser = null;
+        QCustomer trackCust = null;
+        if (user != null) {
+            trackUser = user.getUser();
+            
+            if (trackUser != null) {
+                trackCust = trackUser.getCustomer();
+            }
+        }
+            
+        Executer.getInstance().TrackUserClick("Feedback, Main Screen", "Before", trackUser, trackCust);
+        ReportBug();
+        Executer.getInstance().TrackUserClick("Feedback, Main Screen", "After", trackUser, trackCust);
+    }
+    
     @Command
     public void ReportBug() {
         ReportingBugWindow.setVisible(true);
@@ -441,6 +522,9 @@ public class Form {
         CSRIcon = ":information_desk_person:";
 
         // Call Slack Api to connect to address
+        //package ru.apertum.qsys.quser;
+        //import ru.apertum.qsystem.server.model.QUser;
+
         SlackApi api = new SlackApi(
                 "https://hooks.slack.com/services/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");
         // SlackMessage msg = null;
@@ -521,27 +605,32 @@ public class Form {
     @NotifyChange(value = { "user" })
     public void QuickTxnCSRChecked() {
 
-        //  Debug
-        QLog.l().logQUser().debug("==> Start: QuickTxnChecked");
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("CSR QTxn", "Before", user.getUser(), user.getUser().getCustomer());
 
         //  Get user, quick transaction flag, then reset it.
         QUser quser = user.getUser();
-        boolean save = quser.getQuickTxn();
-        quser.setQuickTxn(!save);
+        quser.setQuickTxn(csrQuickTxn.isChecked());
 
         //  More debug.
-        QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
-        QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
-        QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
-        QLog.l().logQUser().debug("==> End: QuickTxnChecked");
+        //QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("==> End: QuickTxnChecked");
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("CSR QTxn", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
     @NotifyChange(value = { "btnsDisabled", "login", "user", "postponList", "customer",
             "avaitColumn", "officeName" })
     public void logout() {
-        QLog.l().logQUser().debug("Logout " + user.getName());
+
+        //  CM:  Track start.
+        Executer.getInstance().TrackUserClick("Logout", "Before", user.getUser(), user.getUser().getCustomer());
+        
+        //QLog.l().logQUser().debug("Logout " + user.getName());
 
         // Set all of the session parameters back to defaults
         setKeyRegim(KEYS_OFF);
@@ -554,7 +643,9 @@ public class Form {
 
         // Andrew - to change quser state for GABoard
         QUser quser = user.getUser();
+        quser.setQuickTxn(false);
         quser.setCurrentState(false);
+        csrQuickTxn.setChecked(false);
         // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getName() + "\n\n\n\n");
         // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + quser.getCurrentState() + "\n\n\n\n");
 
@@ -576,6 +667,9 @@ public class Form {
         clientDashboardNorth.setStyle(checkCFMSHidden);
         clientDashboardNorth.setSize(checkCFMSHeight);
         btn_invite.setVisible(false);
+
+        //  CM:  Track end.
+        Executer.getInstance().TrackUserClick("Logout", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     public LinkedList<QUser> getUsersForLogin() {
@@ -651,6 +745,9 @@ public class Form {
         if (quser == null) {
             return false;
         }
+        
+        //  Assume not a reception office.
+        checkCFMSType = false;
 
         String qsb = quser.getOffice().getSmartboardType();
         if (qsb.equalsIgnoreCase("callbyticket")) {
@@ -660,6 +757,49 @@ public class Form {
             checkCFMSType = true;
         }
         return checkCFMSType;
+    }
+    
+    public boolean isReceptionOffice() {
+        
+        //  Just call the getCFMSType function.  This fn has a better name.
+        return getCFMSType();
+    }
+
+    public void EnableService(boolean enable) {
+
+        //  User wants to enable service.
+        //QLog.l().logger().debug("==> EnableService(" + enable + ")");
+
+        //        Button myAdd = (Button) addTicketDailogWindow.getFellow("addAndServeBtn");
+        //        if (myAdd != null) {
+        //            //QLog.l().logger().debug("    --> Begin button found!!!");
+        //            myAdd.setDisabled(true);
+        //        }
+        //        else {
+        //            //QLog.l().logger().debug("    --> Begin button not found ... Sigh ...");
+        //        }
+    }
+
+    //    @NotifyChange(value = { "pickedRedirectServ" })
+    //    public boolean isNoServiceSelected() {
+    //
+    //        //  CM:  Assume a service is selected.
+    //        boolean result = false;
+    //
+    //        //  No service selected.
+    //        if (pickedRedirectServ == null) {
+    //            result = true;
+    //        }
+    //
+    //        //  Return the result.
+    //        return result;
+    //    }
+    //
+    @Command
+    public void serviceSelected() {
+        //QLog.l().logQUser().debug("==> Start: logQUser for serviceSelected");
+        //QLog.l().logger().debug("--> Start: logger for serviceSelected");
+        //EnableService(true);
     }
 
     public String getCFMSHeight() {
@@ -717,12 +857,52 @@ public class Form {
 
     @Command
     @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
-    public void invite() {
+    public void inviteClick() {
 
-        QLog.l().logQUser().debug("==> Start: invite - Invite by " + user.getName());
+        //  CM:  Track the user's click, then call standard invite routine.
+        Executer.getInstance().TrackUserClick("Invite", "Before", user.getUser(), user.getUser().getCustomer());
+        this.invite();
+        Executer.getInstance().TrackUserClick("Invite", "After", user.getUser(), user.getUser().getCustomer());
+    }
+    
+    @Command
+    @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
+    public void invite() {
+        
+        //  CM:  See if small time has elapsed since last CSR in this office clicked invite.
+        //  CM:  Kludge to prevent two CSRs calling the same citizen.
+        Long officeId = user.getUser().getOffice().getId();
+        Long lastTime = inviteTimes.get(officeId);
+        Long currentTime = System.currentTimeMillis();
+
+        //QLog.l().logQUser().debug("==> Invite: Off: " + officeId + "; Curr: " + currentTime + "; Last: " + lastTime);
+        
+        //  CM:  If less than 1 second since last invite in this office, wait.
+        if ((currentTime - lastTime) < 1000) {
+            QLog.l().logQUser().debug("    --> Have to wait ...");
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            }
+            catch(InterruptedException ex) {
+                QLog.l().logQUser().debug("    --> Waiting interrupted.");
+            }
+            //QLog.l().logQUser().debug("    --> OK, good to go.");
+        }
+        
+        //  CM:  Update the time of the last invite for this office.
+        inviteTimes.put(officeId, currentTime);
+        
+        //QLog.l().logQUser().debug("==> Start: invite - Invite by " + user.getName());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
+        //  CM:  Set user's customer to be null.  Avoid recall errors when
+        //       two CSRs click invite at same time, AFTER returning customer to queue.
+//        QUser tempUser = user.getUser();
+//        Long myId = user.getUser().getId();
+//        Long myId2 = tempUser.getId();
+//        tempUser.setCustomer(null);
+        
         // QLog.l().logQUser().debug("\n\n\n\nBEFORE INTO EXCECUTE \n\n\n\n\n");
         final RpcInviteCustomer result = (RpcInviteCustomer) Executer.getInstance().getTasks()
                 .get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
@@ -743,7 +923,16 @@ public class Form {
         service_list.invalidate();
 
         //  Debug
-        QLog.l().logQUser().debug("==> End: invite");
+        //QLog.l().logQUser().debug("==> End: invite");
+    }
+
+    @Command
+    public void addServeScreenClick() {
+
+        //  CM:  Track the user's Serve Now click, then call the regular routine.
+        Executer.getInstance().TrackUserClick("Serve Now", "Before", user.getUser(), user.getUser().getCustomer());
+        this.addServeScreen();
+        Executer.getInstance().TrackUserClick("Serve Now", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
@@ -761,7 +950,7 @@ public class Form {
         Messagebox.show("Do you want to remove the client?", "Remove", new Messagebox.Button[]{
                 Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION,
                 (Messagebox.ClickEvent t) -> {
-                    QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
+                    //QLog.l().logQUser().debug("Kill by " + user.getName() + " customer " + customer.getFullNumber());
                     if (t.getButton() != null && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
                         final CmdParams params = new CmdParams();
 
@@ -819,13 +1008,13 @@ public class Form {
         // QUser quser = QUserList.getInstance().getById(user.getUser().getId());
         // quser.setCurrentComments(tempComment);
 
-        QLog.l().logQUser().debug("\n\nPostponed!!:\n" + customer.getTempComments() + "\n\n\n");
+        QLog.l().logQUser().debug("==> updateComments (postponed?): " + customer.getTempComments());
     }
 
     @Command
     public void postpone() {
-        QLog.l().logQUser()
-                .debug("Postpone by " + user.getName() + " customer " + customer.getFullNumber());
+        //        QLog.l().logQUser()
+        //                .debug("Postpone by " + user.getName() + " customer " + customer.getFullNumber());
         postponeCustomerDialog.setVisible(true);
         postponeCustomerDialog.doModal();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -924,8 +1113,12 @@ public class Form {
 
     @Command
     @NotifyChange(value = { "addWindowButtons" })
-    public void addClient() {
-        QLog.l().logQUser().debug("addClient");
+    public void backOffice() {
+
+        //  CM:  Track start of Add Citizen
+        Executer.getInstance().TrackUserClick("Back Office", "Before", user.getUser(), user.getUser().getCustomer());
+
+        //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
         addWindowButtons[0] = true;
         addWindowButtons[1] = false;
@@ -934,7 +1127,32 @@ public class Form {
         // customer.setChannels(1);
         pickedRedirectServ = null;
         ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
-        this.addTicketScreen();
+        this.addTicketScreen(true, true);
+
+        //  CM:  Track end of Add Citizen
+        Executer.getInstance().TrackUserClick("Back Office", "After", user.getUser(), user.getUser().getCustomer());
+    }
+
+    @Command
+    @NotifyChange(value = { "addWindowButtons" })
+    public void addClient() {
+
+        //  CM:  Track start of Add Citizen
+        Executer.getInstance().TrackUserClick("Add Citizen", "Before", user.getUser(), user.getUser().getCustomer());
+
+        //QLog.l().logQUser().debug("addClient");
+        user.setCustomerWelcomeTime(new Date());
+        addWindowButtons[0] = true;
+        addWindowButtons[1] = false;
+        addWindowButtons[2] = false;
+        addWindowButtons[3] = false;
+        // customer.setChannels(1);
+        pickedRedirectServ = null;
+        ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
+        this.addTicketScreen(true, false);
+
+        //  CM:  Track end of Add Citizen
+        Executer.getInstance().TrackUserClick("Add Citizen", "After", user.getUser(), user.getUser().getCustomer());
     }
 
     @Command
@@ -949,7 +1167,7 @@ public class Form {
         addWindowButtons[3] = false;
         // refresh the service list. Remove the default service selection
         pickedRedirectServ = null;
-        this.addTicketScreen();
+        this.addTicketScreen(false, false);
     }
 
     @Command
@@ -982,8 +1200,8 @@ public class Form {
     @Command
     @NotifyChange(value = { "btnsDisabled", "customer" })
     public void finish() {
-        QLog.l().logQUser()
-                .debug("Finish by " + user.getName() + " customer " + customer.getFullNumber());
+        //        QLog.l().logQUser()
+        //                .debug("==> Start: Finish CSR " + user.getName() + "; client " + customer.getFullNumber());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
@@ -1022,6 +1240,7 @@ public class Form {
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         serveCustomerDialogWindow.setVisible(false);
 
+        //QLog.l().logQUser().debug("==> End: Finish");
     }
 
     public QCustomer getPickedCustomer() {
@@ -1045,41 +1264,6 @@ public class Form {
     public void clickListServices() {
     }
 
-    /*
-     * new function prepareInvite() {
-     *     look through service list.
-     *     set pickedCustomer = one that matches
-     *     Write a new function inviteCustomerNow
-     *      
-     * }
-     * 
-     * 
-     * CM:  Possible implementation of the Q.Txn feature
-     * 
-     *  keep the old inviteCustomerNow, but have it take a parameter of pickedCustomer
-     *  
-     *  write a new inviteCustomerNow, which takes no parameters, just like the old one.
-     *  It only has one line, it calls the old one with a parameter.
-     *  
-     *  
-     *  
-     *  public void inviteCustomerNew() {
-     *  
-     *    inviteCustomerOld(pickedCustomer);
-     *  }
-     *  
-     *  public void inviteCustomerOld(pickedCustomer) {
-     *  
-     *    all the old code
-     *  
-     *  }
-     *  
-     *  
-     *  Now, I can write a new function, which looks through the service list,
-     *  selects a customer, sets it to be pickedCustomer, and calls the function.
-     * 
-     */
-
     @Command
     public void inviteCustomerNow() {
         // 1. Postpone the customer
@@ -1094,10 +1278,13 @@ public class Form {
 
         final CmdParams params = new CmdParams();
 
-        QLog.l().logQUser().debug(pickedCustomer.getId());
-
-        if (!validInviteStates.contains(pickedCustomer.getStateIn())) {
-            Messagebox.show("Unable to invite selected customer. This usually means another user has already invited this customer", "Error inviting customer", Messagebox.OK, Messagebox.INFORMATION);
+        //  New "customer already picked" test.
+        Object[] msg = { "" };
+        if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedCustomer, msg,
+                "WaitQ")) {
+            Messagebox.show(msg[0].toString(), "Error picking customer from wait queue",
+                    Messagebox.OK,
+                Messagebox.INFORMATION);
             return;
         }
 
@@ -1276,7 +1463,7 @@ public class Form {
     }
 
     public void refreshChannels() {
-        QLog.l().logger().debug("refreshChannels");
+        //QLog.l().logger().debug("refreshChannels");
         if (getCFMSType()) {
             ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options"))
                     .setSelectedIndex(0);
@@ -1332,19 +1519,46 @@ public class Form {
 
     @Command
     public void clickListPostponedInvite() {
+
+        //  CM:  Ensure pickedPostponed isn't null.
         if (user.getPlan().isEmpty() || pickedPostponed == null) {
             return;
         }
+
+        //  CM:  Make sure the customer picked hasn't already been picked by someone else.
+        Object[] msg = { "" };
+        if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg,
+                "HoldQ")) {
+            Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
+                    Messagebox.OK,
+                    Messagebox.INFORMATION);
+            return;
+        }
+
         Messagebox.show("Do you want to invite citizen " + pickedPostponed.getFullNumber() + " ?",
                 l("inviting_client"), new Messagebox.Button[] {
                         Messagebox.Button.YES, Messagebox.Button.NO },
                 Messagebox.QUESTION,
                 (Messagebox.ClickEvent t) -> {
-                    QLog.l().logQUser().debug(
-                            "Invite postponed by " + user.getName() + " citizen " + pickedPostponed
-                                    .getFullNumber());
-                    if (t.getButton() != null
-                            && t.getButton().compareTo(Messagebox.Button.YES) == 0) {
+
+                    if ((user != null) && (pickedPostponed != null)) {
+                        //                    QLog.l().logQUser().debug(
+                        //                            "Invite postponed by " + user.getName() + " citizen " + pickedPostponed
+                        //                                    .getFullNumber());
+                    }
+
+                    //  CM:  Only proceed if you can still call the customer.
+                    if ((t.getButton() != null)
+                            && (t.getButton().compareTo(Messagebox.Button.YES) == 0)
+                            && ((boolean) Executer.getInstance().CustomerCanBeCalled(
+                                    pickedPostponed, msg, "HoldQ(2)"))) {
+
+                        //  CM:  Display current customer.
+                        //                        QLog.l().logQUser().debug("--> In Invite(Yes) - Picked customer: "
+                        //                                + pickedPostponed.getName() + "; StateStr: " + pickedPostponed
+                        //                                        .currentStateIn() + "; StateInt: " + pickedPostponed
+                        //                                                .getStateIn());
+
                         final CmdParams params = new CmdParams();
                         // @param userId id юзера который вызывает The user who causes
                         // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
@@ -1363,13 +1577,35 @@ public class Form {
 
                         this.addServeScreen();
                         this.begin();
-
-                        pickedPostponed = null;
                     }
                     else {
-                        pickedPostponed = null;
+
+                        //  CM:  Display current customer.
+                        //                        QLog.l().logQUser().debug("--> In Invite(Yes) - Picked customer: "
+                        //                                + pickedPostponed.getName() + "; StateStr: " + pickedPostponed
+                        //                                        .currentStateIn() + "; StateInt: " + pickedPostponed
+                        //                                                .getStateIn());
+
+                        //  CM:  Another CSR served the customer.
+                        Messagebox.show(
+                                msg[0].toString(),
+                                "Error picking customer from hold queue",
+                                Messagebox.OK,
+                                Messagebox.INFORMATION);
                     }
+
+                    //  CM:  Whether served or not, set customer to be null.
+                    pickedPostponed = null;
                 });
+
+        //  CM:  See what pickedPostponed is.
+        if (pickedPostponed == null) {
+            //QLog.l().logQUser().debug("--> End pick postponed: Picked customer is null");
+        }
+        else {
+            //            QLog.l().logQUser().debug("--> End pick postponed: Picked customer: " + pickedPostponed
+            //                    .getName());
+        }
     }
 
     public TreeServices getTreeServs() {
@@ -1393,75 +1629,76 @@ public class Form {
     }
 
     @Command
-    public void addTicketScreen() {
+    public void addTicketScreen(boolean newCustomer, boolean backOffice) {
 
         //  Debugging
-        QLog.l().logQUser().debug("==> Start: addTicketScreen");
+        //QLog.l().logQUser().debug("==> Start: addTicketScreen");
 
-        //  Get quick transaction check box.
-        Checkbox QuickTxn = (Checkbox) addTicketDailogWindow.getFellow("QuickTxnCust");
-
-        // Remove previous comments and categories searched
-        this.refreshAddWindow();
+        // CM:  Remove previous comments and categories searched
         this.refreshChannels();
+        this.refreshAddWindow(newCustomer);
+        //this.refreshChannels();
 
-        //  You are (???) pulling an existing customer, in queue or on hold.
-        if (customer != null) {
-            QLog.l().logQUser()
-                    .debug("    --> Customer channel index not null: Set addTicket combo box. Index: "
-                            + customer.getChannelsIndex());
-
-            //  You are dealing with a reception office.
-            if (getCFMSType()) {
-                ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options"))
-                        .setSelectedIndex(customer.getChannelsIndex() - 1);
-            }
-
-            //  Dealing with a non-reception office.
-            else {
-                ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options"))
-                        .setSelectedIndex(customer.getChannelsIndex() - 1);
-            }
-
-            //  Make sure you found the checkbox.            
-            if (QuickTxn != null) {
-                //  *** NOTE: Temporarily, set quicktxn to false. Set to be customer value.
-                //  MUST change this to set it to the Quick trans flag of the customer 
-                QuickTxn.setChecked(false);
-            }
+        //  CM:  If a backoffice transaction, preselect this category.
+        if (backOffice) {
+            ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).setSelectedIndex(2);
+            ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).setSelectedIndex(2);
         }
-
-        //  You are starting a new transaction.
-        else {
-            QLog.l().logQUser().debug("    -->  Customer of channel index is null");
-
-            //  If no customer, set default quick txn to be false.            
-            if (QuickTxn != null) {
-                QuickTxn.setChecked(false);
-            }
-        }
-
-        //  Debug.
-        if (QuickTxn != null) {
-            boolean isQuick = QuickTxn.isChecked();
-            QLog.l().logQUser()
-                    .debug("    --> Checkbox is: " + (isQuick ? "Checked" : "Not checked"));
-        }
-        else {
-            QLog.l().logQUser().debug("    --> Bad news!  Could not find QuickTxn checkbox.");
-        }
-
+        
+        //  CM:  Make add ticket window visible, transfer control.
         addTicketDailogWindow.setVisible(true);
         addTicketDailogWindow.doModal();
 
         //  Debugging.
-        QLog.l().logQUser().debug("==> End: addTicketScreen");
+        // QLog.l().logQUser().debug("==> End: addTicketScreen");
     }
 
-    public void refreshAddWindow() {
-        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
+    public void refreshAddWindow(boolean newCustomer) {
+
+        //  CM:  You're about to display the addTicketDialog window.  Set all fields appropriately.
+        //  CM:  For add, change, next options, comments always blank.
+        String msg = "";
         ((Textbox) addTicketDailogWindow.getFellow("reception_ticket_comments")).setText("");
         ((Textbox) addTicketDailogWindow.getFellow("general_ticket_comments")).setText("");
+
+        //  CM:  Get checkbox field.
+        Checkbox quickTxn = (Checkbox) addTicketDailogWindow.getFellow("QuickTxnCust");
+
+        //  CM:  For change and next options (existing customer), retain some old values.
+        if (!newCustomer) {
+
+            //  CM:  There is a customer.
+            msg += "==> RefreshAddWin: Cust: " + customer.getFullNumber();
+
+            //  CM:  Retain reception or non-reception channel field, depending on office type.
+            if (getCFMSType()) {
+                msg += "; Reception; Channel: " + customer.getChannels();
+                ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options"))
+                        .setSelectedIndex(customer.getChannelsIndex() - 1);
+            }
+            else {
+                msg += "; NonReception; Channel: " + customer.getChannels();
+                ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options"))
+                        .setSelectedIndex(customer.getChannelsIndex() - 1);
+            }
+
+            //  CM:  Retain QuickTxn value.  Disable QuickTxn box.
+            quickTxn.setChecked(customer.getTempQuickTxn());
+            quickTxn.setDisabled(true);
+        }
+
+        //  CM:  No customer.  Make sure QuickTxn has default value.
+        else {
+            msg += "==> RefreshAddWin: No current customer";
+            quickTxn.setChecked(false);
+            quickTxn.setDisabled(false);
+        }
+
+        //  CM:  Debug
+        //QLog.l().logger().debug(msg);
+
+        //  CM:  For add, change, next options, service and category always blank.
+        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
         ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("");
 
         // Reset focus, if not reception.
@@ -1539,7 +1776,7 @@ public class Form {
             }
         }
         else {
-            QLog.l().logger().debug("Office is null");
+            //QLog.l().logger().debug("Office is null");
         }
 
         return customers;
@@ -1576,13 +1813,37 @@ public class Form {
     @NotifyChange("listServices")
     @Command
     public void changeCategory(InputEvent event) {
+
+        //  CM:  If you change the category, clear the selected service.
+        pickedRedirectServ = null;
+        //EnableService(false);
+
         ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
 
+        listServices = FilterServicesByCategory(false);
+    }
+
+    private List<QService> FilterServicesByCategory(boolean BackOffice) {
+
+        //  CM:  Initialize variables.
+        List<QService> returnServices = null;
         LinkedList<QService> allServices = QServiceTree.getInstance().getNodes();
+        QService backOffice = null;
         List<QService> requiredServices = null;
 
+        //  CM:  If you are filtering by back office, find back office service, set it to be pickedMainService.
+        if (BackOffice) {
+            for (QService next : allServices) {
+                if ("back office".equals(next.getName().toLowerCase())) {
+                    setPickedMainService(next);
+                    break;
+                }
+            }
+        }
+
+        //  CM:  Continue on as normal.
         if (getPickedMainService() == null) {
-            QLog.l().logQUser().debug("null category was selected");
+            //QLog.l().logQUser().debug("null category was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1595,11 +1856,11 @@ public class Form {
                                                                     .toLowerCase()))
                                     && !service.getParentId().equals(1L))
                     .collect(Collectors.toList());
-            QLog.l().logQUser().debug("The getvalue() returns : \n");
+            //QLog.l().logQUser().debug("The getvalue() returns :");
 
         }
         else {
-            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            QLog.l().logQUser().debug("--> Category selected: " + pickedMainService.getName());
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1613,10 +1874,10 @@ public class Form {
                     .collect(Collectors.toList());
         }
 
-        listServices = filterServicesByUser(requiredServices);
-
+        returnServices = filterServicesByUser(requiredServices);
+        return returnServices;
     }
-
+    
     // Andrew
     // onChanging category updates the category searching algorithm, searching while typing
     @NotifyChange("listServices")
@@ -1624,12 +1885,16 @@ public class Form {
     public void changingCategory(@BindingParam("v") String value,
             @ContextParam(ContextType.TRIGGER_EVENT) InputEvent event) {
 
+        //  CM:  If you start changing the category, clear the selected service.
+        pickedRedirectServ = null;
+        //EnableService(false);
+
         listServices.clear();
         LinkedList<QService> allServices = QServiceTree.getInstance().getNodes();
         List<QService> requiredServices = null;
 
         if (getPickedMainService() == null) {
-            QLog.l().logQUser().debug("null category was selected");
+            //QLog.l().logQUser().debug("null category was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1643,7 +1908,7 @@ public class Form {
                     .collect(Collectors.toList());
         }
         else {
-            QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
+            //QLog.l().logQUser().debug("Category " + pickedMainService.getName() + " was selected");
             requiredServices = allServices
                     .stream()
                     .filter(
@@ -1660,9 +1925,20 @@ public class Form {
         listServices = filterServicesByUser(requiredServices);
     }
 
+    //@NotifyChange("listServices pickedRedirectServ")
     @NotifyChange("listServices")
     @Command
     public void doSearch() {
+
+        //  CM:  If you start typing, clear the selected service.
+        //EnableService(false);
+
+        //  CM:  Get the new filter string.
+        filter = ((Textbox) addTicketDailogWindow.getFellow("typeservices")).getText();
+
+        //  CM:  Reset the selected service. 
+        pickedRedirectServ = null;
+
         listServices.clear();
         LinkedList<QService> allServices = QServiceTree.getInstance().getNodes();
         List<QService> requiredServices;
@@ -1752,6 +2028,12 @@ public class Form {
     @Command
     public void closeAddNextServiceDialog() {
 
+        //  CM:  Debug.
+        QLog.l().logger().debug("Start: Next Service (closeAddNextServiceDialog)");
+
+        //  String to save comments in.
+        String custComments = "";
+
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
@@ -1785,13 +2067,20 @@ public class Form {
             // params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
 
             if (getCFMSType()) {
-                params.comments = ((Textbox) addTicketDailogWindow
+                custComments = ((Textbox) addTicketDailogWindow
                         .getFellow("reception_ticket_comments")).getText();
+                params.comments = custComments;
             }
             else {
-                params.comments = ((Textbox) addTicketDailogWindow
+                custComments = ((Textbox) addTicketDailogWindow
                         .getFellow("general_ticket_comments")).getText();
+                params.comments = custComments;
             }
+
+            QLog.l().logger().debug("    --> CSR:  " + user.getName());
+            QLog.l().logger().debug("    --> Cust: " + customer.getFullNumber());
+            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
+            QLog.l().logger().debug("    --> Cmnt: " + custComments);
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
@@ -1816,8 +2105,13 @@ public class Form {
             // QLog.l().logQUser().debug(((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex());
             customer.setChannels(params.new_channels);
             customer.setChannelsIndex(params.new_channels_Index);
+            customer.setTempComments(custComments);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
+
+        //  CM:  Debug.
+        QLog.l().logger().debug("End: Next Service (closeAddNextServiceDialog)");
+
     }
 
     @Command
@@ -1873,11 +2167,17 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = {"postponList", "customer", "btnsDisabled"})
+    //@NotifyChange(value = { "postponList", "customer", "btnsDisabled" })
+    @NotifyChange(value = { "postponList", "btnsDisabled" })
     public void closeAddToQueueDialog() {
 
         //  Debug
-        QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
+        //QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
+
+        //  Debug
+        String testText = ((Textbox) addTicketDailogWindow
+                .getFellow("reception_ticket_comments")).getText();
+        //QLog.l().logQUser().debug("    --> Comments: " + testText);
 
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
@@ -1885,14 +2185,15 @@ public class Form {
                 return;
             }
 
-            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL, Boolean.FALSE);
+            final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
+                    Boolean.FALSE);
 
             boolean Quick = params.custQtxn;
-            QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
+            //QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
 
-            QLog.l().logQUser().debug("addToQueue");
+            //QLog.l().logQUser().debug("addToQueue");
             this.addToQueue(params);
-            QLog.l().logQUser().debug("Done");
+            //QLog.l().logQUser().debug("Done");
 
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
@@ -1905,7 +2206,7 @@ public class Form {
         }
 
         //  Debug
-        QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
+        //QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
     }
 
     public void Sort() {
@@ -1918,7 +2219,7 @@ public class Form {
         final CmdParams params = new CmdParams();
 
         //  Debug
-        QLog.l().logQUser().debug("==> Start: paramsForAddingInQueue");
+        //QLog.l().logQUser().debug("==> Start: paramsForAddingInQueue");
 
         params.userId = user.getUser().getId();
         params.serviceId = pickedRedirectServ.getId();
@@ -1948,14 +2249,14 @@ public class Form {
                 .getFellow("QuickTxnCust");
 
         if (QuickTxn == null) {
-            QLog.l().logQUser().debug("    --> Bad news.  Checkbox could not be found");
+            //QLog.l().logQUser().debug("    --> Bad news.  Checkbox could not be found");
             params.custQtxn = false;
         }
         else {
-            QLog.l().logQUser().debug("    --> Yea!  Checkbox is not null");
+            //QLog.l().logQUser().debug("    --> Yea!  Checkbox is not null");
             boolean Quick = QuickTxn.isChecked();
-            QLog.l().logQUser()
-                    .debug("    --> Checkbox found. It is: " + (Quick ? "Checked" : "Not checked"));
+            //QLog.l().logQUser()
+            //        .debug("    --> Checkbox found. It is: " + (Quick ? "Checked" : "Not checked"));
             params.custQtxn = Quick;
         }
 
@@ -1964,7 +2265,7 @@ public class Form {
         params.welcomeTime = user.getCustomerWelcomeTime();
 
         //  Debug
-        QLog.l().logQUser().debug("==> End: paramsForAddingInQueue");
+        //QLog.l().logQUser().debug("==> End: paramsForAddingInQueue");
 
         return params;
     }
@@ -1982,11 +2283,15 @@ public class Form {
         addWindowButtons[2] = false;
         addWindowButtons[3] = false;
 
-        this.addTicketScreen();
+        this.addTicketScreen(false, false);
     }
 
     @Command
     public void closeChangeServiceDialog() {
+
+        //  CM:  Debug
+        //QLog.l().logger().debug("==> Start: Change Service (closeChangeServiceDialog)");
+
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
@@ -2000,6 +2305,10 @@ public class Form {
                         "Access Issues", Messagebox.OK, Messagebox.EXCLAMATION);
                 return;
             }
+
+            //            QLog.l().logger().debug("    --> CSR:  " + user.getName());
+            //            QLog.l().logger().debug("    --> Cust: " + customer.getFullNumber());
+            //            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
 
             final CmdParams params = new CmdParams();
             params.userId = user.getUser().getId();
@@ -2028,6 +2337,10 @@ public class Form {
                         .getFellow("general_Channels_options")).getSelectedItem().getValue()
                                 .toString();
             }
+
+            //  CM:  Get quick transaction status.
+            params.custQtxn = customer.getTempQuickTxn();
+
             // params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
             // params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
 
@@ -2041,12 +2354,26 @@ public class Form {
             customer.setChannels(params.new_channels);
             customer.setChannelsIndex(params.new_channels_Index);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
+
+            //  CM:  Debug
+            //QLog.l().logger().debug("==> End: Change Service (closeChangeServiceDialog)");
         }
     }
 
     @Command
     public void closeAddAndServeDialog() {
+
+        //  Debug
+        //QLog.l().logQUser().debug("==> Start: closeAddAndServeDialog");
+
         if (pickedRedirectServ != null) {
+
+            //  CM:  Debug.
+            //QCustomer cust = pickedRedirectServ.getCustomer();
+            //            QLog.l().logQUser().debug("    --> pickedRedirectServ not null, Name: "
+            //                    + pickedRedirectServ.getName());
+            //QLog.l().logQUser().debug("    --> Customer: " + cust.getFullNumber());
+
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
@@ -2074,8 +2401,13 @@ public class Form {
             this.invite();
             this.begin();
             BindUtils.postNotifyChange(null, null, Form.this, "*");
-
         }
+        else {
+            //QLog.l().logQUser().debug("    --> pickedRedirectServ is null");
+        }
+
+        //  Debug
+        //QLog.l().logQUser().debug("==> End: closeAddAndServeDialog");
     }
 
     @Command
