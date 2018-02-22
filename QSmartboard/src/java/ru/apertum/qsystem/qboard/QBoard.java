@@ -306,10 +306,8 @@ public class QBoard extends GenericForwardComposer {
             .reduce(total, Integer::sum);
 
         //  CM:  Get session ID.
-        //
-        //HttpSession boardSession = 
-        //        QLog.l().logQUser().debug("==> QBoard.getCustomersCount(): Session ID is " + boardSession
-        //                .getId());
+        QLog.l().logQUser().debug("==> QBoard.getCustomersCount(): Session hashcode is " + Sessions
+                .getCurrent().hashCode());
 
         return total;
     }
