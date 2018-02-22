@@ -1561,49 +1561,53 @@ public class Form {
                     Messagebox.QUESTION,
                     (Messagebox.ClickEvent t) -> {
 
-                        if ((user != null) && (pickedPostponed != null)) {
-                        }
-
                         //  CM:  Only proceed if you can still call the customer.
                         if ((t.getButton() != null)
-                                && (t.getButton().compareTo(Messagebox.Button.YES) == 0)
-                                && ((boolean) Executer.getInstance().CustomerCanBeCalled(
-                                        pickedPostponed, msg, "HoldQ(2)"))) {
+                                && (t.getButton().compareTo(Messagebox.Button.YES) == 0)) {
 
-                            final CmdParams params = new CmdParams();
-                            // @param userId id юзера который вызывает The user who causes
-                            // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
-                            // It is the ID of the caller which is called from the pool of deferred, it is because With a long-stroke tool we have been working for
-                            // a long time
-                            params.customerId = pickedPostponed.getId();
-                            params.userId = user.getUser().getId();
-                            Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
-                                    .process(params, "", new byte[4]);
-                            customer = user.getUser().getCustomer();
+                            QLog.l().logger().debug("--> Checking customer can be called from queue.");
 
-                            setKeyRegim(KEYS_INVITED);
-                            BindUtils.postNotifyChange(null, null, Form.this, "postponList");
-                            BindUtils.postNotifyChange(null, null, Form.this, "customer");
-                            BindUtils.postNotifyChange(null, null, Form.this, "btnsDisabled");
+                            if ((boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg, "HoldQ(2)")) {
+                                
+                                QLog.l().logger().debug("    --> Customer can be called from hold queue");
+                            
+                                final CmdParams params = new CmdParams();
+                                // @param userId id юзера который вызывает The user who causes
+                                // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
+                                // It is the ID of the caller which is called from the pool of deferred, it is because With a long-stroke tool we have been working for
+                                // a long time
+                                params.customerId = pickedPostponed.getId();
+                                params.userId = user.getUser().getId();
+                                Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
+                                        .process(params, "", new byte[4]);
+                                customer = user.getUser().getCustomer();
 
-                            this.addServeScreen();
-                            this.begin();
-                        }
-                        else {
+                                setKeyRegim(KEYS_INVITED);
+                                BindUtils.postNotifyChange(null, null, Form.this, "postponList");
+                                BindUtils.postNotifyChange(null, null, Form.this, "customer");
+                                BindUtils.postNotifyChange(null, null, Form.this, "btnsDisabled");
+
+                                this.addServeScreen();
+                                this.begin();
+                            }
+                            else {
+
+                                QLog.l().logger().debug("    --> Customer cannot be called from hold queue");
     
-                            //  CM:  Another CSR served the customer.
-                            Messagebox.show(
-                                    msg[0].toString(),
-                                    "Error picking customer from hold queue",
-                                    Messagebox.OK,
-                                    Messagebox.INFORMATION);
+                                //  CM:  Another CSR served the customer.
+                                Messagebox.show(
+                                        msg[0].toString(),
+                                        "Error picking customer from hold queue",
+                                        Messagebox.OK,
+                                        Messagebox.INFORMATION);
+                            }
                         }
-
-                    //  CM:  Whether served or not, set customer to be null.
-                    pickedPostponed = null;
-                }
+                    }
             );
         }
+        
+        //  CM:  Whether served or not, set customer to be null.
+        pickedPostponed = null;
 
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Select Hold Queue", "After", user.getUser(), user.getUser().getCustomer());
