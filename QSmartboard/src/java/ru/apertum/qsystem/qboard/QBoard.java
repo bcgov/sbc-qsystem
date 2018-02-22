@@ -167,7 +167,7 @@ public class QBoard extends GenericForwardComposer {
             if (i <= records.getRecords().size()) {
                 line.labelA = new Label(
                     records.getRecords().get(i - 1).customerPrefix + records.getRecords()
-                        .get(i - 1).customerNumber);
+                                .get(i - 1).customerNumber);
                 line.labelB = new Label(records.getRecords().get(i - 1).point);
 
                 final boolean blink = (
@@ -301,6 +301,10 @@ public class QBoard extends GenericForwardComposer {
             .filter((service) -> service.getSmartboard().equals("Y"))
             .map((service) -> service.getCountCustomersByOffice(office))
             .reduce(total, Integer::sum);
+
+        //  CM:  Get session ID.
+        QLog.l().logQUser().debug("==> QBoard.getCustomersCount(): Session hashcode is " + Sessions
+                .getCurrent().hashCode());
 
         return total;
     }
