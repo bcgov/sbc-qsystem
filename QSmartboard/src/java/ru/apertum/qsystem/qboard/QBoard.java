@@ -49,6 +49,8 @@ public class QBoard extends GenericForwardComposer {
     Columnchildren right;
     private Boolean plFlag = null;
     private List<QPlanService> plan = new LinkedList<>();
+    private int oldHashcode = Sessions.getCurrent().hashCode();
+    private int newHashcode = 0;
 
     /**
      * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard
@@ -248,11 +250,6 @@ public class QBoard extends GenericForwardComposer {
     }
 
     public boolean getBottomVisible() {
-        //        QLog.l().logQUser().debug(getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize());
-        //        QLog.l().logQUser().debug(checkPlugin() ? !"".equals(
-        //            getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
-        //                .replaceAll("0|%|(px)", ""))
-        //            : false);
 
         return checkPlugin() ? !"".equals(
             getPrintRecordsByOfficeId(getSessionOfficeId()).getBottomSize()
@@ -292,6 +289,7 @@ public class QBoard extends GenericForwardComposer {
     }
 
     public int getCustomersCount() {
+
         int total = 0;
         Long office_id = Integer.toUnsignedLong(getSessionOfficeId());
         QOffice office = QOfficeList.getInstance().getById(office_id);
@@ -303,8 +301,17 @@ public class QBoard extends GenericForwardComposer {
             .reduce(total, Integer::sum);
 
         //  CM:  Get session ID.
-        QLog.l().logQUser().debug("==> QBoard.getCustomersCount(): Session hashcode is " + Sessions
-                .getCurrent().hashCode());
+        //        private int oldHashcode = Sessions.getCurrent().hashCode();
+        //        private int newHashcode = 0;
+        newHashcode = Sessions.getCurrent().hashCode();
+        QLog.l().logQUser().debug("==> QBoard: Old hash: " + oldHashcode
+                + "; New hash: " + newHashcode);
+
+        //  CM:  If hash codes are different, reload the page.
+        if (oldHashcode != newHashcode) {
+            oldHashcode = newHashcode;
+            Executions.sendRedirect(null);
+        }
 
         return total;
     }
