@@ -1602,13 +1602,13 @@ public class Form {
                                         Messagebox.INFORMATION);
                             }
                         }
+
+                        //  CM:  Whether served or not, set customer to be null.
+                        pickedPostponed = null;
                     }
             );
         }
         
-        //  CM:  Whether served or not, set customer to be null.
-        pickedPostponed = null;
-
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Select Hold Queue", "After", user.getUser(), user.getUser().getCustomer());
     }
