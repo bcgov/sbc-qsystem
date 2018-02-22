@@ -37,6 +37,9 @@ import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.smartboard.PrintRecords;
 import ru.apertum.qsystem.smartboard.PrintRecordsList;
 
+//  CM:  For server session information.
+import javax.servlet.http.*;
+
 /**
  * @author Evgeniy Egorov
  */
@@ -167,7 +170,7 @@ public class QBoard extends GenericForwardComposer {
             if (i <= records.getRecords().size()) {
                 line.labelA = new Label(
                     records.getRecords().get(i - 1).customerPrefix + records.getRecords()
-                        .get(i - 1).customerNumber);
+                                .get(i - 1).customerNumber);
                 line.labelB = new Label(records.getRecords().get(i - 1).point);
 
                 final boolean blink = (
@@ -301,6 +304,12 @@ public class QBoard extends GenericForwardComposer {
             .filter((service) -> service.getSmartboard().equals("Y"))
             .map((service) -> service.getCountCustomersByOffice(office))
             .reduce(total, Integer::sum);
+
+        //  CM:  Get session ID.
+        //
+        //HttpSession boardSession = 
+        //        QLog.l().logQUser().debug("==> QBoard.getCustomersCount(): Session ID is " + boardSession
+        //                .getId());
 
         return total;
     }
