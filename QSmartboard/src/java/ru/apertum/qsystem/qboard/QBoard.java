@@ -37,9 +37,6 @@ import ru.apertum.qsystem.server.model.QUserList;
 import ru.apertum.qsystem.smartboard.PrintRecords;
 import ru.apertum.qsystem.smartboard.PrintRecordsList;
 
-//  CM:  For server session information.
-import javax.servlet.http.*;
-
 /**
  * @author Evgeniy Egorov
  */
