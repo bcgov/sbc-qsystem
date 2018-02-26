@@ -62,6 +62,9 @@ public class QSessions {
     }
 
     public synchronized boolean check(Long userId, String ipAdress, byte[] IP) {
+        QLog.l().logger().debug("==> QSessions.check(): userID=" + userId + "; address=" + ipAdress + "; ip=" + Arrays
+                    .toString(IP));
+            
         for (QSession session : sessions) {
             if ((session.isValid())
                 && (

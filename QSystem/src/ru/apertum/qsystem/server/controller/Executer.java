@@ -192,8 +192,12 @@ public final class Executer {
 
         //  CM:  Debug.
         if (potentialCustomer == null) {
-            //QLog.l().logger().debug("==> Start: CanCall - Potential Customer is null");
+            QLog.l().logger().debug("==> Start: CanCall - Potential Customer is null");
             custName = "Does not exist";
+        }
+        else {
+            QLog.l().logger().debug("==> Start: CanCall - Potential Customer not null: "
+                    + potentialCustomer.getName());
         }
 
         //  If potential customer not null, it's possible they could be called.
