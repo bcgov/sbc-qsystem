@@ -191,14 +191,14 @@ public final class Executer {
         String custName = "";
 
         //  CM:  Debug.
-        if (potentialCustomer == null) {
-            QLog.l().logger().debug("==> Start: CanCall - Potential Customer is null");
-            custName = "Does not exist";
-        }
-        else {
-            QLog.l().logger().debug("==> Start: CanCall - Potential Customer not null: "
-                    + potentialCustomer.getName());
-        }
+        //        if (potentialCustomer == null) {
+        //            QLog.l().logger().debug("==> Start: CanCall - Potential Customer is null");
+        //            custName = "Does not exist";
+        //        }
+        //        else {
+        //            QLog.l().logger().debug("==> Start: CanCall - Potential Customer not null: "
+        //                    + potentialCustomer.getName());
+        //        }
 
         //  If potential customer not null, it's possible they could be called.
         if (potentialCustomer != null) {
@@ -207,9 +207,9 @@ public final class Executer {
             okToCall = (validInviteStates.contains(potentialCustomer.getStateIn()));
 
             //  Debug.
-            QLog.l().logger().debug("    --> From: " + calledFrom + "; State: "
-                    + potentialCustomer.getStateIn()
-                    + "; CallOK: " + okToCall);
+            //            QLog.l().logger().debug("    --> From: " + calledFrom + "; State: "
+            //                    + potentialCustomer.getStateIn()
+            //                    + "; CallOK: " + okToCall);
             String pcOffice = (potentialCustomer.getOffice() == null ? "Null" : potentialCustomer
                     .getOffice().getName());
             String pcService = (potentialCustomer.getService() == null ? "Null" : potentialCustomer
@@ -218,10 +218,10 @@ public final class Executer {
             String pcCSR = (potentialCustomer.getUser() == null ? "Unknown" : potentialCustomer
                     .getUser().getName());
 
-            QLog.l().logger().debug("    --> O: " + pcOffice + "; CSR: " + pcCSR + "; Cust: "
-                    + custName
-                    + "; Svc: "
-                    + pcService);
+            //            QLog.l().logger().debug("    --> O: " + pcOffice + "; CSR: " + pcCSR + "; Cust: "
+            //                    + custName
+            //                    + "; Svc: "
+            //                    + pcService);
 
             //  CM:  Set a return message.
             if (okToCall) {
@@ -851,7 +851,7 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            QLog.l().logQUser().debug("==> Start: Task(KillNxtCust).process()");
+            //QLog.l().logQUser().debug("==> Start: Task(KillNxtCust).process()");
             super.process(cmdParams, ipAdress, IP);
             final QUser user = QUserList.getInstance().getById(cmdParams.userId);
             final Long CustId = user.getCustomer().getId();
@@ -991,11 +991,11 @@ public final class Executer {
 
             //  CM:  Get the user that invited the customer.
             final QUser user = QUserList.getInstance().getById(cmdParams.userId); // юзер
-            QLog.l().logQUser().debug("--> Ini: " + user.getName());
+            //QLog.l().logQUser().debug("--> Ini: " + user.getName());
             if (user.getCustomer() != null) {
                 QCustomer tempCust = user.getCustomer();
-                QLog.l().logger().debug("    --> Cust: " + tempCust.getName() + "; Svc: " + tempCust
-                        .getService().getName());
+                //                QLog.l().logger().debug("    --> Cust: " + tempCust.getName() + "; Svc: " + tempCust
+                //                        .getService().getName());
 
                 //                QLog.l().logQUser().debug("    --> CSR Id: " + user.getId()
                 //                        + "; Param CSR Id: " + cmdParams.userId);
@@ -1007,7 +1007,7 @@ public final class Executer {
                 //                        + "; Svc: " + user.getCustomer().getService().getName());
             }
             else {
-                QLog.l().logQUser().debug("    --> Customer is null");
+                //                QLog.l().logQUser().debug("    --> Customer is null");
             }
 
             //  CM:  Display info about CSR.
@@ -1024,9 +1024,9 @@ public final class Executer {
             // Does the user have a called customizer? Then the puerile challenge
             if (isRecall) {
 
-                QLog.l().logQUser().debug("    --> Is Recall: CSR: " + user.getName() + "; Cust: "
-                        + user.getCustomer().getName() + "; CustCSR: " + user.getCustomer()
-                                .getUser().getName());
+                //                QLog.l().logQUser().debug("    --> Is Recall: CSR: " + user.getName() + "; Cust: "
+                //                        + user.getCustomer().getName() + "; CustCSR: " + user.getCustomer()
+                //                                .getUser().getName());
                 user.getCustomer().upRecallCount(); // еще один повторный вызов
                 //                QLog.l().logger().debug(
                 //                    "Повторный вызов " + user.getCustomer().getRecallCount() + " кастомера №" + user
@@ -1062,8 +1062,8 @@ public final class Executer {
                         }
                     }
 
-                    QLog.l().logQUser().debug("    --> Recall: CSR: " + user.getName()
-                            + "; CustCSR: " + user.getCustomer().getUser().getName());
+                    //                    QLog.l().logQUser().debug("    --> Recall: CSR: " + user.getName()
+                    //                            + "; CustCSR: " + user.getCustomer().getUser().getName());
                     user.getCustomer().setState(user.getCustomer().getState());
 
                     // просигналим звуком
@@ -1269,16 +1269,16 @@ public final class Executer {
                     
                     //  Debug
                     if (custToServe == null) {
-                        QLog.l().logQUser().debug(
-                                "--> No customer found to serve (likely none in queue)");
+                        //                        QLog.l().logQUser().debug(
+                        //                                "--> No customer found to serve (likely none in queue)");
                     }
                     else {
                         //QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
                         //  By the time you get here, you should have the next customer in line, if there is one.
                         customer = custToServe;
-                        QLog.l().logger().debug("--> Srv CSR: " + user.getName() + "; Cust: "
-                                + customer
-                                        .getName() + "; Svc: " + customer.getService().getName());
+                        //                        QLog.l().logger().debug("--> Srv CSR: " + user.getName() + "; Cust: "
+                        //                                + customer
+                        //                                        .getName() + "; Svc: " + customer.getService().getName());
                     }
 
                     //  CM:  Set customer to be QTxn selection, not original selection.
@@ -1716,7 +1716,7 @@ public final class Executer {
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
 
-            QLog.l().logQUser().debug("==> Start: Task(FinishCust).process()");
+            //QLog.l().logQUser().debug("==> Start: Task(FinishCust).process()");
 
             super.process(cmdParams, ipAdress, IP);
             // вот он все это творит
@@ -3301,7 +3301,12 @@ public final class Executer {
 
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP) {
-            //QLog.l().logQUser().debug("==> Start: Task.process(CmdParams, String, byte[])");
+
+            //QLog.l().logQUser().debug("==> Start: Task.process(a)");
+            Boolean sessionOK = QSessions.getInstance().check(cmdParams == null ? null
+                    : cmdParams.userId, ipAdress, IP);
+            QLog.l().logQUser().debug("    --> Start: Task(a) SOK: " + sessionOK + "; IP: "
+                    + ipAdress);
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
 
@@ -3334,7 +3339,9 @@ public final class Executer {
         @Override
         public AJsonRPC20 process(CmdParams cmdParams, String ipAdress, byte[] IP,
             QCustomer customer) {
-            //QLog.l().logQUser().debug("==> Start: Task.process(CmdParams, String, byte[], QCustomer)");
+            Boolean sessionOK = QSessions.getInstance().check(cmdParams == null ? null
+                    : cmdParams.userId, ipAdress, IP);
+            QLog.l().logQUser().debug("    --> Start: Task.process(b) SessionOK = " + sessionOK);
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
             this.cmdParams = cmdParams;
