@@ -51,15 +51,15 @@ public class UserLoginValidator extends AbstractValidator {
     private void validateMultipleLogin(ValidationContext ctx, String name, String pass) {
         final Long l = UsersInside.getInstance().getUsersInside().get(name + pass);
         if (l != null && new Date().getTime() - l < 60000) {
-            //this.addInvalidMessage(ctx, "name", l("user_rady_workng"));
-            //If user already login somewher else, make him force logout
-            for (QSession session : QSessions.getInstance().getSessions()) {
-                if (name.equals(session.getUser().getName())) {
-                    QLog.l().logQUser().debug("    --> Requestor: " + name + "; Logins: " + session.getUser().getName());
-                    QSessions.getInstance().getSessions().remove(session);
-                    return;
-                }
-            }
+            this.addInvalidMessage(ctx, "name", l("user_rady_workng"));
+            //If user already login somewhere else, make him force logout
+            //            for (QSession session : QSessions.getInstance().getSessions()) {
+            //                if (name.equals(session.getUser().getName())) {
+            //                    QLog.l().logQUser().debug("    --> Requestor: " + name + "; Logins: " + session.getUser().getName());
+            //                    QSessions.getInstance().getSessions().remove(session);
+            //                    return;
+            //                }
+            //            }
         } else {
             QUser usr = null;
             for (QUser user : QUserList.getInstance().getItems()) {
