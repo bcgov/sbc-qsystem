@@ -55,6 +55,7 @@ public class UserLoginValidator extends AbstractValidator {
             //If user already login somewher else, make him force logout
             for (QSession session : QSessions.getInstance().getSessions()) {
                 if (name.equals(session.getUser().getName())) {
+                    QLog.l().logQUser().debug("    --> Requestor: " + name + "; Logins: " + session.getUser().getName());
                     QSessions.getInstance().getSessions().remove(session);
                     return;
                 }
