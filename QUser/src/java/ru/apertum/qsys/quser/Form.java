@@ -87,6 +87,10 @@ import ru.apertum.qsystem.server.Spring;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+//  CM:  For debugging session info.
+//import java.util.Map;
+//import java.util.Set;
+
 /**
  * @author Evgeniy Egorov
  */
@@ -328,7 +332,7 @@ public class Form {
         if (user.getUser().getAdminAccess()) {
             user.setGABoard(true);
         }
-        QLog.l().logQUser().debug("STATUS : " + user.getGABoard());
+        QLog.l().logQUser().debug("==> Login GABoard Status: " + user.getGABoard());
 
         final Session sess = Sessions.getCurrent();
         sess.setAttribute("userForQUser", user);
