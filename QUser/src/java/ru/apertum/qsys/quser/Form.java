@@ -34,6 +34,7 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.resource.Labels;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
@@ -262,6 +263,15 @@ public class Form {
     @Init
     public void init() {
         QLog.l().logQUser().debug("==> Loading page: init");
+
+        // CM:  Get environment.
+        //        String mySrvName = Executions.getCurrent().getServerName();
+        //        String myContext = Executions.getCurrent().getContextPath();
+        //        String myPath = Executions.getCurrent().getDesktop().getRequestPath();
+        //        String myEnv = System.getenv("QSYSTEM_ENV");
+        //        QLog.l().logQUser().debug("    --> Vars SrvName: " + mySrvName + "; Ctx: " + myContext
+        //                + "; Path: " + myPath + "; Env: " + myEnv);
+
         final Session sess = Sessions.getCurrent();
         final User userL = (User) sess.getAttribute("userForQUser");
         setKeyRegimForUser(userL);
@@ -293,6 +303,26 @@ public class Form {
         }
         
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
+    }
+
+    public String getBackgroundClass() {
+
+        //  CM:  Get the environment you're running in, set color class accordingly.
+        String envClass = "";
+        String qSysEnv = System.getenv("QSYSTEM_ENV");
+        switch (qSysEnv) {
+            case "PROD":
+                envClass = "prod-background";
+                break;
+            case "TEST":
+                envClass = "test-background";
+                break;
+            default:
+                envClass = "dev-background";
+                break;
+        }
+
+        return envClass;
     }
 
     /**
