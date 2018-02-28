@@ -26,8 +26,9 @@
     </style>
 
 <window id="serveCustomerDialog" title="Serve Citizen Screen" border="normal" width="920px" height="620px"
-    position="center,center" closable="true"
+    position="center,center"
     onClose="self.visible = false; event.stopPropagation();"
+    closable="false"
     action="show: slideDown;hide: slideUp">
     
     <vlayout sclass="blue-background" height="200px">
