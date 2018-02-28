@@ -37,6 +37,15 @@
         .blue-background {
         background-color: #003366;
         }
+        .prod-background {
+        background-color: #003366;
+        }
+        .test-background {
+        background-color: #52AB4D;
+        }
+        .dev-background {
+        background-color: #F0D6B7;
+        }
         .toolbar-items {
         color:white;
         font-size : 10px; 
@@ -67,7 +76,7 @@
         </zscript>
         
         <!--  North is the top dark blue section with logo, office, login/out, invite, add citizen buttons -->
-        <north size="180px" border="0" sclass="blue-background" id="main_north">
+        <north size="180px" border="0" sclass="@load(fmodel.getBackgroundClass())" id="main_north">
             <vbox height="100%" pack="center">
                 <hbox>
                     <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px"
@@ -75,12 +84,12 @@
                     <div width="20px"/>
                     <vbox>
                         <div height="50px"/>
-                        <label sclass="login-text bdd-login-officename" value="@bind(fmodel.officeName)"
+                        <label sclass="login-text bdd-login-officename" value="@bind(fmodel.getOfficeName())"
                                height="56px" style="margin-top: 24px;"/>
                     </vbox>
                 </hbox>
                 <hlayout></hlayout>
-                <vlayout sclass="blue-background" height="100px" width="1200px">
+                <vlayout sclass="@load(fmodel.getBackgroundClass())" height="100px" width="1200px">
                     <div>
                         <hbox width="80%">
                             <button sclass="act-button bdd-invite" style="margin-left: 22px; margin-top: 18px;"

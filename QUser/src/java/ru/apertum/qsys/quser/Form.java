@@ -34,6 +34,7 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.resource.Labels;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
@@ -262,6 +263,15 @@ public class Form {
     @Init
     public void init() {
         QLog.l().logQUser().debug("==> Loading page: init");
+
+        // CM:  Get environment.
+        //        String mySrvName = Executions.getCurrent().getServerName();
+        //        String myContext = Executions.getCurrent().getContextPath();
+        //        String myPath = Executions.getCurrent().getDesktop().getRequestPath();
+        //        String myEnv = System.getenv("QSYSTEM_ENV");
+        //        QLog.l().logQUser().debug("    --> Vars SrvName: " + mySrvName + "; Ctx: " + myContext
+        //                + "; Path: " + myPath + "; Env: " + myEnv);
+
         final Session sess = Sessions.getCurrent();
         final User userL = (User) sess.getAttribute("userForQUser");
         setKeyRegimForUser(userL);
@@ -293,6 +303,34 @@ public class Form {
         }
         
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
+
+        //  If a current user, get the office name and set it.
+        if (user != null) {
+            QUser quser = user.getUser();
+            if (quser != null) {
+                officeName = user.getUser().getOffice().getName();
+            }
+        }
+    }
+
+    public String getBackgroundClass() {
+
+        //  CM:  Get the environment you're running in, set color class accordingly.
+        String envClass = "";
+        String qSysEnv = System.getenv("QSYSTEM_ENV");
+        switch (qSysEnv) {
+            case "PROD":
+                envClass = "prod-background";
+                break;
+            case "TEST":
+                envClass = "test-background";
+                break;
+            default:
+                envClass = "dev-background";
+                break;
+        }
+
+        return envClass;
     }
 
     /**
@@ -443,7 +481,7 @@ public class Form {
     // @ContextParam(ContextType.VIEW) Component comp
     @Command
     public void closeGA() {
-        QLog.l().logQUser().debug("==> Start: closeGA");
+        //QLog.l().logQUser().debug("==> Start: closeGA");
         CheckGABoard = false;
         GAManagementDialogWindow.addEventListener("onClose", new EventListener() {
 
@@ -457,14 +495,14 @@ public class Form {
 
                 CheckGABoard = false;
 
-                QLog.l().logQUser()
-                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
-                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
-                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
+                //                QLog.l().logQUser()
+                //                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
+                //                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
+                //                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
             }
         });
 
-        QLog.l().logQUser().debug("==> End: closeGA");
+        //QLog.l().logQUser().debug("==> End: closeGA");
     }
 
     @Command
@@ -1762,6 +1800,13 @@ public class Form {
     public LinkedList<QUser> getuserListbyOffice() {
         userList = QUserList.getInstance().getItems();
         userListbyOffice = filterusersByOffice(userList);
+
+        //  CM:  Sort the list if more than one element.
+        if (userListbyOffice.size() > 1) {
+            Comparator sortUser = new QUser.QUserComparator();
+            userListbyOffice.sort(sortUser);
+        }
+
         return userListbyOffice;
     }
 
@@ -2038,7 +2083,7 @@ public class Form {
     public void closeAddNextServiceDialog() {
 
         //  CM:  Debug.
-        QLog.l().logger().debug("Start: Next Service (closeAddNextServiceDialog)");
+        //QLog.l().logger().debug("Start: Next Service (closeAddNextServiceDialog)");
 
         //  String to save comments in.
         String custComments = "";
@@ -2086,10 +2131,10 @@ public class Form {
                 params.comments = custComments;
             }
 
-            QLog.l().logger().debug("    --> CSR:  " + user.getName());
-            QLog.l().logger().debug("    --> Cust: " + customer.getFullNumber());
-            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
-            QLog.l().logger().debug("    --> Cmnt: " + custComments);
+            //            QLog.l().logger().debug("    --> CSR:  " + user.getName());
+            //            QLog.l().logger().debug("    --> Cust: " + customer.getFullNumber());
+            //            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
+            //            QLog.l().logger().debug("    --> Cmnt: " + custComments);
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
@@ -2119,7 +2164,7 @@ public class Form {
         }
 
         //  CM:  Debug.
-        QLog.l().logger().debug("End: Next Service (closeAddNextServiceDialog)");
+        //QLog.l().logger().debug("End: Next Service (closeAddNextServiceDialog)");
 
     }
 
