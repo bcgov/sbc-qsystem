@@ -64,11 +64,11 @@ public class QSessions {
     public synchronized boolean check(Long userId, String ipAdress, byte[] IP) {
 //        QLog.l().logger().debug("==> QSessions.check(): userID=" + userId + "; address=" + ipAdress + "; ip=" + Arrays
 //                    .toString(IP));
-      QLog.l().logger().debug("==> QS.check(): userID: " + userId + "; AIp: " + ipAdress + ": #: " + sessions.size());
+      //QLog.l().logger().debug("==> QS.check(): userID: " + userId + "; AIp: " + ipAdress + ": #: " + sessions.size());
             
         for (QSession session : sessions) {
 
-            QLog.l().logger().debug("    --> SCSR: " + session.getUser().getName() + "; SIp: " + session.getIpAdress() + "; ");
+            //QLog.l().logger().debug("    --> SCSR: " + session.getUser().getName() + "; SIp: " + session.getIpAdress() + "; ");
             
             if ((session.isValid())
                 && (
