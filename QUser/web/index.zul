@@ -81,7 +81,7 @@
                     <div width="20px"/>
                     <vbox>
                         <div height="50px"/>
-                        <label sclass="login-text bdd-login-officename" value="@bind(fmodel.officeName)"
+                        <label sclass="login-text bdd-login-officename" value="@bind(fmodel.getOfficeName())"
                                height="56px" style="margin-top: 24px;"/>
                     </vbox>
                 </hbox>
