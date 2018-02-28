@@ -2083,7 +2083,7 @@ public class Form {
     public void closeAddNextServiceDialog() {
 
         //  CM:  Debug.
-        QLog.l().logger().debug("Start: Next Service (closeAddNextServiceDialog)");
+        //QLog.l().logger().debug("Start: Next Service (closeAddNextServiceDialog)");
 
         //  String to save comments in.
         String custComments = "";
@@ -2131,10 +2131,10 @@ public class Form {
                 params.comments = custComments;
             }
 
-            QLog.l().logger().debug("    --> CSR:  " + user.getName());
-            QLog.l().logger().debug("    --> Cust: " + customer.getFullNumber());
-            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
-            QLog.l().logger().debug("    --> Cmnt: " + custComments);
+            //            QLog.l().logger().debug("    --> CSR:  " + user.getName());
+            //            QLog.l().logger().debug("    --> Cust: " + customer.getFullNumber());
+            //            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
+            //            QLog.l().logger().debug("    --> Cmnt: " + custComments);
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
@@ -2164,7 +2164,7 @@ public class Form {
         }
 
         //  CM:  Debug.
-        QLog.l().logger().debug("End: Next Service (closeAddNextServiceDialog)");
+        //QLog.l().logger().debug("End: Next Service (closeAddNextServiceDialog)");
 
     }
 
