@@ -34,6 +34,9 @@
         .act-button:hover {
         border-color: #FFFF00;
         }
+        .blue-background {
+        background-color: #003366;
+        }
         .prod-background {
         background-color: #003366;
         }
