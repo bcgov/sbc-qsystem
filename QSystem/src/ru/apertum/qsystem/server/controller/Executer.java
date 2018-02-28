@@ -3305,8 +3305,8 @@ public final class Executer {
             //QLog.l().logQUser().debug("==> Start: Task.process(a)");
             Boolean sessionOK = QSessions.getInstance().check(cmdParams == null ? null
                     : cmdParams.userId, ipAdress, IP);
-            QLog.l().logQUser().debug("    --> Start: Task(a) SOK: " + sessionOK + "; IP: "
-                    + ipAdress);
+            //            QLog.l().logQUser().debug("    --> Start: Task(a) SOK: " + sessionOK + "; IP: "
+            //                    + ipAdress);
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
 
@@ -3341,7 +3341,7 @@ public final class Executer {
             QCustomer customer) {
             Boolean sessionOK = QSessions.getInstance().check(cmdParams == null ? null
                     : cmdParams.userId, ipAdress, IP);
-            QLog.l().logQUser().debug("    --> Start: Task.process(b) SessionOK = " + sessionOK);
+            //QLog.l().logQUser().debug("    --> Start: Task.process(b) SessionOK = " + sessionOK);
             QSessions.getInstance()
                 .update(cmdParams == null ? null : cmdParams.userId, ipAdress, IP);
             this.cmdParams = cmdParams;
