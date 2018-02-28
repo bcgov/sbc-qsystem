@@ -303,6 +303,14 @@ public class Form {
         }
         
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
+
+        //  If a current user, get the office name and set it.
+        if (user != null) {
+            QUser quser = user.getUser();
+            if (quser != null) {
+                officeName = user.getUser().getOffice().getName();
+            }
+        }
     }
 
     public String getBackgroundClass() {
