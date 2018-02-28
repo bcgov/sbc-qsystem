@@ -473,7 +473,7 @@ public class Form {
     // @ContextParam(ContextType.VIEW) Component comp
     @Command
     public void closeGA() {
-        QLog.l().logQUser().debug("==> Start: closeGA");
+        //QLog.l().logQUser().debug("==> Start: closeGA");
         CheckGABoard = false;
         GAManagementDialogWindow.addEventListener("onClose", new EventListener() {
 
@@ -487,14 +487,14 @@ public class Form {
 
                 CheckGABoard = false;
 
-                QLog.l().logQUser()
-                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
-                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
-                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
+                //                QLog.l().logQUser()
+                //                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
+                //                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
+                //                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
             }
         });
 
-        QLog.l().logQUser().debug("==> End: closeGA");
+        //QLog.l().logQUser().debug("==> End: closeGA");
     }
 
     @Command
@@ -1792,6 +1792,13 @@ public class Form {
     public LinkedList<QUser> getuserListbyOffice() {
         userList = QUserList.getInstance().getItems();
         userListbyOffice = filterusersByOffice(userList);
+
+        //  CM:  Sort the list if more than one element.
+        if (userListbyOffice.size() > 1) {
+            Comparator sortUser = new QUser.QUserComparator();
+            userListbyOffice.sort(sortUser);
+        }
+
         return userListbyOffice;
     }
 
