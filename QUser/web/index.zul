@@ -46,6 +46,9 @@
         .dev-background {
         background-color: #F0D6B7;
         }
+        .local-background {
+        background-color: #E9EEF3;
+        }
         .toolbar-items {
         color:white;
         font-size : 10px; 
@@ -76,7 +79,10 @@
         </zscript>
         
         <!--  North is the top dark blue section with logo, office, login/out, invite, add citizen buttons -->
+        <!--
         <north size="180px" border="0" sclass="@load(fmodel.getBackgroundClass())" id="main_north">
+        -->
+        <north size="180px" border="0" sclass="local-background" id="main_north">
             <vbox height="100%" pack="center">
                 <hbox>
                     <image src="/resources/img/bc_logo_resized.png" width="204px"  height="56px"
@@ -89,7 +95,10 @@
                     </vbox>
                 </hbox>
                 <hlayout></hlayout>
+                <!--
                 <vlayout sclass="@load(fmodel.getBackgroundClass())" height="100px" width="1200px">
+                -->
+                <vlayout sclass="local-background" height="100px" width="1200px">
                     <div>
                         <hbox width="80%">
                             <button sclass="act-button bdd-invite" style="margin-left: 22px; margin-top: 18px;"
