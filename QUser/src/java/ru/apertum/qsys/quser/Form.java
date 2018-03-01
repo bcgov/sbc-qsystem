@@ -303,6 +303,7 @@ public class Form {
         }
         
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
+        String temp = getBackgroundClass();
 
         //  If a current user, get the office name and set it.
         if (user != null) {
@@ -318,16 +319,28 @@ public class Form {
         //  CM:  Get the environment you're running in, set color class accordingly.
         String envClass = "";
         String qSysEnv = System.getenv("QSYSTEM_ENV");
-        switch (qSysEnv) {
-            case "PROD":
-                envClass = "prod-background";
-                break;
-            case "TEST":
-                envClass = "test-background";
-                break;
-            default:
-                envClass = "dev-background";
-                break;
+
+        //  CM:  If null returned, set default background, else process.
+        if (qSysEnv == null) {
+            qSysEnv = "";
+            envClass = "local-background";
+        }
+        else {
+            switch (qSysEnv) {
+                case "PROD":
+                    envClass = "prod-background";
+                    break;
+                case "TEST":
+                    envClass = "test-background";
+                    break;
+                case "DEV":
+                    envClass = "dev-background";
+                    break;
+                default:
+                    envClass = "local-background";
+                    break;
+
+            }
         }
 
         return envClass;
