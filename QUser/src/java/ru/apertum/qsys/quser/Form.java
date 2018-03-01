@@ -198,6 +198,7 @@ public class Form {
     private String checkCFMSHeight = "0%";
     private boolean checkCombo = false;
     private QCustomer customer = null;
+    private QCustomer trackCust = null;
     @Wire("#btn_invite")
     private Button btn_invite;
     @Wire("#incClientDashboard #service_list")
@@ -524,7 +525,7 @@ public class Form {
         //  CM:  Track start, call regular ReportBug, track end.
         //  CM:  Set variables depending on whether null or not.
         QUser trackUser = null;
-        QCustomer trackCust = null;
+        trackCust = null;
         if (user != null) {
             trackUser = user.getUser();
             
@@ -917,7 +918,7 @@ public class Form {
         //  CM:  Track the user's click, then call standard invite routine.
         Executer.getInstance().TrackUserClick("Invite", "Before", user.getUser(), user.getUser().getCustomer());
         this.invite();
-        Executer.getInstance().TrackUserClick("Invite", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Invite", "After", user.getUser(), customer);
     }
     
     @Command
@@ -951,13 +952,6 @@ public class Form {
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
-        //  CM:  Set user's customer to be null.  Avoid recall errors when
-        //       two CSRs click invite at same time, AFTER returning customer to queue.
-//        QUser tempUser = user.getUser();
-//        Long myId = user.getUser().getId();
-//        Long myId2 = tempUser.getId();
-//        tempUser.setCustomer(null);
-        
         // QLog.l().logQUser().debug("\n\n\n\nBEFORE INTO EXCECUTE \n\n\n\n\n");
         final RpcInviteCustomer result = (RpcInviteCustomer) Executer.getInstance().getTasks()
                 .get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
@@ -1325,9 +1319,11 @@ public class Form {
         // 2. Pick the customer from Postponed list
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Select Wait Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Select Wait Queue", "Before", user.getUser(),
+                pickedCustomer);
         
         Boolean OkToContinue = true;
+        trackCust = null;
 
         if (pickedCustomer == null || keys_current == KEYS_INVITED || keys_current == KEYS_STARTED
                 || keys_current == KEYS_OFF) {
@@ -1363,6 +1359,7 @@ public class Form {
 
                 Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
                 customer = user.getUser().getCustomer();
+                trackCust = customer;
 
                 setKeyRegim(KEYS_INVITED);
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -1373,7 +1370,8 @@ public class Form {
         }
         
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Select Wait Queue", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Select Wait Queue", "After", user.getUser(),
+                trackCust);
     }
 
     public LinkedList<String> getPrior_St() {
@@ -1586,11 +1584,13 @@ public class Form {
     public void clickListPostponedInvite() {
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Select Hold Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Select Hold Queue", "Before", user.getUser(),
+                pickedPostponed);
         
         //  CM:  Variable to see if OK to process.
         Boolean OkToContinue = true;
         Object[] msg = { "" };
+        trackCust = null;
         
         //  CM:  Ensure pickedPostponed isn't null.
         if (user.getPlan().isEmpty() || pickedPostponed == null) {
@@ -1620,12 +1620,10 @@ public class Form {
                         if ((t.getButton() != null)
                                 && (t.getButton().compareTo(Messagebox.Button.YES) == 0)) {
 
-                            QLog.l().logger().debug("--> Checking customer can be called from queue.");
+                            //QLog.l().logger().debug("--> Checking customer can be called from queue.");
 
                             if ((boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg, "HoldQ(2)")) {
                                 
-                                QLog.l().logger().debug("    --> Customer can be called from hold queue");
-                            
                                 final CmdParams params = new CmdParams();
                                 // @param userId id юзера который вызывает The user who causes
                                 // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
@@ -1636,6 +1634,7 @@ public class Form {
                                 Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
                                         .process(params, "", new byte[4]);
                                 customer = user.getUser().getCustomer();
+                                trackCust = customer;
 
                                 setKeyRegim(KEYS_INVITED);
                                 BindUtils.postNotifyChange(null, null, Form.this, "postponList");
@@ -1647,8 +1646,6 @@ public class Form {
                             }
                             else {
 
-                                QLog.l().logger().debug("    --> Customer cannot be called from hold queue");
-    
                                 //  CM:  Another CSR served the customer.
                                 Messagebox.show(
                                         msg[0].toString(),
@@ -1665,7 +1662,8 @@ public class Form {
         }
         
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Select Hold Queue", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Select Hold Queue", "After", user.getUser(),
+                trackCust);
     }
 
     public TreeServices getTreeServs() {
@@ -2240,6 +2238,7 @@ public class Form {
 
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Add to Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        trackCust = null;
         
         //  Debug
         //QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
@@ -2259,12 +2258,10 @@ public class Form {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
 
-                boolean Quick = params.custQtxn;
-                //QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
-
-                //QLog.l().logQUser().debug("addToQueue");
-                this.addToQueue(params);
-                //QLog.l().logQUser().debug("Done");
+                RpcStandInService result = this.addToQueue(params);
+                if (result.getResult() != null) {
+                    trackCust = result.getResult();
+                }
 
                 customer = null;
                 setKeyRegim(KEYS_MAY_INVITE);
@@ -2281,7 +2278,7 @@ public class Form {
         //QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Add to Queue", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Add to Queue", "After", user.getUser(), trackCust);
     }
 
     public void Sort() {
