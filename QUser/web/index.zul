@@ -46,6 +46,9 @@
         .dev-background {
         background-color: #F0D6B7;
         }
+        .local-background {
+        background-color: #E9EEF3;
+        }
         .toolbar-items {
         color:white;
         font-size : 10px; 

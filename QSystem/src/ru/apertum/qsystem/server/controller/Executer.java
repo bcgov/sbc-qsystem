@@ -923,7 +923,7 @@ public final class Executer {
                 //QServer.savePool();
                 //разослать оповещение о том, что посетитель откланен
                 // Должно подтереться основном табло
-                QLog.l().logQUser().debug("    --> MainBoard...killCustomer(user)");
+                //QLog.l().logQUser().debug("    --> MainBoard...killCustomer(user)");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
@@ -932,7 +932,7 @@ public final class Executer {
             //  Call John's stored procedure.
             CallStoredProcDone(user, user.getCustomer(), CustId, "Customer left");
 
-            QLog.l().logQUser().debug("==> End: Task(KillNxtCust).process()");
+            //QLog.l().logQUser().debug("==> End: Task(KillNxtCust).process()");
 
             return new JsonRPC20OK();
         }
@@ -2061,31 +2061,38 @@ public final class Executer {
         DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
         Date dateNow = new Date();
         String timeNow = df.format(dateNow);
-        Long officeId;
-        Long userId;
+        Long officeId = 0L;
+        Long userId = 0L;
         Boolean userQuick = false;
         QCustomer cust = null;
-        if (user != null) {
-            officeId = user.getOffice().getId();
-            userId = user.getId();
-            userQuick = user.getQuickTxn();
-            cust = user.getCustomer();
-        }
-        else {
-            officeId = 0L;
-            userId = 0L;
-        }
         Long custId = 0L;
         String ticket = "";
         Long serviceId = 0L;
         Integer state = -1;
         Boolean custQuick = false;
-        if (cust != null) {
-            custId = cust.getId();
-            ticket = cust.getPrefix() + Long.toString(cust.getNumber());
-            serviceId = cust.getService().getId();
-            state = cust.getStateIn();
-            custQuick = cust.getTempQuickTxn();
+
+        //  CM:  If user not null, get good values.
+        if (user != null) {
+            officeId = user.getOffice().getId();
+            userId = user.getId();
+            userQuick = user.getQuickTxn();
+
+            //  CM:  If input customer null, get it from CSR.
+            if (customer == null) {
+                cust = user.getCustomer();
+            }
+            else {
+                cust = customer;
+            }
+
+            //  CM:  If cust not null, get info from it.
+            if (cust != null) {
+                custId = cust.getId();
+                ticket = cust.getPrefix() + Long.toString(cust.getNumber());
+                serviceId = cust.getService().getId();
+                state = cust.getStateIn();
+                custQuick = cust.getTempQuickTxn();
+            }
         }
 
         //  CM:  Debug.

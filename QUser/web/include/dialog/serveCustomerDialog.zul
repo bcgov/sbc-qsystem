@@ -253,7 +253,7 @@
             <vbox style="margin-right: 10px;" >
                 <div height="60px" />
                 <label style=" cursor:pointer;text-decoration: underline; color:white; font-size:1em; font-weight:bold"
-                       value="Feedback" onClick="@command('ReportBug')" visible="true"
+                       value="Feedback" onClick="@command('ReportBugServe')" visible="true"
                        tooltip="csrReports, position=end_before"/>
             </vbox>>   
         </hbox> 
