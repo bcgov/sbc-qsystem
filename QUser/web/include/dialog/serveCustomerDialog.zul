@@ -30,6 +30,13 @@
     onClose="self.visible = false; event.stopPropagation();"
     action="show: slideDown;hide: slideUp">
     
+    <zscript>	
+  		org.zkoss.zul.SimpleConstraint c1 = new org.zkoss.zul.SimpleConstraint("no empty"," Please enter a value");
+  		org.zkoss.zul.SimpleConstraint c2 = new org.zkoss.zul.SimpleConstraint("no negative"," Numbers can not be negative");
+  		org.zkoss.zul.SimpleConstraint c3 = new org.zkoss.zul.SimpleConstraint("no negative"," Numbers can not be negative");
+  		//org.zkoss.zul.CustomConstraint c3 = new org.zkoss.zul.CustomConstraint("/^\d+$/", " Please enter values only");    	
+    </zscript>
+    
     <vlayout sclass="blue-background" height="200px">
         
         <hbox>
@@ -37,8 +44,7 @@
                 <vbox style="margin-left: 26px; margin-top: 34px;">
                     <label id="customer_number_label" value="Ticket #: " sclass="top-text-style"
                            style="font-weight: bold;"/>
-                    <label id="channels_label" value="Channels: " sclass="top-text-style" style="font-weight: bold;"/>
-                    
+                    <label id="channels_label" value="Channels: " sclass="top-text-style" style="font-weight: bold;"/>                    
                 </vbox>
                 <vbox style="margin-left: 13px; margin-top: 34px;">
                     <label id="customer_number"
@@ -143,7 +149,7 @@
                     <label sclass="general-text"
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
                     <textbox value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"
-                             constraint="no empty, no negative" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client">
+                             constraint="${c1},${c2},${c3}" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client">
                     </textbox>
                     <button sclass="button-with-image" image="/resources/img/005_change_icon.png"
                             autodisable="self"
