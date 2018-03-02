@@ -923,7 +923,7 @@ public final class Executer {
                 //QServer.savePool();
                 //разослать оповещение о том, что посетитель откланен
                 // Должно подтереться основном табло
-                QLog.l().logQUser().debug("    --> MainBoard...killCustomer(user)");
+                //QLog.l().logQUser().debug("    --> MainBoard...killCustomer(user)");
                 MainBoard.getInstance().killCustomer(user);
             } catch (Exception ex) {
                 QLog.l().logger().error(ex);
@@ -932,7 +932,7 @@ public final class Executer {
             //  Call John's stored procedure.
             CallStoredProcDone(user, user.getCustomer(), CustId, "Customer left");
 
-            QLog.l().logQUser().debug("==> End: Task(KillNxtCust).process()");
+            //QLog.l().logQUser().debug("==> End: Task(KillNxtCust).process()");
 
             return new JsonRPC20OK();
         }
