@@ -34,6 +34,7 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.resource.Labels;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
@@ -86,6 +87,10 @@ import org.hibernate.criterion.Property;
 import ru.apertum.qsystem.server.Spring;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+
+//  CM:  For debugging session info.
+//import java.util.Map;
+//import java.util.Set;
 
 /**
  * @author Evgeniy Egorov
@@ -193,6 +198,7 @@ public class Form {
     private String checkCFMSHeight = "0%";
     private boolean checkCombo = false;
     private QCustomer customer = null;
+    private QCustomer trackCust = null;
     @Wire("#btn_invite")
     private Button btn_invite;
     @Wire("#incClientDashboard #service_list")
@@ -258,6 +264,15 @@ public class Form {
     @Init
     public void init() {
         QLog.l().logQUser().debug("==> Loading page: init");
+
+        // CM:  Get environment.
+        //        String mySrvName = Executions.getCurrent().getServerName();
+        //        String myContext = Executions.getCurrent().getContextPath();
+        //        String myPath = Executions.getCurrent().getDesktop().getRequestPath();
+        //        String myEnv = System.getenv("QSYSTEM_ENV");
+        //        QLog.l().logQUser().debug("    --> Vars SrvName: " + mySrvName + "; Ctx: " + myContext
+        //                + "; Path: " + myPath + "; Env: " + myEnv);
+
         final Session sess = Sessions.getCurrent();
         final User userL = (User) sess.getAttribute("userForQUser");
         setKeyRegimForUser(userL);
@@ -289,6 +304,47 @@ public class Form {
         }
         
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
+        String temp = getBackgroundClass();
+
+        //  If a current user, get the office name and set it.
+        if (user != null) {
+            QUser quser = user.getUser();
+            if (quser != null) {
+                officeName = user.getUser().getOffice().getName();
+            }
+        }
+    }
+
+    public String getBackgroundClass() {
+
+        //  CM:  Get the environment you're running in, set color class accordingly.
+        String envClass = "";
+        String qSysEnv = System.getenv("QSYSTEM_ENV");
+
+        //  CM:  If null returned, set default background, else process.
+        if (qSysEnv == null) {
+            qSysEnv = "";
+            envClass = "local-background";
+        }
+        else {
+            switch (qSysEnv) {
+                case "PROD":
+                    envClass = "prod-background";
+                    break;
+                case "TEST":
+                    envClass = "test-background";
+                    break;
+                case "DEV":
+                    envClass = "dev-background";
+                    break;
+                default:
+                    envClass = "local-background";
+                    break;
+
+            }
+        }
+
+        return envClass;
     }
 
     /**
@@ -319,7 +375,8 @@ public class Form {
     public void login() {
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Login", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Log: Login", "Before", user.getUser(), user.getUser()
+                .getCustomer());
         
         Uses.userTimeZone = (TimeZone) Sessions.getCurrent()
                 .getAttribute("org.zkoss.web.preferred.timeZone");
@@ -328,7 +385,7 @@ public class Form {
         if (user.getUser().getAdminAccess()) {
             user.setGABoard(true);
         }
-        QLog.l().logQUser().debug("STATUS : " + user.getGABoard());
+        QLog.l().logQUser().debug("==> Login GABoard Status: " + user.getGABoard());
 
         final Session sess = Sessions.getCurrent();
         sess.setAttribute("userForQUser", user);
@@ -373,7 +430,8 @@ public class Form {
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Login", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Log: Login", "After", user.getUser(), user.getUser()
+                .getCustomer());
     }
 
     @Command
@@ -418,7 +476,8 @@ public class Form {
     public void GABoard() {
 
         //  CM:  Track start.
-        Executer.getInstance().TrackUserClick("GABoard", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Log: GABoard", "Before", user.getUser(), user
+                .getUser().getCustomer());
 
         //  CM:  Regular GABoard code.
         GAManagementDialogWindow.setVisible(true);
@@ -433,13 +492,14 @@ public class Form {
         // QLog.l().logQUser().debug("\n\n\n\n Close GA show FLAG: " + user.getGABoard() + "\n\n\n\n");
 
         //  CM:  Track start.
-        Executer.getInstance().TrackUserClick("GABoard", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Log: GABoard", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     // @ContextParam(ContextType.VIEW) Component comp
     @Command
     public void closeGA() {
-        QLog.l().logQUser().debug("==> Start: closeGA");
+        //QLog.l().logQUser().debug("==> Start: closeGA");
         CheckGABoard = false;
         GAManagementDialogWindow.addEventListener("onClose", new EventListener() {
 
@@ -453,14 +513,14 @@ public class Form {
 
                 CheckGABoard = false;
 
-                QLog.l().logQUser()
-                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
-                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
-                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
+                //                QLog.l().logQUser()
+                //                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
+                //                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
+                //                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
             }
         });
 
-        QLog.l().logQUser().debug("==> End: closeGA");
+        //QLog.l().logQUser().debug("==> End: closeGA");
     }
 
     @Command
@@ -469,7 +529,7 @@ public class Form {
         //  CM:  Track start, call regular ReportBug, track end.
         //  CM:  Set variables depending on whether null or not.
         QUser trackUser = null;
-        QCustomer trackCust = null;
+        trackCust = null;
         if (user != null) {
             trackUser = user.getUser();
             
@@ -478,9 +538,18 @@ public class Form {
             }
         }
             
-        Executer.getInstance().TrackUserClick("Feedback, Main Screen", "Before", trackUser, trackCust);
+        Executer.getInstance().TrackUserClick("Ind: Feedback", "Before", trackUser, trackCust);
         ReportBug();
-        Executer.getInstance().TrackUserClick("Feedback, Main Screen", "After", trackUser, trackCust);
+        Executer.getInstance().TrackUserClick("Ind: Feedback", "After", trackUser, trackCust);
+    }
+
+    @Command
+    public void ReportBugServe() {
+        Executer.getInstance().TrackUserClick("Srv: Feedback", "Before", user.getUser(), user
+                .getUser().getCustomer());
+        ReportBug();
+        Executer.getInstance().TrackUserClick("Srv: Feedback", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
     
     @Command
@@ -606,7 +675,8 @@ public class Form {
     public void QuickTxnCSRChecked() {
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("CSR QTxn", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Log: CSR QTxn", "Before", user.getUser(), user
+                .getUser().getCustomer());
 
         //  Get user, quick transaction flag, then reset it.
         QUser quser = user.getUser();
@@ -619,7 +689,8 @@ public class Form {
         //QLog.l().logQUser().debug("==> End: QuickTxnChecked");
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("CSR QTxn", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Log: CSR QTxn", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
@@ -628,7 +699,8 @@ public class Form {
     public void logout() {
 
         //  CM:  Track start.
-        Executer.getInstance().TrackUserClick("Logout", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Log: Logout", "Before", user.getUser(), user
+                .getUser().getCustomer());
         
         //QLog.l().logQUser().debug("Logout " + user.getName());
 
@@ -669,7 +741,8 @@ public class Form {
         btn_invite.setVisible(false);
 
         //  CM:  Track end.
-        Executer.getInstance().TrackUserClick("Logout", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Log: Logout", "After", user.getUser(), user.getUser()
+                .getCustomer());
     }
 
     public LinkedList<QUser> getUsersForLogin() {
@@ -860,9 +933,10 @@ public class Form {
     public void inviteClick() {
 
         //  CM:  Track the user's click, then call standard invite routine.
-        Executer.getInstance().TrackUserClick("Invite", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Ind: Invite", "Before", user.getUser(), user
+                .getUser().getCustomer());
         this.invite();
-        Executer.getInstance().TrackUserClick("Invite", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Ind: Invite", "After", user.getUser(), customer);
     }
     
     @Command
@@ -896,13 +970,6 @@ public class Form {
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
-        //  CM:  Set user's customer to be null.  Avoid recall errors when
-        //       two CSRs click invite at same time, AFTER returning customer to queue.
-//        QUser tempUser = user.getUser();
-//        Long myId = user.getUser().getId();
-//        Long myId2 = tempUser.getId();
-//        tempUser.setCustomer(null);
-        
         // QLog.l().logQUser().debug("\n\n\n\nBEFORE INTO EXCECUTE \n\n\n\n\n");
         final RpcInviteCustomer result = (RpcInviteCustomer) Executer.getInstance().getTasks()
                 .get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
@@ -930,9 +997,11 @@ public class Form {
     public void addServeScreenClick() {
 
         //  CM:  Track the user's Serve Now click, then call the regular routine.
-        Executer.getInstance().TrackUserClick("Serve Now", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Ind: Serve Now", "Before", user.getUser(), user
+                .getUser().getCustomer());
         this.addServeScreen();
-        Executer.getInstance().TrackUserClick("Serve Now", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Ind: Serve Now", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
@@ -946,6 +1015,10 @@ public class Form {
     @Command
     @NotifyChange(value = { "btnsDisabled", "customer" })
     public void kill() {
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Citizen Left", "Before", user.getUser(), user
+                .getUser().getCustomer());
 
         Messagebox.show("Do you want to remove the client?", "Remove", new Messagebox.Button[]{
                 Messagebox.Button.YES, Messagebox.Button.NO}, Messagebox.QUESTION,
@@ -964,6 +1037,7 @@ public class Form {
                         // Set the current working service to be empty
                         QUser quser = QUserList.getInstance().getById(params.userId);
                         quser.setCurrentService("");
+                        quser.setCustomer(customer);
 
                         setKeyRegim(KEYS_MAY_INVITE);
                         service_list.setModel(service_list.getModel());
@@ -975,12 +1049,20 @@ public class Form {
 
                     }
                 });
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Citizen Left", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
     @NotifyChange(value = { "btnsDisabled" })
     public void begin() {
-        // QLog.l().logQUser().debug("Begin by " + user.getName() + " customer " + customer.getFullNumber());
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Begin Service", "Before", user.getUser(), user
+                .getUser().getCustomer());
+
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
         Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER)
@@ -995,33 +1077,51 @@ public class Form {
         refreshListServices();
         service_list.invalidate();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Begin Service", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
     public void updateComments() {
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Comments", "Before", user.getUser(), user
+                .getUser().getCustomer());
+
         // Inheritance the comment from Serve-customer window to hold window
         String tempComment = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments"))
                 .getText();
         customer.setTempComments(tempComment);
 
-        // Set to User current Comments
-        // QUser quser = QUserList.getInstance().getById(user.getUser().getId());
-        // quser.setCurrentComments(tempComment);
-
-        QLog.l().logQUser().debug("==> updateComments (postponed?): " + customer.getTempComments());
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Comments", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
     public void postpone() {
-        //        QLog.l().logQUser()
-        //                .debug("Postpone by " + user.getName() + " customer " + customer.getFullNumber());
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Place on hold", "Before", user.getUser(), user
+                .getUser().getCustomer());
+
         postponeCustomerDialog.setVisible(true);
         postponeCustomerDialog.doModal();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Place on hold", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
     public void ReturnedRedirect() {
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Return to queue", "Before", user.getUser(), user
+                .getUser().getCustomer());
 
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
@@ -1048,6 +1148,10 @@ public class Form {
         refreshListServices();
         service_list.invalidate();
         serveCustomerDialogWindow.setVisible(false);
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Return to queue", "Before", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
@@ -1115,8 +1219,9 @@ public class Form {
     @NotifyChange(value = { "addWindowButtons" })
     public void backOffice() {
 
-        //  CM:  Track start of Add Citizen
-        Executer.getInstance().TrackUserClick("Back Office", "Before", user.getUser(), user.getUser().getCustomer());
+        //  CM:  Track start of Add Citizen via Back Office button.
+        Executer.getInstance().TrackUserClick("Ind: Back Office", "Before", user.getUser(), user
+                .getUser().getCustomer());
 
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
@@ -1130,7 +1235,8 @@ public class Form {
         this.addTicketScreen(true, true);
 
         //  CM:  Track end of Add Citizen
-        Executer.getInstance().TrackUserClick("Back Office", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Ind: Back Office", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
@@ -1138,7 +1244,8 @@ public class Form {
     public void addClient() {
 
         //  CM:  Track start of Add Citizen
-        Executer.getInstance().TrackUserClick("Add Citizen", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Ind: Add Citizen", "Before", user.getUser(), user
+                .getUser().getCustomer());
 
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
@@ -1152,12 +1259,18 @@ public class Form {
         this.addTicketScreen(true, false);
 
         //  CM:  Track end of Add Citizen
-        Executer.getInstance().TrackUserClick("Add Citizen", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Ind: Add Citizen", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
     @NotifyChange(value = { "addWindowButtons" })
     public void addNextService() {
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Add Next Service", "Before", user.getUser(),
+                customer);
+
         // Save the customer to the DB before adding a service, so the service_quantity persists
         customer.save();
 
@@ -1168,10 +1281,19 @@ public class Form {
         // refresh the service list. Remove the default service selection
         pickedRedirectServ = null;
         this.addTicketScreen(false, false);
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Add Next Service", "After", user.getUser(),
+                user.getUser().getCustomer());
     }
 
     @Command
     public void disableButtons() {
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Inaccurate Time", "Before", user.getUser(), user
+                .getUser().getCustomer());
+
         // addWindowButtons[0] = false;
         // addWindowButtons[1] = false;
         // addWindowButtons[2] = false;
@@ -1195,13 +1317,20 @@ public class Form {
         // setBtnsDisabled(inaccurateChecked);
         // QLog.l().logQUser().debug("\n\n\n\n DISABLE BUTTON");
         BindUtils.postNotifyChange(null, null, Form.this, "*");
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Inaccurate Time", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command
     @NotifyChange(value = { "btnsDisabled", "customer" })
     public void finish() {
-        //        QLog.l().logQUser()
-        //                .debug("==> Start: Finish CSR " + user.getName() + "; client " + customer.getFullNumber());
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Finish", "Before", user.getUser(), user
+                .getUser().getCustomer());
+
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
 
@@ -1240,7 +1369,9 @@ public class Form {
         BindUtils.postNotifyChange(null, null, Form.this, "*");
         serveCustomerDialogWindow.setVisible(false);
 
-        //QLog.l().logQUser().debug("==> End: Finish");
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Finish", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     public QCustomer getPickedCustomer() {
@@ -1270,9 +1401,11 @@ public class Form {
         // 2. Pick the customer from Postponed list
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Select Wait Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Q: Select Wait Queue", "Before", user.getUser(),
+                pickedCustomer);
         
         Boolean OkToContinue = true;
+        trackCust = null;
 
         if (pickedCustomer == null || keys_current == KEYS_INVITED || keys_current == KEYS_STARTED
                 || keys_current == KEYS_OFF) {
@@ -1308,6 +1441,7 @@ public class Form {
 
                 Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED).process(params, "", new byte[4]);
                 customer = user.getUser().getCustomer();
+                trackCust = customer;
 
                 setKeyRegim(KEYS_INVITED);
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -1318,7 +1452,8 @@ public class Form {
         }
         
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Select Wait Queue", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Q: Select Wait Queue", "After", user.getUser(),
+                trackCust);
     }
 
     public LinkedList<String> getPrior_St() {
@@ -1440,6 +1575,7 @@ public class Form {
 
         QUser quser = QUserList.getInstance().getById(params.userId);
         quser.setCurrentService("");
+        quser.setCustomer(customer);
 
         setKeyRegim(KEYS_MAY_INVITE);
         postpone_list.setModel(postpone_list.getModel());
@@ -1463,13 +1599,21 @@ public class Form {
 
     @Command
     public void ChangeChannels() {
-        QLog.l().logger().debug("ChangeChannels");
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Change Channel", "Before", user.getUser(), user
+                .getUser().getCustomer());
+
         int channelIndex = ((Combobox) serveCustomerDialogWindow.getFellow("Change_Channels"))
                 .getSelectedIndex() + 1;
         String channels = ((Combobox) serveCustomerDialogWindow.getFellow("Change_Channels"))
                 .getSelectedItem().getValue().toString();
         customer.setChannels(channels);
         customer.setChannelsIndex(channelIndex);
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Change Channel", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     public void refreshChannels() {
@@ -1531,11 +1675,13 @@ public class Form {
     public void clickListPostponedInvite() {
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Select Hold Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Q: Select Hold Queue", "Before", user.getUser(),
+                pickedPostponed);
         
         //  CM:  Variable to see if OK to process.
         Boolean OkToContinue = true;
         Object[] msg = { "" };
+        trackCust = null;
         
         //  CM:  Ensure pickedPostponed isn't null.
         if (user.getPlan().isEmpty() || pickedPostponed == null) {
@@ -1565,12 +1711,10 @@ public class Form {
                         if ((t.getButton() != null)
                                 && (t.getButton().compareTo(Messagebox.Button.YES) == 0)) {
 
-                            QLog.l().logger().debug("--> Checking customer can be called from queue.");
+                            //QLog.l().logger().debug("--> Checking customer can be called from queue.");
 
                             if ((boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg, "HoldQ(2)")) {
                                 
-                                QLog.l().logger().debug("    --> Customer can be called from hold queue");
-                            
                                 final CmdParams params = new CmdParams();
                                 // @param userId id юзера который вызывает The user who causes
                                 // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
@@ -1581,6 +1725,7 @@ public class Form {
                                 Executer.getInstance().getTasks().get(Uses.TASK_INVITE_POSTPONED)
                                         .process(params, "", new byte[4]);
                                 customer = user.getUser().getCustomer();
+                                trackCust = customer;
 
                                 setKeyRegim(KEYS_INVITED);
                                 BindUtils.postNotifyChange(null, null, Form.this, "postponList");
@@ -1592,8 +1737,6 @@ public class Form {
                             }
                             else {
 
-                                QLog.l().logger().debug("    --> Customer cannot be called from hold queue");
-    
                                 //  CM:  Another CSR served the customer.
                                 Messagebox.show(
                                         msg[0].toString(),
@@ -1610,7 +1753,8 @@ public class Form {
         }
         
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Select Hold Queue", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Q: Select Hold Queue", "After", user.getUser(),
+                trackCust);
     }
 
     public TreeServices getTreeServs() {
@@ -1758,6 +1902,13 @@ public class Form {
     public LinkedList<QUser> getuserListbyOffice() {
         userList = QUserList.getInstance().getItems();
         userListbyOffice = filterusersByOffice(userList);
+
+        //  CM:  Sort the list if more than one element.
+        if (userListbyOffice.size() > 1) {
+            Comparator sortUser = new QUser.QUserComparator();
+            userListbyOffice.sort(sortUser);
+        }
+
         return userListbyOffice;
     }
 
@@ -2034,7 +2185,7 @@ public class Form {
     public void closeAddNextServiceDialog() {
 
         //  CM:  Debug.
-        QLog.l().logger().debug("Start: Next Service (closeAddNextServiceDialog)");
+        //QLog.l().logger().debug("Start: Next Service (closeAddNextServiceDialog)");
 
         //  String to save comments in.
         String custComments = "";
@@ -2082,10 +2233,10 @@ public class Form {
                 params.comments = custComments;
             }
 
-            QLog.l().logger().debug("    --> CSR:  " + user.getName());
-            QLog.l().logger().debug("    --> Cust: " + customer.getFullNumber());
-            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
-            QLog.l().logger().debug("    --> Cmnt: " + custComments);
+            //            QLog.l().logger().debug("    --> CSR:  " + user.getName());
+            //            QLog.l().logger().debug("    --> Cust: " + customer.getFullNumber());
+            //            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
+            //            QLog.l().logger().debug("    --> Cmnt: " + custComments);
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
@@ -2115,60 +2266,73 @@ public class Form {
         }
 
         //  CM:  Debug.
-        QLog.l().logger().debug("End: Next Service (closeAddNextServiceDialog)");
+        //QLog.l().logger().debug("End: Next Service (closeAddNextServiceDialog)");
 
     }
 
     @Command
     public void selectPreviousService() {
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Previous Service", "Before", user.getUser(),
+                user.getUser().getCustomer());
+
+        Boolean OkToContinue = true;
+
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
-                return;
+                OkToContinue = false;
             }
 
-            final CmdParams params = new CmdParams();
+            if (OkToContinue) {
+                final CmdParams params = new CmdParams();
 
-            params.userId = user.getUser().getId();
-            params.serviceId = pickedRedirectServ.getId();
-            params.requestBack = Boolean.FALSE;
-            params.resultId = -1L;
-            params.comments = "";
+                params.userId = user.getUser().getId();
+                params.serviceId = pickedRedirectServ.getId();
+                params.requestBack = Boolean.FALSE;
+                params.resultId = -1L;
+                params.comments = "";
 
-            Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params, "",
-                    new byte[4]);
+                Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params,
+                        "",
+                        new byte[4]);
 
-            customer = null;
-            setKeyRegim(KEYS_MAY_INVITE);
-            service_list.setModel(service_list.getModel());
-            refreshListServices();
-            service_list.invalidate();
+                customer = null;
+                setKeyRegim(KEYS_MAY_INVITE);
+                service_list.setModel(service_list.getModel());
+                refreshListServices();
+                service_list.invalidate();
 
-            this.invite();
-            this.begin();
-            this.refreshChannels();
-            if (getCFMSType()) {
-                params.new_channels_Index = ((Combobox) addTicketDailogWindow
-                        .getFellow("reception_Channels_options")).getSelectedIndex() + 1;
-                params.new_channels = ((Combobox) addTicketDailogWindow
-                        .getFellow("reception_Channels_options")).getSelectedItem().getValue()
-                                .toString();
+                this.invite();
+                this.begin();
+                this.refreshChannels();
+                if (getCFMSType()) {
+                    params.new_channels_Index = ((Combobox) addTicketDailogWindow
+                            .getFellow("reception_Channels_options")).getSelectedIndex() + 1;
+                    params.new_channels = ((Combobox) addTicketDailogWindow
+                            .getFellow("reception_Channels_options")).getSelectedItem().getValue()
+                                    .toString();
+                }
+                else {
+                    params.new_channels_Index = ((Combobox) addTicketDailogWindow
+                            .getFellow("general_Channels_options")).getSelectedIndex() + 1;
+                    params.new_channels = ((Combobox) addTicketDailogWindow
+                            .getFellow("general_Channels_options")).getSelectedItem().getValue()
+                                    .toString();
+                }
+                // params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
+                // params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
+                customer.setChannelsIndex(params.new_channels_Index);
+                customer.setChannels(params.new_channels);
+                BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
-            else {
-                params.new_channels_Index = ((Combobox) addTicketDailogWindow
-                        .getFellow("general_Channels_options")).getSelectedIndex() + 1;
-                params.new_channels = ((Combobox) addTicketDailogWindow
-                        .getFellow("general_Channels_options")).getSelectedItem().getValue()
-                                .toString();
-            }
-            // params.new_channels_Index = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
-            // params.new_channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
-            customer.setChannelsIndex(params.new_channels_Index);
-            customer.setChannels(params.new_channels);
-            BindUtils.postNotifyChange(null, null, Form.this, "*");
         }
 
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Previous Service", "After", user.getUser(),
+                customer);
     }
 
     @Command
@@ -2178,6 +2342,7 @@ public class Form {
 
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Add to Queue", "Before", user.getUser(), user.getUser().getCustomer());
+        trackCust = null;
         
         //  Debug
         //QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
@@ -2197,12 +2362,10 @@ public class Form {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
 
-                boolean Quick = params.custQtxn;
-                //QLog.l().logQUser().debug("    --> params QTxn: " + (Quick ? "Yes" : "No"));
-
-                //QLog.l().logQUser().debug("addToQueue");
-                this.addToQueue(params);
-                //QLog.l().logQUser().debug("Done");
+                RpcStandInService result = this.addToQueue(params);
+                if (result.getResult() != null) {
+                    trackCust = result.getResult();
+                }
 
                 customer = null;
                 setKeyRegim(KEYS_MAY_INVITE);
@@ -2219,7 +2382,7 @@ public class Form {
         //QLog.l().logQUser().debug("==> End: closeAddToQueueDialog");
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Add to Queue", "After", user.getUser(), user.getUser().getCustomer());
+        Executer.getInstance().TrackUserClick("Add to Queue", "After", user.getUser(), trackCust);
     }
 
     public void Sort() {
@@ -2291,12 +2454,21 @@ public class Form {
     @Command
     @NotifyChange(value = { "addWindowButtons" })
     public void changeService() {
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Change service", "Before", user.getUser(), user
+                .getUser().getCustomer());
+
         addWindowButtons[0] = false;
         addWindowButtons[1] = true;
         addWindowButtons[2] = false;
         addWindowButtons[3] = false;
 
         this.addTicketScreen(false, false);
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Change service", "After", user.getUser(), user
+                .getUser().getCustomer());
     }
 
     @Command

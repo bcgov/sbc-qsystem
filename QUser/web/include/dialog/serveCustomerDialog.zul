@@ -26,8 +26,9 @@
     </style>
 
 <window id="serveCustomerDialog" title="Serve Citizen Screen" border="normal" width="920px" height="620px"
-    position="center,center" closable="true"
+    position="center,center"
     onClose="self.visible = false; event.stopPropagation();"
+    closable="false"
     action="show: slideDown;hide: slideUp">
     
     <zscript>	
@@ -102,6 +103,7 @@
         <hbox>
             <button sclass="act-button" style="margin-left: 22px; margin-top: 22px;" label="${c:l('begin')}"
                     disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('begin')"
+                    visible="@load(fmodel.isReceptionOffice())"
                     autodisable="self"
                     id="btn_start" height="38px" width="158px">
             </button>
@@ -109,6 +111,7 @@
             <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Citizen Left"
                     disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')"
                     autodisable="self"
+                    visible="@load(fmodel.isReceptionOffice())"
                     id="btn_kill" height="38px" width="158px">
             </button>     
             
@@ -256,7 +259,7 @@
             <vbox style="margin-right: 10px;" >
                 <div height="60px" />
                 <label style=" cursor:pointer;text-decoration: underline; color:white; font-size:1em; font-weight:bold"
-                       value="Feedback" onClick="@command('ReportBug')" visible="true"
+                       value="Feedback" onClick="@command('ReportBugServe')" visible="true"
                        tooltip="csrReports, position=end_before"/>
             </vbox>>   
         </hbox> 

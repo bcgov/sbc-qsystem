@@ -14,15 +14,21 @@
                         Comparator cTimeAsc = new WaitingPanelComparator(true, 1);
                         Comparator cTimeDsc = new WaitingPanelComparator(false, 1);
                     ]]></zscript>
-                    <listbox id="service_list" model="@load(fmodel.user.customerList)"
-                             selectedItem="@bind(fmodel.pickedCustomer)" width="100%" height="100%" onSelect=""
-                             onClick="@command('inviteCustomerNow')" vflex="max" >
+                    <listbox id="service_list"
+                             model="@load(fmodel.user.customerList)"
+                             selectedItem="@bind(fmodel.pickedCustomer)"
+                             sizedByContent="true"
+                             width="100%"
+                             height="100%"
+                             onSelect=""
+                             onClick="@command('inviteCustomerNow')"
+                             vflex="max" >
                         <listhead>
-                            <listheader id="QuickTxn" label="Q.Txn" width="150px" align="center"/>
-                            <listheader id="SortTime" label="Time" width="300px" align="center"/>     
-            
+                            <listheader id="QuickTxn" label="Q.Txn" width="75px" align="center"/>
+                            <listheader id="SortTime" label="Time" width="100px" align="center"/>     
                             <listheader label="Ticket" width="100px" align="center" />
                             <listheader label="Served By" width="100px" align="center"/>
+                            <listheader label="Category" width="100px" align="center" />
                             <listheader label="Service" width="200px" align="center"/>
                             <!--
                             <listheader label="Priority" width="100px" align="center" sortAscending="${cPriorityAsc}"
@@ -57,6 +63,7 @@
                                 <listcell label="@load(customerList.standTimeinHHMMSS())" />
                                 <listcell label="@load(customerList.getFullNumber())" />
                                 <listcell label="@load(customerList.getAddedBy())"/>
+                                <listcell label="@load(customerList.getService().getParent().getName())" />
                                 <listcell label="@load(customerList.getService().getName())" />
                                 <!--<listcell label="@load(customerList.taskPriority())" />-->
                                 <listcell label="@load(customerList.currentStateIn())" />
@@ -95,7 +102,7 @@
         
         <!--  Center is for the citizens on hold -->
         <center border="none" hflex="true" autoscroll="true">
-            <panel title="Citizens on hold" border="normal" height="100%">
+            <panel title="Citizens on hold - see list below" border="normal" height="100%">
                 <panelchildren>
                     <listbox  id="postpone_list" model="@load(fmodel.postponList)" selectedItem="@bind(fmodel.pickedPostponed)" width="100%" height="100%"
                               onClick="@command('clickListPostponedInvite')" vflex="max">
@@ -104,6 +111,7 @@
                             <listheader label="Time" width="100px" sort="auto" align="center"/>
                             <listheader label="Ticket" width="100px" sort="auto" align="center"/>
                             <listheader label="Served By" width="100px" sort="auto" align="center"/>
+                            <listheader label="Category" width="100px" sort="auto" align="center"/>
                             <listheader label="Service" width="200px" sort="auto" align="center"/>
                             <listheader label="Comments" sort="auto"/>
                         </listhead>
@@ -116,6 +124,7 @@
                                 <listcell label="@load(pCust.standTimeinHHMMSS())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getFullNumber())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getAddedBy())" visible="@load(fmodel.login)"/>
+                                <listcell label="@load(pCust.getService().getParent().getName())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getService().getName())" visible="@load(fmodel.login)"/>
                                 <listcell label="@load(pCust.getTempComments())" visible="@load(fmodel.login)"/>
                             </listitem>

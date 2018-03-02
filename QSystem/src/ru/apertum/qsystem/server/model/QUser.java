@@ -17,6 +17,7 @@
 package ru.apertum.qsystem.server.model;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -274,7 +275,7 @@ public class QUser implements IidGetter, Serializable {
             return "online";
         }
         else {
-            return "offline";
+            return "";
         }
     }
 
@@ -690,6 +691,15 @@ public class QUser implements IidGetter, Serializable {
     public void setShadow(Shadow shadow) {
         this.shadow = shadow;
     }
+
+    public static class QUserComparator implements Comparator<QUser> {
+        @Override
+        public int compare(final QUser user1, final QUser user2) {
+            String name1 = user1.getName();
+            String name2 = user2.getName();
+            return name1.toUpperCase().compareTo(name2.toUpperCase());
+        }
+    };
 
     public static class Shadow {
 

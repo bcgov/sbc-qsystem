@@ -989,8 +989,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     ;
 
     public void setPreviousList(QService s) {
-        PreviousList.add(s);
-
+        if (!PreviousList.contains(s)) {
+            PreviousList.add(s);
+        }
     }
 
     ;

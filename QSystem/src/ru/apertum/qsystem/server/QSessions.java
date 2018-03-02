@@ -62,10 +62,14 @@ public class QSessions {
     }
 
     public synchronized boolean check(Long userId, String ipAdress, byte[] IP) {
-        QLog.l().logger().debug("==> QSessions.check(): userID=" + userId + "; address=" + ipAdress + "; ip=" + Arrays
-                    .toString(IP));
+//        QLog.l().logger().debug("==> QSessions.check(): userID=" + userId + "; address=" + ipAdress + "; ip=" + Arrays
+//                    .toString(IP));
+      //QLog.l().logger().debug("==> QS.check(): userID: " + userId + "; AIp: " + ipAdress + ": #: " + sessions.size());
             
         for (QSession session : sessions) {
+
+            //QLog.l().logger().debug("    --> SCSR: " + session.getUser().getName() + "; SIp: " + session.getIpAdress() + "; ");
+            
             if ((session.isValid())
                 && (
                 (!QConfig.cfg().isTerminal() && (ipAdress.equals(session.getIpAdress()) || Arrays
@@ -91,7 +95,8 @@ public class QSessions {
                 return true;
             }
         }
-        return sessions.add(new QSession(QUserList.getInstance().getById(userId), ipAdress, IP));
+        QSession newSession = new QSession(QUserList.getInstance().getById(userId), ipAdress, IP);
+        return sessions.add(newSession);
     }
 
     public synchronized void remove(Long userId) {

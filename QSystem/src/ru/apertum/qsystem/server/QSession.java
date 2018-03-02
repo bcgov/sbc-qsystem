@@ -39,7 +39,7 @@ public class QSession {
         this.ipAdress = ipAdress;
         this.IP = IP;
         time = System.currentTimeMillis();
-        QLog.l().logger().trace("Session for new user '" + user.getName() + "' ip=" + ipAdress);
+        //QLog.l().logger().trace("Session for new user '" + user.getName() + "' ip=" + ipAdress);
     }
 
     public QSession(QUser user) {
