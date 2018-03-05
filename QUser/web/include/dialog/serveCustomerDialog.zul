@@ -30,13 +30,7 @@
     onClose="self.visible = false; event.stopPropagation();"
     closable="false"
     action="show: slideDown;hide: slideUp">
-    
-    <zscript>	
-  		org.zkoss.zul.SimpleConstraint c1 = new org.zkoss.zul.SimpleConstraint("no empty"," Please enter a value");
-  		org.zkoss.zul.SimpleConstraint c2 = new org.zkoss.zul.SimpleConstraint("no negative"," Numbers can not be negative");
-  		org.zkoss.zul.SimpleConstraint c3 = new org.zkoss.zul.SimpleConstraint("no negative"," Numbers can not be negative");
-  		//org.zkoss.zul.CustomConstraint c3 = new org.zkoss.zul.CustomConstraint("/^\d+$/", " Please enter values only");    	
-    </zscript>
+      
     
     <vlayout sclass="blue-background" height="200px">
         
@@ -151,9 +145,16 @@
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" />
                     <label sclass="general-text"
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
-                    <textbox value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"
-                             constraint="${c1},${c2},${c3}" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client">
-                    </textbox>
+                    <textbox id="customer_quantity" value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"
+                            onChanging="@command('validateQuantity',v=event.value)" onChange="@command('saveQuantity')" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client">
+                    </textbox> 
+                                      
+<!--
+ <textbox id="customer_quantity" value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"
+                            onChanging="@command('validateQuantity',v=event.value)" 
+                            onChange="@command('saveQuantity')" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client"                            
+                    </textbox> 
+ -->
                     <button sclass="button-with-image" image="/resources/img/005_change_icon.png"
                             autodisable="self"
                             onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">
