@@ -30,6 +30,7 @@
     onClose="self.visible = false; event.stopPropagation();"
     closable="false"
     action="show: slideDown;hide: slideUp">
+      
     
     <vlayout sclass="blue-background" height="200px">
         
@@ -38,8 +39,7 @@
                 <vbox style="margin-left: 26px; margin-top: 34px;">
                     <label id="customer_number_label" value="Ticket #: " sclass="top-text-style"
                            style="font-weight: bold;"/>
-                    <label id="channels_label" value="Channels: " sclass="top-text-style" style="font-weight: bold;"/>
-                    
+                    <label id="channels_label" value="Channels: " sclass="top-text-style" style="font-weight: bold;"/>                    
                 </vbox>
                 <vbox style="margin-left: 13px; margin-top: 34px;">
                     <label id="customer_number"
@@ -145,9 +145,16 @@
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" />
                     <label sclass="general-text"
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
-                    <textbox value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"
-                             constraint="no empty, no negative" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client">
-                    </textbox>
+                    <textbox id="customer_quantity" value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"
+                            onChanging="@command('validateQuantity',v=event.value)" onChange="@command('saveQuantity')" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client">
+                    </textbox> 
+                                      
+<!--
+ <textbox id="customer_quantity" value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"
+                            onChanging="@command('validateQuantity',v=event.value)" 
+                            onChange="@command('saveQuantity')" maxlength="3" forward="QuantityId.onOK"  xmlns:w="client"                            
+                    </textbox> 
+ -->
                     <button sclass="button-with-image" image="/resources/img/005_change_icon.png"
                             autodisable="self"
                             onClick="@command('changeService')" id="btn_change_service" height="44px" width="44px">

@@ -222,6 +222,8 @@ public class Form {
     private int customersCount = 0;
     private boolean currentState = false;
     private boolean CheckGABoard = false;
+    
+    private String lastGoodQuantity = "1";
 
     // public LinkedList<QUser> test2 = greed.get(2).getShadow();
     // public LinkedList<QUser> userList = QUserList.getInstance().getItems();
@@ -311,8 +313,9 @@ public class Form {
             QUser quser = user.getUser();
             if (quser != null) {
                 officeName = user.getUser().getOffice().getName();
-            }
-        }
+            }            
+        }     
+         
     }
 
     public String getBackgroundClass() {
@@ -941,8 +944,8 @@ public class Form {
     
     @Command
     @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
-    public void invite() {
-        
+    public void invite() {         	
+    	  
         //  CM:  See if small time has elapsed since last CSR in this office clicked invite.
         //  CM:  Kludge to prevent two CSRs calling the same citizen.
         Long officeId = user.getUser().getOffice().getId();
@@ -1006,8 +1009,20 @@ public class Form {
 
     @Command
     public void addServeScreen() {
-        ((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox"))
+        
+    	((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox"))
                 .setChecked(false);
+        
+    	String tempVal = ((Textbox) serveCustomerDialogWindow.getFellow("customer_quantity")).getValue();
+        
+    	if (!isNumeric(tempVal)){
+        	lastGoodQuantity = customer.getQuantity();
+        	QLog.l().logQUser().debug("LastGoodQuantity ==> " +  lastGoodQuantity );
+        }else{
+        	lastGoodQuantity = tempVal;
+        	QLog.l().logQUser().debug("LGQ tempVal ==> " +  tempVal );
+        }   
+               
         serveCustomerDialogWindow.setVisible(true);
         serveCustomerDialogWindow.doModal();
     }
@@ -1098,8 +1113,48 @@ public class Form {
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Comments", "After", user.getUser(), user
                 .getUser().getCustomer());
-    }
+    }    
 
+    @Command
+    public void validateQuantity(@BindingParam("v") String newValue,
+            @ContextParam(ContextType.TRIGGER_EVENT) InputEvent event) {
+
+        //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Quantity", "Before", user.getUser(), user
+                .getUser().getCustomer());
+       
+        QLog.l().logQUser().debug("validateQuantity ==> LastGoodQuantity= " +  lastGoodQuantity );
+        
+       // Check if quantity is numeric and display message if not
+       if(!isNumeric(newValue)){  
+    	   ((Textbox) serveCustomerDialogWindow.getFellow("customer_quantity")).setText(lastGoodQuantity);
+   			customer.setQuantity(lastGoodQuantity);       
+        	Messagebox.show(
+       				"Please enter a numeric value for quantity.","Quantity Error"  
+        				, Messagebox.OK, Messagebox.INFORMATION);	 		
+       }else{
+    	   //save the value
+    	   customer.setQuantity(newValue);
+    	   //save this as last good value
+    	   lastGoodQuantity = newValue;    			   
+       }
+          
+       //  CM:  Tracking.
+        Executer.getInstance().TrackUserClick("Srv: Quantity", "After", user.getUser(), user
+                .getUser().getCustomer());
+    }
+    
+    public static boolean isNumeric(String str)
+    {
+      return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    }
+    
+    @Command
+    public void saveQuantity() {
+    	QLog.l().logQUser().debug("saveQuantity ==> LastGoodQuantity= " +  lastGoodQuantity );
+    	customer.setQuantity(lastGoodQuantity);
+    }
+    
     @Command
     public void postpone() {
 
