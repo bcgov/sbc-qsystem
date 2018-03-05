@@ -17,7 +17,8 @@
 			else if(nhour==12){ap=" PM";}
 			else if(nhour>12){ap=" PM";nhour-=12;}
 			if(nmin<=9) nmin="0"+nmin;
-				document.getElementById('clockbox').innerHTML=""+tday[nday]+", "+tmonth[nmonth]+" "+ndate+", "+nyear+" "+nhour+":"+nmin+ap+"";
+			document.getElementById('clockbox').innerHTML=""+tday[nday]+", "+tmonth[nmonth]+" "+ndate+", "+nyear+" "+nhour+":"+nmin+ap+"";
+	
 			}
 		window.onload=function(){
 			GetClock();
@@ -34,7 +35,7 @@
     overflow: hidden
 }
 </style>
-		<div id="clockbox" style="font-size: 2em;text-align:center;color:black;">
+		<div id="clockbox" style="font-size: 3em; font-family: Arial, Helvetica, sans-serif;text-align:center;color:black;">
 		</div>
 
 
