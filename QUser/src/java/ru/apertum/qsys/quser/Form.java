@@ -388,7 +388,7 @@ public class Form {
         if (user.getUser().getAdminAccess()) {
             user.setGABoard(true);
         }
-        //QLog.l().logQUser().debug("==> Login GABoard Status: " + user.getGABoard());
+        QLog.l().logQUser().debug("==> Login GABoard Status: " + user.getGABoard());
 
         final Session sess = Sessions.getCurrent();
         sess.setAttribute("userForQUser", user);
@@ -604,7 +604,7 @@ public class Form {
 
         if (user.getUser() != null && user.getName() != null) {
             Username = "CSR - " + user.getName();
-            if (user.getUser().getCustomer().getName() != null) {
+            if (user.getUser().getCustomer() != null) {
                 ReportTicket = user.getUser().getCustomer().getName();
             }
             else {
@@ -1009,13 +1009,20 @@ public class Form {
 
     @Command
     public void addServeScreen() {
-        ((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox"))
-                .setChecked(false);
-        lastGoodQuantity = ((Textbox) serveCustomerDialogWindow.getFellow("customer_quantity")).getValue(); 
-       
-        //debug
-        QLog.l().logQUser().debug("LastGoodQuantity ==> " +  lastGoodQuantity );
         
+    	((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox"))
+                .setChecked(false);
+        
+    	String tempVal = ((Textbox) serveCustomerDialogWindow.getFellow("customer_quantity")).getValue();
+        
+    	if (!isNumeric(tempVal)){
+        	lastGoodQuantity = customer.getQuantity();
+        	QLog.l().logQUser().debug("LastGoodQuantity ==> " +  lastGoodQuantity );
+        }else{
+        	lastGoodQuantity = tempVal;
+        	QLog.l().logQUser().debug("LGQ tempVal ==> " +  tempVal );
+        }   
+               
         serveCustomerDialogWindow.setVisible(true);
         serveCustomerDialogWindow.doModal();
     }
@@ -1115,7 +1122,9 @@ public class Form {
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Quantity", "Before", user.getUser(), user
                 .getUser().getCustomer());
-                  
+       
+        QLog.l().logQUser().debug("validateQuantity ==> LastGoodQuantity= " +  lastGoodQuantity );
+        
        // Check if quantity is numeric and display message if not
        if(!isNumeric(newValue)){  
     	   ((Textbox) serveCustomerDialogWindow.getFellow("customer_quantity")).setText(lastGoodQuantity);
@@ -1142,6 +1151,7 @@ public class Form {
     
     @Command
     public void saveQuantity() {
+    	QLog.l().logQUser().debug("saveQuantity ==> LastGoodQuantity= " +  lastGoodQuantity );
     	customer.setQuantity(lastGoodQuantity);
     }
     
