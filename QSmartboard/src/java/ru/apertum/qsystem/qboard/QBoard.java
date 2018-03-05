@@ -304,8 +304,8 @@ public class QBoard extends GenericForwardComposer {
         //        private int oldHashcode = Sessions.getCurrent().hashCode();
         //        private int newHashcode = 0;
         newHashcode = Sessions.getCurrent().hashCode();
-        QLog.l().logQUser().debug("==> QBoard: Old hash: " + oldHashcode
-                + "; New hash: " + newHashcode);
+        //        QLog.l().logQUser().debug("==> QBoard: Old hash: " + oldHashcode
+        //                + "; New hash: " + newHashcode);
 
         //  CM:  If hash codes are different, reload the page.
         if (oldHashcode != newHashcode) {
