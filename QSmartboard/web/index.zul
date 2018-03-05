@@ -60,8 +60,8 @@
                     <columnchildren id="bottom_center1" width="100%" style="@load(fmodel.customerDisplay)">
                         <div width="100%">
                             <hbox align="center" pack="center" hflex="1" vflex="1">
-                                <label style="font-size: 4em;" value="Currently waiting:"  />
-                                <label style="font-size: 4em;" value="@load(fmodel.customersCount)"  />
+                                <label style="font-size: 6em;" value="Currently waiting:"  />
+                                <label style="font-size: 6em;" value="@load(fmodel.customersCount)"  />
                             </hbox>
                         </div>
                         <timer id="timer_service_list" delay="1000" repeats="true" running="true" onTimer="@command('refreshListServices')"/>
