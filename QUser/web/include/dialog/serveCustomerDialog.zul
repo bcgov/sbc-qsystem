@@ -96,7 +96,7 @@
             
         <hbox>
             <button sclass="act-button" style="margin-left: 22px; margin-top: 22px;" label="${c:l('begin')}"
-                    disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('begin')"
+                    disabled="@load(fmodel.btnsDisabled[2])" onClick="@command('beginClick')"
                     visible="@load(fmodel.isReceptionOffice())"
                     autodisable="self"
                     id="btn_start" height="38px" width="158px">
