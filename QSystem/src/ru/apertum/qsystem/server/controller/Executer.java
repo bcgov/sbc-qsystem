@@ -31,6 +31,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.exolab.castor.types.DateTime;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Property;
@@ -1024,9 +1025,9 @@ public final class Executer {
             // Does the user have a called customizer? Then the puerile challenge
             if (isRecall) {
 
-                //                QLog.l().logQUser().debug("    --> Is Recall: CSR: " + user.getName() + "; Cust: "
-                //                        + user.getCustomer().getName() + "; CustCSR: " + user.getCustomer()
-                //                                .getUser().getName());
+                QLog.l().logQUser().debug("    --> Is Recall: CSR: " + user.getName() + "; Cust: "
+                        + user.getCustomer().getName() + "; CustCSR: " + user.getCustomer()
+                                .getUser().getName());
                 user.getCustomer().upRecallCount(); // еще один повторный вызов
                 //                QLog.l().logger().debug(
                 //                    "Повторный вызов " + user.getCustomer().getRecallCount() + " кастомера №" + user
@@ -1137,49 +1138,8 @@ public final class Executer {
                             //QLog.l().logQUser().debug("--> After add customers");
                         }
 
-                        //  CM:  Loop through all custs, all offices, wanting this service, return
-                        //  CM:  the first customer wanting this service in this office.
-                        //                        final QCustomer cust = serv
-                        //                            .peekCustomerByOffice(user.getOffice()); // первый в этой очереди
-                        //QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust);
-                        // если очередь пуста
-
-                        //  If no customer wanting current service, current office, look at next service.
-                        //                        if (cust == null) {
-                        //                            continue;
-                        //                        }
-                        // учтем приоритетность кастомеров и приоритетность очередей для юзера в которые они стоят
-
-                        //  CM:  Display info abut the customer.
-                        //QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust + "; Quick: " + cust.getStringQuickTxn());
-
-                        //  Get the priority of the current service.
-                        //                        final Integer prior = plan.getCoefficient();
-                        //QLog.l().logQUser().debug("Service Co-efficient: " + prior + "; servPriority: " + servPriority);
-
-                        //  CM:  First time through this loop, any found customer will be set to be next customer.
-                        //  CM:  Next time through, found cust will be set next cust if they have been waiting longer,
-                        //  CM:  or if they have a higher priority.
-                        //                        if (prior > servPriority || (prior == servPriority && customer != null
-                        //                            && customer.compareTo(cust) == 1)) {
-                        //                            servPriority = prior;
-                        //                            customer = cust;
-                        //                        }
                     }
 
-                    //  CM:  Debug code for now.
-                    //QLog.l().logQUser().debug("    --> Total In Queue: " + custAll.size());
-
-                    /*
-                     *  (1) Get CSR State
-                     *  (2) Set NewCust = null
-                     *  (3)   Loop through all custAll, if a Q.Txn match, select, if longer in queue, replace
-                     *  (4) If NewCust still null
-                     *  (5)   Loop through all custAll, select, if longer in queue, replace
-                     *  (6) If NewCust still null, no person in line
-                     * 
-                     * 
-                     */
 
                     DateFormat df = new SimpleDateFormat("HH:mm:ss");
                     
@@ -1195,10 +1155,19 @@ public final class Executer {
                     //  Loop through all customers, looking for a match.
                     for (QCustomer nextCustInLine : custAll) {
 
-                        //  CM:  Look for a Quick Txn match. 
-                        if (nextCustInLine.getTempQuickTxn() == userQuick) {
+                        //  CM:  Look for a Quick Txn match that is not part of a sequence.
+                        Long dateNow = (new Date()).getTime();
+                        String custName = nextCustInLine.getName();
+                        Boolean quickMatch = nextCustInLine.getTempQuickTxn() == userQuick;
+                        Boolean notInSequence = !nextCustInLine.getIsInSequence();
+                        Boolean inSequenceTimeOut = nextCustInLine.getIsInSequence() &&
+                                (dateNow - nextCustInLine.getStandTime().getTime()) > 5000;
+                        QLog.l().logQUser().debug("==> ChkQMatch: Cust: " + custName + "; QM: "
+                                + quickMatch + "; NotS: " + notInSequence + "; STimeO: "
+                                + inSequenceTimeOut);
+
+                        if (quickMatch & (notInSequence || inSequenceTimeOut)) {
                             
-                            //QLog.l().logQUser().debug("    --> QTxn match with customer");
                             //  CM:  You have a match.  If no next customer, take this one in line.
                             if (custToServe == null) {
                                 custToServe = nextCustInLine;
@@ -1215,20 +1184,7 @@ public final class Executer {
                                 //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
                                 if (custToServe.compareTo(nextCustInLine) == 1) {
                                     custToServe = nextCustInLine;
-                                    //                                    QLog.l().logger().debug("    --> Win:    Cust: " + custToServe
-                                    //                                            .getName() + "; Pri: " + custToServe
-                                    //                                                    .getPriority().get() + "; Stand: " + df.format(
-                                    //                                                            custToServe.getStandTime()) + "; Svc: "
-                                    //                                            + custToServe.getService().getName());
-
                                 }
-                                //                                else {
-                                //                                    QLog.l().logger().debug("    --> Kpt:    Cust: " + custToServe
-                                //                                            .getName() + "; Pri: " + custToServe
-                                //                                                    .getPriority().get() + "; Stand: " + df.format(
-                                //                                                            custToServe.getStandTime()) + "; Svc: "
-                                //                                            + custToServe.getService().getName());
-                                //                                }
                             }
                         }
                     }
@@ -1242,26 +1198,40 @@ public final class Executer {
                         //  CM:  Pick next customer, regardless of QuickTxn state.
                         for (QCustomer nextCustInLine : custAll) {
 
-                            //  CM:  If no next customer, take the first customer in the list.
-                            if (custToServe == null) {
-                                custToServe = nextCustInLine;
-                                // QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
-                            }
-                            
-                            //  CM:  You have a tentative next customer.  See who is next.
-                            //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
-                            else {
+                            //  CM:  Look for any customer that is not part of a sequence.
+                            String custName = nextCustInLine.getName();
+                            Long dateNow = (new Date()).getTime();
+                            Boolean notInSequence = !nextCustInLine.getIsInSequence();
+                            Boolean inSequenceTimeOut = nextCustInLine.getIsInSequence() &&
+                                    (dateNow - nextCustInLine.getStandTime().getTime()) > 5000;
 
-                                //  Compare customers.
-                                // QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+                            QLog.l().logQUser().debug("==> ChkQMatch: Cust: " + custName
+                                    + "; NotS: " + notInSequence + "; STimeO: "
+                                    + inSequenceTimeOut);
 
-                                if (custToServe.compareTo(nextCustInLine) == 1) {
+                            if (notInSequence || inSequenceTimeOut) {
+
+                                //  CM:  If no next customer, take the first customer in the list.
+                                if (custToServe == null) {
                                     custToServe = nextCustInLine;
-                                    //                                    QLog.l().logger().debug("    --> Win:    Cust: " + custToServe
-                                    //                                            .getName() + "; Pri: " + custToServe
-                                    //                                                    .getPriority().get() + "; Stand: " + df.format(
-                                    //                                                            custToServe.getStandTime()) + "; Svc: "
-                                    //                                            + custToServe.getService().getName());
+                                    // QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                                }
+
+                                //  CM:  You have a tentative next customer.  See who is next.
+                                //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
+                                else {
+
+                                    //  Compare customers.
+                                    // QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+
+                                    if (custToServe.compareTo(nextCustInLine) == 1) {
+                                        custToServe = nextCustInLine;
+                                        //                                    QLog.l().logger().debug("    --> Win:    Cust: " + custToServe
+                                        //                                            .getName() + "; Pri: " + custToServe
+                                        //                                                    .getPriority().get() + "; Stand: " + df.format(
+                                        //                                                            custToServe.getStandTime()) + "; Svc: "
+                                        //                                            + custToServe.getService().getName());
+                                    }
                                 }
                             }
                         }
@@ -2189,7 +2159,10 @@ public final class Executer {
             }
             final QCustomer customer = user.getCustomer();
             // комменты по редиректу
+            //  Add comments, quick txn or not, whether user in sequence or not.
             customer.setTempComments(cmdParams.comments);
+            customer.setTempQuickTxn(cmdParams.custQtxn);
+            customer.setIsInSequence(cmdParams.in_sequence);
 
             // set added by which user
             customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
@@ -3422,9 +3395,9 @@ public final class Executer {
                 customer.setOffice(userOffice);
                 customer.setUser(user);
 
-                //  Add quick txn or not.
+                //  Add quick txn or not, whether user in sequence or not.
                 customer.setTempQuickTxn(cmdParams.custQtxn);
-                //QLog.l().logQUser().debug("    --> Customer QTxn: " + (customer.getTempQuickTxn() ? "Yes" : "No"));
+                customer.setIsInSequence(cmdParams.in_sequence);
 
                 //добавим нового пользователя
                 // add a new user

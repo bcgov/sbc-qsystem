@@ -984,6 +984,10 @@ public class Form {
                 .get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
         if (result.getResult() != null) {
             customer = result.getResult();
+            String InSeqBefore = (customer.getIsInSequence() ? "Yes" : "No");
+            customer.setIsInSequence(false);
+            String InSeqAfter = (customer.getIsInSequence() ? "Yes" : "No");
+            QLog.l().logQUser().debug("    ==> Insequence: Before: Start: " + InSeqBefore + "; After: " + InSeqAfter);
             setKeyRegim(KEYS_INVITED);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
             this.addServeScreen();
@@ -2358,9 +2362,10 @@ public class Form {
                 params.comments = custComments;
             }
 
+            //  CM:  When adding next service, the Add to queue, invite, begin sequence is used.
+            params.in_sequence = true;
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
-
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
@@ -2370,7 +2375,6 @@ public class Form {
 
             // Reset the combobox to default value/placeHolder
             ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
-
             this.invite();
             this.begin();
             this.refreshChannels();
@@ -2693,12 +2697,6 @@ public class Form {
 
         if (pickedRedirectServ != null) {
 
-            //  CM:  Debug.
-            //QCustomer cust = pickedRedirectServ.getCustomer();
-            //            QLog.l().logQUser().debug("    --> pickedRedirectServ not null, Name: "
-            //                    + pickedRedirectServ.getName());
-            //QLog.l().logQUser().debug("    --> Customer: " + cust.getFullNumber());
-
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
@@ -2714,9 +2712,12 @@ public class Form {
 
             if (OkToContinue) {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
+
+                //  CM:  Let system know this person about to enter AddQueue, Invite, Begin sequence.
+                //       Can't be picked by other CSRs.
+                params.in_sequence = true;
                 final RpcStandInService res = this.addToQueue(params);
                 customer = res.getResult();
-
                 customer = null;
                 setKeyRegim(KEYS_MAY_INVITE);
                 service_list.setModel(service_list.getModel());
@@ -2724,8 +2725,23 @@ public class Form {
                 service_list.invalidate();
                 addTicketDailogWindow.setVisible(false);
 
+                //                try {
+                //                    TimeUnit.SECONDS.wait(5);
+                //                }
+                //                catch (Exception ex) {
+                //                }
                 this.invite();
+                //                try {
+                //                    TimeUnit.SECONDS.wait(5);
+                //                }
+                //                catch (Exception ex) {
+                //                }
                 this.begin();
+                //                try {
+                //                    TimeUnit.SECONDS.wait(5);
+                //                }
+                //                catch (Exception ex) {
+                //                }
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
         }
