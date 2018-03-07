@@ -154,6 +154,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @Expose
     @SerializedName("need_back")
     private boolean needBack = false;
+    @Expose
+    @SerializedName("in_sequence")
+    private boolean in_sequence = false;
     /**
      * Комментариии юзеров о кастомере при редиректе и отправки в отложенные :: Comments and users about the custodian when redirecting and sending to deferred
      */
@@ -970,8 +973,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     @Column(name = "channelsIndex")
     public int getChannelsIndex() {
-        //        QLog.l().logger().trace("\n\n\n\n CHANNEL NAME:\n  " + channels + "\n\n ");
-        //        return this.getService().getQuantity();
         return this.channelsIndex;
     }
 
@@ -1008,6 +1009,15 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setOffice(QOffice office) {
         this.office = office;
+    }
+
+    @Transient
+    public Boolean getIsInSequence() {
+        return this.in_sequence;
+    }
+
+    public void setIsInSequence(Boolean isInSequence) {
+        this.in_sequence = isInSequence;
     }
 
 }
