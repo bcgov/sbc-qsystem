@@ -1496,13 +1496,14 @@ public class Form {
 
             //  New "customer already picked" test.
             Object[] msg = { "" };
-            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedCustomer, msg,
-                    "WaitQ")) {
+            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
+                    pickedCustomer, msg, "WaitQ")) {
                 Messagebox.show(msg[0].toString(), "Error picking customer from wait queue",
                         Messagebox.OK,
                     Messagebox.INFORMATION);
+                pickedCustomer = null;
             }
-            
+
             else {
                 params.userId = user.getUser().getId();
                 params.postponedPeriod = 0;
@@ -1801,8 +1802,8 @@ public class Form {
 
         //  CM:  Make sure the customer picked hasn't already been picked by someone else.
         if (OkToContinue) {
-            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg,
-                    "HoldQ")) {
+            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
+                    pickedPostponed, msg, "HoldQ")) {
                 Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
                         Messagebox.OK,
                         Messagebox.INFORMATION);
@@ -1824,7 +1825,8 @@ public class Form {
 
                             //QLog.l().logger().debug("--> Checking customer can be called from queue.");
 
-                            if ((boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg, "HoldQ(2)")) {
+                            if ((boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
+                                    pickedPostponed, msg, "HoldQ(2)")) {
                                 
                                 final CmdParams params = new CmdParams();
                                 // @param userId id юзера который вызывает The user who causes
@@ -2375,8 +2377,29 @@ public class Form {
 
             // Reset the combobox to default value/placeHolder
             ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
+            try {
+                QLog.l().logQUser().debug("    --> Wait before");
+                TimeUnit.SECONDS.sleep(7);
+                QLog.l().logQUser().debug("    --> Wait after");
+            }
+            catch (Exception ex) {
+            }
             this.invite();
+            try {
+                QLog.l().logQUser().debug("    --> Wait before");
+                TimeUnit.SECONDS.sleep(7);
+                QLog.l().logQUser().debug("    --> Wait after");
+            }
+            catch (Exception ex) {
+            }
             this.begin();
+            try {
+                QLog.l().logQUser().debug("    --> Wait before");
+                TimeUnit.SECONDS.sleep(7);
+                QLog.l().logQUser().debug("    --> Wait after");
+            }
+            catch (Exception ex) {
+            }
             this.refreshChannels();
             // QLog.l().logQUser().debug("Updating channels");
             // QLog.l().logQUser().debug(params.channelsIndex);
@@ -2725,23 +2748,23 @@ public class Form {
                 service_list.invalidate();
                 addTicketDailogWindow.setVisible(false);
 
-                //                try {
-                //                    TimeUnit.SECONDS.wait(5);
-                //                }
-                //                catch (Exception ex) {
-                //                }
+                try {
+                    TimeUnit.SECONDS.sleep(7);
+                }
+                catch (Exception ex) {
+                }
                 this.invite();
-                //                try {
-                //                    TimeUnit.SECONDS.wait(5);
-                //                }
-                //                catch (Exception ex) {
-                //                }
+                try {
+                    TimeUnit.SECONDS.sleep(7);
+                }
+                catch (Exception ex) {
+                }
                 this.begin();
-                //                try {
-                //                    TimeUnit.SECONDS.wait(5);
-                //                }
-                //                catch (Exception ex) {
-                //                }
+                try {
+                    TimeUnit.SECONDS.sleep(7);
+                }
+                catch (Exception ex) {
+                }
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
         }
