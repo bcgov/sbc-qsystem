@@ -221,18 +221,11 @@ public final class Executer {
             Boolean inSequenceTimeOut = inSequence &&
                     (dateNow - potentialCustomer.getStandTime().getTime()) > 5000;
             String istos = (inSequenceTimeOut ? "Y" : "N");
-            QLog.l().logQUser().debug("==> Cust: " + custName + "; Q: " + qms + "; C: "
-                    + cms + "; S: " + iss + "; STO: " + istos);
+            //            QLog.l().logQUser().debug("==> Cust: " + custName + "; Q: " + qms + "; C: "
+            //                    + cms + "; S: " + iss + "; STO: " + istos);
 
             okToCall = okToCall && (notInSequence || inSequenceTimeOut || (inSequence && csrMatch));
 
-            //  Other conditions must also apply now, to take into account services.
-            // xxx
-
-            //  Debug.
-            //            QLog.l().logger().debug("    --> From: " + calledFrom + "; State: "
-            //                    + potentialCustomer.getStateIn()
-            //                    + "; CallOK: " + okToCall);
             String pcOffice = (potentialCustomer.getOffice() == null ? "Null" : potentialCustomer
                     .getOffice().getName());
             String pcService = (potentialCustomer.getService() == null ? "Null" : potentialCustomer
@@ -973,15 +966,6 @@ public final class Executer {
             //                    .getCurrentService() + "; Cust: " + user.getCustomer().getName());
 
             if (usrs.contains(user)) {
-
-                //                QLog.l().logQUser().debug("    --> CSR list contains CSR " + user.getName());
-
-                //                QLog.l().logQUser().debug("--> ");
-                //                QLog.l().logger().debug("--> Winner:    Cust: " + customer
-                //                        .getName() + "; Pri: " + customer
-                //                                .getPriority().get() + "; Stand: " + df.format(
-                //                                        customer.getStandTime()) + "; Svc: "
-                //                        + customer.getService().getName());
                 return;
             }
             usrs.add(user);
@@ -1193,8 +1177,8 @@ public final class Executer {
                         Boolean inSequenceTimeOut = inSequence &&
                                 (dateNow - nextCustInLine.getStandTime().getTime()) > 5000;
                         String istos = (inSequenceTimeOut ? "Y" : "N");
-                        QLog.l().logQUser().debug("==> Cust: " + custName + "; Q: " + qms + "; C: "
-                                + cms + "; S: " + iss + "; STO: " + istos);
+                        //                        QLog.l().logQUser().debug("==> Cust: " + custName + "; Q: " + qms + "; C: "
+                        //                                + cms + "; S: " + iss + "; STO: " + istos);
 
                         if (quickMatch && (notInSequence || inSequenceTimeOut || (inSequence
                                 && csrMatch))) {
@@ -1203,9 +1187,9 @@ public final class Executer {
                             if (custToServe == null) {
                                 custToServe = nextCustInLine;
                                 //QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
-                                QLog.l().logQUser().debug("    --> First cust chosen: "
-                                        + nextCustInLine.getName() + "; CSR: " + nextCustInLine
-                                                .getUser().getName());
+                                //                                QLog.l().logQUser().debug("    --> First cust chosen: "
+                                //                                        + nextCustInLine.getName() + "; CSR: " + nextCustInLine
+                                //                                                .getUser().getName());
                             }
                             
                             //  CM:  You have a match, and a tentative next customer.  See who is next.
@@ -1214,18 +1198,18 @@ public final class Executer {
 
                                 //  Compare customers.
                                 //QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
-                                QLog.l().logger().debug("    --> Curr: " + custToServe.getName()
-                                        + "; CSR: " + custToServe.getUser().getName());
-                                QLog.l().logger().debug("    --> Line: " + nextCustInLine
-                                        .getName() + "; CSR: " + nextCustInLine.getUser()
-                                                .getName());
+                                //                                QLog.l().logger().debug("    --> Curr: " + custToServe.getName()
+                                //                                        + "; CSR: " + custToServe.getUser().getName());
+                                //                                QLog.l().logger().debug("    --> Line: " + nextCustInLine
+                                //                                        .getName() + "; CSR: " + nextCustInLine.getUser()
+                                //                                                .getName());
 
                                 //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
                                 if (custToServe.compareTo(nextCustInLine) == 1) {
                                     custToServe = nextCustInLine;
-                                    QLog.l().logger().debug("        --> Win:  " + custToServe
-                                            .getName() + "; CSR: " + custToServe.getUser()
-                                                    .getName());
+                                    //                                    QLog.l().logger().debug("        --> Win:  " + custToServe
+                                    //                                            .getName() + "; CSR: " + custToServe.getUser()
+                                    //                                                    .getName());
                                 }
                             }
                         }
@@ -1251,18 +1235,18 @@ public final class Executer {
                             Boolean notInSequence = !inSequence;
                             Boolean inSequenceTimeOut = inSequence &&
                                     (dateNow - nextCustInLine.getStandTime().getTime()) > 5000;
-                            QLog.l().logQUser().debug("==> ChkQMatch: Cust: " + custName + "; QM: "
-                                    + quickMatch + "; CSRMatch: " + csrMatch + "; NotS: "
-                                    + notInSequence + "; STimeO: " + inSequenceTimeOut);
+                            //                            QLog.l().logQUser().debug("==> ChkQMatch: Cust: " + custName + "; QM: "
+                            //                                    + quickMatch + "; CSRMatch: " + csrMatch + "; NotS: "
+                            //                                    + notInSequence + "; STimeO: " + inSequenceTimeOut);
 
                             if (notInSequence || inSequenceTimeOut || (inSequence && csrMatch)) {
 
                                 //  CM:  If no next customer, take the first customer in the list.
                                 if (custToServe == null) {
                                     custToServe = nextCustInLine;
-                                    QLog.l().logQUser().debug("    --> First cust chosen: "
-                                            + nextCustInLine.getName() + "; CSR: " + nextCustInLine
-                                                    .getUser().getName());
+                                    //                                    QLog.l().logQUser().debug("    --> First cust chosen: "
+                                    //                                            + nextCustInLine.getName() + "; CSR: " + nextCustInLine
+                                    //                                                    .getUser().getName());
                                 }
 
                                 //  CM:  You have a tentative next customer.  See who is next.
@@ -1271,17 +1255,17 @@ public final class Executer {
 
                                     //  Compare customers.
                                     // QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
-                                    QLog.l().logger().debug("    --> Curr: " + custToServe.getName()
-                                            + "; CSR: " + custToServe.getUser().getName());
-                                    QLog.l().logger().debug("    --> Line: " + nextCustInLine
-                                            .getName() + "; CSR: " + nextCustInLine.getUser()
-                                                    .getName());
+                                    //                                    QLog.l().logger().debug("    --> Curr: " + custToServe.getName()
+                                    //                                            + "; CSR: " + custToServe.getUser().getName());
+                                    //                                    QLog.l().logger().debug("    --> Line: " + nextCustInLine
+                                    //                                            .getName() + "; CSR: " + nextCustInLine.getUser()
+                                    //                                                    .getName());
 
                                     if (custToServe.compareTo(nextCustInLine) == 1) {
                                         custToServe = nextCustInLine;
-                                        QLog.l().logger().debug("        --> Win:  " + custToServe
-                                                .getName() + "; CSR: " + custToServe.getUser()
-                                                        .getName());
+                                        //                                        QLog.l().logger().debug("        --> Win:  " + custToServe
+                                        //                                                .getName() + "; CSR: " + custToServe.getUser()
+                                        //                                                        .getName());
                                     }
                                 }
                             }
