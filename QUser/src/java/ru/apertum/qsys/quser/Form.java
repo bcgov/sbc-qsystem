@@ -501,7 +501,6 @@ public class Form {
                 .getUser().getCustomer());
     }
 
-    // @ContextParam(ContextType.VIEW) Component comp
     @Command
     public void closeGA() {
         //QLog.l().logQUser().debug("==> Start: closeGA");
@@ -515,13 +514,7 @@ public class Form {
                 event.stopPropagation();
                 // GAManagementDialogWindow.detach();
                 GAManagementDialogWindow.setVisible(false);
-
                 CheckGABoard = false;
-
-                //                QLog.l().logQUser()
-                //                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
-                //                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
-                //                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
             }
         });
 
@@ -571,18 +564,6 @@ public class Form {
     @NotifyChange(value = { "service_list" })
     public int getCustomersCount() {
         int total = 0;
-        // Long office_id = Integer.toUnsignedLong(getSessionOfficeId());
-        // QOffice office = QOfficeList.getInstance().getById(office_id);
-        //
-        // total = QServiceTree.getInstance().getNodes()
-        // .stream()
-        // .filter((service) -> service.getSmartboard().equals("Y"))
-        // .map((service) -> service.getCountCustomersByOffice(office))
-        // .reduce(total, Integer::sum);
-        // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + total + "\n\n\n\n");
-        // customersCount = total;
-        // total = listServices.size();
-        // service_list
         total = service_list.getModel().getSize();
         return total;
     }
@@ -596,12 +577,8 @@ public class Form {
         CSRIcon = ":information_desk_person:";
 
         // Call Slack Api to connect to address
-        //package ru.apertum.qsys.quser;
-        //import ru.apertum.qsystem.server.model.QUser;
-
         SlackApi api = new SlackApi(
                 "https://hooks.slack.com/services/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");
-        // SlackMessage msg = null;
         SlackMessage msg = new SlackMessage(null);
 
         if (user.getUser() != null && user.getName() != null) {
@@ -617,18 +594,12 @@ public class Form {
             Username = "User is not logged in";
         }
 
-        // if (user.getName() !=null && user.getUser().getCustomer()!=null){
-        // ReportTicket = user.getUser().getCustomer().getName();
-        // }else{
-        // ReportTicket = "Ticket numebr is not provided";
-        // }
         ReportMsg = ReportMsg + Username + "\n" + "Office Name: " + getOfficeName() + "\n"
                 + "Ticket Number: " + ReportTicket + "\n\n" + BugMsg + "\n";
 
         msg.setIcon(CSRIcon);
         msg.setText(ReportMsg);
         msg.setUsername(Username);
-        // api.SlackMessage.setIcon(":information_desk_person:");
         api.call(msg);
 
         ReportingBugWindow.setVisible(false);
@@ -686,12 +657,6 @@ public class Form {
         //  Get user, quick transaction flag, then reset it.
         QUser quser = user.getUser();
         quser.setQuickTxn(csrQuickTxn.isChecked());
-
-        //  More debug.
-        //QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
-        //QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
-        //QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
-        //QLog.l().logQUser().debug("==> End: QuickTxnChecked");
 
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Log: CSR QTxn", "After", user.getUser(), user
@@ -984,6 +949,10 @@ public class Form {
                 .get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
         if (result.getResult() != null) {
             customer = result.getResult();
+            String InSeqBefore = (customer.getIsInSequence() ? "Yes" : "No");
+            customer.setIsInSequence(false);
+            String InSeqAfter = (customer.getIsInSequence() ? "Yes" : "No");
+            //QLog.l().logQUser().debug("    ==> Insequence: Before: Start: " + InSeqBefore + "; After: " + InSeqAfter);
             setKeyRegim(KEYS_INVITED);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
             this.addServeScreen();
@@ -1486,19 +1455,44 @@ public class Form {
             OkToContinue = false;
         }
 
+        //  CM:  If user is in a sequence, and under 5 seconds, can't pick customer.
+        Long dateNow = (new Date()).getTime();
+        Integer pickedState = pickedCustomer.getStateIn();
+        Boolean inSequence = pickedCustomer.getIsInSequence();
+        String iss = (inSequence ? "Y" : "N");
+        Boolean notInSequence = !inSequence;
+        String nss = (notInSequence ? "Y" : "N");
+        Boolean inSequenceTimeOut = inSequence &&
+                (dateNow - pickedCustomer.getStandTime().getTime()) > 5000;
+        String istos = (inSequenceTimeOut ? "Y" : "N");
+        QLog.l().logQUser().debug("==> Cust: " + pickedCustomer.getName() + "; S: " + iss
+                + "; STO: " + istos);
+
+        if (inSequence && !inSequenceTimeOut) {
+            OkToContinue = false;
+            pickedCustomer.setState(1);
+            pickedCustomer = null;
+            Messagebox.show(
+                    "Citizen being served by another CSR.  Please click on a different citizen",
+                    "Error picking customer from wait queue",
+                    Messagebox.OK,
+                    Messagebox.INFORMATION);
+        }
+
         //  CM:  See if OK to continue.
         if (OkToContinue) {
             final CmdParams params = new CmdParams();
 
             //  New "customer already picked" test.
             Object[] msg = { "" };
-            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedCustomer, msg,
-                    "WaitQ")) {
+            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
+                    pickedCustomer, msg, "WaitQ")) {
                 Messagebox.show(msg[0].toString(), "Error picking customer from wait queue",
                         Messagebox.OK,
                     Messagebox.INFORMATION);
+                pickedCustomer = null;
             }
-            
+
             else {
                 params.userId = user.getUser().getId();
                 params.postponedPeriod = 0;
@@ -1797,12 +1791,13 @@ public class Form {
 
         //  CM:  Make sure the customer picked hasn't already been picked by someone else.
         if (OkToContinue) {
-            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg,
-                    "HoldQ")) {
+            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
+                    pickedPostponed, msg, "HoldQ")) {
                 Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
                         Messagebox.OK,
                         Messagebox.INFORMATION);
                 OkToContinue = false;
+                pickedPostponed = null;
             }
         }
 
@@ -1820,7 +1815,8 @@ public class Form {
 
                             //QLog.l().logger().debug("--> Checking customer can be called from queue.");
 
-                            if ((boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg, "HoldQ(2)")) {
+                            if ((boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
+                                    pickedPostponed, msg, "HoldQ(2)")) {
                                 
                                 final CmdParams params = new CmdParams();
                                 // @param userId id юзера который вызывает The user who causes
@@ -2358,9 +2354,10 @@ public class Form {
                 params.comments = custComments;
             }
 
+            //  CM:  When adding next service, the Add to queue, invite, begin sequence is used.
+            params.in_sequence = true;
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
-
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
@@ -2370,7 +2367,6 @@ public class Form {
 
             // Reset the combobox to default value/placeHolder
             ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
-
             this.invite();
             this.begin();
             this.refreshChannels();
@@ -2693,12 +2689,6 @@ public class Form {
 
         if (pickedRedirectServ != null) {
 
-            //  CM:  Debug.
-            //QCustomer cust = pickedRedirectServ.getCustomer();
-            //            QLog.l().logQUser().debug("    --> pickedRedirectServ not null, Name: "
-            //                    + pickedRedirectServ.getName());
-            //QLog.l().logQUser().debug("    --> Customer: " + cust.getFullNumber());
-
             if (!pickedRedirectServ.isLeaf()) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
@@ -2714,9 +2704,12 @@ public class Form {
 
             if (OkToContinue) {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
+
+                //  CM:  Let system know this person about to enter AddQueue, Invite, Begin sequence.
+                //       Can't be picked by other CSRs.
+                params.in_sequence = true;
                 final RpcStandInService res = this.addToQueue(params);
                 customer = res.getResult();
-
                 customer = null;
                 setKeyRegim(KEYS_MAY_INVITE);
                 service_list.setModel(service_list.getModel());
@@ -2729,12 +2722,6 @@ public class Form {
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
         }
-        else {
-            //QLog.l().logQUser().debug("    --> pickedRedirectServ is null");
-        }
-
-        //  Debug
-        //QLog.l().logQUser().debug("==> End: closeAddAndServeDialog");
 
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Add: Begin Service", "After", user.getUser(), user

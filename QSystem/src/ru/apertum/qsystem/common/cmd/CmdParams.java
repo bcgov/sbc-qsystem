@@ -127,6 +127,10 @@ public class CmdParams {
     @SerializedName("cust_qtxn")
     public boolean custQtxn;
 
+    @Expose
+    @SerializedName("in_sequence")
+    public boolean in_sequence;
+
     public CmdParams() {
     }
 
