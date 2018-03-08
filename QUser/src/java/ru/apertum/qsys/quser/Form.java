@@ -1455,28 +1455,32 @@ public class Form {
             OkToContinue = false;
         }
 
-        //  CM:  If user is in a sequence, and under 5 seconds, can't pick customer.
-        Long dateNow = (new Date()).getTime();
-        Integer pickedState = pickedCustomer.getStateIn();
-        Boolean inSequence = pickedCustomer.getIsInSequence();
-        String iss = (inSequence ? "Y" : "N");
-        Boolean notInSequence = !inSequence;
-        String nss = (notInSequence ? "Y" : "N");
-        Boolean inSequenceTimeOut = inSequence &&
-                (dateNow - pickedCustomer.getStandTime().getTime()) > 5000;
-        String istos = (inSequenceTimeOut ? "Y" : "N");
-        QLog.l().logQUser().debug("==> Cust: " + pickedCustomer.getName() + "; S: " + iss
-                + "; STO: " + istos);
+        //  CM:  If no errors so far, perform the in sequence check.
+        if (OkToContinue) {
 
-        if (inSequence && !inSequenceTimeOut) {
-            OkToContinue = false;
-            pickedCustomer.setState(1);
-            pickedCustomer = null;
-            Messagebox.show(
-                    "Citizen being served by another CSR.  Please click on a different citizen",
-                    "Error picking customer from wait queue",
-                    Messagebox.OK,
-                    Messagebox.INFORMATION);
+            //  CM:  If user is in a sequence, and under 5 seconds, can't pick customer.
+            Long dateNow = (new Date()).getTime();
+            Integer pickedState = pickedCustomer.getStateIn();
+            Boolean inSequence = pickedCustomer.getIsInSequence();
+            String iss = (inSequence ? "Y" : "N");
+            Boolean notInSequence = !inSequence;
+            String nss = (notInSequence ? "Y" : "N");
+            Boolean inSequenceTimeOut = inSequence &&
+                    (dateNow - pickedCustomer.getStandTime().getTime()) > 5000;
+            String istos = (inSequenceTimeOut ? "Y" : "N");
+            QLog.l().logQUser().debug("==> Cust: " + pickedCustomer.getName() + "; S: " + iss
+                    + "; STO: " + istos);
+
+            if (inSequence && !inSequenceTimeOut) {
+                OkToContinue = false;
+                pickedCustomer.setState(1);
+                pickedCustomer = null;
+                Messagebox.show(
+                        "Citizen being served by another CSR.  Please click on a different citizen",
+                        "Error picking customer from wait queue",
+                        Messagebox.OK,
+                        Messagebox.INFORMATION);
+            }
         }
 
         //  CM:  See if OK to continue.
