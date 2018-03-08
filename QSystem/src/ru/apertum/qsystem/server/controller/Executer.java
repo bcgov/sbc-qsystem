@@ -184,7 +184,7 @@ public final class Executer {
 
     //  CM:  This method checks to ensure a customer is in a state where they can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
-    public boolean CustomerCanBeCalled(QCustomer potentialCustomer, Object[] msg,
+    public boolean CustomerCanBeCalled(QUser user, QCustomer potentialCustomer, Object[] msg,
             String calledFrom) {
 
         //  Assume the customer cannot be called.
@@ -206,6 +206,28 @@ public final class Executer {
 
             //  Determine whether the customer is in a valid state to be called.
             okToCall = (validInviteStates.contains(potentialCustomer.getStateIn()));
+            
+            Long dateNow = (new Date()).getTime();
+            custName = potentialCustomer.getName();
+            Long csrMe = user.getId();
+            Long csrCust = potentialCustomer.getUser().getId();
+            String qms = "N/A";
+            Boolean csrMatch = csrMe == csrCust;
+            String cms = (csrMatch ? "Y" : "N");
+            Boolean inSequence = potentialCustomer.getIsInSequence();
+            String iss = (inSequence ? "Y" : "N");
+            Boolean notInSequence = !inSequence;
+            String nss = (notInSequence ? "Y" : "N");
+            Boolean inSequenceTimeOut = inSequence &&
+                    (dateNow - potentialCustomer.getStandTime().getTime()) > 5000;
+            String istos = (inSequenceTimeOut ? "Y" : "N");
+            QLog.l().logQUser().debug("==> Cust: " + custName + "; Q: " + qms + "; C: "
+                    + cms + "; S: " + iss + "; STO: " + istos);
+
+            okToCall = okToCall && (notInSequence || inSequenceTimeOut || (inSequence && csrMatch));
+
+            //  Other conditions must also apply now, to take into account services.
+            // xxx
 
             //  Debug.
             //            QLog.l().logger().debug("    --> From: " + calledFrom + "; State: "
@@ -1053,7 +1075,7 @@ public final class Executer {
                     //       the current customer.
                     if (user.getName() != user.getCustomer().getUser().getName()) {
                         Object[] msg = { "" };
-                        if (!CustomerCanBeCalled(user.getCustomer(), msg, "Invite")) {
+                        if (!CustomerCanBeCalled(user, user.getCustomer(), msg, "Invite")) {
                             QLog.l().logQUser().debug(
                                     "    --> Trying to recall, served by someone else");
 
@@ -1158,20 +1180,32 @@ public final class Executer {
                         //  CM:  Look for a Quick Txn match that is not part of a sequence.
                         Long dateNow = (new Date()).getTime();
                         String custName = nextCustInLine.getName();
+                        Long csrMe = user.getId();
+                        Long csrCust = nextCustInLine.getUser().getId();
                         Boolean quickMatch = nextCustInLine.getTempQuickTxn() == userQuick;
-                        Boolean notInSequence = !nextCustInLine.getIsInSequence();
-                        Boolean inSequenceTimeOut = nextCustInLine.getIsInSequence() &&
+                        String qms = (quickMatch ? "Y" : "N");
+                        Boolean csrMatch = csrMe == csrCust;
+                        String cms = (csrMatch ? "Y" : "N");
+                        Boolean inSequence = nextCustInLine.getIsInSequence();
+                        String iss = (inSequence ? "Y" : "N");
+                        Boolean notInSequence = !inSequence;
+                        String nss = (notInSequence ? "Y" : "N");
+                        Boolean inSequenceTimeOut = inSequence &&
                                 (dateNow - nextCustInLine.getStandTime().getTime()) > 5000;
-                        QLog.l().logQUser().debug("==> ChkQMatch: Cust: " + custName + "; QM: "
-                                + quickMatch + "; NotS: " + notInSequence + "; STimeO: "
-                                + inSequenceTimeOut);
+                        String istos = (inSequenceTimeOut ? "Y" : "N");
+                        QLog.l().logQUser().debug("==> Cust: " + custName + "; Q: " + qms + "; C: "
+                                + cms + "; S: " + iss + "; STO: " + istos);
 
-                        if (quickMatch & (notInSequence || inSequenceTimeOut)) {
+                        if (quickMatch && (notInSequence || inSequenceTimeOut || (inSequence
+                                && csrMatch))) {
                             
                             //  CM:  You have a match.  If no next customer, take this one in line.
                             if (custToServe == null) {
                                 custToServe = nextCustInLine;
                                 //QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                                QLog.l().logQUser().debug("    --> First cust chosen: "
+                                        + nextCustInLine.getName() + "; CSR: " + nextCustInLine
+                                                .getUser().getName());
                             }
                             
                             //  CM:  You have a match, and a tentative next customer.  See who is next.
@@ -1180,10 +1214,18 @@ public final class Executer {
 
                                 //  Compare customers.
                                 //QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+                                QLog.l().logger().debug("    --> Curr: " + custToServe.getName()
+                                        + "; CSR: " + custToServe.getUser().getName());
+                                QLog.l().logger().debug("    --> Line: " + nextCustInLine
+                                        .getName() + "; CSR: " + nextCustInLine.getUser()
+                                                .getName());
 
                                 //  CM:  NOTE!!!  Not taking priority (coefficient) into account here.
                                 if (custToServe.compareTo(nextCustInLine) == 1) {
                                     custToServe = nextCustInLine;
+                                    QLog.l().logger().debug("        --> Win:  " + custToServe
+                                            .getName() + "; CSR: " + custToServe.getUser()
+                                                    .getName());
                                 }
                             }
                         }
@@ -1199,22 +1241,28 @@ public final class Executer {
                         for (QCustomer nextCustInLine : custAll) {
 
                             //  CM:  Look for any customer that is not part of a sequence.
-                            String custName = nextCustInLine.getName();
                             Long dateNow = (new Date()).getTime();
-                            Boolean notInSequence = !nextCustInLine.getIsInSequence();
-                            Boolean inSequenceTimeOut = nextCustInLine.getIsInSequence() &&
+                            String custName = nextCustInLine.getName();
+                            Long csrMe = user.getId();
+                            Long csrCust = nextCustInLine.getUser().getId();
+                            Boolean quickMatch = nextCustInLine.getTempQuickTxn() == userQuick;
+                            Boolean csrMatch = csrMe == csrCust;
+                            Boolean inSequence = nextCustInLine.getIsInSequence();
+                            Boolean notInSequence = !inSequence;
+                            Boolean inSequenceTimeOut = inSequence &&
                                     (dateNow - nextCustInLine.getStandTime().getTime()) > 5000;
+                            QLog.l().logQUser().debug("==> ChkQMatch: Cust: " + custName + "; QM: "
+                                    + quickMatch + "; CSRMatch: " + csrMatch + "; NotS: "
+                                    + notInSequence + "; STimeO: " + inSequenceTimeOut);
 
-                            QLog.l().logQUser().debug("==> ChkQMatch: Cust: " + custName
-                                    + "; NotS: " + notInSequence + "; STimeO: "
-                                    + inSequenceTimeOut);
-
-                            if (notInSequence || inSequenceTimeOut) {
+                            if (notInSequence || inSequenceTimeOut || (inSequence && csrMatch)) {
 
                                 //  CM:  If no next customer, take the first customer in the list.
                                 if (custToServe == null) {
                                     custToServe = nextCustInLine;
-                                    // QLog.l().logQUser().debug("        --> First cust chosen: " + nextCust);
+                                    QLog.l().logQUser().debug("    --> First cust chosen: "
+                                            + nextCustInLine.getName() + "; CSR: " + nextCustInLine
+                                                    .getUser().getName());
                                 }
 
                                 //  CM:  You have a tentative next customer.  See who is next.
@@ -1223,14 +1271,17 @@ public final class Executer {
 
                                     //  Compare customers.
                                     // QLog.l().logQUser().debug("        --> Curr Cust : " + nextCust + " Test Next: " + custHere);
+                                    QLog.l().logger().debug("    --> Curr: " + custToServe.getName()
+                                            + "; CSR: " + custToServe.getUser().getName());
+                                    QLog.l().logger().debug("    --> Line: " + nextCustInLine
+                                            .getName() + "; CSR: " + nextCustInLine.getUser()
+                                                    .getName());
 
                                     if (custToServe.compareTo(nextCustInLine) == 1) {
                                         custToServe = nextCustInLine;
-                                        //                                    QLog.l().logger().debug("    --> Win:    Cust: " + custToServe
-                                        //                                            .getName() + "; Pri: " + custToServe
-                                        //                                                    .getPriority().get() + "; Stand: " + df.format(
-                                        //                                                            custToServe.getStandTime()) + "; Svc: "
-                                        //                                            + custToServe.getService().getName());
+                                        QLog.l().logger().debug("        --> Win:  " + custToServe
+                                                .getName() + "; CSR: " + custToServe.getUser()
+                                                        .getName());
                                     }
                                 }
                             }
@@ -1277,7 +1328,7 @@ public final class Executer {
 
                     //  CM:  If the customer is already being served, return.
                     Object[] msg = { "" };
-                    if (!CustomerCanBeCalled(customer, msg, "Invite")) {
+                    if (!CustomerCanBeCalled(user, customer, msg, "Invite")) {
                         return new RpcInviteCustomer(null);
                     }
 
@@ -1320,7 +1371,9 @@ public final class Executer {
                 }
             } catch (Exception ex) {
                 QLog.l().logQUser().debug("Exception: " + ex.getMessage());
-                throw new ServerException("Ошибка при постановке клиента в очередь" + ex);
+                //throw new ServerException("Ошибка при постановке клиента в очередь" + ex);
+                throw new ServerException(
+                        "Error in the formulation of the client in the queue(???): " + ex);
             } finally {
                 CLIENT_TASK_LOCK.unlock();
             }
