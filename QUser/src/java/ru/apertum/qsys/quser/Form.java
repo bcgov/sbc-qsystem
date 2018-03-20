@@ -1184,14 +1184,16 @@ public class Form {
         // quser.setCurrentComments(params.comments);
 
         Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE).process(params, "", new byte[4]);
-
-        customer = null;
+        
+        customer.setUser(user.getUser());        
+       
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
         refreshListServices();
         service_list.invalidate();
         serveCustomerDialogWindow.setVisible(false);
-
+        customer = null;
+        
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Return to queue", "Before", user.getUser(), user
                 .getUser().getCustomer());
