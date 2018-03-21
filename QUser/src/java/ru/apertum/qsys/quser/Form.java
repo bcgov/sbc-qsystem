@@ -2399,11 +2399,11 @@ public class Form {
             // Reset the combobox to default value/placeHolder
             ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
 
-            SleepSeconds(7);
+            //SleepSeconds(7);
             this.invite();
-            SleepSeconds(7);
+            //SleepSeconds(7);
             this.begin();
-            SleepSeconds(7);
+            //SleepSeconds(7);
             this.refreshChannels();
             // QLog.l().logQUser().debug("Updating channels");
             // QLog.l().logQUser().debug(params.channelsIndex);
