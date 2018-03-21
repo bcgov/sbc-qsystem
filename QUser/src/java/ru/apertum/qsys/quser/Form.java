@@ -103,7 +103,7 @@ public class Form {
     private final LinkedList<QCustomer> postponList = QPostponedList.getInstance().getPostponedCustomers();
     private final LinkedList<QResult> resultList = QResultList.getInstance().getItems();
     // ********************************************************************************************************************************************
-    // ** Перенаправление Redirection
+    // ** ??????????????? Redirection
     // ********************************************************************************************************************************************
     private final TreeServices treeServs = new TreeServices();
 
@@ -112,22 +112,22 @@ public class Form {
     // *****************************************************
     /*
      * public ArrayList<Lng> getLangs() { return Multilingual.LANGS; }
-     * 
+     *
      * private Lng lang = new Multilingual().init();
-     * 
+     *
      * public Lng getLang() { return lang; }
-     * 
+     *
      * public void setLang(Lng lang) { this.lang = lang; }
-     * 
+     *
      * @Command("changeLang") public void changeLang() { if (lang != null) { final Session session = Sessions.getCurrent(); final Locale prefer_locale =
      * lang.code.length() > 2 ? new Locale(lang.code.substring(0, 2), lang.code.substring(3)) : new Locale(lang.code);
      * session.setAttribute(org.zkoss.web.Attributes.PREFERRED_LOCALE, prefer_locale); Executions.sendRedirect(null);
-     * 
+     *
      * } }
      */
 
     // *****************************************************
-    // **** Логин Login
+    // **** ????? Login
     // *****************************************************
     public LinkedList<String> prior_St = new LinkedList(Uses.get_COEFF_WORD().values());
     public String officeType = "non-reception";
@@ -144,15 +144,15 @@ public class Form {
     @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg")
     Window changeServicePriorityDialog;
     // ********************************************************************************************************************************************
-    // ** Отложенные Отложить посетителя Postponed Postpone visitor
+    // ** ?????????? ???????? ?????????? Postponed Postpone visitor
     // ********************************************************************************************************************************************
     @Wire("#incClientDashboard #incPostponeCustomerDialog #postponeDialog")
     Window postponeCustomerDialog;
-    // *** Диалоги изменения состояния и вызова лтложенных Dialogs for changing the state and calling ltalges
+    // *** ??????? ????????? ????????? ? ?????? ?????????? Dialogs for changing the state and calling ltalges
     @Wire("#incClientDashboard #incChangePostponedStatusDialog #changePostponedStatusDialog")
     Window changePostponedStatusDialog;
     // *********************************************************************************************************
-    // **** Кнопки и их события Buttons and their events
+    // **** ?????? ? ?? ??????? Buttons and their events
     // *********************************************************************************************************
     QService pickedRedirectServ;
     @Wire("#incClientDashboard #incGAManagementDialog #GAManagementDialog")
@@ -177,17 +177,17 @@ public class Form {
     //  CM:  Login form, for checkbox.
     @Wire("#incLoginForm #QuickTxnCSR")
     Checkbox csrQuickTxn;
-    
+
     QService pickedMainService;
     @Wire
     private Textbox typeservices;
     /**
-     * Залогиневшейся юзер Logged user
+     * ?????????????? ???? Logged user
      */
     private User user = new User();
     private LinkedList<QService> PreviousList = new LinkedList<>();
     /**
-     * текущее состояние кнопок Current state of the buttons
+     * ??????? ????????? ?????? Current state of the buttons
      */
     private String keys_current = KEYS_OFF;
     private boolean[] btnsDisabled = new boolean[] { true, true, true, true, true, true, true, true,
@@ -224,7 +224,7 @@ public class Form {
     private int customersCount = 0;
     private boolean currentState = false;
     private boolean CheckGABoard = false;
-    
+
     private String lastGoodQuantity = "1";
 
     // public LinkedList<QUser> test2 = greed.get(2).getShadow();
@@ -283,12 +283,12 @@ public class Form {
         setCFMSAttributes();
 
         //QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
-        
+
         //  CM:  If invite times not set yet, initialize them.
         if (inviteTimes.size() == 0) {
 
             QLog.l().logQUser().debug("    --> Invite times not loaded yet.  Loading now ...");
-            
+
             //  Read a list of all offices.
             List<QOffice> offices = Spring.getInstance().getHt().findByCriteria(
                     DetachedCriteria.forClass(QOffice.class)
@@ -306,7 +306,7 @@ public class Form {
 //                QLog.l().logQUser().debug("    --> Office: " + inviteInfo.getKey() + "; Time: " + inviteInfo.getValue());
 //            }
         }
-        
+
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
         String temp = getBackgroundClass();
 
@@ -315,9 +315,9 @@ public class Form {
             QUser quser = user.getUser();
             if (quser != null) {
                 officeName = user.getUser().getOffice().getName();
-            }            
-        }     
-         
+            }
+        }
+
     }
 
     public String getBackgroundClass() {
@@ -353,7 +353,7 @@ public class Form {
     }
 
     /**
-     * Это нужно чтоб делать include во view и потом связывать @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg") This is necessary to do
+     * ??? ????? ???? ?????? include ?? view ? ????? ????????? @Wire("#incClientDashboard #incChangePriorityDialog #changePriorityDlg") This is necessary to do
      * include in the view and then bind
      */
     @AfterCompose
@@ -382,7 +382,7 @@ public class Form {
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Log: Login", "Before", user.getUser(), user.getUser()
                 .getCustomer());
-        
+
         Uses.userTimeZone = (TimeZone) Sessions.getCurrent()
                 .getAttribute("org.zkoss.web.preferred.timeZone");
         QLog.l().logQUser().debug("Login : " + user.getName());
@@ -433,7 +433,7 @@ public class Form {
         // GA_list.setModel(GA_list.getModel());
         // GA_list.getModel();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
-        
+
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Log: Login", "After", user.getUser(), user.getUser()
                 .getCustomer());
@@ -501,6 +501,7 @@ public class Form {
                 .getUser().getCustomer());
     }
 
+    // @ContextParam(ContextType.VIEW) Component comp
     @Command
     public void closeGA() {
         //QLog.l().logQUser().debug("==> Start: closeGA");
@@ -514,7 +515,13 @@ public class Form {
                 event.stopPropagation();
                 // GAManagementDialogWindow.detach();
                 GAManagementDialogWindow.setVisible(false);
+
                 CheckGABoard = false;
+
+                //                QLog.l().logQUser()
+                //                        .debug("        --> user.getGABoard() flag:  " + user.getGABoard());
+                //                QLog.l().logQUser().debug("        --> CheckGABoard static var:  " + CheckGABoard);
+                //                QLog.l().logQUser().debug("    --> End: onEvent in closeGA");
             }
         });
 
@@ -523,19 +530,19 @@ public class Form {
 
     @Command
     public void ReportBugIndex() {
-        
+
         //  CM:  Track start, call regular ReportBug, track end.
         //  CM:  Set variables depending on whether null or not.
         QUser trackUser = null;
         trackCust = null;
         if (user != null) {
             trackUser = user.getUser();
-            
+
             if (trackUser != null) {
                 trackCust = trackUser.getCustomer();
             }
         }
-            
+
         Executer.getInstance().TrackUserClick("Ind: Feedback", "Before", trackUser, trackCust);
         ReportBug();
         Executer.getInstance().TrackUserClick("Ind: Feedback", "After", trackUser, trackCust);
@@ -549,7 +556,7 @@ public class Form {
         Executer.getInstance().TrackUserClick("Srv: Feedback", "After", user.getUser(), user
                 .getUser().getCustomer());
     }
-    
+
     @Command
     public void ReportBug() {
         ReportingBugWindow.setVisible(true);
@@ -564,6 +571,18 @@ public class Form {
     @NotifyChange(value = { "service_list" })
     public int getCustomersCount() {
         int total = 0;
+        // Long office_id = Integer.toUnsignedLong(getSessionOfficeId());
+        // QOffice office = QOfficeList.getInstance().getById(office_id);
+        //
+        // total = QServiceTree.getInstance().getNodes()
+        // .stream()
+        // .filter((service) -> service.getSmartboard().equals("Y"))
+        // .map((service) -> service.getCountCustomersByOffice(office))
+        // .reduce(total, Integer::sum);
+        // QLog.l().logQUser().debug("\n\n\n\n COUNT: " + total + "\n\n\n\n");
+        // customersCount = total;
+        // total = listServices.size();
+        // service_list
         total = service_list.getModel().getSize();
         return total;
     }
@@ -577,8 +596,12 @@ public class Form {
         CSRIcon = ":information_desk_person:";
 
         // Call Slack Api to connect to address
+        //package ru.apertum.qsys.quser;
+        //import ru.apertum.qsystem.server.model.QUser;
+
         SlackApi api = new SlackApi(
                 "https://hooks.slack.com/services/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");
+        // SlackMessage msg = null;
         SlackMessage msg = new SlackMessage(null);
 
         if (user.getUser() != null && user.getName() != null) {
@@ -594,12 +617,18 @@ public class Form {
             Username = "User is not logged in";
         }
 
+        // if (user.getName() !=null && user.getUser().getCustomer()!=null){
+        // ReportTicket = user.getUser().getCustomer().getName();
+        // }else{
+        // ReportTicket = "Ticket numebr is not provided";
+        // }
         ReportMsg = ReportMsg + Username + "\n" + "Office Name: " + getOfficeName() + "\n"
                 + "Ticket Number: " + ReportTicket + "\n\n" + BugMsg + "\n";
 
         msg.setIcon(CSRIcon);
         msg.setText(ReportMsg);
         msg.setUsername(Username);
+        // api.SlackMessage.setIcon(":information_desk_person:");
         api.call(msg);
 
         ReportingBugWindow.setVisible(false);
@@ -658,6 +687,12 @@ public class Form {
         QUser quser = user.getUser();
         quser.setQuickTxn(csrQuickTxn.isChecked());
 
+        //  More debug.
+        //QLog.l().logQUser().debug("    --> Quick start value: " + (save ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("    --> New value you want: " + ((!save) ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("    --> What got set: " + (quser.getQuickTxn() ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("==> End: QuickTxnChecked");
+
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Log: CSR QTxn", "After", user.getUser(), user
                 .getUser().getCustomer());
@@ -671,7 +706,7 @@ public class Form {
         //  CM:  Track start.
         Executer.getInstance().TrackUserClick("Log: Logout", "Before", user.getUser(), user
                 .getUser().getCustomer());
-        
+
         //QLog.l().logQUser().debug("Logout " + user.getName());
 
         // Set all of the session parameters back to defaults
@@ -731,7 +766,7 @@ public class Form {
     }
 
     /**
-     * Механизм включения/отключения кнопок Button on / off mechanism
+     * ???????? ?????????/?????????? ?????? Button on / off mechanism
      */
     public void setKeyRegim(String regim) {
         keys_current = regim;
@@ -788,7 +823,7 @@ public class Form {
         if (quser == null) {
             return false;
         }
-        
+
         //  Assume not a reception office.
         checkCFMSType = false;
 
@@ -801,9 +836,9 @@ public class Form {
         }
         return checkCFMSType;
     }
-    
+
     public boolean isReceptionOffice() {
-        
+
         //  Just call the getCFMSType function.  This fn has a better name.
         return getCFMSType();
     }
@@ -912,11 +947,11 @@ public class Form {
         this.invite();
         Executer.getInstance().TrackUserClick("Ind: Invite", "After", user.getUser(), customer);
     }
-    
+
     @Command
     @NotifyChange(value = { "btnsDisabled", "customer", "avaitColumn" })
-    public void invite() {         	
-    	  
+    public void invite() {
+
         //  CM:  See if small time has elapsed since last CSR in this office clicked invite.
         //  CM:  Kludge to prevent two CSRs calling the same citizen.
         Long officeId = user.getUser().getOffice().getId();
@@ -924,7 +959,7 @@ public class Form {
         Long currentTime = System.currentTimeMillis();
 
         //QLog.l().logQUser().debug("==> Invite: Off: " + officeId + "; Curr: " + currentTime + "; Last: " + lastTime);
-        
+
         //  CM:  If less than 1 second since last invite in this office, wait.
         if ((currentTime - lastTime) < 1000) {
             QLog.l().logQUser().debug("    --> Have to wait ...");
@@ -936,10 +971,10 @@ public class Form {
             }
             //QLog.l().logQUser().debug("    --> OK, good to go.");
         }
-        
+
         //  CM:  Update the time of the last invite for this office.
         inviteTimes.put(officeId, currentTime);
-        
+
         //QLog.l().logQUser().debug("==> Start: invite - Invite by " + user.getName());
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
@@ -949,10 +984,6 @@ public class Form {
                 .get(Uses.TASK_INVITE_NEXT_CUSTOMER).process(params, "", new byte[4]);
         if (result.getResult() != null) {
             customer = result.getResult();
-            String InSeqBefore = (customer.getIsInSequence() ? "Yes" : "No");
-            customer.setIsInSequence(false);
-            String InSeqAfter = (customer.getIsInSequence() ? "Yes" : "No");
-            //QLog.l().logQUser().debug("    ==> Insequence: Before: Start: " + InSeqBefore + "; After: " + InSeqAfter);
             setKeyRegim(KEYS_INVITED);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
             this.addServeScreen();
@@ -984,20 +1015,20 @@ public class Form {
 
     @Command
     public void addServeScreen() {
-        
+
     	((Checkbox) serveCustomerDialogWindow.getFellow("inaccurateTimeCheckBox"))
                 .setChecked(false);
-        
+
     	String tempVal = ((Textbox) serveCustomerDialogWindow.getFellow("customer_quantity")).getValue();
-        
+
     	if (!isNumeric(tempVal)){
         	lastGoodQuantity = customer.getQuantity();
         	QLog.l().logQUser().debug("LastGoodQuantity ==> " +  lastGoodQuantity );
         }else{
         	lastGoodQuantity = tempVal;
         	QLog.l().logQUser().debug("LGQ tempVal ==> " +  tempVal );
-        }   
-               
+        }
+
         serveCustomerDialogWindow.setVisible(true);
         serveCustomerDialogWindow.doModal();
     }
@@ -1101,7 +1132,7 @@ public class Form {
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Comments", "After", user.getUser(), user
                 .getUser().getCustomer());
-    }    
+    }
 
     @Command
     public void validateQuantity(@BindingParam("v") String newValue,
@@ -1110,39 +1141,39 @@ public class Form {
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Quantity", "Before", user.getUser(), user
                 .getUser().getCustomer());
-       
+
         QLog.l().logQUser().debug("validateQuantity ==> LastGoodQuantity= " +  lastGoodQuantity );
-        
+
        // Check if quantity is numeric and display message if not
-       if(!isNumeric(newValue)){  
+       if(!isNumeric(newValue)){
     	   ((Textbox) serveCustomerDialogWindow.getFellow("customer_quantity")).setText(lastGoodQuantity);
-   			customer.setQuantity(lastGoodQuantity);       
+   			customer.setQuantity(lastGoodQuantity);
         	Messagebox.show(
-       				"Please enter a numeric value for quantity.","Quantity Error"  
-        				, Messagebox.OK, Messagebox.INFORMATION);	 		
+       				"Please enter a numeric value for quantity.","Quantity Error"
+        				, Messagebox.OK, Messagebox.INFORMATION);
        }else{
     	   //save the value
     	   customer.setQuantity(newValue);
     	   //save this as last good value
-    	   lastGoodQuantity = newValue;    			   
+    	   lastGoodQuantity = newValue;
        }
-          
+
        //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Quantity", "After", user.getUser(), user
                 .getUser().getCustomer());
     }
-    
+
     public static boolean isNumeric(String str)
     {
       return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
     }
-    
+
     @Command
     public void saveQuantity() {
     	QLog.l().logQUser().debug("saveQuantity ==> LastGoodQuantity= " +  lastGoodQuantity );
     	customer.setQuantity(lastGoodQuantity);
     }
-    
+
     @Command
     public void postpone() {
 
@@ -1184,16 +1215,16 @@ public class Form {
         // quser.setCurrentComments(params.comments);
 
         Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_RETURN_QUEUE).process(params, "", new byte[4]);
-        
-        customer.setUser(user.getUser());        
-       
+
+        customer.setUser(user.getUser());
+
         setKeyRegim(KEYS_MAY_INVITE);
         service_list.setModel(service_list.getModel());
         refreshListServices();
         service_list.invalidate();
         serveCustomerDialogWindow.setVisible(false);
-        customer = null;
-        
+		customer = null;
+
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Return to queue", "Before", user.getUser(), user
                 .getUser().getCustomer());
@@ -1228,7 +1259,7 @@ public class Form {
             // quser.setCurrentComments(params.comments);
 
             final QUser redirectUser = QUserList.getInstance().getById(params.userId);
-            // переключение на кастомера при параллельном приеме, должен приехать customerID
+            // ???????????? ?? ????????? ??? ???????????? ??????, ?????? ???????? customerID
             // switch to the custodian with parallel reception, must arrive customerID
             if (params.customerId != null) {
                 final QCustomer parallelCust = redirectUser.getParallelCustomers()
@@ -1242,7 +1273,7 @@ public class Form {
                 else {
                     redirectUser.setCustomer(parallelCust);
                     QLog.l().logger().debug(
-                            "Юзер \"" + user + "\" переключился на кастомера \"" + parallelCust
+                            "???? \"" + user + "\" ???????????? ?? ????????? \"" + parallelCust
                                     .getFullNumber()
                                     + "\"");
                 }
@@ -1386,8 +1417,8 @@ public class Form {
 
         final RpcStandInService res = (RpcStandInService) Executer.getInstance().getTasks()
                 .get(Uses.TASK_FINISH_CUSTOMER).process(params, "", new byte[4]);
-        // вернется кастомер и возможно он еще не домой а по списку услуг. Список определяется при старте кастомера в обработку специяльным юзером в
-        // регистратуре
+        // ???????? ???????? ? ???????? ?? ??? ?? ????? ? ?? ?????? ?????. ?????? ???????????? ??? ?????? ????????? ? ????????? ??????????? ?????? ?
+        // ????????????
         if (res.getResult() != null && res.getResult().getService() != null
                 && res.getResult().getState() == CustomerState.STATE_WAIT_COMPLEX_SERVICE) {
             Messagebox.show(
@@ -1448,7 +1479,7 @@ public class Form {
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Q: Select Wait Queue", "Before", user.getUser(),
                 pickedCustomer);
-        
+
         Boolean OkToContinue = true;
         trackCust = null;
 
@@ -1457,30 +1488,25 @@ public class Form {
             OkToContinue = false;
         }
 
-        //  CM:  If no errors so far, perform the in sequence check.
+        //  CM:  See if OK to continue.
         if (OkToContinue) {
 
-            //  CM:  If user is in a sequence, and under 5 seconds, can't pick customer.
+            //  See if "In sequence" state has expired (5 seconds).
             Long dateNow = (new Date()).getTime();
-            Integer pickedState = pickedCustomer.getStateIn();
-            Boolean inSequence = pickedCustomer.getIsInSequence();
-            String iss = (inSequence ? "Y" : "N");
-            Boolean notInSequence = !inSequence;
-            String nss = (notInSequence ? "Y" : "N");
-            Boolean inSequenceTimeOut = inSequence &&
-                    (dateNow - pickedCustomer.getStandTime().getTime()) > 5000;
-            String istos = (inSequenceTimeOut ? "Y" : "N");
-            QLog.l().logQUser().debug("==> Cust: " + pickedCustomer.getName() + "; S: " + iss
-                    + "; STO: " + istos);
+            Boolean sequenceTimeOut = (dateNow - pickedCustomer.getStandTime().getTime()) > 5000;
+            String sto = (sequenceTimeOut ? "Yes" : "No");
 
-            if (inSequence && !inSequenceTimeOut) {
+            //  CM:  Debug.
+            QLog.l().logQUser().debug("==> Pick: " + pickedCustomer.getName() + "; Seq: "
+                    + (pickedCustomer.getIsInSequence() ? "Yes" : "No") + "; State: "
+                    + pickedCustomer.getStateIn() + "; STO: " + sto);
+
+            //  CM:  Can't pick a customer if they are in a add to queue, invite, begin sequence.
+            if (pickedCustomer.getIsInSequence() && (!sequenceTimeOut)) {
                 OkToContinue = false;
-                pickedCustomer.setState(1);
-                pickedCustomer = null;
                 Messagebox.show(
-                        "Citizen being served by another CSR.  Please click on a different citizen",
-                        "Error picking customer from wait queue",
-                        Messagebox.OK,
+                        "Another CSR is serving this citizen.  Please choose another citizen.",
+                        "Error picking customer from wait queue", Messagebox.OK,
                         Messagebox.INFORMATION);
             }
         }
@@ -1491,12 +1517,11 @@ public class Form {
 
             //  New "customer already picked" test.
             Object[] msg = { "" };
-            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
-                    pickedCustomer, msg, "WaitQ")) {
+            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedCustomer, msg,
+                    "WaitQ")) {
                 Messagebox.show(msg[0].toString(), "Error picking customer from wait queue",
                         Messagebox.OK,
                     Messagebox.INFORMATION);
-                pickedCustomer = null;
             }
 
             else {
@@ -1524,7 +1549,7 @@ public class Form {
                 this.addServeScreen();
             }
         }
-        
+
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Q: Select Wait Queue", "After", user.getUser(),
                 trackCust);
@@ -1597,9 +1622,9 @@ public class Form {
     @NotifyChange(value = { "postponList", "avaitColumn" })
     public void refreshListServices() {
         if (isLogin()) {
-            // тут поддержание сессии как в веб приложении Here the maintenance of the session as a web application
+            // ??? ??????????? ?????? ??? ? ??? ?????????? Here the maintenance of the session as a web application
             UsersInside.getInstance().getUsersInside().put(user.getName() + user.getPassword(), new Date().getTime());
-            // тут поддержание сессии как залогинившегося юзера в СУО Here the maintenance of the session as a logged user in the MSA
+            // ??? ??????????? ?????? ??? ??????????????? ????? ? ??? Here the maintenance of the session as a logged user in the MSA
             QSessions.getInstance()
                     .update(user.getUser().getId(), Sessions.getCurrent().getRemoteHost(), Sessions.getCurrent().getRemoteAddr().getBytes());
 
@@ -1767,9 +1792,9 @@ public class Form {
     @NotifyChange(value = { "postponList" })
     public void closeChangePostponedStatusDialog() {
         final CmdParams params = new CmdParams();
-        // кому
+        // ????
         params.customerId = pickedPostponed.getId();
-        // на что
+        // ?? ???
         params.textData = ((Combobox) changePostponedStatusDialog.getFellow("pndResultBox"))
                 .getText();
         Executer.getInstance().getTasks().get(Uses.TASK_POSTPON_CHANGE_STATUS)
@@ -1784,12 +1809,12 @@ public class Form {
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Q: Select Hold Queue", "Before", user.getUser(),
                 pickedPostponed);
-        
+
         //  CM:  Variable to see if OK to process.
         Boolean OkToContinue = true;
         Object[] msg = { "" };
         trackCust = null;
-        
+
         //  CM:  Ensure pickedPostponed isn't null.
         if (user.getPlan().isEmpty() || pickedPostponed == null) {
             OkToContinue = false;
@@ -1797,13 +1822,12 @@ public class Form {
 
         //  CM:  Make sure the customer picked hasn't already been picked by someone else.
         if (OkToContinue) {
-            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
-                    pickedPostponed, msg, "HoldQ")) {
+            if (!(boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg,
+                    "HoldQ")) {
                 Messagebox.show(msg[0].toString(), "Error picking customer from hold queue",
                         Messagebox.OK,
                         Messagebox.INFORMATION);
                 OkToContinue = false;
-                pickedPostponed = null;
             }
         }
 
@@ -1821,12 +1845,11 @@ public class Form {
 
                             //QLog.l().logger().debug("--> Checking customer can be called from queue.");
 
-                            if ((boolean) Executer.getInstance().CustomerCanBeCalled(user.getUser(),
-                                    pickedPostponed, msg, "HoldQ(2)")) {
-                                
+                            if ((boolean) Executer.getInstance().CustomerCanBeCalled(pickedPostponed, msg, "HoldQ(2)")) {
+
                                 final CmdParams params = new CmdParams();
-                                // @param userId id юзера который вызывает The user who causes
-                                // @param id это ID кастомера которого вызываем из пула отложенных, оно есть т.к. с качстомером давно работаем
+                                // @param userId id ????? ??????? ???????? The user who causes
+                                // @param id ??? ID ????????? ???????? ???????? ?? ???? ??????????, ??? ???? ?.?. ? ??????????? ????? ????????
                                 // It is the ID of the caller which is called from the pool of deferred, it is because With a long-stroke tool we have been working for
                                 // a long time
                                 params.customerId = pickedPostponed.getId();
@@ -1871,7 +1894,7 @@ public class Form {
                     }
             );
         }
-        
+
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Q: Select Hold Queue", "After", user.getUser(),
                 trackCust);
@@ -1913,7 +1936,7 @@ public class Form {
             ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options")).setSelectedIndex(2);
             ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options")).setSelectedIndex(2);
         }
-        
+
         //  CM:  Make add ticket window visible, transfer control.
         addTicketDailogWindow.setVisible(true);
         addTicketDailogWindow.doModal();
@@ -2158,7 +2181,7 @@ public class Form {
         returnServices = filterServicesByUser(requiredServices);
         return returnServices;
     }
-    
+
     // Andrew
     // onChanging category updates the category searching algorithm, searching while typing
     @NotifyChange("listServices")
@@ -2217,7 +2240,7 @@ public class Form {
         //  CM:  Get the new filter string.
         filter = ((Textbox) addTicketDailogWindow.getFellow("typeservices")).getText();
 
-        //  CM:  Reset the selected service. 
+        //  CM:  Reset the selected service.
         pickedRedirectServ = null;
 
         listServices.clear();
@@ -2360,10 +2383,12 @@ public class Form {
                 params.comments = custComments;
             }
 
-            //  CM:  When adding next service, the Add to queue, invite, begin sequence is used.
-            params.in_sequence = true;
+            //  CM:  Citizen is in a sequence.
+            //params.in_sequence = true;
+
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
+
             customer = null;
             setKeyRegim(KEYS_MAY_INVITE);
             service_list.setModel(service_list.getModel());
@@ -2373,8 +2398,12 @@ public class Form {
 
             // Reset the combobox to default value/placeHolder
             ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
+
+            SleepSeconds(7);
             this.invite();
+            SleepSeconds(7);
             this.begin();
+            SleepSeconds(7);
             this.refreshChannels();
             // QLog.l().logQUser().debug("Updating channels");
             // QLog.l().logQUser().debug(params.channelsIndex);
@@ -2466,7 +2495,7 @@ public class Form {
         Executer.getInstance().TrackUserClick("Add: Add to Queue", "Before", user.getUser(), user
                 .getUser().getCustomer());
         trackCust = null;
-        
+
         //  Debug
         //QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
 
@@ -2481,7 +2510,7 @@ public class Form {
                         Messagebox.EXCLAMATION);
             }
             else {
-            
+
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
 
@@ -2571,6 +2600,9 @@ public class Form {
     }
 
     public RpcStandInService addToQueue(CmdParams params) {
+
+        QLog.l().logQUser().debug("==> addToQueue: " + (params.in_sequence ? "Yes" : "No"));
+
         return (RpcStandInService) Executer.getInstance().getTasks().get(Uses.TASK_STAND_IN)
                 .process(params, "", new byte[4]);
     }
@@ -2689,9 +2721,6 @@ public class Form {
 
         //  CM:  For early returns.
         Boolean OkToContinue = true;
-        
-        //  Debug
-        //QLog.l().logQUser().debug("==> Start: closeAddAndServeDialog");
 
         if (pickedRedirectServ != null) {
 
@@ -2710,12 +2739,10 @@ public class Form {
 
             if (OkToContinue) {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
-
-                //  CM:  Let system know this person about to enter AddQueue, Invite, Begin sequence.
-                //       Can't be picked by other CSRs.
                 params.in_sequence = true;
                 final RpcStandInService res = this.addToQueue(params);
                 customer = res.getResult();
+
                 customer = null;
                 setKeyRegim(KEYS_MAY_INVITE);
                 service_list.setModel(service_list.getModel());
@@ -2723,8 +2750,11 @@ public class Form {
                 service_list.invalidate();
                 addTicketDailogWindow.setVisible(false);
 
+                SleepSeconds(7);
                 this.invite();
+                SleepSeconds(7);
                 this.begin();
+                SleepSeconds(7);
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
         }
@@ -2732,6 +2762,19 @@ public class Form {
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Add: Begin Service", "After", user.getUser(), user
                 .getUser().getCustomer());
+    }
+
+    public void SleepSeconds(Integer seconds) {
+        try {
+            if (user.getUser().getId() != 88) {
+                QLog.l().logQUser().debug("==> Sleeping " + seconds.toString() + " seconds.");
+                TimeUnit.SECONDS.sleep(seconds);
+            }
+        }
+        catch (Exception ex) {
+            QLog.l().logQUser().debug("==> Sleeping " + seconds.toString() + " seconds.  Error: "
+                    + ex.getMessage());
+        }
     }
 
     @Command
