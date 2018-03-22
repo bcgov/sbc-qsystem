@@ -2750,11 +2750,11 @@ public class Form {
                 service_list.invalidate();
                 addTicketDailogWindow.setVisible(false);
 
-                SleepSeconds(7);
+                //SleepSeconds(7);
                 this.invite();
-                SleepSeconds(7);
+                //SleepSeconds(7);
                 this.begin();
-                SleepSeconds(7);
+                //SleepSeconds(7);
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
         }
