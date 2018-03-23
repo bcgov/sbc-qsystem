@@ -25,8 +25,10 @@
 
                 <!-- <zk if="${fmodel.getCFMSType()}"> -->
 	                <hbox hflex="1" visible="@load(fmodel.getCFMSType())">
-	                    <label value="On hold time"/>
-	                    <combobox id="timeBox" readonly="true" autodrop="true" hflex="1">
+	                    
+	                    <!--  hold time combo set visible=false until working properly - uncomment label below -->
+	                    <!--<label value="On hold time"/>-->
+	                    <combobox id="timeBox" readonly="true" autodrop="true" hflex="1" visible="false">
 	                        <attribute name="onCreate">
 	                            self.setSelectedIndex(0);
 	                        </attribute>
@@ -38,6 +40,7 @@
 	                        <comboitem label="${c:l('25min')}"/>
 	                        <comboitem label="${c:l('30min')}"/>
 	                    </combobox>
+	                    
 	                </hbox>
             	<!-- </zk> -->
                 <div style="float:right; margin:10px 0px 0px 0px;">
