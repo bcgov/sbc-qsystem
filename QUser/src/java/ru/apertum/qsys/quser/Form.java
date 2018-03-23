@@ -2778,15 +2778,16 @@ public class Form {
                     + ex.getMessage());
         }
     }
+    
     public void SleepMilliSeconds(Integer milli ) {
         try {
             if (user.getUser().getId() != 88) {
-                QLog.l().logQUser().debug("==> Sleeping " + seconds.toString() + " seconds.");
+                QLog.l().logQUser().debug("==> Sleeping " + milli.toString() + " milliseconds.");
                 TimeUnit.SECONDS.sleep(milli);
             }
         }
         catch (Exception ex) {
-            QLog.l().logQUser().debug("==> Sleeping " + seconds.toString() + " seconds.  Error: "
+            QLog.l().logQUser().debug("==> Sleeping " + milli.toString() + " milliseconds.  Error: "
                     + ex.getMessage());
         }
     }
