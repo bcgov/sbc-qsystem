@@ -2402,8 +2402,9 @@ public class Form {
             //SleepSeconds(7);
             this.invite();
             //SleepSeconds(7);
+            SleepMilliSeconds(600);
             this.begin();
-            //SleepSeconds(7);
+            //SleepSeconds(7);            
             this.refreshChannels();
             // QLog.l().logQUser().debug("Updating channels");
             // QLog.l().logQUser().debug(params.channelsIndex);
@@ -2750,11 +2751,12 @@ public class Form {
                 service_list.invalidate();
                 addTicketDailogWindow.setVisible(false);
 
-                SleepSeconds(7);
+                //SleepSeconds(7);
                 this.invite();
-                SleepSeconds(7);
+                SleepMilliSeconds(600);
+                //SleepSeconds(7);
                 this.begin();
-                SleepSeconds(7);
+                //SleepSeconds(7);               
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
         }
@@ -2773,6 +2775,19 @@ public class Form {
         }
         catch (Exception ex) {
             QLog.l().logQUser().debug("==> Sleeping " + seconds.toString() + " seconds.  Error: "
+                    + ex.getMessage());
+        }
+    }
+    
+    public void SleepMilliSeconds(Integer milli ) {
+        try {
+            if (user.getUser().getId() != 88) {
+                QLog.l().logQUser().debug("==> Sleeping " + milli.toString() + " milliseconds.");
+                TimeUnit.SECONDS.sleep(milli);
+            }
+        }
+        catch (Exception ex) {
+            QLog.l().logQUser().debug("==> Sleeping " + milli.toString() + " milliseconds.  Error: "
                     + ex.getMessage());
         }
     }
