@@ -2384,7 +2384,7 @@ public class Form {
             }
 
             //  CM:  Citizen is in a sequence.
-            //params.in_sequence = true;
+            params.in_sequence = true;
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
@@ -2446,6 +2446,7 @@ public class Form {
                 params.requestBack = Boolean.FALSE;
                 params.resultId = -1L;
                 params.comments = "";
+                params.in_sequence = true;
 
                 Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params,
                         "",
