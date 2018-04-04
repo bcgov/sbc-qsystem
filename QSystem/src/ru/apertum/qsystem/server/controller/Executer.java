@@ -1221,8 +1221,10 @@ public final class Executer {
                         //                                + cms + "; S: " + iss + "; STO: " + istos);
 
                         //  CM:  Look for a Quick Txn match. 
-                        if (quickMatch && (notInSequence || inSequenceTimeOut || (inSequence
-                                && csrMatch))) {
+                        //  if (quickMatch && (notInSequence || inSequenceTimeOut || (inSequence
+                        //          && csrMatch))) {
+                        if ((notInSequence && quickMatch) || (inSequence && csrMatch)
+                                || (inSequenceTimeOut)) {
 
                             // if (nextCustInLine.getTempQuickTxn() == userQuick) {
                             
