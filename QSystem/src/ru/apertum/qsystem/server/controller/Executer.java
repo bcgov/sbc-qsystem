@@ -1216,6 +1216,9 @@ public final class Executer {
                                 (dateNow - nextCustInLine.getStandTime().getTime()) > 5000;
                         String istos = (inSequenceTimeOut ? "Y" : "N");
 
+                        //                        QLog.l().logQUser().debug("==> Cust: " + custName + "; Q: " + qms + "; C: "
+                        //                                + cms + "; S: " + iss + "; STO: " + istos);
+
                         //  CM:  Look for a Quick Txn match. 
                         if (quickMatch && (notInSequence || inSequenceTimeOut || (inSequence
                                 && csrMatch))) {
@@ -1895,7 +1898,7 @@ public final class Executer {
                 QLog.l().logger().error(ex);
             }
 
-            QLog.l().logQUser().debug("==> End: Task(FinishCust).process()");
+            //QLog.l().logQUser().debug("==> End: Task(FinishCust).process()");
 
             //  CM:  Call John's MySql stored procedure.
             CallStoredProcDone(user, savedCustomer, CustId, "Customer finished");

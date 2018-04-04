@@ -1023,10 +1023,10 @@ public class Form {
 
     	if (!isNumeric(tempVal)){
         	lastGoodQuantity = customer.getQuantity();
-        	QLog.l().logQUser().debug("LastGoodQuantity ==> " +  lastGoodQuantity );
+            //QLog.l().logQUser().debug("LastGoodQuantity ==> " +  lastGoodQuantity );
         }else{
         	lastGoodQuantity = tempVal;
-        	QLog.l().logQUser().debug("LGQ tempVal ==> " +  tempVal );
+            //QLog.l().logQUser().debug("LGQ tempVal ==> " +  tempVal );
         }
 
         serveCustomerDialogWindow.setVisible(true);
@@ -1226,7 +1226,7 @@ public class Form {
 		customer = null;
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Srv: Return to queue", "Before", user.getUser(), user
+        Executer.getInstance().TrackUserClick("Srv: Return to queue", "After", user.getUser(), user
                 .getUser().getCustomer());
     }
 
@@ -2402,7 +2402,7 @@ public class Form {
             //SleepSeconds(7);
             this.invite();
             //SleepSeconds(7);
-            SleepMilliSeconds(600);
+            //SleepMilliSeconds(600);
             this.begin();
             //SleepSeconds(7);            
             this.refreshChannels();
@@ -2602,7 +2602,7 @@ public class Form {
 
     public RpcStandInService addToQueue(CmdParams params) {
 
-        QLog.l().logQUser().debug("==> addToQueue: " + (params.in_sequence ? "Yes" : "No"));
+        //QLog.l().logQUser().debug("==> addToQueue: " + (params.in_sequence ? "Yes" : "No"));
 
         return (RpcStandInService) Executer.getInstance().getTasks().get(Uses.TASK_STAND_IN)
                 .process(params, "", new byte[4]);
@@ -2709,7 +2709,7 @@ public class Form {
         }
 
         //  CM:  Tracking.
-        Executer.getInstance().TrackUserClick("Add: Change service", "Before", user.getUser(),
+        Executer.getInstance().TrackUserClick("Add: Change service", "After", user.getUser(),
                 customer);
     }
 
@@ -2753,10 +2753,10 @@ public class Form {
 
                 //SleepSeconds(7);
                 this.invite();
-                SleepMilliSeconds(600);
+                //SleepMilliSeconds(600);
                 //SleepSeconds(7);
                 this.begin();
-                //SleepSeconds(7);               
+                //SleepSeconds(7);
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
             }
         }
@@ -2783,7 +2783,7 @@ public class Form {
         try {
             if (user.getUser().getId() != 88) {
                 QLog.l().logQUser().debug("==> Sleeping " + milli.toString() + " milliseconds.");
-                TimeUnit.SECONDS.sleep(milli);
+                TimeUnit.MILLISECONDS.sleep(milli);
             }
         }
         catch (Exception ex) {
