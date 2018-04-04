@@ -406,6 +406,7 @@ public final class Executer {
             customer.setFinishTime(new Date());
             // ???????? ????????? ? ????????? "?????????????", ?? ?? "?????????"
             customer.setState(CustomerState.STATE_POSTPONED_REDIRECT);
+            QLog.l().logQUser().debug("==> Task(InviteSelCust): setState(Redirect)");
 
             try {
                 for (QService service : QServiceTree.getInstance().getNodes()) {
@@ -2258,6 +2259,7 @@ public final class Executer {
             //Now update the customer to the new state
             customer.setService(newService);
             customer.setState(CustomerState.STATE_REDIRECT, cmdParams.serviceId);
+            QLog.l().logQUser().debug("==> Task(RedirectCust): setState(Redirect)");
             customer.setPreviousList(oldService);
 
             if (!oldService.getId().equals(cmdParams.serviceId)) {
