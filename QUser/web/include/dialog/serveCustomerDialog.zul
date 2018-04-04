@@ -102,6 +102,11 @@
                     id="btn_start" height="38px" width="158px">
             </button>
 
+            <!--
+            <timer id="timer_beginservice" delay="1000" repeats="true" running="@load(fmodel.user.getGABoard())" onTimer="@command('refreshGAList')"/>
+            -->
+            <timer id="timer_beginservice" delay="5000" repeats="true" running="true" onTimer="@command('refreshGAList')"/>
+
             <button sclass="act-button" style="margin-left: 15px; margin-top: 22px;" label="Citizen Left"
                     disabled="@load(fmodel.btnsDisabled[1])" onClick="@command('kill')"
                     autodisable="self"
