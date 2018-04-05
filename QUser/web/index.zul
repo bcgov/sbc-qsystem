@@ -4,67 +4,139 @@
 <zk xmlns="http://www.zkoss.org/2005/zul" >
     <?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
 <style>
-        .act-button:active { 
-        background: -webkit-linear-gradient(top, #FFFFFF 0%, #FFDDDD 100%); /* Chrome10+,Safari5.1+ */
-        background: linear-gradient(to bottom, #FFFFFF 0%, #FFDDDD 100%); /* W3C */
-        ;
-        }
         .act-button { 
-        background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
-        background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
-        -webkit-border-radius: 0em;
-        -moz-border-radius: 0em;
-        border-radius: 0em;
-        font-size : 16px; 
-        font-family: Helvetica;
+          background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
+          background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
+          -webkit-border-radius: 0em;
+          -moz-border-radius: 0em;
+          border-radius: 0em;
+          font-size : 16px; 
+          font-family: Helvetica;
+          /*
+          -webkit-animation: blink .75s linear infinite;
+	      -moz-animation: blink .75s linear infinite;
+  	      -ms-animation: blink .75s linear infinite;
+          -o-animation: blink .75s linear infinite;
+	      animation: blink .75s linear infinite;
+	      */
+        }
+        .act-button:active { 
+          background: -webkit-linear-gradient(top, #FFFFFF 0%, #FFDDDD 100%); /* Chrome10+,Safari5.1+ */
+          background: linear-gradient(to bottom, #FFFFFF 0%, #FFDDDD 100%); /* W3C */
         }
         .act-button:focus { 
-        background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
-        background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
-        -webkit-border-radius: 0em;
-        -moz-border-radius: 0em;
-        border-radius: 0em;
-        font-size : 16px; 
-        font-family: Helvetica;
+          background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
+          background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
+          -webkit-border-radius: 0em;
+          -moz-border-radius: 0em;
+          border-radius: 0em;
+          font-size : 16px; 
+          font-family: Helvetica;
         }
         .act-button:disabled { 
-        background: -webkit-linear-gradient(top, #FFFFFF 0%, #dddddd 100%); /* Chrome10+,Safari5.1+ */
-        background: linear-gradient(to bottom, #FFFFFF 0%, #dddddd 100%); /* W3C */
+          background: -webkit-linear-gradient(top, #FFFFFF 0%, #dddddd 100%); /* Chrome10+,Safari5.1+ */
+          background: linear-gradient(to bottom, #FFFFFF 0%, #dddddd 100%); /* W3C */
         }
         .act-button:hover {
-        border-color: #FFFF00;
+          border-color: #FFFF00;
         }
+
+        .blink-button { 
+          background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
+          background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
+          -webkit-border-radius: 0em;
+          -moz-border-radius: 0em;
+          border-radius: 0em;
+          font-size : 16px; 
+          font-family: Helvetica;
+          -webkit-animation: blink .75s linear infinite;
+	      -moz-animation: blink .75s linear infinite;
+  	      -ms-animation: blink .75s linear infinite;
+          -o-animation: blink .75s linear infinite;
+	      animation: blink .75s linear infinite;
+        }
+        .blink-button:active { 
+          background: -webkit-linear-gradient(top, #FFFFFF 0%, #FFDDDD 100%); /* Chrome10+,Safari5.1+ */
+          background: linear-gradient(to bottom, #FFFFFF 0%, #FFDDDD 100%); /* W3C */
+        }
+        .blink-button:focus { 
+          background: -webkit-linear-gradient(top, #FFFFFF 0%, #E1A424 100%); /* Chrome10+,Safari5.1+ */
+          background: linear-gradient(to bottom, #FFFFFF 0%, #E1A424 100%); /* W3C */
+          -webkit-border-radius: 0em;
+          -moz-border-radius: 0em;
+          border-radius: 0em;
+          font-size : 16px; 
+          font-family: Helvetica;
+        }
+        .blink-button:disabled { 
+          background: -webkit-linear-gradient(top, #FFFFFF 0%, #dddddd 100%); /* Chrome10+,Safari5.1+ */
+          background: linear-gradient(to bottom, #FFFFFF 0%, #dddddd 100%); /* W3C */
+        }
+        .blink-button:hover {
+          border-color: #FFFF00;
+        }
+        
+        @-webkit-keyframes blink {
+          0% { opacity: 1; }
+          50% { opacity: 1; }
+          50.01% { opacity: 0; }
+          100% { opacity: 0; }
+        }
+        @-moz-keyframes blink {
+          0% { opacity: 1; }
+          50% { opacity: 1; }
+          50.01% { opacity: 0; }
+          100% { opacity: 0; }
+        }
+        @-ms-keyframes blink {
+          0% { opacity: 1; }
+          50% { opacity: 1; }
+          50.01% { opacity: 0; }
+          100% { opacity: 0; }
+        }
+        @-o-keyframes blink {
+          0% { opacity: 1; }
+          50% { opacity: 1; }
+          50.01% { opacity: 0; }
+          100% { opacity: 0; }
+        }
+        @keyframes blink {
+          0% { opacity: 1; }
+          50% { opacity: 1; }
+          50.01% { opacity: 0; }
+          100% { opacity: 0; }
+        }        
         .blue-background {
-        background-color: #003366;
+          background-color: #003366;
         }
         .prod-background {
-        background-color: #003366;
+          background-color: #003366;
         }
         .test-background {
-        background-color: #52AB4D;
+          background-color: #52AB4D;
         }
         .dev-background {
-        background-color: #F0D6B7;
+          background-color: #F0D6B7;
         }
         .local-background {
-        background-color: #E9EEF3;
+          background-color: #E9EEF3;
         }
         .toolbar-items {
-        color:white;
-        font-size : 10px; 
-        font-family: Helvetica;
+          color:white;
+          font-size : 10px; 
+          font-family: Helvetica;
         }
         .version-number {
-        color:white;
-        font-size : 10px; 
-        font-family: Helvetica;
+          color:white;
+          font-size : 10px; 
+          font-family: Helvetica;
         }
     
         .z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-close:before {
-            font-size : 1.5em;
-	}
+          font-size : 1.5em;
+	    }
         .z-treerow.tree-cell > .z-treecell >.z-treecell-content > .z-tree-icon > .z-tree-open:before {
-            font-size : 1.5em;
+          font-size : 1.5em;
         }
     </style>
     
