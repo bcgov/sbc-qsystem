@@ -221,6 +221,7 @@ public class Form {
     private Combobox cboFmCompress;
     private String filterCa = "";
     private String CSRIcon = "";
+    private String beginServiceClass = "act-button";
     private int customersCount = 0;
     private boolean currentState = false;
     private boolean CheckGABoard = false;
@@ -308,7 +309,6 @@ public class Form {
         }
 
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
-        String temp = getBackgroundClass();
 
         //  If a current user, get the office name and set it.
         if (user != null) {
@@ -318,6 +318,10 @@ public class Form {
             }
         }
 
+    }
+
+    public String getBeginServiceClass() {
+        return beginServiceClass;
     }
 
     public String getBackgroundClass() {
@@ -997,6 +1001,7 @@ public class Form {
         service_list.setModel(service_list.getModel());
         refreshListServices();
         service_list.invalidate();
+        beginServiceClass = "blink-button";
 
         //  Debug
         //QLog.l().logQUser().debug("==> End: invite");
@@ -1101,6 +1106,7 @@ public class Form {
     @NotifyChange(value = { "btnsDisabled" })
     public void begin() {
 
+        this.beginServiceClass = "act-button";
         final CmdParams params = new CmdParams();
         params.userId = user.getUser().getId();
         Executer.getInstance().getTasks().get(Uses.TASK_START_CUSTOMER)
@@ -1482,6 +1488,7 @@ public class Form {
 
         Boolean OkToContinue = true;
         trackCust = null;
+        this.beginServiceClass = "blink-button";
 
         if (pickedCustomer == null || keys_current == KEYS_INVITED || keys_current == KEYS_STARTED
                 || keys_current == KEYS_OFF) {
