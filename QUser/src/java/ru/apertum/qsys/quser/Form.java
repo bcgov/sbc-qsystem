@@ -1497,9 +1497,9 @@ public class Form {
             String sto = (sequenceTimeOut ? "Yes" : "No");
 
             //  CM:  Debug.
-            QLog.l().logQUser().debug("==> Pick: " + pickedCustomer.getName() + "; Seq: "
-                    + (pickedCustomer.getIsInSequence() ? "Yes" : "No") + "; State: "
-                    + pickedCustomer.getStateIn() + "; STO: " + sto);
+            //            QLog.l().logQUser().debug("==> Pick: " + pickedCustomer.getName() + "; Seq: "
+            //                    + (pickedCustomer.getIsInSequence() ? "Yes" : "No") + "; State: "
+            //                    + pickedCustomer.getStateIn() + "; STO: " + sto);
 
             //  CM:  Can't pick a customer if they are in a add to queue, invite, begin sequence.
             if (pickedCustomer.getIsInSequence() && (!sequenceTimeOut)) {

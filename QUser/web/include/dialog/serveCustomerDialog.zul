@@ -2,6 +2,10 @@
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
     <style>
+        .z-modal-mask {
+          background: white;
+          opacity: .1;
+        }
         .text-style{
             font-size : 26px; 
             font-family: Helvetica; 
