@@ -1017,9 +1017,12 @@ public final class Executer {
             //QLog.l().logQUser().debug("    --> Checking if customer already served by another CSR");
 
             //  CM: If user has a customer with state of invited, or invited secondary, a recall? 
-            final boolean isRecall = user.getCustomer() != null && (
-                CustomerState.STATE_INVITED.equals(user.getCustomer().getState())
-                    || CustomerState.STATE_INVITED_SECONDARY.equals(user.getCustomer().getState()));
+            //            final boolean isRecall = user.getCustomer() != null && (
+            //                CustomerState.STATE_INVITED.equals(user.getCustomer().getState())
+            //                    || CustomerState.STATE_INVITED_SECONDARY.equals(user.getCustomer().getState()));
+
+            //  See if this resolves problems.  This may affect other things???
+            final boolean isRecall = false;
 
             // ???? ?? ? ????? ????????? ????????? ????? ???????? ?????
             // Does the user have a called customizer? Then the puerile challenge
@@ -1316,16 +1319,15 @@ public final class Executer {
                     
                     //  Debug
                     if (custToServe == null) {
-                        //                        QLog.l().logQUser().debug(
-                        //                                "--> No customer found to serve (likely none in queue)");
+                        QLog.l().logQUser().debug("--> CSR " + user.getName()
+                                        + " No customer found to serve (likely none in queue)");
                     }
                     else {
                         //QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
                         //  By the time you get here, you should have the next customer in line, if there is one.
                         customer = custToServe;
-                        //                        QLog.l().logger().debug("--> Srv CSR: " + user.getName() + "; Cust: "
-                        //                                + customer
-                        //                                        .getName() + "; Svc: " + customer.getService().getName());
+                        //                        QLog.l().logger().debug("--> CSR: " + user.getName() + "; Cust: "
+                        //                                + customer.getName() + "; Svc: " + customer.getService().getName());
                     }
 
                     //  CM:  Set customer to be QTxn selection, not original selection.
@@ -3476,8 +3478,8 @@ public final class Executer {
                 //  Add quick txn or not, sequence or not.
                 customer.setTempQuickTxn(cmdParams.custQtxn);
                 customer.setIsInSequence(cmdParams.in_sequence);
-                QLog.l().logQUser().debug("    --> Cust: " + customer.getName() + "; Cust Seq: "
-                        + (customer.getIsInSequence() ? "Yes" : "No"));
+                //                QLog.l().logQUser().debug("    --> Cust: " + customer.getName() + "; Cust Seq: "
+                //                        + (customer.getIsInSequence() ? "Yes" : "No"));
 
                 //??????? ?????? ????????????
                 // add a new user
