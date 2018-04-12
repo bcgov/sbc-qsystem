@@ -614,7 +614,7 @@ public class Form {
                 ReportTicket = user.getUser().getCustomer().getName();
             }
             else {
-                ReportTicket = "Ticket numebr is not provided";
+                ReportTicket = "Ticket number is not provided";
             }
         }
         else {
@@ -2343,6 +2343,11 @@ public class Form {
         Executer.getInstance().TrackUserClick("Add: Apply Next Service", "Before", user.getUser(),
                 user.getUser().getCustomer());
 
+        //  Save start customer ID, to check for switching customers in the Add to queue, invite, begin sequence.
+        QCustomer customerStart = user.getUser().getCustomer();
+        Long customerIdStart = customerStart.getId();
+        String ticketStart = customerStart.getName();
+
         //  String to save comments in.
         String custComments = "";
         Boolean OkToContinue = true;
@@ -2406,12 +2411,9 @@ public class Form {
             // Reset the combobox to default value/placeHolder
             ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
 
-            //SleepSeconds(7);
+            //SleepSeconds(15);
             this.invite();
-            //SleepSeconds(7);
-            //SleepMilliSeconds(600);
             this.begin();
-            //SleepSeconds(7);            
             this.refreshChannels();
             // QLog.l().logQUser().debug("Updating channels");
             // QLog.l().logQUser().debug(params.channelsIndex);
@@ -2422,6 +2424,30 @@ public class Form {
             customer.setChannelsIndex(params.new_channels_Index);
             customer.setTempComments(custComments);
             BindUtils.postNotifyChange(null, null, Form.this, "*");
+        }
+
+        //  Get ending customer ID.
+        QCustomer customerEnd = user.getUser().getCustomer();
+        Long customerIdEnd = customerEnd.getId();
+
+        //  If different, an error.  Send message to Slack.
+        if (customerIdStart != customerIdEnd) {
+            //            QLog.l().logQUser().debug("==> Error: Next Service customer switch from "
+            //                    + customerIdStart.toString() + " to " + customerIdEnd.toString());
+            
+            String UserMsg = "Error when adding next service to citizen"
+                    + "\nOffice Name: " + user.getUser().getOffice().getName()
+                    + "\nCSR Name: " + user.getUser().getName()
+                    + "\nTicket Number: " + ticketStart
+                    + "\nCustomer ID: " + customerIdStart.toString()
+                    + "\nService: " + customerStart.getService().getName()
+                    + "\n\nWrong Citizen selected: "
+                    + "\n->Wrong Ticket: " + customerEnd.getName()
+                    + "\n->Wrong ID: " + customerIdEnd.toString()
+                    + "\n->Wrong Service: " + customerEnd.getService().getName();
+
+            //  Send message to Slack.
+            Executer.getInstance().SendSlackMessage(user.getUser(), customerStart, UserMsg);
         }
 
         //  CM:  Tracking.
@@ -2437,6 +2463,9 @@ public class Form {
                 user.getUser().getCustomer());
 
         Boolean OkToContinue = true;
+        QCustomer customerStart = user.getUser().getCustomer();
+        Long customerIdStart = customerStart.getId();
+        String ticketStart = customerStart.getName();
 
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
@@ -2465,6 +2494,7 @@ public class Form {
                 refreshListServices();
                 service_list.invalidate();
 
+                //SleepSeconds(15);
                 this.invite();
                 this.begin();
                 this.refreshChannels();
@@ -2487,6 +2517,37 @@ public class Form {
                 customer.setChannelsIndex(params.new_channels_Index);
                 customer.setChannels(params.new_channels);
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
+
+                //  If wrong customer selected, an error.
+                if (customer != null) {
+
+                    //  Get customer actually chosen.
+                    Long customerIdEnd = customer.getId();
+
+                    //  If customer chosen different than customer created, an error.  Send to slack.
+                    if (customerIdStart != customerIdEnd) {
+
+                        //            QLog.l().logQUser().debug("==> Error: Next Service customer switch from "
+                        //                    + customerIdStart.toString() + " to " + customerIdEnd.toString());
+
+                        String UserMsg = "Error selecting previous service"
+                                + "\nOffice Name: " + user.getUser().getOffice().getName()
+                                + "\nCSR Name: " + user.getUser().getName()
+                                + "\nTicket Number: " + ticketStart
+                                + "\nCustomer ID: " + customerIdStart.toString()
+                                + "\nService: " + customerStart.getService().getName()
+                                + "\n\nWrong Citizen previous service: "
+                                + "\n->Wrong Ticket: " + customer.getName()
+                                + "\n->Wrong ID: " + customerIdEnd.toString()
+                                + "\n->Wrong Service: " + customer.getService().getName();
+
+                        //  Send message to Slack.
+                        Executer.getInstance().SendSlackMessage(user.getUser(), customerStart,
+                                UserMsg);
+                    }
+                }
+
+                //////////////////
             }
         }
 
@@ -2750,7 +2811,9 @@ public class Form {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
                 params.in_sequence = true;
                 final RpcStandInService res = this.addToQueue(params);
-                customer = res.getResult();
+                QCustomer customerStart = res.getResult();
+                Long customerIdStart = customerStart.getId();
+                String ticketStart = customerStart.getName();
 
                 customer = null;
                 setKeyRegim(KEYS_MAY_INVITE);
@@ -2759,13 +2822,40 @@ public class Form {
                 service_list.invalidate();
                 addTicketDailogWindow.setVisible(false);
 
-                //SleepSeconds(7);
+                //SleepSeconds(15);
                 this.invite();
-                //SleepMilliSeconds(600);
-                //SleepSeconds(7);
                 this.begin();
-                //SleepSeconds(7);
                 BindUtils.postNotifyChange(null, null, Form.this, "*");
+
+                //  If wrong customer selected, an error.
+                if (customer != null) {
+
+                    //  Get customer actually chosen.
+                    Long customerIdEnd = customer.getId();
+
+
+                    //  If customer chosen different than customer created, an error.  Send to slack.
+                    if (customerIdStart != customerIdEnd) {
+
+                        //            QLog.l().logQUser().debug("==> Error: Next Service customer switch from "
+                        //                    + customerIdStart.toString() + " to " + customerIdEnd.toString());
+
+                        String UserMsg = "Error when begining to serve citizen"
+                                + "\nOffice Name: " + user.getUser().getOffice().getName()
+                                + "\nCSR Name: " + user.getUser().getName()
+                                + "\nTicket Number: " + ticketStart
+                                + "\nCustomer ID: " + customerIdStart.toString()
+                                + "\nService: " + customerStart.getService().getName()
+                                + "\n\nWrong Citizen served: "
+                                + "\n->Wrong Ticket: " + customer.getName()
+                                + "\n->Wrong ID: " + customerIdEnd.toString()
+                                + "\n->Wrong Service: " + customer.getService().getName();
+
+                        //  Send message to Slack.
+                        Executer.getInstance().SendSlackMessage(user.getUser(), customerStart,
+                                UserMsg);
+                    }
+                }
             }
         }
 
