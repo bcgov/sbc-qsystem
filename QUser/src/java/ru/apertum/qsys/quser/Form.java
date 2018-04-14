@@ -2395,8 +2395,9 @@ public class Form {
                 params.comments = custComments;
             }
 
-            //  CM:  Citizen is in a sequence.
+            //  CM:  Set status flags.  Citizen is in a sequence, want wait queue logging
             params.in_sequence = true;
+            params.log_waitqueue = true;
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
