@@ -174,8 +174,9 @@ public final class Executer {
             + "?noAccessToProcedureBodies=true";
     private static String SqlInsertStatement =
             "INSERT INTO trackactions (time_now, button_clicked, start_finish, office_id, " +
-                    "user_id, client_id, ticket, service_id, state_in, user_quick, client_quick) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "user_id, client_id, ticket, service_id, state_in, user_quick, " +
+                    "client_quick, channel, quantity, priority, srv_user_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     //  CM:  This variable sets the states in which a customer can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
@@ -189,16 +190,6 @@ public final class Executer {
         //  Assume the customer cannot be called.
         boolean okToCall = false;
         String custName = "";
-
-        //  CM:  Debug.
-        //        if (potentialCustomer == null) {
-        //            QLog.l().logger().debug("==> Start: CanCall - Potential Customer is null");
-        //            custName = "Does not exist";
-        //        }
-        //        else {
-        //            QLog.l().logger().debug("==> Start: CanCall - Potential Customer not null: "
-        //                    + potentialCustomer.getName());
-        //        }
 
         //  If potential customer not null, it's possible they could be called.
         if (potentialCustomer != null) {
@@ -1140,51 +1131,9 @@ public final class Executer {
                             custAll.addAll(custSvc);
                             //QLog.l().logQUser().debug("--> After add customers");
                         }
-
-                        //  CM:  Loop through all custs, all offices, wanting this service, return
-                        //  CM:  the first customer wanting this service in this office.
-                        //                        final QCustomer cust = serv
-                        //                            .peekCustomerByOffice(user.getOffice()); // ?????? ? ???? ???????
-                        //QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust);
-                        // ???? ??????? ?????
-
-                        //  If no customer wanting current service, current office, look at next service.
-                        //                        if (cust == null) {
-                        //                            continue;
-                        //                        }
-                        // ????? ?????????????? ?????????? ? ?????????????? ???????? ??? ????? ? ??????? ??? ?????
-
-                        //  CM:  Display info abut the customer.
-                        //QLog.l().logQUser().debug("TASK_InvNxtCust Customer: " + cust + "; Quick: " + cust.getStringQuickTxn());
-
-                        //  Get the priority of the current service.
-                        //                        final Integer prior = plan.getCoefficient();
-                        //QLog.l().logQUser().debug("Service Co-efficient: " + prior + "; servPriority: " + servPriority);
-
-                        //  CM:  First time through this loop, any found customer will be set to be next customer.
-                        //  CM:  Next time through, found cust will be set next cust if they have been waiting longer,
-                        //  CM:  or if they have a higher priority.
-                        //                        if (prior > servPriority || (prior == servPriority && customer != null
-                        //                            && customer.compareTo(cust) == 1)) {
-                        //                            servPriority = prior;
-                        //                            customer = cust;
-                        //                        }
                     }
 
-                    //  CM:  Debug code for now.
-                    //QLog.l().logQUser().debug("    --> Total In Queue: " + custAll.size());
-
-                    /*
-                     *  (1) Get CSR State
-                     *  (2) Set NewCust = null
-                     *  (3)   Loop through all custAll, if a Q.Txn match, select, if longer in queue, replace
-                     *  (4) If NewCust still null
-                     *  (5)   Loop through all custAll, select, if longer in queue, replace
-                     *  (6) If NewCust still null, no person in line
-                     * 
-                     * 
-                     */
-
+                    //  For formatting dates.
                     DateFormat df = new SimpleDateFormat("HH:mm:ss");
                     
                     //  CM:  Get whether user is q quick txn CSR or not.
@@ -1201,6 +1150,28 @@ public final class Executer {
                     Long csrMe = user.getId();
                     //                        QLog.l().logQUser().debug("==> Cust: " + custName + "; Q: " + qms + "; C: "
                     //                                + cms + "; S: " + iss + "; STO: " + istos);
+
+                    //  See if any customer in the queue has their log wait queue flag set.
+                    boolean logWaitQueue = false;
+                    for (QCustomer nextCustInLine : custAll) {
+                        logWaitQueue = logWaitQueue || nextCustInLine.getLogWaitQueue();
+                    }
+
+                    //  If any customer has the log wait queue flag set, then log the queue.
+                    if (logWaitQueue) {
+
+                        //  Let the user know you're logging the queue.
+                        QLog.l().logQUser().debug("==> Next Service, Logging Wait queue");
+
+                        for (QCustomer nextCustInLine : custAll) {
+                            QLog.l().logQUser().debug("    --> Cust: " + nextCustInLine.getName()
+                                    + "; #: " + nextCustInLine.getId());
+
+                            TrackUserClick("Add: Apply Next Service", "Log Queue", user,
+                                    nextCustInLine);
+
+                        }
+                    }
 
                     //  Loop through all customers, looking for a match.
                     for (QCustomer nextCustInLine : custAll) {
@@ -2121,6 +2092,10 @@ public final class Executer {
         Long serviceId = 0L;
         Integer state = -1;
         Boolean custQuick = false;
+        String custChannel = "";
+        String custQuantity = "1";
+        int custPriority = 0;
+        Long custUserId = 0L;
 
         //  CM:  If user not null, get good values.
         if (user != null) {
@@ -2143,6 +2118,10 @@ public final class Executer {
                 serviceId = cust.getService().getId();
                 state = cust.getStateIn();
                 custQuick = cust.getTempQuickTxn();
+                custChannel = cust.getChannels();
+                custQuantity = cust.getQuantity();
+                custPriority = cust.getPriority().get();
+                custUserId = cust.getUser().getId();
             }
         }
 
@@ -2173,6 +2152,10 @@ public final class Executer {
             pStmt.setInt(9, state);
             pStmt.setBoolean(10, userQuick);
             pStmt.setBoolean(11, custQuick);
+            pStmt.setString(12, custChannel);
+            pStmt.setString(13, custQuantity);
+            pStmt.setInt(14, custPriority);
+            pStmt.setLong(15, custUserId);
             pStmt.executeUpdate();
             //  Autocommit seems to be on, can't call commmit.
             //conn.commit();
@@ -2242,6 +2225,7 @@ public final class Executer {
             // ???????? ?? ?????????
             customer.setTempComments(cmdParams.comments);
             customer.setIsInSequence(cmdParams.in_sequence);
+            customer.setLogWaitQueue(cmdParams.log_waitqueue);
 
             // set added by which user
             customer.setAddedBy(QUserList.getInstance().getById(cmdParams.userId).getName());
