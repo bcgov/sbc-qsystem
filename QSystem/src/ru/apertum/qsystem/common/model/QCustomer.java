@@ -157,6 +157,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @Expose
     @SerializedName("in_sequence")
     private boolean in_sequence = false;
+    @Expose
+    @SerializedName("log_waitqueue")
+    public boolean log_waitqueue;
     /**
      * ???????????? ?????? ? ????????? ??? ????????? ? ???????? ? ?????????? :: Comments and users about the custodian when redirecting and sending to deferred
      */
@@ -1020,4 +1023,12 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         this.in_sequence = isInSequence;
     }
 
+    @Transient
+    public Boolean getLogWaitQueue() {
+        return this.log_waitqueue;
+    }
+
+    public void setLogWaitQueue(Boolean logQueue) {
+        this.log_waitqueue = logQueue;
+    }
 }
