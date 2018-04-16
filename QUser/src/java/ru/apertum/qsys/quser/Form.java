@@ -228,6 +228,10 @@ public class Form {
 
     private String lastGoodQuantity = "1";
 
+    private static boolean trackQOnBeginService = false;
+    private static boolean trackQOnNextService = false;
+    private static boolean trackQOnPreviousService = false;
+
     // public LinkedList<QUser> test2 = greed.get(2).getShadow();
     // public LinkedList<QUser> userList = QUserList.getInstance().getItems();
 
@@ -303,9 +307,11 @@ public class Form {
                 inviteTimes.put(office.getId(), System.currentTimeMillis());
             }
 
-//            for (HashMap.Entry<Long, Long> inviteInfo : inviteTimes.entrySet()) {
-//                QLog.l().logQUser().debug("    --> Office: " + inviteInfo.getKey() + "; Time: " + inviteInfo.getValue());
-//            }
+            //  Set when to log the state of the wait queue.
+            trackQOnBeginService = getEnvBoolean("QSYSTEM_TRACK_Q_BEGIN");
+            trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
+            trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
+
         }
 
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
@@ -322,6 +328,33 @@ public class Form {
 
     public String getBeginServiceClass() {
         return beginServiceClass;
+    }
+
+    public Boolean getEnvBoolean(String envVar) {
+
+        //  CM:  Get the environment variable, if it exists.
+        Boolean envBool = false;
+        String envString = System.getenv(envVar);
+
+        if (envString == null) {
+            QLog.l().logQUser().debug("--> Var: " + envVar + " is null");
+        }
+        else {
+            QLog.l().logQUser().debug("--> Var: " + envVar + " is " + envString);
+            if (envString.toUpperCase().equals("YES")) {
+                QLog.l().logQUser().debug("--> Var: " + envVar + " Value is indeed YES");
+            }
+            else {
+                QLog.l().logQUser().debug("--> Var: " + envVar + " Value is not YES");
+            }
+        }
+
+        //  CM:  Only do processing if string not null.
+        if ((envString != null) && (envString.toUpperCase().equals("YES"))) {
+                envBool = true;
+        }
+
+        return envBool;
     }
 
     public String getBackgroundClass() {
@@ -2397,7 +2430,7 @@ public class Form {
 
             //  CM:  Set status flags.  Citizen is in a sequence, want wait queue logging
             params.in_sequence = true;
-            params.log_waitqueue = true;
+            params.log_waitqueue = trackQOnNextService;
 
             Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER)
                     .process(params, "", new byte[4]);
@@ -2484,6 +2517,7 @@ public class Form {
                 params.resultId = -1L;
                 params.comments = "";
                 params.in_sequence = true;
+                params.log_waitqueue = trackQOnPreviousService;
 
                 Executer.getInstance().getTasks().get(Uses.TASK_REDIRECT_CUSTOMER).process(params,
                         "",
@@ -2811,6 +2845,7 @@ public class Form {
             if (OkToContinue) {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
                 params.in_sequence = true;
+                params.log_waitqueue = trackQOnBeginService;
                 final RpcStandInService res = this.addToQueue(params);
                 QCustomer customerStart = res.getResult();
                 Long customerIdStart = customerStart.getId();
