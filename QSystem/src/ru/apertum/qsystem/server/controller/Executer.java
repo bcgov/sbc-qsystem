@@ -175,8 +175,8 @@ public final class Executer {
     private static String SqlInsertStatement =
             "INSERT INTO trackactions (time_now, button_clicked, start_finish, office_id, " +
                     "user_id, client_id, ticket, service_id, state_in, user_quick, " +
-                    "client_quick, channel, quantity, priority, srv_user_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "client_quick, channel, quantity, priority, srv_user_id, srv_quick) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     //  CM:  This variable sets the states in which a customer can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.
@@ -1160,16 +1160,15 @@ public final class Executer {
                     //  If any customer has the log wait queue flag set, then log the queue.
                     if (logWaitQueue) {
 
-                        //  Let the user know you're logging the queue.
-                        QLog.l().logQUser().debug("==> Next Service, Logging Wait queue");
+                        //                        //  Let the user know you're logging the queue.
+                        //                        QLog.l().logQUser().debug("==> Next Service, Logging Wait queue");
 
                         for (QCustomer nextCustInLine : custAll) {
-                            QLog.l().logQUser().debug("    --> Cust: " + nextCustInLine.getName()
-                                    + "; #: " + nextCustInLine.getId());
+                            //                            QLog.l().logQUser().debug("    --> Cust: " + nextCustInLine.getName()
+                            //                                    + "; #: " + nextCustInLine.getId());
 
-                            TrackUserClick("Add: Apply Next Service", "Log Queue", user,
+                            TrackUserClick("Track: Add, Invite, Begin sequence", "Log Queue", user,
                                     nextCustInLine);
-
                         }
                     }
 
@@ -1297,6 +1296,7 @@ public final class Executer {
                         //QLog.l().logQUser().debug("    --> QTxn method next customer: " + nextCust);
                         //  By the time you get here, you should have the next customer in line, if there is one.
                         customer = custToServe;
+                        customer.setLogWaitQueue(false);
                         //                        QLog.l().logger().debug("--> CSR: " + user.getName() + "; Cust: "
                         //                                + customer.getName() + "; Svc: " + customer.getService().getName());
                     }
@@ -2094,8 +2094,9 @@ public final class Executer {
         Boolean custQuick = false;
         String custChannel = "";
         String custQuantity = "1";
-        int custPriority = 0;
+        int custPriority = 1;
         Long custUserId = 0L;
+        Boolean custUserQTxn = false;
 
         //  CM:  If user not null, get good values.
         if (user != null) {
@@ -2120,8 +2121,17 @@ public final class Executer {
                 custQuick = cust.getTempQuickTxn();
                 custChannel = cust.getChannels();
                 custQuantity = cust.getQuantity();
-                custPriority = cust.getPriority().get();
-                custUserId = cust.getUser().getId();
+
+                //  If customer has a priority, get it.
+                if (cust.getPriority() != null) {
+                    custPriority = cust.getPriority().get();
+                }
+
+                //  If CSR serving customer not null, track it too.
+                if (cust.getUser() != null) {
+                    custUserId = cust.getUser().getId();
+                    custUserQTxn = cust.getUser().getQuickTxn();
+                }
             }
         }
 
@@ -2156,6 +2166,7 @@ public final class Executer {
             pStmt.setString(13, custQuantity);
             pStmt.setInt(14, custPriority);
             pStmt.setLong(15, custUserId);
+            pStmt.setBoolean(16, custUserQTxn);
             pStmt.executeUpdate();
             //  Autocommit seems to be on, can't call commmit.
             //conn.commit();
@@ -3462,6 +3473,7 @@ public final class Executer {
                 //  Add quick txn or not, sequence or not.
                 customer.setTempQuickTxn(cmdParams.custQtxn);
                 customer.setIsInSequence(cmdParams.in_sequence);
+                customer.setLogWaitQueue(cmdParams.log_waitqueue);
                 //                QLog.l().logQUser().debug("    --> Cust: " + customer.getName() + "; Cust Seq: "
                 //                        + (customer.getIsInSequence() ? "Yes" : "No"));
 
