@@ -131,6 +131,10 @@ public class CmdParams {
     @SerializedName("in_sequence")
     public boolean in_sequence;
 
+    @Expose
+    @SerializedName("log_waitqueue")
+    public boolean log_waitqueue;
+
     public CmdParams() {
     }
 
