@@ -595,6 +595,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     @Transient
     public IPriority getPriority() {
+        if (this.priority == null) {
+            this.priority = 0;
+            //QLog.l().logger().debug("==> getPriority(): this.priority is " + priority);
+        }
         return new Priority(priority);
     }
 
