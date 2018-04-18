@@ -239,7 +239,10 @@ public final class Executer {
     public void TestSnowplow() {
         // get the client adapter
         // this is used by the Java tracker to transmit events to the collector
+
+        QLog.l().logger().debug("    --> Before 1st call");
         HttpClientAdapter okHttpClientAdapter = getClient(collectorEndpoint);
+
 
         Emitter emitter = SimpleEmitter.builder()
                 .httpClientAdapter(okHttpClientAdapter) // Required
@@ -254,7 +257,7 @@ public final class Executer {
         //----------------------------------------
         // Create a Map of the data you want to include...
         Map<String, Object> citizenMap = new HashMap<>();
-        citizenMap.put("client_id", 123456);
+        citizenMap.put("client_id", 98765);
         SelfDescribingJson citizen = new SelfDescribingJson(
                 "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/1-0-0", citizenMap);
 
@@ -304,6 +307,7 @@ public final class Executer {
                 .eventData(beginserviceData)
                 .customContext(contexts)
                 .build());
+        QLog.l().logger().debug("    --> After last call");
     }
 
     //  CM:  ==>  End of Snowplow routine.
