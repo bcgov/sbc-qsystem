@@ -19,6 +19,23 @@
     <version>1.6.1</version>
 </dependency>
 
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>${jackson.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-annotations</artifactId>
+    <version>${jackson.version}</version>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-core</artifactId>
+    <version>${jackson.version}</version>
+</dependency>
+
         <dependency>
                 <groupId>com.snowplowanalytics</groupId>
                 <artifactId>snowplow-java-tracker</artifactId>
@@ -396,6 +413,7 @@
 		</dependency>
 	</dependencies>
 	<properties>
+        <jackson.version>2.4.1</jackson.version>
 		<src.dir>src</src.dir>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
