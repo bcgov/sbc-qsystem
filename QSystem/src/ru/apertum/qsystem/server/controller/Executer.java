@@ -17,7 +17,6 @@
 package ru.apertum.qsystem.server.controller;
 
 import static ru.apertum.qsystem.common.cmd.JsonRPC20Error.ErrorRPC.ADVANCED_NOT_FOUND;
-import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -149,14 +148,13 @@ import com.snowplowanalytics.snowplow.tracker.payload.SelfDescribingJson;
 import com.snowplowanalytics.snowplow.tracker.http.HttpClientAdapter;
 import com.snowplowanalytics.snowplow.tracker.http.OkHttpClientAdapter;
 import com.snowplowanalytics.snowplow.tracker.payload.TrackerPayload;
-//
-//import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkHttpClient;
 
-//import java.util.List;
-//import java.util.concurrent.TimeUnit;
-//
-//import java.util.ArrayList;
-//import java.util.Map;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * ??? ????????. ??? ???????? - ??????? ????????? ?????????? ?????????. ? ??????? ??????????
@@ -209,35 +207,101 @@ public final class Executer {
                     "client_quick, channel, quantity, priority, srv_user_id, srv_quick) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    //    //  CM:  ==>  Start of Snowplow variables
-    //    //private static final String collectorEndpoint = "https://ca-bc-gov-main.collector.snplow.net";
-    //    private static final String collectorEndpoint = "https://spm.gov.bc.ca";
-    //
-    //    //========================================
-    //    // Set up the namespace and appID
-    //    private static final String namespace = "CFMS_poc";
-    //    private static final String appID = "demo";
-    //    //========================================
-    //    // Set whether or not to send events base64 encoded. For now, we send nonencoded to ease debugging
-    //    private static final Boolean baseSetting = false;
-    //    //  CM:  ==>  End of Snowplow variables.
-    //
-    //    //  CM:  ==>  Start of Snowplow routine.    
-    //    //========================================
-    //    public static HttpClientAdapter getClient(String url) {
-    //        // use okhttp to send events
-    //        OkHttpClient client = new OkHttpClient();
-    //
-    //        client.setConnectTimeout(5, TimeUnit.SECONDS);
-    //        client.setReadTimeout(5, TimeUnit.SECONDS);
-    //        client.setWriteTimeout(5, TimeUnit.SECONDS);
-    //
-    //        return OkHttpClientAdapter.builder()
-    //                .url(url)
-    //                .httpClient(client)
-    //                .build();
-    //    }
-    //    //  CM:  ==>  End of Snowplow routine.
+    //  CM:  ==>  Start of Snowplow variables
+    //private static final String collectorEndpoint = "https://ca-bc-gov-main.collector.snplow.net";
+    private static final String collectorEndpoint = "https://spm.gov.bc.ca";
+
+    //========================================
+    // Set up the namespace and appID
+    private static final String namespace = "CFMS_poc";
+    private static final String appID = "demo";
+    //========================================
+    // Set whether or not to send events base64 encoded. For now, we send nonencoded to ease debugging
+    private static final Boolean baseSetting = false;
+    //  CM:  ==>  End of Snowplow variables.
+
+    //  CM:  ==>  Start of Snowplow routine.    
+    //========================================
+    public static HttpClientAdapter getClient(String url) {
+        // use okhttp to send events
+        OkHttpClient client = new OkHttpClient();
+
+        client.setConnectTimeout(5, TimeUnit.SECONDS);
+        client.setReadTimeout(5, TimeUnit.SECONDS);
+        client.setWriteTimeout(5, TimeUnit.SECONDS);
+
+        return OkHttpClientAdapter.builder()
+                .url(url)
+                .httpClient(client)
+                .build();
+    }
+
+    public void TestSnowplow() {
+        // get the client adapter
+        // this is used by the Java tracker to transmit events to the collector
+        HttpClientAdapter okHttpClientAdapter = getClient(collectorEndpoint);
+        
+        Emitter emitter = SimpleEmitter.builder()
+                .httpClientAdapter( okHttpClientAdapter ) // Required
+                .threadCount(20) // Default is 50
+                .build();
+            
+        Tracker tracker = new Tracker.TrackerBuilder(emitter, namespace, appID)
+                            .base64(baseSetting)
+                            .platform(DevicePlatform.Desktop)
+                            .build();
+        
+        //----------------------------------------
+        // Create a Map of the data you want to include...
+        Map<String, Object> citizenMap = new HashMap<>();
+        citizenMap.put("client_id", 123456);
+        SelfDescribingJson citizen = new SelfDescribingJson("iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/1-0-0", citizenMap);
+    
+        //----------------------------------------
+        Map<String, Object> officeMap = new HashMap<>();
+        officeMap.put("office_id", 12);
+        officeMap.put("office_type", "reception");
+        SelfDescribingJson office = new SelfDescribingJson("iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
+        
+        //----------------------------------------
+        Map<String, Object> agentMap = new HashMap<>();
+        agentMap.put("agent_id", 12);
+        agentMap.put("role", "CSR");
+        SelfDescribingJson agent = new SelfDescribingJson("iglu:ca.bc.gov.cfmspoc/agent/jsonschema/1-0-0", agentMap);
+        
+        //----------------------------------------
+        List<SelfDescribingJson> contexts = new ArrayList<>();
+        contexts.add(citizen);
+        contexts.add(office);
+        contexts.add(agent);
+        
+        // Create your event data -- in this example the event has data of its own
+        Map<String, Object> chooseserviceMap = new HashMap<>();
+        chooseserviceMap.put("channel","in-person");
+        chooseserviceMap.put("program_id",45);
+        chooseserviceMap.put("parent_id",0);
+        chooseserviceMap.put("program_name","An amazing program");
+        chooseserviceMap.put("transaction_name","A fantastic transaction");
+        chooseserviceMap.put("quick_txn",false);
+    
+        SelfDescribingJson chooseserviceData = new SelfDescribingJson("iglu:ca.bc.gov.cfmspoc/chooseservice/jsonschema/1-0-0", chooseserviceMap);
+        // Track your event with your custom event data
+        tracker.track(Unstructured.builder()
+            .eventData(chooseserviceData)
+            .customContext(contexts)
+            .build());
+    
+        //----------------------------------------
+        // Create your event data -- in this example the event has no data of its own
+        SelfDescribingJson beginserviceData = new SelfDescribingJson("iglu:ca.bc.gov.cfmspoc/beginservice/jsonschema/1-0-0");
+        // Track your event with your custom event data
+        tracker.track(Unstructured.builder()
+            .eventData(beginserviceData)
+            .customContext(contexts)
+            .build());
+    }
+
+    //  CM:  ==>  End of Snowplow routine.
 
     //  CM:  This variable sets the states in which a customer can be called.
     //  CM:  Used to prevent two CSRs calling the same customer at the same time.

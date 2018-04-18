@@ -90,27 +90,6 @@ import ru.apertum.qsystem.server.Spring;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-//import com.snowplowanalytics.snowplow.tracker.DevicePlatform;
-//import com.snowplowanalytics.snowplow.tracker.Tracker;
-//import com.snowplowanalytics.snowplow.tracker.emitter.SimpleEmitter;
-//import com.snowplowanalytics.snowplow.tracker.emitter.BatchEmitter;
-//import com.snowplowanalytics.snowplow.tracker.emitter.Emitter;
-//import com.snowplowanalytics.snowplow.tracker.emitter.RequestCallback;
-//import com.snowplowanalytics.snowplow.tracker.events.PageView;
-//import com.snowplowanalytics.snowplow.tracker.events.Unstructured;
-//import com.snowplowanalytics.snowplow.tracker.payload.SelfDescribingJson;
-//import com.snowplowanalytics.snowplow.tracker.http.HttpClientAdapter;
-//import com.snowplowanalytics.snowplow.tracker.http.OkHttpClientAdapter;
-//import com.snowplowanalytics.snowplow.tracker.payload.TrackerPayload;
-import com.squareup.okhttp.OkHttpClient;
-//
-//import java.util.List;
-//import java.util.concurrent.TimeUnit;
-//
-//import java.util.HashMap;
-//import java.util.ArrayList;
-//import java.util.Map;
-
 //  CM:  For debugging session info.
 //import java.util.Map;
 //import java.util.Set;
@@ -333,6 +312,8 @@ public class Form {
             trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
             trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
 
+            //  Test Snowplow.
+            Executer.getInstance().TestSnowplow();
         }
 
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
