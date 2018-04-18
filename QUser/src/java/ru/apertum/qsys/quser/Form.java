@@ -90,6 +90,33 @@ import ru.apertum.qsystem.server.Spring;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+////CM:  For Snowplow
+///******************************************************************************
+//* Proof of concept code for CFMS Instrumentation project
+//* NOTE: There is a bug right now that doesn't close the session correctly
+//*   As a result the program may seem to hang when running
+//*   If it logs "SimpleEmitter successfully sent 1 events: code: 200", then 
+//*      it was successful, even if it doesn't close out
+//******************************************************************************/
+//
+//import com.snowplowanalytics.snowplow.tracker.DevicePlatform;
+//import com.snowplowanalytics.snowplow.tracker.Tracker;
+//import com.snowplowanalytics.snowplow.tracker.emitter.SimpleEmitter;
+//import com.snowplowanalytics.snowplow.tracker.emitter.BatchEmitter;
+//import com.snowplowanalytics.snowplow.tracker.emitter.Emitter;
+//import com.snowplowanalytics.snowplow.tracker.emitter.RequestCallback;
+//import com.snowplowanalytics.snowplow.tracker.events.PageView;
+//import com.snowplowanalytics.snowplow.tracker.events.Unstructured;
+//import com.snowplowanalytics.snowplow.tracker.payload.SelfDescribingJson;
+//import com.snowplowanalytics.snowplow.tracker.http.HttpClientAdapter;
+//import com.snowplowanalytics.snowplow.tracker.http.OkHttpClientAdapter;
+//import com.snowplowanalytics.snowplow.tracker.payload.TrackerPayload;
+//import com.squareup.okhttp.OkHttpClient;
+//
+//import java.util.List;
+//import java.util.ArrayList;
+////  CM:  End of Snowplow imports
+
 //  CM:  For debugging session info.
 //import java.util.Map;
 //import java.util.Set;
@@ -235,6 +262,19 @@ public class Form {
     // public LinkedList<QUser> test2 = greed.get(2).getShadow();
     // public LinkedList<QUser> userList = QUserList.getInstance().getItems();
 
+    //    //  CM:  ==>  Start of Snowplow variables
+    //    //private static final String collectorEndpoint = "https://ca-bc-gov-main.collector.snplow.net";
+    //    private static final String collectorEndpoint = "https://spm.gov.bc.ca";
+    //
+    //    //========================================
+    //    // Set up the namespace and appID
+    //    private static final String namespace = "CFMS_poc";
+    //    private static final String appID = "demo";
+    //    //========================================
+    //    // Set whether or not to send events base64 encoded. For now, we send nonencoded to ease debugging
+    //    private static final Boolean baseSetting = false;
+    //    //  CM:  ==>  End of Snowplow variables.
+
     public String l(String resName) {
         return Labels.getLabel(resName);
     }
@@ -269,6 +309,23 @@ public class Form {
             }
         }
     }
+
+    //    //  CM:  ==>  Start of Snowplow routine.    
+    //    //========================================
+    //    public HttpClientAdapter getClient(String url) {
+    //        // use okhttp to send events
+    //        OkHttpClient client = new OkHttpClient();
+    //
+    //        client.setConnectTimeout(5, TimeUnit.SECONDS);
+    //        client.setReadTimeout(5, TimeUnit.SECONDS);
+    //        client.setWriteTimeout(5, TimeUnit.SECONDS);
+    //
+    //        return OkHttpClientAdapter.builder()
+    //                .url(url)
+    //                .httpClient(client)
+    //                .build();
+    //    }
+    //    //  CM:  ==>  End of Snowplow routine.    
 
     @Init
     public void init() {
@@ -306,15 +363,88 @@ public class Form {
             for (QOffice office : offices) {
                 inviteTimes.put(office.getId(), System.currentTimeMillis());
             }
-
-            //  Set when to log the state of the wait queue.
-            trackQOnBeginService = getEnvBoolean("QSYSTEM_TRACK_Q_BEGIN");
-            trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
-            trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
-
-            //  Test Snowplow.
-            Executer.getInstance().TestSnowplow();
         }
+            
+
+        //  Set when to log the state of the wait queue.
+        trackQOnBeginService = getEnvBoolean("QSYSTEM_TRACK_Q_BEGIN");
+        trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
+        trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
+        
+                    //  Test Snowplow.
+                    //Executer.getInstance().TestSnowplow();
+                    
+
+        //        //  CM:  ==> Start of Snowplow calling routine.
+        //        // get the client adapter
+        //        // this is used by the Java tracker to transmit events to the collector
+        //        HttpClientAdapter okHttpClientAdapter = getClient(collectorEndpoint);
+        //
+        //        Emitter emitter = SimpleEmitter.builder()
+        //                .httpClientAdapter(okHttpClientAdapter) // Required
+        //                .threadCount(20) // Default is 50
+        //                .build();
+        //
+        //        Tracker tracker = new Tracker.TrackerBuilder(emitter, namespace, appID)
+        //                .base64(baseSetting)
+        //                .platform(DevicePlatform.Desktop)
+        //                .build();
+        //
+        //        //----------------------------------------
+        //        // Create a Map of the data you want to include...
+        //        Map<String, Object> citizenMap = new HashMap<>();
+        //        citizenMap.put("client_id", 123456);
+        //        SelfDescribingJson citizen = new SelfDescribingJson(
+        //                "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/1-0-0", citizenMap);
+        //
+        //        //----------------------------------------
+        //        Map<String, Object> officeMap = new HashMap<>();
+        //        officeMap.put("office_id", 12);
+        //        officeMap.put("office_type", "reception");
+        //        SelfDescribingJson office = new SelfDescribingJson(
+        //                "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
+        //
+        //        //----------------------------------------
+        //        Map<String, Object> agentMap = new HashMap<>();
+        //        agentMap.put("agent_id", 12);
+        //        agentMap.put("role", "CSR");
+        //        SelfDescribingJson agent = new SelfDescribingJson(
+        //                "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/1-0-0", agentMap);
+        //
+        //        //----------------------------------------
+        //        List<SelfDescribingJson> contexts = new ArrayList<>();
+        //        contexts.add(citizen);
+        //        contexts.add(office);
+        //        contexts.add(agent);
+        //
+        //        // Create your event data -- in this example the event has data of its own
+        //        Map<String, Object> chooseserviceMap = new HashMap<>();
+        //        chooseserviceMap.put("channel", "in-person");
+        //        chooseserviceMap.put("program_id", 45);
+        //        chooseserviceMap.put("parent_id", 0);
+        //        chooseserviceMap.put("program_name", "An amazing program");
+        //        chooseserviceMap.put("transaction_name", "A fantastic transaction");
+        //        chooseserviceMap.put("quick_txn", false);
+        //
+        //        SelfDescribingJson chooseserviceData = new SelfDescribingJson(
+        //                "iglu:ca.bc.gov.cfmspoc/chooseservice/jsonschema/1-0-0", chooseserviceMap);
+        //        // Track your event with your custom event data
+        //        tracker.track(Unstructured.builder()
+        //                .eventData(chooseserviceData)
+        //                .customContext(contexts)
+        //                .build());
+        //
+        //        //----------------------------------------
+        //        // Create your event data -- in this example the event has no data of its own
+        //        SelfDescribingJson beginserviceData = new SelfDescribingJson(
+        //                "iglu:ca.bc.gov.cfmspoc/beginservice/jsonschema/1-0-0");
+        //        // Track your event with your custom event data
+        //        tracker.track(Unstructured.builder()
+        //                .eventData(beginserviceData)
+        //                .customContext(contexts)
+        //                .build());
+        //
+        //        //  CM:  ==> End of Snowplow calling routine.
 
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
 
