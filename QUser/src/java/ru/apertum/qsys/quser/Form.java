@@ -371,8 +371,8 @@ public class Form {
         trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
         trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
         
-                    //  Test Snowplow.
-                    //Executer.getInstance().TestSnowplow();
+        //  Test Snowplow.
+        Executer.getInstance().TestSnowplow();
                     
 
         //        //  CM:  ==> Start of Snowplow calling routine.
