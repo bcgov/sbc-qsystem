@@ -2264,6 +2264,12 @@ public final class Executer {
             if (!oldService.getId().equals(cmdParams.serviceId)) {
                 customer.setPriority(Uses.PRIORITY_HI);
             }
+            else {
+                customer.setPriority(Uses.PRIORITY_HI);
+                QLog.l().logQUser().debug("==> Next service same: O: " + oldService.getName()
+                        + "; N: " + cmdParams.serviceId);
+                QLog.l().logQUser().debug("    --> Hi priority set anyway");
+            }
             customer.setStandTime(new Date());
             newService.addCustomer(customer);
 
