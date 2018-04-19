@@ -218,6 +218,18 @@ public final class Executer {
     //========================================
     // Set whether or not to send events base64 encoded. For now, we send nonencoded to ease debugging
     private static final Boolean baseSetting = false;
+
+    //  CM:  Static variables needed to send info to Snowplow.  Hopefully, can reuse.
+    private static final HttpClientAdapter okHttpClientAdapter = getClient(collectorEndpoint);
+    private static final Emitter emitter = SimpleEmitter.builder()
+            .httpClientAdapter(okHttpClientAdapter) // Required
+            .threadCount(20) // Default is 50
+            .build();
+    private static final Tracker tracker = new Tracker.TrackerBuilder(emitter, namespace, appID)
+            .base64(baseSetting)
+            .platform(DevicePlatform.Desktop)
+            .build();
+
     //  CM:  ==>  End of Snowplow variables.
 
     //  CM:  ==>  Start of Snowplow routine.    
@@ -236,41 +248,44 @@ public final class Executer {
                 .build();
     }
 
-    public void TestSnowplow() {
+    public void TestSnowplow(Long clientId, int officeId, int agentId) {
         // get the client adapter
         // this is used by the Java tracker to transmit events to the collector
 
-        QLog.l().logger().debug("    --> Before 1st call");
-        HttpClientAdapter okHttpClientAdapter = getClient(collectorEndpoint);
+        //        QLog.l().logger().debug("    --> Before 1st call");
+        //        HttpClientAdapter okHttpClientAdapter = getClient(collectorEndpoint);
+        //
+        //
+        //        Emitter emitter = SimpleEmitter.builder()
+        //                .httpClientAdapter(okHttpClientAdapter) // Required
+        //                .threadCount(20) // Default is 50
+        //                .build();
+        //
+        //        Tracker tracker = new Tracker.TrackerBuilder(emitter, namespace, appID)
+        //                .base64(baseSetting)
+        //                .platform(DevicePlatform.Desktop)
+        //                .build();
 
-
-        Emitter emitter = SimpleEmitter.builder()
-                .httpClientAdapter(okHttpClientAdapter) // Required
-                .threadCount(20) // Default is 50
-                .build();
-
-        Tracker tracker = new Tracker.TrackerBuilder(emitter, namespace, appID)
-                .base64(baseSetting)
-                .platform(DevicePlatform.Desktop)
-                .build();
+        QLog.l().logger().debug("==> Snowplow: C: " + clientId + "; O: " + officeId + "; A: "
+                + agentId);
 
         //----------------------------------------
         // Create a Map of the data you want to include...
         Map<String, Object> citizenMap = new HashMap<>();
-        citizenMap.put("client_id", 98765);
+        citizenMap.put("client_id", clientId);
         SelfDescribingJson citizen = new SelfDescribingJson(
                 "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/1-0-0", citizenMap);
 
         //----------------------------------------
         Map<String, Object> officeMap = new HashMap<>();
-        officeMap.put("office_id", 12);
+        officeMap.put("office_id", officeId);
         officeMap.put("office_type", "reception");
         SelfDescribingJson office = new SelfDescribingJson(
                 "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
 
         //----------------------------------------
         Map<String, Object> agentMap = new HashMap<>();
-        agentMap.put("agent_id", 12);
+        agentMap.put("agent_id", agentId);
         agentMap.put("role", "CSR");
         SelfDescribingJson agent = new SelfDescribingJson(
                 "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/1-0-0", agentMap);
