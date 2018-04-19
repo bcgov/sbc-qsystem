@@ -471,20 +471,13 @@ public class Form {
         if (envString == null) {
             QLog.l().logQUser().debug("--> Var: " + envVar + " is null");
         }
-        else {
-            QLog.l().logQUser().debug("--> Var: " + envVar + " is " + envString);
-            if (envString.toUpperCase().equals("YES")) {
-                QLog.l().logQUser().debug("--> Var: " + envVar + " Value is indeed YES");
-            }
-            else {
-                QLog.l().logQUser().debug("--> Var: " + envVar + " Value is not YES");
-            }
-        }
 
         //  CM:  Only do processing if string not null.
         if ((envString != null) && (envString.toUpperCase().equals("YES"))) {
                 envBool = true;
         }
+
+        QLog.l().logQUser().debug("--> Var " + envVar + (envBool ? ": True" : ": False"));
 
         return envBool;
     }

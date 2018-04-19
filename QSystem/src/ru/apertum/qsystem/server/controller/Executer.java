@@ -2396,7 +2396,22 @@ public final class Executer {
             customer.setPreviousList(oldService);
 
             if (!oldService.getId().equals(cmdParams.serviceId)) {
+                //                QLog.l().logQUser().debug("==> NxtSvc diff: OId: " + oldService.getId()
+                //                        + "; O: " + oldService.getName()
+                //                        + "; NId: " + cmdParams.serviceId);
+                //                QLog.l().logQUser().debug("    --> NPriB: " + customer.getPriority().get());
+                //                QLog.l().logQUser().debug("    --> Hi priority set as per normal");
                 customer.setPriority(Uses.PRIORITY_HI);
+                //                QLog.l().logQUser().debug("    --> NPriA: " + customer.getPriority().get());
+            }
+            else {
+                QLog.l().logQUser().debug("==> NxtSvc same: OId: " + oldService.getId()
+                        + "; O: " + oldService.getName()
+                        + "; NId: " + cmdParams.serviceId);
+                QLog.l().logQUser().debug("    --> NPriB: " + customer.getPriority().get());
+                QLog.l().logQUser().debug("    --> Hi priority set anyway");
+                customer.setPriority(Uses.PRIORITY_HI);
+                QLog.l().logQUser().debug("    --> NPriA: " + customer.getPriority().get());
             }
             customer.setStandTime(new Date());
             newService.addCustomer(customer);
