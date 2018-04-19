@@ -372,79 +372,8 @@ public class Form {
         trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
         
         //  Test Snowplow.
-        Executer.getInstance().TestSnowplow(99999L, 12, 12);
-        Executer.getInstance().TestSnowplow(88888L, 13, 13);
-
-        //        //  CM:  ==> Start of Snowplow calling routine.
-        //        // get the client adapter
-        //        // this is used by the Java tracker to transmit events to the collector
-        //        HttpClientAdapter okHttpClientAdapter = getClient(collectorEndpoint);
-        //
-        //        Emitter emitter = SimpleEmitter.builder()
-        //                .httpClientAdapter(okHttpClientAdapter) // Required
-        //                .threadCount(20) // Default is 50
-        //                .build();
-        //
-        //        Tracker tracker = new Tracker.TrackerBuilder(emitter, namespace, appID)
-        //                .base64(baseSetting)
-        //                .platform(DevicePlatform.Desktop)
-        //                .build();
-        //
-        //        //----------------------------------------
-        //        // Create a Map of the data you want to include...
-        //        Map<String, Object> citizenMap = new HashMap<>();
-        //        citizenMap.put("client_id", 123456);
-        //        SelfDescribingJson citizen = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/1-0-0", citizenMap);
-        //
-        //        //----------------------------------------
-        //        Map<String, Object> officeMap = new HashMap<>();
-        //        officeMap.put("office_id", 12);
-        //        officeMap.put("office_type", "reception");
-        //        SelfDescribingJson office = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
-        //
-        //        //----------------------------------------
-        //        Map<String, Object> agentMap = new HashMap<>();
-        //        agentMap.put("agent_id", 12);
-        //        agentMap.put("role", "CSR");
-        //        SelfDescribingJson agent = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/1-0-0", agentMap);
-        //
-        //        //----------------------------------------
-        //        List<SelfDescribingJson> contexts = new ArrayList<>();
-        //        contexts.add(citizen);
-        //        contexts.add(office);
-        //        contexts.add(agent);
-        //
-        //        // Create your event data -- in this example the event has data of its own
-        //        Map<String, Object> chooseserviceMap = new HashMap<>();
-        //        chooseserviceMap.put("channel", "in-person");
-        //        chooseserviceMap.put("program_id", 45);
-        //        chooseserviceMap.put("parent_id", 0);
-        //        chooseserviceMap.put("program_name", "An amazing program");
-        //        chooseserviceMap.put("transaction_name", "A fantastic transaction");
-        //        chooseserviceMap.put("quick_txn", false);
-        //
-        //        SelfDescribingJson chooseserviceData = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/chooseservice/jsonschema/1-0-0", chooseserviceMap);
-        //        // Track your event with your custom event data
-        //        tracker.track(Unstructured.builder()
-        //                .eventData(chooseserviceData)
-        //                .customContext(contexts)
-        //                .build());
-        //
-        //        //----------------------------------------
-        //        // Create your event data -- in this example the event has no data of its own
-        //        SelfDescribingJson beginserviceData = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/beginservice/jsonschema/1-0-0");
-        //        // Track your event with your custom event data
-        //        tracker.track(Unstructured.builder()
-        //                .eventData(beginserviceData)
-        //                .customContext(contexts)
-        //                .build());
-        //
-        //        //  CM:  ==> End of Snowplow calling routine.
+        //Executer.getInstance().TestSnowplow(99999L, 12, 12);
+        //Executer.getInstance().TestSnowplow(88888L, 13, 13);
 
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
 
@@ -2743,6 +2672,7 @@ public class Form {
 
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
+                params.create_spservice = true;
 
                 //  Need to get service from params.
                 final QService service = QServiceTree.getInstance().getById(params.serviceId);
