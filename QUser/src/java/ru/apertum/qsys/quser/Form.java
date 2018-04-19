@@ -372,8 +372,8 @@ public class Form {
         trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
         
         //  Test Snowplow.
-        Executer.getInstance().TestSnowplow();
-                    
+        Executer.getInstance().TestSnowplow(99999L, 12, 12);
+        Executer.getInstance().TestSnowplow(88888L, 13, 13);
 
         //        //  CM:  ==> Start of Snowplow calling routine.
         //        // get the client adapter
@@ -2744,9 +2744,34 @@ public class Form {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
 
+                //  Need to get service from params.
+                final QService service = QServiceTree.getInstance().getById(params.serviceId);
+
+                QLog.l().logQUser().debug("==> Choosing a service from Params:");
+                QLog.l().logQUser().debug("    --> Channel:  " + params.channels);
+                QLog.l().logQUser().debug("    --> SvcId:    " + params.serviceId);
+                QLog.l().logQUser().debug("    --> SvcPId:   " + service.getParentId());
+                QLog.l().logQUser().debug("    --> SvcCat:   " + service.getParent().getName());
+                QLog.l().logQUser().debug("    --> SvtTrans: " + service.getName());
+                QLog.l().logQUser().debug("    --> Q.Txn:    " + (params.custQtxn ? "True"
+                        : "False"));
+
                 RpcStandInService result = this.addToQueue(params);
                 if (result.getResult() != null) {
                     trackCust = result.getResult();
+
+                    QLog.l().logQUser().debug("==> Choosing a service from Add to Queue result:");
+                    QLog.l().logQUser().debug("    --> Channel:  " + trackCust.getChannels());
+                    QLog.l().logQUser().debug("    --> SvcId:    " + trackCust.getService()
+                            .getId());
+                    QLog.l().logQUser().debug("    --> SvcPId:   " + trackCust.getService()
+                            .getParentId());
+                    QLog.l().logQUser().debug("    --> SvcCat:   " + trackCust.getService()
+                            .getParent().getName());
+                    QLog.l().logQUser().debug("    --> SvtTrans: " + trackCust.getService()
+                            .getName());
+                    QLog.l().logQUser().debug("    --> Q.Txn:    " + (trackCust.getTempQuickTxn()
+                            ? "True" : "False"));
                 }
 
                 customer = null;
