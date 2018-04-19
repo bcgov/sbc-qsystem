@@ -22,6 +22,7 @@ public class User {
     private List<QPlanService> plan = new LinkedList<>();
     private LinkedList<QCustomer> customerList = new LinkedList<>();
     private Date customerWelcomeTime;
+    private Long snowPlowCustId;
     private boolean GABoard = false;
     private boolean QuickTxn = false;
 
@@ -69,6 +70,14 @@ public class User {
 
     public void setQuickTxn(boolean txn) {
         this.QuickTxn = txn;
+    }
+    
+    public Long getSnowPlowCustId() {
+        return this.snowPlowCustId;
+    }
+
+    public void setSnowPlowCustId(Long spcId) {
+        this.snowPlowCustId = spcId;
     }
 
     public String getPassword() {
