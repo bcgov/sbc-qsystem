@@ -415,6 +415,31 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                         .inkWorked(new Date().getTime() - getStartTime().getTime());
                 break;
         }
+
+        // For now, no Snowplow calls, log to see if this is where they should go.
+        QLog.l().logQUser().debug("==> Changing customer state:");
+        if (this.getUser() == null) {
+            QLog.l().logQUser().debug("    --> CSR:    is null");
+        }
+        else {
+            QLog.l().logQUser().debug("    --> CSR:    " + this.getUser().getName());
+        }
+        if (this.getOffice() == null) {
+            QLog.l().logQUser().debug("    --> Office: is null");
+        }
+        else {
+            QLog.l().logQUser().debug("    --> Office: " + this.getOffice().getName());
+        }
+        QLog.l().logQUser().debug("    --> Cust:   " + this.getId());
+        if (this.getService() == null) {
+            QLog.l().logQUser().debug("    --> Svc:    is null");
+        }
+        else {
+            QLog.l().logQUser().debug("    --> Svc:    " + this.getService().getName());
+        }
+        QLog.l().logQUser().debug("    --> State:  " + this.getStateIn());
+
+
         saveToSelfDB();
 
         // ????????? ????????????? ????????? :: Support extensibility plug-ins
