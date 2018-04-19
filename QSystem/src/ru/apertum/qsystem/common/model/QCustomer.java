@@ -160,6 +160,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @Expose
     @SerializedName("log_waitqueue")
     public boolean log_waitqueue;
+    @Expose
+    @SerializedName("create_spservice")
+    public boolean create_spservice;
     /**
      * ???????????? ?????? ? ????????? ??? ????????? ? ???????? ? ?????????? :: Comments and users about the custodian when redirecting and sending to deferred
      */
@@ -438,7 +441,8 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
             QLog.l().logQUser().debug("    --> Svc:    " + this.getService().getName());
         }
         QLog.l().logQUser().debug("    --> State:  " + this.getStateIn());
-
+        QLog.l().logQUser().debug("    --> SPSrv:  " + (this.getCreateSnowplowService() ? "Yes"
+                : "No"));
 
         saveToSelfDB();
 
@@ -1060,4 +1064,14 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     public void setLogWaitQueue(Boolean logQueue) {
         this.log_waitqueue = logQueue;
     }
+
+    @Transient
+    public Boolean getCreateSnowplowService() {
+        return this.create_spservice;
+    }
+
+    public void setCreateSnowplowService(Boolean createSnowplowService) {
+        this.create_spservice = createSnowplowService;
+    }
+
 }
