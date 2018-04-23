@@ -329,7 +329,7 @@ public final class Executer {
     //  CM:  ==>  End of Snowplow routine.
 
     //  CM:  ==>  Start of Snowplow routine to choose a service.
-    public void SnowplowChooseService(CmdParams params) {
+    public void SnowplowAddCitizen() {
 
         //        QLog.l().logger().debug("==> Snowplow: C: " + clientId + "; O: " + officeId + "; A: "
         //                + agentId);
@@ -3714,7 +3714,7 @@ public final class Executer {
                 customer.setTempQuickTxn(cmdParams.custQtxn);
                 customer.setIsInSequence(cmdParams.in_sequence);
                 customer.setLogWaitQueue(cmdParams.log_waitqueue);
-                customer.setCreateSnowplowService(true);
+                customer.setSpId(cmdParams.spId);
                 //                QLog.l().logQUser().debug("    --> Cust: " + customer.getName() + "; Cust Seq: "
                 //                        + (customer.getIsInSequence() ? "Yes" : "No"));
 
