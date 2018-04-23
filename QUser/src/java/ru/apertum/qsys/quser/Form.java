@@ -90,33 +90,6 @@ import ru.apertum.qsystem.server.Spring;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-////CM:  For Snowplow
-///******************************************************************************
-//* Proof of concept code for CFMS Instrumentation project
-//* NOTE: There is a bug right now that doesn't close the session correctly
-//*   As a result the program may seem to hang when running
-//*   If it logs "SimpleEmitter successfully sent 1 events: code: 200", then 
-//*      it was successful, even if it doesn't close out
-//******************************************************************************/
-//
-//import com.snowplowanalytics.snowplow.tracker.DevicePlatform;
-//import com.snowplowanalytics.snowplow.tracker.Tracker;
-//import com.snowplowanalytics.snowplow.tracker.emitter.SimpleEmitter;
-//import com.snowplowanalytics.snowplow.tracker.emitter.BatchEmitter;
-//import com.snowplowanalytics.snowplow.tracker.emitter.Emitter;
-//import com.snowplowanalytics.snowplow.tracker.emitter.RequestCallback;
-//import com.snowplowanalytics.snowplow.tracker.events.PageView;
-//import com.snowplowanalytics.snowplow.tracker.events.Unstructured;
-//import com.snowplowanalytics.snowplow.tracker.payload.SelfDescribingJson;
-//import com.snowplowanalytics.snowplow.tracker.http.HttpClientAdapter;
-//import com.snowplowanalytics.snowplow.tracker.http.OkHttpClientAdapter;
-//import com.snowplowanalytics.snowplow.tracker.payload.TrackerPayload;
-//import com.squareup.okhttp.OkHttpClient;
-//
-//import java.util.List;
-//import java.util.ArrayList;
-////  CM:  End of Snowplow imports
-
 //  CM:  For debugging session info.
 //import java.util.Map;
 //import java.util.Set;
@@ -252,6 +225,7 @@ public class Form {
     private int customersCount = 0;
     private boolean currentState = false;
     private boolean CheckGABoard = false;
+    private Long spId = 0L;
 
     private String lastGoodQuantity = "1";
 
@@ -261,19 +235,6 @@ public class Form {
 
     // public LinkedList<QUser> test2 = greed.get(2).getShadow();
     // public LinkedList<QUser> userList = QUserList.getInstance().getItems();
-
-    //    //  CM:  ==>  Start of Snowplow variables
-    //    //private static final String collectorEndpoint = "https://ca-bc-gov-main.collector.snplow.net";
-    //    private static final String collectorEndpoint = "https://spm.gov.bc.ca";
-    //
-    //    //========================================
-    //    // Set up the namespace and appID
-    //    private static final String namespace = "CFMS_poc";
-    //    private static final String appID = "demo";
-    //    //========================================
-    //    // Set whether or not to send events base64 encoded. For now, we send nonencoded to ease debugging
-    //    private static final Boolean baseSetting = false;
-    //    //  CM:  ==>  End of Snowplow variables.
 
     public String l(String resName) {
         return Labels.getLabel(resName);
@@ -309,23 +270,6 @@ public class Form {
             }
         }
     }
-
-    //    //  CM:  ==>  Start of Snowplow routine.    
-    //    //========================================
-    //    public HttpClientAdapter getClient(String url) {
-    //        // use okhttp to send events
-    //        OkHttpClient client = new OkHttpClient();
-    //
-    //        client.setConnectTimeout(5, TimeUnit.SECONDS);
-    //        client.setReadTimeout(5, TimeUnit.SECONDS);
-    //        client.setWriteTimeout(5, TimeUnit.SECONDS);
-    //
-    //        return OkHttpClientAdapter.builder()
-    //                .url(url)
-    //                .httpClient(client)
-    //                .build();
-    //    }
-    //    //  CM:  ==>  End of Snowplow routine.    
 
     @Init
     public void init() {
@@ -1385,12 +1329,16 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = { "addWindowButtons" })
+    @NotifyChange(value = { "addWindowButtons", "spId" })
     public void backOffice() {
 
         //  CM:  Track start of Add Citizen via Back Office button.
         Executer.getInstance().TrackUserClick("Ind: Back Office", "Before", user.getUser(), user
                 .getUser().getCustomer());
+
+        //  CM:  Create a Snowplow ID number.
+        spId = createSpId();
+        Executer.getInstance().SnowplowAddCitizen();
 
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
@@ -1409,12 +1357,16 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = { "addWindowButtons" })
+    @NotifyChange(value = { "addWindowButtons", "spId" })
     public void addClient() {
 
         //  CM:  Track start of Add Citizen
         Executer.getInstance().TrackUserClick("Ind: Add Citizen", "Before", user.getUser(), user
                 .getUser().getCustomer());
+
+        //  CM:  Create a Snowplow ID number, then call Snowplow.
+        spId = createSpId();
+        Executer.getInstance().SnowplowAddCitizen();
 
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
@@ -1430,6 +1382,13 @@ public class Form {
         //  CM:  Track end of Add Citizen
         Executer.getInstance().TrackUserClick("Ind: Add Citizen", "After", user.getUser(), user
                 .getUser().getCustomer());
+    }
+
+    private Long createSpId() {
+        Long officeCSR = (1000L * (Long) user.getUser().getOffice().getId()) +
+                user.getUser().getId();
+        Long timeNow = new Date().getTime();
+        return (10000000000000L * officeCSR) + timeNow;
     }
 
     @Command
@@ -2672,7 +2631,6 @@ public class Form {
 
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
-                params.create_spservice = true;
 
                 //  Need to get service from params.
                 final QService service = QServiceTree.getInstance().getById(params.serviceId);
@@ -2685,6 +2643,8 @@ public class Form {
                 QLog.l().logQUser().debug("    --> SvtTrans: " + service.getName());
                 QLog.l().logQUser().debug("    --> Q.Txn:    " + (params.custQtxn ? "True"
                         : "False"));
+                QLog.l().logQUser().debug("    --> PSpId:     " + params.spId);
+                QLog.l().logQUser().debug("    --> VSpId:     " + this.spId);
 
                 RpcStandInService result = this.addToQueue(params);
                 if (result.getResult() != null) {
@@ -2702,6 +2662,7 @@ public class Form {
                             .getName());
                     QLog.l().logQUser().debug("    --> Q.Txn:    " + (trackCust.getTempQuickTxn()
                             ? "True" : "False"));
+                    QLog.l().logQUser().debug("    --> PSpId:     " + params.spId);
                 }
 
                 customer = null;
@@ -2777,6 +2738,7 @@ public class Form {
         // params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
         // params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
         params.welcomeTime = user.getCustomerWelcomeTime();
+        params.spId = this.spId;
 
         //  Debug
         //QLog.l().logQUser().debug("==> End: paramsForAddingInQueue");
