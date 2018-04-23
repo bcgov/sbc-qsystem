@@ -136,8 +136,8 @@ public class CmdParams {
     public boolean log_waitqueue;
 
     @Expose
-    @SerializedName("create_spservice")
-    public boolean create_spservice;
+    @SerializedName("spId")
+    public Long spId;
 
     public CmdParams() {
     }
