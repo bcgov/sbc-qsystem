@@ -44,6 +44,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import ru.apertum.qsystem.server.controller.Executer;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
@@ -420,29 +421,31 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         }
 
         // For now, no Snowplow calls, log to see if this is where they should go.
-        QLog.l().logQUser().debug("==> Changing customer state:");
-        if (this.getUser() == null) {
-            QLog.l().logQUser().debug("    --> CSR:    is null");
-        }
-        else {
-            QLog.l().logQUser().debug("    --> CSR:    " + this.getUser().getName());
-        }
-        if (this.getOffice() == null) {
-            QLog.l().logQUser().debug("    --> Office: is null");
-        }
-        else {
-            QLog.l().logQUser().debug("    --> Office: " + this.getOffice().getName());
-        }
-        QLog.l().logQUser().debug("    --> Cust:   " + this.getId());
-        if (this.getService() == null) {
-            QLog.l().logQUser().debug("    --> Svc:    is null");
-        }
-        else {
-            QLog.l().logQUser().debug("    --> Svc:    " + this.getService().getName());
-        }
-        QLog.l().logQUser().debug("    --> State:  " + this.getStateIn());
-        QLog.l().logQUser().debug("    --> SPId:   " + this.getSpId().toString());
-        //  xxxx
+        //        QLog.l().logQUser().debug("==> Changing customer state:");
+        //        if (this.getUser() == null) {
+        //            QLog.l().logQUser().debug("    --> CSR:    is null");
+        //        }
+        //        else {
+        //            QLog.l().logQUser().debug("    --> CSR:    " + this.getUser().getName());
+        //        }
+        //        if (this.getOffice() == null) {
+        //            QLog.l().logQUser().debug("    --> Office: is null");
+        //        }
+        //        else {
+        //            QLog.l().logQUser().debug("    --> Office: " + this.getOffice().getName());
+        //        }
+        //        QLog.l().logQUser().debug("    --> Cust:   " + this.getId());
+        //        if (this.getService() == null) {
+        //            QLog.l().logQUser().debug("    --> Svc:    is null");
+        //        }
+        //        else {
+        //            QLog.l().logQUser().debug("    --> Svc:    " + this.getService().getName());
+        //        }
+        //        QLog.l().logQUser().debug("    --> State:  " + this.getStateIn());
+        //        QLog.l().logQUser().debug("    --> SPId:   " + this.getSpId().toString());
+
+        //  Make Snowplow call.
+        Executer.getInstance().SnowplowLogEvent(this);
 
         saveToSelfDB();
 
@@ -1023,15 +1026,11 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         return this.PreviousList;
     }
 
-    ;
-
     public void setPreviousList(QService s) {
         if (!PreviousList.contains(s)) {
             PreviousList.add(s);
         }
     }
-
-    ;
 
     public void refreshPrevious() {
         this.PreviousList = null;
@@ -1065,7 +1064,7 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         this.log_waitqueue = logQueue;
     }
 
-    @Transient
+    @Column(name = "spId")
     public Long getSpId() {
         return this.spId;
     }
