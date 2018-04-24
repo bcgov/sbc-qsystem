@@ -329,76 +329,71 @@ public final class Executer {
     //  CM:  ==>  End of Snowplow routine.
 
     //  CM:  ==>  Start of Snowplow routine to choose a service.
-    public void SnowplowAddCitizen() {
+    public void SnowplowAddCitizen(Long spId, QUser csr) {
 
-        //        QLog.l().logger().debug("==> Snowplow: C: " + clientId + "; O: " + officeId + "; A: "
-        //                + agentId);
+        //  Extract info Snowplow needs.
+        Long clientId = spId;
+        QOffice csrOffice = csr.getOffice();
+        Long officeId = csrOffice.getId();
+        String officeType = csrOffice.getSmartboardType();
+        Long agentId = csr.getId();
+        String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
 
-        //        //  Need to get service from params.
-        //        final QService service = QServiceTree.getInstance().getById(params.serviceId);
-        //
-        //        QLog.l().logQUser().debug("==> Choosing a service from Params:");
-        //        QLog.l().logQUser().debug("    --> Channel:  " + params.channels);
-        //        QLog.l().logQUser().debug("    --> SvcId:    " + params.serviceId);
-        //        QLog.l().logQUser().debug("    --> SvcPId:   " + service.getParentId());
-        //        QLog.l().logQUser().debug("    --> SvcCat:   " + service.getParent().getName());
-        //        QLog.l().logQUser().debug("    --> SvtTrans: " + service.getName());
-        //        QLog.l().logQUser().debug("    --> Q.Txn:    " + (params.custQtxn ? "True"
-        //                : "False"));
+        QLog.l().logger().debug("==> Snowplow: C: " + clientId + "; O: " + officeId + "; A: "
+                + agentId);
+
+        // Create a Map of the data you want to include...
+        Map<String, Object> citizenMap = new HashMap<>();
+        citizenMap.put("client_id", clientId);
+        SelfDescribingJson citizen = new SelfDescribingJson(
+                "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/1-0-0", citizenMap);
 
         //----------------------------------------
-        //        // Create a Map of the data you want to include...
-        //        Map<String, Object> citizenMap = new HashMap<>();
-        //        citizenMap.put("client_id", clientId);
-        //        SelfDescribingJson citizen = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/1-0-0", citizenMap);
-        //
-        //        //----------------------------------------
-        //        Map<String, Object> officeMap = new HashMap<>();
-        //        officeMap.put("office_id", officeId);
-        //        officeMap.put("office_type", "reception");
-        //        SelfDescribingJson office = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
-        //
-        //        //----------------------------------------
-        //        Map<String, Object> agentMap = new HashMap<>();
-        //        agentMap.put("agent_id", agentId);
-        //        agentMap.put("role", "CSR");
-        //        SelfDescribingJson agent = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/1-0-0", agentMap);
-        //
-        //        //----------------------------------------
-        //        List<SelfDescribingJson> contexts = new ArrayList<>();
-        //        contexts.add(citizen);
-        //        contexts.add(office);
-        //        contexts.add(agent);
-        //
-        //        // Create your event data -- in this example the event has data of its own
-        //        Map<String, Object> chooseserviceMap = new HashMap<>();
-        //        chooseserviceMap.put("channel", "in-person");
-        //        chooseserviceMap.put("program_id", 45);
-        //        chooseserviceMap.put("parent_id", 0);
-        //        chooseserviceMap.put("program_name", "An amazing program");
-        //        chooseserviceMap.put("transaction_name", "A fantastic transaction");
-        //        chooseserviceMap.put("quick_txn", false);
-        //
-        //        SelfDescribingJson chooseserviceData = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/chooseservice/jsonschema/1-0-0", chooseserviceMap);
-        //        // Track your event with your custom event data
-        //        tracker.track(Unstructured.builder()
-        //                .eventData(chooseserviceData)
-        //                .customContext(contexts)
-        //                .build());
-        //
-        //        //----------------------------------------
-        //        // Create your event data -- in this example the event has no data of its own
-        //        SelfDescribingJson beginserviceData = new SelfDescribingJson(
-        //                "iglu:ca.bc.gov.cfmspoc/beginservice/jsonschema/1-0-0");
-        //        // Track your event with your custom event data
-        //        tracker.track(Unstructured.builder()
-        //                .eventData(beginserviceData)
-        //                .customContext(contexts)
-        //                .build());
+        Map<String, Object> officeMap = new HashMap<>();
+        officeMap.put("office_id", officeId);
+        officeMap.put("office_type", officeType);
+        SelfDescribingJson office = new SelfDescribingJson(
+                "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
+
+        //----------------------------------------
+        Map<String, Object> agentMap = new HashMap<>();
+        agentMap.put("agent_id", agentId);
+        agentMap.put("role", agentRole);
+        SelfDescribingJson agent = new SelfDescribingJson(
+                "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/1-0-0", agentMap);
+
+        //----------------------------------------
+        List<SelfDescribingJson> contexts = new ArrayList<>();
+        contexts.add(citizen);
+        contexts.add(office);
+        contexts.add(agent);
+
+        // Create your event data -- in this example the event has data of its own
+        Map<String, Object> chooseserviceMap = new HashMap<>();
+        chooseserviceMap.put("channel", "in-person");
+        chooseserviceMap.put("program_id", 45);
+        chooseserviceMap.put("parent_id", 0);
+        chooseserviceMap.put("program_name", "An amazing program");
+        chooseserviceMap.put("transaction_name", "A fantastic transaction");
+        chooseserviceMap.put("quick_txn", false);
+
+        SelfDescribingJson chooseserviceData = new SelfDescribingJson(
+                "iglu:ca.bc.gov.cfmspoc/chooseservice/jsonschema/1-0-0", chooseserviceMap);
+        // Track your event with your custom event data
+        tracker.track(Unstructured.builder()
+                .eventData(chooseserviceData)
+                .customContext(contexts)
+                .build());
+
+        //----------------------------------------
+        // Create your event data -- in this example the event has no data of its own
+        SelfDescribingJson beginserviceData = new SelfDescribingJson(
+                "iglu:ca.bc.gov.cfmspoc/beginservice/jsonschema/1-0-0");
+        // Track your event with your custom event data
+        tracker.track(Unstructured.builder()
+                .eventData(beginserviceData)
+                .customContext(contexts)
+                .build());
         QLog.l().logger().debug("    --> After last call");
     }
     //  CM:  ==>  End of Snowplow routine to choose a service.
