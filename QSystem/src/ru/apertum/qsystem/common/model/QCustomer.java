@@ -164,6 +164,10 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @Expose
     @SerializedName("spId")
     public Long spId = 0L;
+    @Expose
+    @SerializedName("stateInPrevious")
+    private Integer stateInPrevious = 0;
+
     /**
      * ???????????? ?????? ? ????????? ??? ????????? ? ???????? ? ?????????? :: Comments and users about the custodian when redirecting and sending to deferred
      */
@@ -316,7 +320,16 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
      */
     public void setState(CustomerState state, Long newServiceId) {
         this.state = state;
+        if (stateIn == null) {
+            stateInPrevious = 0;
+            QLog.l().logger().debug("==> ERROR: Current stateIn is null");
+        }
+        else {
+            QLog.l().logger().debug("==> All OK: Current stateIn is " + stateIn);
+            stateInPrevious = stateIn;
+        }
         stateIn = state.ordinal();
+        QLog.l().logger().debug("    --> New stateIn is " + stateIn);
 
         // ????? ????? ??????? ?? ????? ????????? ? ????? ? ?? ??? ???????????
         if (getUser() != null && getUser().getShadow() != null) {
@@ -1064,7 +1077,8 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         this.log_waitqueue = logQueue;
     }
 
-    @Column(name = "spId")
+    //@Column(name = "spId")
+    @Transient
     public Long getSpId() {
         return this.spId;
     }
@@ -1073,4 +1087,12 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         this.spId = snowplowId;
     }
 
+    @Transient
+    public Integer getStateInPrevious() {
+        return this.stateInPrevious;
+    }
+
+    public void setStateInPrevious(Integer stateValue) {
+        this.stateInPrevious = stateValue;
+    }
 }
