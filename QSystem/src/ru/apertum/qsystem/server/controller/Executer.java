@@ -511,8 +511,10 @@ public final class Executer {
         String schema = "";
         Boolean allOK = true;
         Boolean noExtraParameters = true;
+        Integer previousState = qCitizen.getStateInPrevious();
         Map<String, Object> eventDataMap = new HashMap<>();
-        SelfDescribingJson logData;
+        SelfDescribingJson logData = new SelfDescribingJson(
+                "iglu:ca.bc.gov.cfmspoc/addtoqueue/jsonschema/1-0-0");
 
         //  Set the json schema depending on the customer state.
         switch (qCitizen.getState()) {
@@ -520,19 +522,40 @@ public final class Executer {
                 schema = "customerleft";
                 break;
             case STATE_WAIT:  //  State 1, Citizen waiting in the queue
-                schema = "addtoqueue";
+                if (qCitizen.getStateInPrevious() == 0) {
+                    schema = "addtoqueue";
+                }
+                else {
+                    schema = "returntoqueue";
+                }
                 break;
             case STATE_WAIT_AFTER_POSTPONED:  //  State 2, 
-                schema = "Waiting after postponed";
+                schema = "Invalid";
+                allOK = false;
                 break;
             case STATE_WAIT_COMPLEX_SERVICE:  //  State 3,
-                schema = "Waiting after postponed";
+                schema = "Invalid";
+                allOK = false;
                 break;
             case STATE_INVITED:  //  State 4, citizen invited to CSR desk
                 schema = "invitecitizen";
                 break;
             case STATE_INVITED_SECONDARY:  //  State 5, citizen invited to CSR desk
-                schema = "invitefromlist";
+
+                //  Previous state determines which event to call.
+                switch (previousState) {
+                    case 11:
+                        schema = "invitefromhold";
+                        break;
+                    case 12:
+                        schema = "invitefromlist";
+                        break;
+                    default:
+                        schema = "Invalid";
+                        allOK = false;
+                        break;
+                }
+
                 break;
             case STATE_REDIRECT:  //  State 6
                 schema = "additionalservice";
@@ -544,7 +567,8 @@ public final class Executer {
                 schema = "beginservice";
                 break;
             case STATE_BACK:  //  State 9, 
-                schema = "Comes back after redirect";
+                schema = "Invalid";
+                allOK = false;
                 break;
             case STATE_FINISH:  //  State 10, citizen finished receiving service
                 schema = "finish";
@@ -561,8 +585,9 @@ public final class Executer {
                 logData = new SelfDescribingJson(
                         "iglu:ca.bc.gov.cfmspoc/hold/jsonschema/1-0-0", eventDataMap);
                 break;
-            case STATE_POSTPONED_REDIRECT:  //  State 12
-                schema = "invitefromhold";
+            case STATE_POSTPONED_REDIRECT:  //  State 12, user clicked on user in wait queue.
+                schema = "Ignore";
+                allOK = false;
                 break;
             case STATE_INACCURATE_TIME:    //  State 13
                 schema = "finish";
@@ -578,7 +603,7 @@ public final class Executer {
                 break;
         }
 
-        QLog.l().logger().debug("    --> State:  " + schema);
+        QLog.l().logger().debug("    --> Schema:  " + schema);
 
         //----------------------------------------
         // Create your event data -- in this example the event has no data of its own
@@ -3875,7 +3900,7 @@ public final class Executer {
             CLIENT_TASK_LOCK.lock();
             try {
                 // ???????? ????? ??????????? ?????????
-                // Create a new baked custome
+                // Create a new baked customer
                 customer = new QCustomer(service.getNextNumber());
 
                 //set customer welcome time
