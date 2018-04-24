@@ -1338,7 +1338,7 @@ public class Form {
 
         //  CM:  Create a Snowplow ID number.
         spId = createSpId();
-        Executer.getInstance().SnowplowAddCitizen();
+        CallSnowplowAddCitizen(spId);
 
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
@@ -1366,7 +1366,7 @@ public class Form {
 
         //  CM:  Create a Snowplow ID number, then call Snowplow.
         spId = createSpId();
-        Executer.getInstance().SnowplowAddCitizen();
+        CallSnowplowAddCitizen(spId);
 
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
@@ -1389,6 +1389,16 @@ public class Form {
                 user.getUser().getId();
         Long timeNow = new Date().getTime();
         return (10000000000000L * officeCSR) + timeNow;
+    }
+
+    private void CallSnowplowAddCitizen(Long spId) {
+
+        //  Create the arguments that Snowplow needs.
+        QUser csr = user.getUser();
+
+        //  Call routine that makes the actual Snowplow call.
+        Executer.getInstance().SnowplowAddCitizen(spId, csr);
+
     }
 
     @Command
