@@ -44,6 +44,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import ru.apertum.qsystem.server.controller.Executer;
 import ru.apertum.qsystem.common.CustomerState;
 import ru.apertum.qsystem.common.QConfig;
 import ru.apertum.qsystem.common.QLog;
@@ -160,6 +161,13 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @Expose
     @SerializedName("log_waitqueue")
     public boolean log_waitqueue;
+    @Expose
+    @SerializedName("spId")
+    public Long spId = 0L;
+    @Expose
+    @SerializedName("stateInPrevious")
+    private Integer stateInPrevious = 0;
+
     /**
      * ???????????? ?????? ? ????????? ??? ????????? ? ???????? ? ?????????? :: Comments and users about the custodian when redirecting and sending to deferred
      */
@@ -312,7 +320,16 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
      */
     public void setState(CustomerState state, Long newServiceId) {
         this.state = state;
+        if (stateIn == null) {
+            stateInPrevious = 0;
+            QLog.l().logger().debug("==> ERROR: Current stateIn is null");
+        }
+        else {
+            QLog.l().logger().debug("==> All OK: Current stateIn is " + stateIn);
+            stateInPrevious = stateIn;
+        }
         stateIn = state.ordinal();
+        QLog.l().logger().debug("    --> New stateIn is " + stateIn);
 
         // ????? ????? ??????? ?? ????? ????????? ? ????? ? ?? ??? ???????????
         if (getUser() != null && getUser().getShadow() != null) {
@@ -415,6 +432,34 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                         .inkWorked(new Date().getTime() - getStartTime().getTime());
                 break;
         }
+
+        // For now, no Snowplow calls, log to see if this is where they should go.
+        //        QLog.l().logQUser().debug("==> Changing customer state:");
+        //        if (this.getUser() == null) {
+        //            QLog.l().logQUser().debug("    --> CSR:    is null");
+        //        }
+        //        else {
+        //            QLog.l().logQUser().debug("    --> CSR:    " + this.getUser().getName());
+        //        }
+        //        if (this.getOffice() == null) {
+        //            QLog.l().logQUser().debug("    --> Office: is null");
+        //        }
+        //        else {
+        //            QLog.l().logQUser().debug("    --> Office: " + this.getOffice().getName());
+        //        }
+        //        QLog.l().logQUser().debug("    --> Cust:   " + this.getId());
+        //        if (this.getService() == null) {
+        //            QLog.l().logQUser().debug("    --> Svc:    is null");
+        //        }
+        //        else {
+        //            QLog.l().logQUser().debug("    --> Svc:    " + this.getService().getName());
+        //        }
+        //        QLog.l().logQUser().debug("    --> State:  " + this.getStateIn());
+        //        QLog.l().logQUser().debug("    --> SPId:   " + this.getSpId().toString());
+
+        //  Make Snowplow call.
+        Executer.getInstance().SnowplowLogEvent(this);
+
         saveToSelfDB();
 
         // ????????? ????????????? ????????? :: Support extensibility plug-ins
@@ -994,15 +1039,11 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         return this.PreviousList;
     }
 
-    ;
-
     public void setPreviousList(QService s) {
         if (!PreviousList.contains(s)) {
             PreviousList.add(s);
         }
     }
-
-    ;
 
     public void refreshPrevious() {
         this.PreviousList = null;
@@ -1034,5 +1075,24 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setLogWaitQueue(Boolean logQueue) {
         this.log_waitqueue = logQueue;
+    }
+
+    //@Column(name = "spId")
+    @Transient
+    public Long getSpId() {
+        return this.spId;
+    }
+
+    public void setSpId(Long snowplowId) {
+        this.spId = snowplowId;
+    }
+
+    @Transient
+    public Integer getStateInPrevious() {
+        return this.stateInPrevious;
+    }
+
+    public void setStateInPrevious(Integer stateValue) {
+        this.stateInPrevious = stateValue;
     }
 }

@@ -225,6 +225,7 @@ public class Form {
     private int customersCount = 0;
     private boolean currentState = false;
     private boolean CheckGABoard = false;
+    private Long spId = 0L;
 
     private String lastGoodQuantity = "1";
 
@@ -306,13 +307,17 @@ public class Form {
             for (QOffice office : offices) {
                 inviteTimes.put(office.getId(), System.currentTimeMillis());
             }
-
-            //  Set when to log the state of the wait queue.
-            trackQOnBeginService = getEnvBoolean("QSYSTEM_TRACK_Q_BEGIN");
-            trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
-            trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
-
         }
+            
+
+        //  Set when to log the state of the wait queue.
+        trackQOnBeginService = getEnvBoolean("QSYSTEM_TRACK_Q_BEGIN");
+        trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
+        trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
+        
+        //  Test Snowplow.
+        //Executer.getInstance().TestSnowplow(99999L, 12, 12);
+        //Executer.getInstance().TestSnowplow(88888L, 13, 13);
 
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
 
@@ -910,8 +915,21 @@ public class Form {
         String service = pickedRedirectServ.getName();
         Executer.getInstance().TrackUserClick("Add: Click Service " + service, "Before", user
                 .getUser(), user.getUser().getCustomer());
+
+        //  Call Snowplow to choose service.
+        CallSnowplowChooseService(spId, pickedRedirectServ);
+
         Executer.getInstance().TrackUserClick("Add: Click Service " + service, "After", user
                 .getUser(), user.getUser().getCustomer());
+    }
+
+    private void CallSnowplowChooseService(Long spId, QService citizenService) {
+
+        //  Create the arguments that Snowplow needs.
+        QUser csr = user.getUser();
+
+        //  Call routine that makes the actual Snowplow call.
+        Executer.getInstance().SnowplowChooseService(spId, csr, citizenService);
     }
 
     public String getCFMSHeight() {
@@ -1324,12 +1342,16 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = { "addWindowButtons" })
+    @NotifyChange(value = { "addWindowButtons", "spId" })
     public void backOffice() {
 
         //  CM:  Track start of Add Citizen via Back Office button.
         Executer.getInstance().TrackUserClick("Ind: Back Office", "Before", user.getUser(), user
                 .getUser().getCustomer());
+
+        //  CM:  Create a Snowplow ID number.
+        spId = createSpId();
+        CallSnowplowAddCitizen(spId);
 
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
@@ -1348,12 +1370,16 @@ public class Form {
     }
 
     @Command
-    @NotifyChange(value = { "addWindowButtons" })
+    @NotifyChange(value = { "addWindowButtons", "spId" })
     public void addClient() {
 
         //  CM:  Track start of Add Citizen
         Executer.getInstance().TrackUserClick("Ind: Add Citizen", "Before", user.getUser(), user
                 .getUser().getCustomer());
+
+        //  CM:  Create a Snowplow ID number, then call Snowplow.
+        spId = createSpId();
+        CallSnowplowAddCitizen(spId);
 
         //QLog.l().logQUser().debug("addClient");
         user.setCustomerWelcomeTime(new Date());
@@ -1369,6 +1395,23 @@ public class Form {
         //  CM:  Track end of Add Citizen
         Executer.getInstance().TrackUserClick("Ind: Add Citizen", "After", user.getUser(), user
                 .getUser().getCustomer());
+    }
+
+    private Long createSpId() {
+        Long officeCSR = (1000L * (Long) user.getUser().getOffice().getId()) +
+                user.getUser().getId();
+        Long timeNow = new Date().getTime();
+        return (10000000000000L * officeCSR) + timeNow;
+    }
+
+    private void CallSnowplowAddCitizen(Long spId) {
+
+        //  Create the arguments that Snowplow needs.
+        QUser csr = user.getUser();
+
+        //  Call routine that makes the actual Snowplow call.
+        Executer.getInstance().SnowplowAddCitizen(spId, csr);
+
     }
 
     @Command
@@ -2612,9 +2655,37 @@ public class Form {
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
 
+                //                //  Need to get service from params.
+                //                final QService service = QServiceTree.getInstance().getById(params.serviceId);
+                //
+                //                QLog.l().logQUser().debug("==> Choosing a service from Params:");
+                //                QLog.l().logQUser().debug("    --> Channel:  " + params.channels);
+                //                QLog.l().logQUser().debug("    --> SvcId:    " + params.serviceId);
+                //                QLog.l().logQUser().debug("    --> SvcPId:   " + service.getParentId());
+                //                QLog.l().logQUser().debug("    --> SvcCat:   " + service.getParent().getName());
+                //                QLog.l().logQUser().debug("    --> SvtTrans: " + service.getName());
+                //                QLog.l().logQUser().debug("    --> Q.Txn:    " + (params.custQtxn ? "True"
+                //                        : "False"));
+                //                QLog.l().logQUser().debug("    --> PSpId:     " + params.spId);
+                //                QLog.l().logQUser().debug("    --> VSpId:     " + this.spId);
+
                 RpcStandInService result = this.addToQueue(params);
                 if (result.getResult() != null) {
                     trackCust = result.getResult();
+
+                    //                    QLog.l().logQUser().debug("==> Choosing a service from Add to Queue result:");
+                    //                    QLog.l().logQUser().debug("    --> Channel:  " + trackCust.getChannels());
+                    //                    QLog.l().logQUser().debug("    --> SvcId:    " + trackCust.getService()
+                    //                            .getId());
+                    //                    QLog.l().logQUser().debug("    --> SvcPId:   " + trackCust.getService()
+                    //                            .getParentId());
+                    //                    QLog.l().logQUser().debug("    --> SvcCat:   " + trackCust.getService()
+                    //                            .getParent().getName());
+                    //                    QLog.l().logQUser().debug("    --> SvtTrans: " + trackCust.getService()
+                    //                            .getName());
+                    //                    QLog.l().logQUser().debug("    --> Q.Txn:    " + (trackCust.getTempQuickTxn()
+                    //                            ? "True" : "False"));
+                    //                    QLog.l().logQUser().debug("    --> PSpId:     " + params.spId);
                 }
 
                 customer = null;
@@ -2690,6 +2761,7 @@ public class Form {
         // params.channelsIndex = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedIndex() + 1;
         // params.channels = ((Combobox) addTicketDailogWindow.getFellow("Channels_options")).getSelectedItem().getValue().toString();
         params.welcomeTime = user.getCustomerWelcomeTime();
+        params.spId = this.spId;
 
         //  Debug
         //QLog.l().logQUser().debug("==> End: paramsForAddingInQueue");
