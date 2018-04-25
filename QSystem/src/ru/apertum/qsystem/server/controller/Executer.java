@@ -586,7 +586,7 @@ public final class Executer {
                 schema = "finish";
                 noExtraParameters = false;
                 eventDataMap.put("inaccurate_time", false);
-                eventDataMap.put("count", qCitizen.getQuantity());
+                eventDataMap.put("count", Integer.parseInt(qCitizen.getQuantity()));
                 logData = new SelfDescribingJson(
                         "iglu:ca.bc.gov.cfmspoc/finish/jsonschema/1-0-0", eventDataMap);
                 break;
@@ -607,7 +607,7 @@ public final class Executer {
                 schema = "finish";
                 noExtraParameters = false;
                 eventDataMap.put("inaccurate_time", true);
-                eventDataMap.put("count", qCitizen.getQuantity());
+                eventDataMap.put("count", Integer.parseInt(qCitizen.getQuantity()));
                 logData = new SelfDescribingJson(
                         "iglu:ca.bc.gov.cfmspoc/finish/jsonschema/1-0-0", eventDataMap);
                 break;
