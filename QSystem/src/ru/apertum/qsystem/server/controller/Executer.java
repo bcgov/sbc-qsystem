@@ -571,6 +571,8 @@ public final class Executer {
                 allOK = false;
                 break;
             case STATE_FINISH:  //  State 10, citizen finished receiving service
+                QLog.l().logger().debug("    --> Finish: Time accurate, Count: " + qCitizen
+                        .getQuantity());
                 schema = "finish";
                 noExtraParameters = false;
                 eventDataMap.put("inaccurate_time", false);
@@ -590,6 +592,8 @@ public final class Executer {
                 allOK = false;
                 break;
             case STATE_INACCURATE_TIME:    //  State 13
+                QLog.l().logger().debug("    --> Finish: Time NOT accurate, Count: " + qCitizen
+                        .getQuantity());
                 schema = "finish";
                 noExtraParameters = false;
                 eventDataMap.put("inaccurate_time", true);
