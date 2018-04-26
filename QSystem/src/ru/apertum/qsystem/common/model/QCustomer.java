@@ -322,14 +322,14 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
         this.state = state;
         if (stateIn == null) {
             stateInPrevious = 0;
-            QLog.l().logger().debug("==> ERROR: Current stateIn is null");
+            //QLog.l().logger().debug("==> ERROR: Current stateIn is null");
         }
         else {
-            QLog.l().logger().debug("==> All OK: Current stateIn is " + stateIn);
+            //QLog.l().logger().debug("==> All OK: Current stateIn is " + stateIn);
             stateInPrevious = stateIn;
         }
         stateIn = state.ordinal();
-        QLog.l().logger().debug("    --> New stateIn is " + stateIn);
+        //QLog.l().logger().debug("    --> New stateIn is " + stateIn);
 
         // ????? ????? ??????? ?? ????? ????????? ? ????? ? ?? ??? ???????????
         if (getUser() != null && getUser().getShadow() != null) {
