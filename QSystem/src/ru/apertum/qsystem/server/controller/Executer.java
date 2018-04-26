@@ -341,10 +341,10 @@ public final class Executer {
         String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
         Boolean agentQTxn = csr.getQuickTxn();
 
-        QLog.l().logger().debug("==> Before Snowplow addcitizen call");
+        //QLog.l().logger().debug("==> Before Snowplow addcitizen call");
 
         // Create a Map of the data you want to include...
-        QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+        //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
         Map<String, Object> citizenMap = new HashMap<>();
         citizenMap.put("client_id", clientId);
         citizenMap.put("quick_txn", false);
@@ -352,7 +352,7 @@ public final class Executer {
                 "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
 
         //----------------------------------------
-        QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
+        //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
         Map<String, Object> officeMap = new HashMap<>();
         officeMap.put("office_id", officeId);
         officeMap.put("office_type", officeType);
@@ -360,7 +360,7 @@ public final class Executer {
                 "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
 
         //----------------------------------------
-        QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
+        //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
         Map<String, Object> agentMap = new HashMap<>();
         agentMap.put("agent_id", agentId);
         agentMap.put("role", agentRole);
@@ -383,7 +383,7 @@ public final class Executer {
                 .eventData(addcitizenData)
                 .customContext(contexts)
                 .build());
-        QLog.l().logger().debug("    --> After Snowplow addcitizen call");
+        //QLog.l().logger().debug("    --> After Snowplow addcitizen call");
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
 
@@ -406,10 +406,10 @@ public final class Executer {
         String svcName = citizenService.getName();
         Boolean citizenQtxn = false;
 
-        QLog.l().logger().debug("==> Before Snowplow chooseservice call");
+        //QLog.l().logger().debug("==> Before Snowplow chooseservice call");
 
         // Create a Map of the data you want to include...
-        QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+        //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
         Map<String, Object> citizenMap = new HashMap<>();
         citizenMap.put("client_id", clientId);
         citizenMap.put("quick_txn", citizenQtxn);
@@ -417,7 +417,7 @@ public final class Executer {
                 "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
 
         //----------------------------------------
-        QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
+        //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
         Map<String, Object> officeMap = new HashMap<>();
         officeMap.put("office_id", officeId);
         officeMap.put("office_type", officeType);
@@ -425,7 +425,7 @@ public final class Executer {
                 "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
 
         //----------------------------------------
-        QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
+        //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
         Map<String, Object> agentMap = new HashMap<>();
         agentMap.put("agent_id", agentId);
         agentMap.put("role", agentRole);
@@ -464,7 +464,7 @@ public final class Executer {
                 .customContext(contexts)
                 .build());
 
-        QLog.l().logger().debug("    --> After Snowplow chooseservice call");
+        //QLog.l().logger().debug("    --> After Snowplow chooseservice call");
     }
     //  CM:  ==>  End of Snowplow routine to choose a service.
 
@@ -483,10 +483,10 @@ public final class Executer {
         String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
         Boolean agentQTxn = csr.getQuickTxn();
 
-        QLog.l().logger().debug("==> Before Snowplow logevent call");
+        //QLog.l().logger().debug("==> Before Snowplow logevent call");
 
         // Create a Map of the data you want to include...
-        QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+        //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
         Map<String, Object> citizenMap = new HashMap<>();
         citizenMap.put("client_id", clientId);
         citizenMap.put("quick_txn", clientQTxn);
@@ -494,7 +494,7 @@ public final class Executer {
                 "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
 
         //----------------------------------------
-        QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
+        //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
         Map<String, Object> officeMap = new HashMap<>();
         officeMap.put("office_id", officeId);
         officeMap.put("office_type", officeType);
@@ -502,7 +502,7 @@ public final class Executer {
                 "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
 
         //----------------------------------------
-        QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
+        //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
         Map<String, Object> agentMap = new HashMap<>();
         agentMap.put("agent_id", agentId);
         agentMap.put("role", agentRole);
@@ -581,8 +581,8 @@ public final class Executer {
                 allOK = false;
                 break;
             case STATE_FINISH:  //  State 10, citizen finished receiving service
-                QLog.l().logger().debug("    --> Finish: Time accurate, Count: " + qCitizen
-                        .getQuantity());
+                //                QLog.l().logger().debug("    --> Finish: Time accurate, Count: " + qCitizen
+                //                        .getQuantity());
                 schema = "finish";
                 noExtraParameters = false;
                 eventDataMap.put("inaccurate_time", false);
@@ -602,8 +602,8 @@ public final class Executer {
                 allOK = false;
                 break;
             case STATE_INACCURATE_TIME:    //  State 13
-                QLog.l().logger().debug("    --> Finish: Time NOT accurate, Count: " + qCitizen
-                        .getQuantity());
+                //                QLog.l().logger().debug("    --> Finish: Time NOT accurate, Count: " + qCitizen
+                //                        .getQuantity());
                 schema = "finish";
                 noExtraParameters = false;
                 eventDataMap.put("inaccurate_time", true);
@@ -617,7 +617,7 @@ public final class Executer {
                 break;
         }
 
-        QLog.l().logger().debug("    --> Schema:  " + schema);
+        //QLog.l().logger().debug("    --> Schema:  " + schema);
 
         //----------------------------------------
         // Create your event data -- in this example the event has no data of its own
@@ -636,7 +636,7 @@ public final class Executer {
                     .build());
         }
 
-        QLog.l().logger().debug("    --> After Snowplow logevent call");
+        //QLog.l().logger().debug("    --> After Snowplow logevent call");
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
 
