@@ -1362,7 +1362,7 @@ public class Form {
         // customer.setChannels(1);
         pickedRedirectServ = null;
         ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
-        this.addTicketScreen(true, true);
+        this.addTicketScreen(true, true, false);
 
         //  CM:  Track end of Add Citizen
         Executer.getInstance().TrackUserClick("Ind: Back Office", "After", user.getUser(), user
@@ -1390,7 +1390,7 @@ public class Form {
         // customer.setChannels(1);
         pickedRedirectServ = null;
         ((Combobox) serveCustomerDialogWindow.getFellow("previous_services")).setText("");
-        this.addTicketScreen(true, false);
+        this.addTicketScreen(true, false, false);
 
         //  CM:  Track end of Add Citizen
         Executer.getInstance().TrackUserClick("Ind: Add Citizen", "After", user.getUser(), user
@@ -1431,7 +1431,7 @@ public class Form {
         addWindowButtons[3] = false;
         // refresh the service list. Remove the default service selection
         pickedRedirectServ = null;
-        this.addTicketScreen(false, false);
+        this.addTicketScreen(false, false, false);
 
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Add Next Service", "After", user.getUser(),
@@ -1997,14 +1997,14 @@ public class Form {
     }
 
     @Command
-    public void addTicketScreen(boolean newCustomer, boolean backOffice) {
+    public void addTicketScreen(boolean newCustomer, boolean backOffice, boolean saveComments) {
 
         //  Debugging
         //QLog.l().logQUser().debug("==> Start: addTicketScreen");
 
         // CM:  Remove previous comments and categories searched
         this.refreshChannels();
-        this.refreshAddWindow(newCustomer);
+        this.refreshAddWindow(newCustomer, saveComments);
         //this.refreshChannels();
 
         //  CM:  If a backoffice transaction, preselect this category.
@@ -2021,13 +2021,12 @@ public class Form {
         // QLog.l().logQUser().debug("==> End: addTicketScreen");
     }
 
-    public void refreshAddWindow(boolean newCustomer) {
+    public void refreshAddWindow(boolean newCustomer, boolean saveComments) {
 
         //  CM:  You're about to display the addTicketDialog window.  Set all fields appropriately.
         //  CM:  For add, change, next options, comments always blank.
         String msg = "";
-        ((Textbox) addTicketDailogWindow.getFellow("reception_ticket_comments")).setText("");
-        ((Textbox) addTicketDailogWindow.getFellow("general_ticket_comments")).setText("");
+        String oldComments = "";
 
         //  CM:  Get checkbox field.
         Checkbox quickTxn = (Checkbox) addTicketDailogWindow.getFellow("QuickTxnCust");
@@ -2053,6 +2052,21 @@ public class Form {
             //  CM:  Retain QuickTxn value.  Disable QuickTxn box.
             quickTxn.setChecked(customer.getTempQuickTxn());
             quickTxn.setDisabled(true);
+
+            //  CM:  Save comments if the saveComments flag set.
+            if (saveComments) {
+                oldComments = customer.getTempComments();
+                ((Textbox) addTicketDailogWindow.getFellow("reception_ticket_comments"))
+                        .setText(oldComments);
+                ((Textbox) addTicketDailogWindow.getFellow("general_ticket_comments"))
+                        .setText(oldComments);
+            }
+            //  CM:  If not saving comments, set to blank.
+            else {
+                ((Textbox) addTicketDailogWindow.getFellow("reception_ticket_comments"))
+                        .setText("");
+                ((Textbox) addTicketDailogWindow.getFellow("general_ticket_comments")).setText("");
+            }
         }
 
         //  CM:  No customer.  Make sure QuickTxn has default value.
@@ -2790,7 +2804,7 @@ public class Form {
         addWindowButtons[2] = false;
         addWindowButtons[3] = false;
 
-        this.addTicketScreen(false, false);
+        this.addTicketScreen(false, false, true);
 
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Change service", "After", user.getUser(), user
