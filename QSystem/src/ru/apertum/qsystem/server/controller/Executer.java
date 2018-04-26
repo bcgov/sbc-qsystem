@@ -208,8 +208,12 @@ public final class Executer {
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     //  CM:  ==>  Start of Snowplow variables
+    private static final boolean snowplowCall = getEnvBoolean("QSYSTEM_SNOWPLOW_CALL");
+    private static final String collectorEndpoint = getEnvString("QSYSTEM_SNOWPLOW_ENDPOINT",
+            "https://spm.gov.bc.ca");
+
     //private static final String collectorEndpoint = "https://ca-bc-gov-main.collector.snplow.net";
-    private static final String collectorEndpoint = "https://spm.gov.bc.ca";
+    //private static final String collectorEndpoint = "https://spm.gov.bc.ca";
 
     //========================================
     // Set up the namespace and appID
@@ -249,394 +253,367 @@ public final class Executer {
     }
     //  CM:  ==>  End of Snowplow routine to get a client.    
 
-    public void TestSnowplow(Long clientId, int officeId, int agentId) {
-        // get the client adapter
-        // this is used by the Java tracker to transmit events to the collector
+    private static Boolean getEnvBoolean(String envVar) {
 
-        //        QLog.l().logger().debug("    --> Before 1st call");
-        //        HttpClientAdapter okHttpClientAdapter = getClient(collectorEndpoint);
-        //
-        //
-        //        Emitter emitter = SimpleEmitter.builder()
-        //                .httpClientAdapter(okHttpClientAdapter) // Required
-        //                .threadCount(20) // Default is 50
-        //                .build();
-        //
-        //        Tracker tracker = new Tracker.TrackerBuilder(emitter, namespace, appID)
-        //                .base64(baseSetting)
-        //                .platform(DevicePlatform.Desktop)
-        //                .build();
+        //  CM:  Get the environment variable, if it exists.
+        Boolean envBool = false;
+        String envString = System.getenv(envVar);
 
-        QLog.l().logger().debug("==> Snowplow: C: " + clientId + "; O: " + officeId + "; A: "
-                + agentId);
+        if (envString == null) {
+            QLog.l().logQUser().debug("--> Var: " + envVar + " is null");
+        }
 
-        //----------------------------------------
-        // Create a Map of the data you want to include...
-        Map<String, Object> citizenMap = new HashMap<>();
-        citizenMap.put("client_id", clientId);
-        SelfDescribingJson citizen = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/1-0-0", citizenMap);
+        //  CM:  Only do processing if string not null.
+        if ((envString != null) && (envString.toUpperCase().equals("YES"))) {
+            envBool = true;
+        }
 
-        //----------------------------------------
-        Map<String, Object> officeMap = new HashMap<>();
-        officeMap.put("office_id", officeId);
-        officeMap.put("office_type", "reception");
-        SelfDescribingJson office = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
+        QLog.l().logQUser().debug("--> Var " + envVar + (envBool ? ": True" : ": False"));
 
-        //----------------------------------------
-        Map<String, Object> agentMap = new HashMap<>();
-        agentMap.put("agent_id", agentId);
-        agentMap.put("role", "CSR");
-        SelfDescribingJson agent = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/1-0-0", agentMap);
-
-        //----------------------------------------
-        List<SelfDescribingJson> contexts = new ArrayList<>();
-        contexts.add(citizen);
-        contexts.add(office);
-        contexts.add(agent);
-
-        // Create your event data -- in this example the event has data of its own
-        Map<String, Object> chooseserviceMap = new HashMap<>();
-        chooseserviceMap.put("channel", "in-person");
-        chooseserviceMap.put("program_id", 45);
-        chooseserviceMap.put("parent_id", 0);
-        chooseserviceMap.put("program_name", "An amazing program");
-        chooseserviceMap.put("transaction_name", "A fantastic transaction");
-        chooseserviceMap.put("quick_txn", false);
-
-        SelfDescribingJson chooseserviceData = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/chooseservice/jsonschema/1-0-0", chooseserviceMap);
-        // Track your event with your custom event data
-        tracker.track(Unstructured.builder()
-                .eventData(chooseserviceData)
-                .customContext(contexts)
-                .build());
-
-        //----------------------------------------
-        // Create your event data -- in this example the event has no data of its own
-        SelfDescribingJson beginserviceData = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/beginservice/jsonschema/1-0-0");
-        // Track your event with your custom event data
-        tracker.track(Unstructured.builder()
-                .eventData(beginserviceData)
-                .customContext(contexts)
-                .build());
-        QLog.l().logger().debug("    --> After last call");
+        return envBool;
     }
 
-    //  CM:  ==>  End of Snowplow routine.
+    private static String getEnvString(String envVar, String defaultString) {
+
+        //  CM:  Get the environment variable, if it exists.
+        String envValue = defaultString;
+        String envString = System.getenv(envVar);
+
+        if (envString == null) {
+            QLog.l().logQUser().debug("--> Var: " + envVar + " is null");
+        }
+
+        //  CM:  Only do processing if string not null.
+        if (envString != null) {
+            envValue = envString;
+        }
+
+        QLog.l().logQUser().debug("--> Var " + envVar + ": " + envValue);
+
+        return envValue;
+    }
 
     //  CM:  ==>  Start of Snowplow routine to add a citizen to the queue.
     public void SnowplowAddCitizen(Long spId, QUser csr) {
 
-        //  Extract info Snowplow needs.
-        Long clientId = spId;
-        QOffice csrOffice = csr.getOffice();
-        Long officeId = csrOffice.getId();
-        String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
-                "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
-        Long agentId = csr.getId();
-        String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
-        Boolean agentQTxn = csr.getQuickTxn();
+        //  Only execute Snowplow calls if requested.
+        if (snowplowCall) {
 
-        //QLog.l().logger().debug("==> Before Snowplow addcitizen call");
+            //  Extract info Snowplow needs.
+            Long clientId = spId;
+            QOffice csrOffice = csr.getOffice();
+            Long officeId = csrOffice.getId();
+            String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
+                    "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
+            Long agentId = csr.getId();
+            String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
+            Boolean agentQTxn = csr.getQuickTxn();
 
-        // Create a Map of the data you want to include...
-        //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
-        Map<String, Object> citizenMap = new HashMap<>();
-        citizenMap.put("client_id", clientId);
-        citizenMap.put("quick_txn", false);
-        SelfDescribingJson citizen = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
+            //QLog.l().logger().debug("==> Before Snowplow addcitizen call");
 
-        //----------------------------------------
-        //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
-        Map<String, Object> officeMap = new HashMap<>();
-        officeMap.put("office_id", officeId);
-        officeMap.put("office_type", officeType);
-        SelfDescribingJson office = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
+            // Create a Map of the data you want to include...
+            //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+            Map<String, Object> citizenMap = new HashMap<>();
+            citizenMap.put("client_id", clientId);
+            citizenMap.put("quick_txn", false);
+            SelfDescribingJson citizen = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
 
-        //----------------------------------------
-        //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
-        Map<String, Object> agentMap = new HashMap<>();
-        agentMap.put("agent_id", agentId);
-        agentMap.put("role", agentRole);
-        agentMap.put("quick_txn", agentQTxn);
-        SelfDescribingJson agent = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/2-0-0", agentMap);
+            //----------------------------------------
+            //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
+            Map<String, Object> officeMap = new HashMap<>();
+            officeMap.put("office_id", officeId);
+            officeMap.put("office_type", officeType);
+            SelfDescribingJson office = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
 
-        //----------------------------------------
-        List<SelfDescribingJson> contexts = new ArrayList<>();
-        contexts.add(citizen);
-        contexts.add(office);
-        contexts.add(agent);
+            //----------------------------------------
+            //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
+            Map<String, Object> agentMap = new HashMap<>();
+            agentMap.put("agent_id", agentId);
+            agentMap.put("role", agentRole);
+            agentMap.put("quick_txn", agentQTxn);
+            SelfDescribingJson agent = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/2-0-0", agentMap);
 
-        //----------------------------------------
-        // Create your event data -- in this example the event has no data of its own
-        SelfDescribingJson addcitizenData = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/addcitizen/jsonschema/1-0-0");
-        // Track your event with your custom event data
-        tracker.track(Unstructured.builder()
-                .eventData(addcitizenData)
-                .customContext(contexts)
-                .build());
-        //QLog.l().logger().debug("    --> After Snowplow addcitizen call");
+            //----------------------------------------
+            List<SelfDescribingJson> contexts = new ArrayList<>();
+            contexts.add(citizen);
+            contexts.add(office);
+            contexts.add(agent);
+
+            //----------------------------------------
+            // Create your event data -- in this example the event has no data of its own
+            SelfDescribingJson addcitizenData = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/addcitizen/jsonschema/1-0-0");
+            // Track your event with your custom event data
+            tracker.track(Unstructured.builder()
+                    .eventData(addcitizenData)
+                    .customContext(contexts)
+                    .build());
+            //QLog.l().logger().debug("    --> After Snowplow addcitizen call");
+        }
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
 
     //  CM:  ==>  Start of Snowplow routine to choose a service.
     public void SnowplowChooseService(Long spId, QUser csr, QService citizenService) {
 
-        //  Extract info Snowplow needs.
-        Long clientId = spId;
-        QOffice csrOffice = csr.getOffice();
-        Long officeId = csrOffice.getId();
-        String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
-                "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
-        Long agentId = csr.getId();
-        String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
-        Boolean agentQTxn = csr.getQuickTxn();
-        String svcChannel = "in-person";
-        Long serviceId = citizenService.getId();
-        Long parentId = citizenService.getParentId();
-        String pgmName = citizenService.getParent().getName();
-        String svcName = citizenService.getName();
-        Boolean citizenQtxn = false;
+        //  Only call Snowplow if requested.
+        if (snowplowCall) {
 
-        //QLog.l().logger().debug("==> Before Snowplow chooseservice call");
+            //  Extract info Snowplow needs.
+            Long clientId = spId;
+            QOffice csrOffice = csr.getOffice();
+            Long officeId = csrOffice.getId();
+            String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
+                    "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
+            Long agentId = csr.getId();
+            String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
+            Boolean agentQTxn = csr.getQuickTxn();
+            String svcChannel = "in-person";
+            Long serviceId = citizenService.getId();
+            Long parentId = citizenService.getParentId();
+            String pgmName = citizenService.getParent().getName();
+            String svcName = citizenService.getName();
+            Boolean citizenQtxn = false;
 
-        // Create a Map of the data you want to include...
-        //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
-        Map<String, Object> citizenMap = new HashMap<>();
-        citizenMap.put("client_id", clientId);
-        citizenMap.put("quick_txn", citizenQtxn);
-        SelfDescribingJson citizen = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
+            //QLog.l().logger().debug("==> Before Snowplow chooseservice call");
 
-        //----------------------------------------
-        //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
-        Map<String, Object> officeMap = new HashMap<>();
-        officeMap.put("office_id", officeId);
-        officeMap.put("office_type", officeType);
-        SelfDescribingJson office = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
+            // Create a Map of the data you want to include...
+            //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+            Map<String, Object> citizenMap = new HashMap<>();
+            citizenMap.put("client_id", clientId);
+            citizenMap.put("quick_txn", citizenQtxn);
+            SelfDescribingJson citizen = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
 
-        //----------------------------------------
-        //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
-        Map<String, Object> agentMap = new HashMap<>();
-        agentMap.put("agent_id", agentId);
-        agentMap.put("role", agentRole);
-        agentMap.put("quick_txn", agentQTxn);
-        SelfDescribingJson agent = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/2-0-0", agentMap);
+            //----------------------------------------
+            //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
+            Map<String, Object> officeMap = new HashMap<>();
+            officeMap.put("office_id", officeId);
+            officeMap.put("office_type", officeType);
+            SelfDescribingJson office = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
 
-        //----------------------------------------
-        List<SelfDescribingJson> contexts = new ArrayList<>();
-        contexts.add(citizen);
-        contexts.add(office);
-        contexts.add(agent);
+            //----------------------------------------
+            //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
+            Map<String, Object> agentMap = new HashMap<>();
+            agentMap.put("agent_id", agentId);
+            agentMap.put("role", agentRole);
+            agentMap.put("quick_txn", agentQTxn);
+            SelfDescribingJson agent = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/2-0-0", agentMap);
 
-        //        //  Get service information.
-        //        QLog.l().logger().debug("    --> Service Info");
-        //        QLog.l().logger().debug("        --> Channel:  " + svcChannel);
-        //        QLog.l().logger().debug("        --> PgmId:    " + serviceId);
-        //        QLog.l().logger().debug("        --> ParentId: " + parentId);
-        //        QLog.l().logger().debug("        --> Pgm Name: " + pgmName);
-        //        QLog.l().logger().debug("        --> Service:  " + svcName);
-        //        QLog.l().logger().debug("        --> QTxn:     " + (citizenQtxn ? "True" : "False"));
+            //----------------------------------------
+            List<SelfDescribingJson> contexts = new ArrayList<>();
+            contexts.add(citizen);
+            contexts.add(office);
+            contexts.add(agent);
 
-        // Create your event data -- in this example the event has data of its own
-        Map<String, Object> chooseserviceMap = new HashMap<>();
-        chooseserviceMap.put("channel", svcChannel);
-        chooseserviceMap.put("program_id", serviceId);
-        chooseserviceMap.put("parent_id", parentId);
-        chooseserviceMap.put("program_name", pgmName);
-        chooseserviceMap.put("transaction_name", svcName);
+            //        //  Get service information.
+            //        QLog.l().logger().debug("    --> Service Info");
+            //        QLog.l().logger().debug("        --> Channel:  " + svcChannel);
+            //        QLog.l().logger().debug("        --> PgmId:    " + serviceId);
+            //        QLog.l().logger().debug("        --> ParentId: " + parentId);
+            //        QLog.l().logger().debug("        --> Pgm Name: " + pgmName);
+            //        QLog.l().logger().debug("        --> Service:  " + svcName);
+            //        QLog.l().logger().debug("        --> QTxn:     " + (citizenQtxn ? "True" : "False"));
 
-        SelfDescribingJson chooseserviceData = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/chooseservice/jsonschema/2-0-0", chooseserviceMap);
-        // Track your event with your custom event data
-        tracker.track(Unstructured.builder()
-                .eventData(chooseserviceData)
-                .customContext(contexts)
-                .build());
+            // Create your event data -- in this example the event has data of its own
+            Map<String, Object> chooseserviceMap = new HashMap<>();
+            chooseserviceMap.put("channel", svcChannel);
+            chooseserviceMap.put("program_id", serviceId);
+            chooseserviceMap.put("parent_id", parentId);
+            chooseserviceMap.put("program_name", pgmName);
+            chooseserviceMap.put("transaction_name", svcName);
 
-        //QLog.l().logger().debug("    --> After Snowplow chooseservice call");
+            SelfDescribingJson chooseserviceData = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/chooseservice/jsonschema/2-0-0", chooseserviceMap);
+            // Track your event with your custom event data
+            tracker.track(Unstructured.builder()
+                    .eventData(chooseserviceData)
+                    .customContext(contexts)
+                    .build());
+
+            //QLog.l().logger().debug("    --> After Snowplow chooseservice call");
+        }
     }
     //  CM:  ==>  End of Snowplow routine to choose a service.
 
     //  CM:  ==>  Start of Snowplow routine to add a citizen to the queue.
     public void SnowplowLogEvent(QCustomer qCitizen) {
 
-        //  Extract info Snowplow needs.
-        Long clientId = qCitizen.getSpId();
-        Boolean clientQTxn = qCitizen.getTempQuickTxn();
-        QUser csr = qCitizen.getUser();
-        QOffice csrOffice = csr.getOffice();
-        Long officeId = csrOffice.getId();
-        String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
-                "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
-        Long agentId = csr.getId();
-        String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
-        Boolean agentQTxn = csr.getQuickTxn();
+        //  Only call Snowplow if requested.
+        if (snowplowCall) {
 
-        //QLog.l().logger().debug("==> Before Snowplow logevent call");
+            //  Extract info Snowplow needs.
+            Long clientId = qCitizen.getSpId();
+            Boolean clientQTxn = qCitizen.getTempQuickTxn();
+            QUser csr = qCitizen.getUser();
+            QOffice csrOffice = csr.getOffice();
+            Long officeId = csrOffice.getId();
+            String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
+                    "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
+            Long agentId = csr.getId();
+            String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
+            Boolean agentQTxn = csr.getQuickTxn();
 
-        // Create a Map of the data you want to include...
-        //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
-        Map<String, Object> citizenMap = new HashMap<>();
-        citizenMap.put("client_id", clientId);
-        citizenMap.put("quick_txn", clientQTxn);
-        SelfDescribingJson citizen = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
+            //QLog.l().logger().debug("==> Before Snowplow logevent call");
 
-        //----------------------------------------
-        //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
-        Map<String, Object> officeMap = new HashMap<>();
-        officeMap.put("office_id", officeId);
-        officeMap.put("office_type", officeType);
-        SelfDescribingJson office = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
+            // Create a Map of the data you want to include...
+            //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+            Map<String, Object> citizenMap = new HashMap<>();
+            citizenMap.put("client_id", clientId);
+            citizenMap.put("quick_txn", clientQTxn);
+            SelfDescribingJson citizen = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
 
-        //----------------------------------------
-        //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
-        Map<String, Object> agentMap = new HashMap<>();
-        agentMap.put("agent_id", agentId);
-        agentMap.put("role", agentRole);
-        agentMap.put("quick_txn", agentQTxn);
-        SelfDescribingJson agent = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/2-0-0", agentMap);
+            //----------------------------------------
+            //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
+            Map<String, Object> officeMap = new HashMap<>();
+            officeMap.put("office_id", officeId);
+            officeMap.put("office_type", officeType);
+            SelfDescribingJson office = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
 
-        //----------------------------------------
-        List<SelfDescribingJson> contexts = new ArrayList<>();
-        contexts.add(citizen);
-        contexts.add(office);
-        contexts.add(agent);
+            //----------------------------------------
+            //QLog.l().logger().debug("    --> AgentId:  " + agentId + "; ARole: " + agentRole);
+            Map<String, Object> agentMap = new HashMap<>();
+            agentMap.put("agent_id", agentId);
+            agentMap.put("role", agentRole);
+            agentMap.put("quick_txn", agentQTxn);
+            SelfDescribingJson agent = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/agent/jsonschema/2-0-0", agentMap);
 
-        //  Get the event schema to use.
-        String schema = "";
-        String schemaVersion = "1-0-0";
-        Boolean allOK = true;
-        Boolean noExtraParameters = true;
-        Integer previousState = qCitizen.getStateInPrevious();
-        Map<String, Object> eventDataMap = new HashMap<>();
-        SelfDescribingJson logData = new SelfDescribingJson(
-                "iglu:ca.bc.gov.cfmspoc/addtoqueue/jsonschema/1-0-0");
+            //----------------------------------------
+            List<SelfDescribingJson> contexts = new ArrayList<>();
+            contexts.add(citizen);
+            contexts.add(office);
+            contexts.add(agent);
 
-        //  Set the json schema depending on the customer state.
-        switch (qCitizen.getState()) {
-            case STATE_DEAD:  //  State 0, Citizen left
-                schema = "customerleft";
-                break;
-            case STATE_WAIT:  //  State 1, Citizen waiting in the queue
-                if (qCitizen.getStateInPrevious() == 0) {
-                    schema = "addtoqueue";
-                }
-                else {
-                    schema = "returntoqueue";
-                }
-                break;
-            case STATE_WAIT_AFTER_POSTPONED:  //  State 2, 
-                schema = "Invalid";
-                allOK = false;
-                break;
-            case STATE_WAIT_COMPLEX_SERVICE:  //  State 3,
-                schema = "Invalid";
-                allOK = false;
-                break;
-            case STATE_INVITED:  //  State 4, citizen invited to CSR desk
-                schema = "invitecitizen";
-                break;
-            case STATE_INVITED_SECONDARY:  //  State 5, citizen invited to CSR desk
+            //  Get the event schema to use.
+            String schema = "";
+            String schemaVersion = "1-0-0";
+            Boolean allOK = true;
+            Boolean noExtraParameters = true;
+            Integer previousState = qCitizen.getStateInPrevious();
+            Map<String, Object> eventDataMap = new HashMap<>();
+            SelfDescribingJson logData = new SelfDescribingJson(
+                    "iglu:ca.bc.gov.cfmspoc/addtoqueue/jsonschema/1-0-0");
 
-                //  Previous state determines which event to call.
-                switch (previousState) {
-                    case 11:
-                        schema = "invitefromhold";
-                        break;
-                    case 12:
-                        schema = "invitefromlist";
-                        break;
-                    default:
-                        schema = "Invalid";
-                        allOK = false;
-                        break;
-                }
+            //  Set the json schema depending on the customer state.
+            switch (qCitizen.getState()) {
+                case STATE_DEAD:  //  State 0, Citizen left
+                    schema = "customerleft";
+                    break;
+                case STATE_WAIT:  //  State 1, Citizen waiting in the queue
+                    if (qCitizen.getStateInPrevious() == 0) {
+                        schema = "addtoqueue";
+                    }
+                    else {
+                        schema = "returntoqueue";
+                    }
+                    break;
+                case STATE_WAIT_AFTER_POSTPONED:  //  State 2, 
+                    schema = "Invalid";
+                    allOK = false;
+                    break;
+                case STATE_WAIT_COMPLEX_SERVICE:  //  State 3,
+                    schema = "Invalid";
+                    allOK = false;
+                    break;
+                case STATE_INVITED:  //  State 4, citizen invited to CSR desk
+                    schema = "invitecitizen";
+                    break;
+                case STATE_INVITED_SECONDARY:  //  State 5, citizen invited to CSR desk
 
-                break;
-            case STATE_REDIRECT:  //  State 6
-                schema = "additionalservice";
-                break;
-            case STATE_WORK:  //  State 7, citizen being served.
-                schema = "beginservice";
-                break;
-            case STATE_WORK_SECONDARY:  //  State 8, citizen being served
-                schema = "beginservice";
-                break;
-            case STATE_BACK:  //  State 9, 
-                schema = "Invalid";
-                allOK = false;
-                break;
-            case STATE_FINISH:  //  State 10, citizen finished receiving service
-                //                QLog.l().logger().debug("    --> Finish: Time accurate, Count: " + qCitizen
-                //                        .getQuantity());
-                schema = "finish";
-                noExtraParameters = false;
-                eventDataMap.put("inaccurate_time", false);
-                eventDataMap.put("count", Integer.parseInt(qCitizen.getQuantity()));
-                logData = new SelfDescribingJson(
-                        "iglu:ca.bc.gov.cfmspoc/finish/jsonschema/1-0-0", eventDataMap);
-                break;
-            case STATE_POSTPONED:  //  State 11
-                schema = "hold";
-                noExtraParameters = false;
-                eventDataMap.put("time", 0);
-                logData = new SelfDescribingJson(
-                        "iglu:ca.bc.gov.cfmspoc/hold/jsonschema/1-0-0", eventDataMap);
-                break;
-            case STATE_POSTPONED_REDIRECT:  //  State 12, user clicked on user in wait queue.
-                schema = "Ignore";
-                allOK = false;
-                break;
-            case STATE_INACCURATE_TIME:    //  State 13
-                //                QLog.l().logger().debug("    --> Finish: Time NOT accurate, Count: " + qCitizen
-                //                        .getQuantity());
-                schema = "finish";
-                noExtraParameters = false;
-                eventDataMap.put("inaccurate_time", true);
-                eventDataMap.put("count", Integer.parseInt(qCitizen.getQuantity()));
-                logData = new SelfDescribingJson(
-                        "iglu:ca.bc.gov.cfmspoc/finish/jsonschema/1-0-0", eventDataMap);
-                break;
-            default:
-                schema = "Undefined";
-                allOK = false;
-                break;
-        }
+                    //  Previous state determines which event to call.
+                    switch (previousState) {
+                        case 11:
+                            schema = "invitefromhold";
+                            break;
+                        case 12:
+                            schema = "invitefromlist";
+                            break;
+                        default:
+                            schema = "Invalid";
+                            allOK = false;
+                            break;
+                    }
 
-        //QLog.l().logger().debug("    --> Schema:  " + schema);
-
-        //----------------------------------------
-        // Create your event data -- in this example the event has no data of its own
-        if (allOK) {
-
-            //  If no extra parameters, use schema with no data.  Use right schema version.
-            if (noExtraParameters) {
-                logData = new SelfDescribingJson("iglu:ca.bc.gov.cfmspoc/" + schema
-                        + "/jsonschema/" + schemaVersion);
+                    break;
+                case STATE_REDIRECT:  //  State 6
+                    schema = "additionalservice";
+                    break;
+                case STATE_WORK:  //  State 7, citizen being served.
+                    schema = "beginservice";
+                    break;
+                case STATE_WORK_SECONDARY:  //  State 8, citizen being served
+                    schema = "beginservice";
+                    break;
+                case STATE_BACK:  //  State 9, 
+                    schema = "Invalid";
+                    allOK = false;
+                    break;
+                case STATE_FINISH:  //  State 10, citizen finished receiving service
+                    //                QLog.l().logger().debug("    --> Finish: Time accurate, Count: " + qCitizen
+                    //                        .getQuantity());
+                    schema = "finish";
+                    noExtraParameters = false;
+                    eventDataMap.put("inaccurate_time", false);
+                    eventDataMap.put("count", Integer.parseInt(qCitizen.getQuantity()));
+                    logData = new SelfDescribingJson(
+                            "iglu:ca.bc.gov.cfmspoc/finish/jsonschema/1-0-0", eventDataMap);
+                    break;
+                case STATE_POSTPONED:  //  State 11
+                    schema = "hold";
+                    noExtraParameters = false;
+                    eventDataMap.put("time", 0);
+                    logData = new SelfDescribingJson(
+                            "iglu:ca.bc.gov.cfmspoc/hold/jsonschema/1-0-0", eventDataMap);
+                    break;
+                case STATE_POSTPONED_REDIRECT:  //  State 12, user clicked on user in wait queue.
+                    schema = "Ignore";
+                    allOK = false;
+                    break;
+                case STATE_INACCURATE_TIME:    //  State 13
+                    //                QLog.l().logger().debug("    --> Finish: Time NOT accurate, Count: " + qCitizen
+                    //                        .getQuantity());
+                    schema = "finish";
+                    noExtraParameters = false;
+                    eventDataMap.put("inaccurate_time", true);
+                    eventDataMap.put("count", Integer.parseInt(qCitizen.getQuantity()));
+                    logData = new SelfDescribingJson(
+                            "iglu:ca.bc.gov.cfmspoc/finish/jsonschema/1-0-0", eventDataMap);
+                    break;
+                default:
+                    schema = "Undefined";
+                    allOK = false;
+                    break;
             }
 
-            // Track your event with your custom event data
-            tracker.track(Unstructured.builder()
-                    .eventData(logData)
-                    .customContext(contexts)
-                    .build());
-        }
+            //QLog.l().logger().debug("    --> Schema:  " + schema);
 
-        //QLog.l().logger().debug("    --> After Snowplow logevent call");
+            //----------------------------------------
+            // Create your event data -- in this example the event has no data of its own
+            if (allOK) {
+
+                //  If no extra parameters, use schema with no data.  Use right schema version.
+                if (noExtraParameters) {
+                    logData = new SelfDescribingJson("iglu:ca.bc.gov.cfmspoc/" + schema
+                            + "/jsonschema/" + schemaVersion);
+                }
+
+                // Track your event with your custom event data
+                tracker.track(Unstructured.builder()
+                        .eventData(logData)
+                        .customContext(contexts)
+                        .build());
+            }
+
+            //QLog.l().logger().debug("    --> After Snowplow logevent call");
+        }
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
 
