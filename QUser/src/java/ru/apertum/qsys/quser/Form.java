@@ -335,7 +335,7 @@ public class Form {
         return beginServiceClass;
     }
 
-    public Boolean getEnvBoolean(String envVar) {
+    private Boolean getEnvBoolean(String envVar) {
 
         //  CM:  Get the environment variable, if it exists.
         Boolean envBool = false;
