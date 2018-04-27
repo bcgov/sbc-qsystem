@@ -2074,6 +2074,11 @@ public class Form {
             msg += "==> RefreshAddWin: No current customer";
             quickTxn.setChecked(false);
             quickTxn.setDisabled(false);
+
+            //  This is a new customer.  Clear the comment field.
+            ((Textbox) addTicketDailogWindow.getFellow("reception_ticket_comments"))
+                    .setText("");
+            ((Textbox) addTicketDailogWindow.getFellow("general_ticket_comments")).setText("");
         }
 
         //  CM:  Debug
