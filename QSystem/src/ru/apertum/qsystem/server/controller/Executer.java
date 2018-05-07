@@ -303,6 +303,15 @@ public final class Executer {
             Long clientId = spId;
             QOffice csrOffice = csr.getOffice();
             Long officeId = csrOffice.getId();
+            QCustomer cust = csr.getCustomer();
+            int svcCount = 0;
+            if (cust == null) {
+                QLog.l().logger().debug("==> Null customer: Service count set to 1");
+                svcCount = 1;
+            }
+            else {
+                svcCount = cust.getServiceCount();
+            }
             String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
                     "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
             Long agentId = csr.getId();
@@ -312,12 +321,14 @@ public final class Executer {
             //QLog.l().logger().debug("==> Before Snowplow addcitizen call");
 
             // Create a Map of the data you want to include...
-            //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+            //            QLog.l().logger().debug("    --> Client:  " + clientId.toString() + "; Count: "
+            //                    + svcCount);
             Map<String, Object> citizenMap = new HashMap<>();
             citizenMap.put("client_id", clientId);
             citizenMap.put("quick_txn", false);
+            citizenMap.put("service_count", svcCount);
             SelfDescribingJson citizen = new SelfDescribingJson(
-                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
+                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/3-0-0", citizenMap);
 
             //----------------------------------------
             //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
@@ -368,6 +379,15 @@ public final class Executer {
             Long officeId = csrOffice.getId();
             String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
                     "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
+            QCustomer cust = csr.getCustomer();
+            int svcCount = 0;
+            if (cust == null) {
+                QLog.l().logger().debug("==> Null customer: Service count set to 1");
+                svcCount = 1;
+            }
+            else {
+                svcCount = cust.getServiceCount();
+            }
             Long agentId = csr.getId();
             String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
             Boolean agentQTxn = csr.getQuickTxn();
@@ -381,12 +401,13 @@ public final class Executer {
             //QLog.l().logger().debug("==> Before Snowplow chooseservice call");
 
             // Create a Map of the data you want to include...
-            //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+            //QLog.l().logger().debug("    --> Client:  " + clientId.toString() + "; Count: " + svcCount);
             Map<String, Object> citizenMap = new HashMap<>();
             citizenMap.put("client_id", clientId);
             citizenMap.put("quick_txn", citizenQtxn);
+            citizenMap.put("service_count", svcCount);
             SelfDescribingJson citizen = new SelfDescribingJson(
-                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
+                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/3-0-0", citizenMap);
 
             //----------------------------------------
             //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
@@ -411,14 +432,14 @@ public final class Executer {
             contexts.add(office);
             contexts.add(agent);
 
-            //        //  Get service information.
-            //        QLog.l().logger().debug("    --> Service Info");
-            //        QLog.l().logger().debug("        --> Channel:  " + svcChannel);
-            //        QLog.l().logger().debug("        --> PgmId:    " + serviceId);
-            //        QLog.l().logger().debug("        --> ParentId: " + parentId);
-            //        QLog.l().logger().debug("        --> Pgm Name: " + pgmName);
-            //        QLog.l().logger().debug("        --> Service:  " + svcName);
-            //        QLog.l().logger().debug("        --> QTxn:     " + (citizenQtxn ? "True" : "False"));
+            //            //  Get service information.
+            //            QLog.l().logger().debug("    --> Service Info");
+            //            QLog.l().logger().debug("        --> Channel:  " + svcChannel);
+            //            QLog.l().logger().debug("        --> PgmId:    " + serviceId);
+            //            QLog.l().logger().debug("        --> ParentId: " + parentId);
+            //            QLog.l().logger().debug("        --> Pgm Name: " + pgmName);
+            //            QLog.l().logger().debug("        --> Service:  " + svcName);
+            //            QLog.l().logger().debug("        --> QTxn:     " + (citizenQtxn ? "True" : "False"));
 
             // Create your event data -- in this example the event has data of its own
             Map<String, Object> chooseserviceMap = new HashMap<>();
@@ -453,6 +474,15 @@ public final class Executer {
             QUser csr = qCitizen.getUser();
             QOffice csrOffice = csr.getOffice();
             Long officeId = csrOffice.getId();
+            QCustomer cust = csr.getCustomer();
+            int svcCount = 0;
+            if (cust == null) {
+                QLog.l().logger().debug("==> Null customer: Service count set to 1");
+                svcCount = 1;
+            }
+            else {
+                svcCount = cust.getServiceCount();
+            }
             String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
                     "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
             Long agentId = csr.getId();
@@ -462,12 +492,14 @@ public final class Executer {
             //QLog.l().logger().debug("==> Before Snowplow logevent call");
 
             // Create a Map of the data you want to include...
-            //QLog.l().logger().debug("    --> Client:  " + clientId.toString());
+            //            QLog.l().logger().debug("    --> Client:  " + clientId.toString() + "; Count: "
+            //                    + svcCount);
             Map<String, Object> citizenMap = new HashMap<>();
             citizenMap.put("client_id", clientId);
             citizenMap.put("quick_txn", clientQTxn);
+            citizenMap.put("service_count", svcCount);
             SelfDescribingJson citizen = new SelfDescribingJson(
-                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/2-0-0", citizenMap);
+                    "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/3-0-0", citizenMap);
 
             //----------------------------------------
             //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
@@ -565,6 +597,9 @@ public final class Executer {
                     eventDataMap.put("count", Integer.parseInt(qCitizen.getQuantity()));
                     logData = new SelfDescribingJson(
                             "iglu:ca.bc.gov.cfmspoc/finish/jsonschema/1-0-0", eventDataMap);
+
+                    //  Update service count.
+                    cust.setServiceCount(svcCount + 1);
                     break;
                 case STATE_POSTPONED:  //  State 11
                     schema = "hold";
@@ -586,6 +621,10 @@ public final class Executer {
                     eventDataMap.put("count", Integer.parseInt(qCitizen.getQuantity()));
                     logData = new SelfDescribingJson(
                             "iglu:ca.bc.gov.cfmspoc/finish/jsonschema/1-0-0", eventDataMap);
+
+                    //  Update service count.  Shouldn't have to do this, as inaccurate time
+                    //  only valid for last service, but just in case.
+                    cust.setServiceCount(svcCount + 1);
                     break;
                 default:
                     schema = "Undefined";
@@ -593,7 +632,8 @@ public final class Executer {
                     break;
             }
 
-            //QLog.l().logger().debug("    --> Schema:  " + schema);
+            //            QLog.l().logger().debug("    --> Schema:  " + schema + "; State: " +
+            //                    qCitizen.getStateIn());
 
             //----------------------------------------
             // Create your event data -- in this example the event has no data of its own
