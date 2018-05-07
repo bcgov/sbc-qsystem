@@ -917,7 +917,7 @@ public class Form {
                 .getUser(), user.getUser().getCustomer());
 
         //  Call Snowplow to choose service.
-        CallSnowplowChooseService(spId, pickedRedirectServ);
+        //CallSnowplowChooseService(spId, pickedRedirectServ);
 
         Executer.getInstance().TrackUserClick("Add: Click Service " + service, "After", user
                 .getUser(), user.getUser().getCustomer());
@@ -2447,6 +2447,9 @@ public class Form {
                 return;
             }
 
+            //  Make a Snowplow call.  Service wanted has been decided on.
+            CallSnowplowChooseService(spId, pickedRedirectServ);
+
             final CmdParams params = new CmdParams();
 
             params.userId = user.getUser().getId();
@@ -2671,6 +2674,9 @@ public class Form {
             }
             else {
 
+                //  Make a Snowplow call.  Service wanted has been decided on.
+                CallSnowplowChooseService(spId, pickedRedirectServ);
+
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
 
@@ -2846,6 +2852,10 @@ public class Form {
             //            QLog.l().logger().debug("    --> Svc:  " + pickedRedirectServ.getName());
 
             if (OkToContinue) {
+
+                //  Make a Snowplow call.  Changed service wanted has been decided on.
+                CallSnowplowChooseService(spId, pickedRedirectServ);
+
                 final CmdParams params = new CmdParams();
                 params.userId = user.getUser().getId();
                 params.serviceId = pickedRedirectServ.getId();
@@ -2927,6 +2937,10 @@ public class Form {
             }
 
             if (OkToContinue) {
+
+                //  Make a Snowplow call.  Service wanted has been decided on.
+                CallSnowplowChooseService(spId, pickedRedirectServ);
+
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
                 params.in_sequence = true;
                 params.log_waitqueue = trackQOnBeginService;
