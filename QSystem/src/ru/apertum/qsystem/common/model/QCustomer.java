@@ -167,6 +167,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @Expose
     @SerializedName("stateInPrevious")
     private Integer stateInPrevious = 0;
+    @Expose
+    @SerializedName("service_count")
+    public int service_count = 1;
 
     /**
      * ???????????? ?????? ? ????????? ??? ????????? ? ???????? ? ?????????? :: Comments and users about the custodian when redirecting and sending to deferred
@@ -432,30 +435,6 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
                         .inkWorked(new Date().getTime() - getStartTime().getTime());
                 break;
         }
-
-        // For now, no Snowplow calls, log to see if this is where they should go.
-        //        QLog.l().logQUser().debug("==> Changing customer state:");
-        //        if (this.getUser() == null) {
-        //            QLog.l().logQUser().debug("    --> CSR:    is null");
-        //        }
-        //        else {
-        //            QLog.l().logQUser().debug("    --> CSR:    " + this.getUser().getName());
-        //        }
-        //        if (this.getOffice() == null) {
-        //            QLog.l().logQUser().debug("    --> Office: is null");
-        //        }
-        //        else {
-        //            QLog.l().logQUser().debug("    --> Office: " + this.getOffice().getName());
-        //        }
-        //        QLog.l().logQUser().debug("    --> Cust:   " + this.getId());
-        //        if (this.getService() == null) {
-        //            QLog.l().logQUser().debug("    --> Svc:    is null");
-        //        }
-        //        else {
-        //            QLog.l().logQUser().debug("    --> Svc:    " + this.getService().getName());
-        //        }
-        //        QLog.l().logQUser().debug("    --> State:  " + this.getStateIn());
-        //        QLog.l().logQUser().debug("    --> SPId:   " + this.getSpId().toString());
 
         //  Make Snowplow call.
         Executer.getInstance().SnowplowLogEvent(this);
@@ -1085,6 +1064,15 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setSpId(Long snowplowId) {
         this.spId = snowplowId;
+    }
+
+    @Transient
+    public int getServiceCount() {
+        return this.service_count;
+    }
+
+    public void setServiceCount(int svcCount) {
+        this.service_count = svcCount;
     }
 
     @Transient
