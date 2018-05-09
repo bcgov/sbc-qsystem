@@ -42,6 +42,7 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.InputEvent;
+import org.zkoss.zk.ui.http.SimpleSession;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
@@ -286,12 +287,14 @@ public class Form {
 
         final Session sess = Sessions.getCurrent();
         Map<String, Object> myAttrs = sess.getAttributes();
+        SimpleSession testSession = (SimpleSession) myAttrs.get("javax.zkoss.zk.ui.Session");
+        Map<String, Object> sessAttrs = testSession.getAttributes();
 
         QLog.l().logQUser().debug("==> Session Attributes");
-        Set<String> myKeys = myAttrs.keySet();
+        Set<String> myKeys = sessAttrs.keySet();
         
         for (String myKey : myKeys) {
-            QLog.l().logQUser().debug("    --> Key: " + myKey + "; Value: " + myAttrs.get(myKey));
+            QLog.l().logQUser().debug("    --> Key: " + myKey + "; Value: " + sessAttrs.get(myKey));
         }
 
         //  Try to set security on jsessionid.
@@ -931,12 +934,19 @@ public class Form {
     }
 
     private void CallSnowplowChooseService(Long spId, QService citizenService) {
+        CallSnowplowChooseService(spId, citizenService, "in-person");
+    }
+
+    private void CallSnowplowChooseService(Long spId, QService citizenService, String custChannel) {
+
+        //  Log the channel.
+        QLog.l().logQUser().debug("==> Channel: " + custChannel);
 
         //  Create the arguments that Snowplow needs.
         QUser csr = user.getUser();
 
         //  Call routine that makes the actual Snowplow call.
-        Executer.getInstance().SnowplowChooseService(spId, csr, citizenService);
+        Executer.getInstance().SnowplowChooseService(spId, csr, citizenService, custChannel);
     }
 
     public String getCFMSHeight() {
@@ -2455,7 +2465,7 @@ public class Form {
             }
 
             //  Make a Snowplow call.  Service wanted has been decided on.
-            CallSnowplowChooseService(spId, pickedRedirectServ);
+            CallSnowplowChooseService(spId, pickedRedirectServ, getChannel());
 
             final CmdParams params = new CmdParams();
 
@@ -2656,6 +2666,48 @@ public class Form {
                 customer);
     }
 
+    private String getChannel() {
+
+        //  Declare return variable.
+        String spChannel = "";
+        String cfmsChannel = "";
+
+        //  Get channel for Snowplow call.
+        if (isReceptionOffice()) {
+            cfmsChannel = ((Textbox) addTicketDailogWindow
+                    .getFellow("reception_Channels_options")).getText();
+        }
+        else {
+            cfmsChannel = ((Textbox) addTicketDailogWindow
+                    .getFellow("general_Channels_options")).getText();
+        }
+
+        //  Translate cfms channel to Snowplow channel.
+        switch (cfmsChannel.toUpperCase()) {
+            case "IN PERSON":
+                spChannel = "in-person";
+                break;
+            case "PHONE":
+                spChannel = "phone";
+                break;
+            case "BACK OFFICE":
+                spChannel = "back-office";
+                break;
+            case "EMAIL/FAX/MAIL":
+                spChannel = "email-fax-mail";
+                break;
+            case "CATS ASSIST":
+                spChannel = "cats-assist";
+                break;
+            case "MOBILE ASSIST":
+                spChannel = "mobile-assist";
+                break;
+        }
+
+        //  Return the channel.
+        return spChannel;
+    }
+
     @Command
     //@NotifyChange(value = { "postponList", "customer", "btnsDisabled" })
     @NotifyChange(value = { "postponList", "btnsDisabled" })
@@ -2665,14 +2717,7 @@ public class Form {
         Executer.getInstance().TrackUserClick("Add: Add to Queue", "Before", user.getUser(), user
                 .getUser().getCustomer());
         trackCust = null;
-
-        //  Debug
-        //QLog.l().logQUser().debug("==> Start: closeAddToQueueDialog");
-
-        //  Debug
-        String testText = ((Textbox) addTicketDailogWindow
-                .getFellow("reception_ticket_comments")).getText();
-        //QLog.l().logQUser().debug("    --> Comments: " + testText);
+        String svcChannel = "";
 
         if (pickedRedirectServ != null) {
             if (!pickedRedirectServ.isLeaf()) {
@@ -2682,7 +2727,7 @@ public class Form {
             else {
 
                 //  Make a Snowplow call.  Service wanted has been decided on.
-                CallSnowplowChooseService(spId, pickedRedirectServ);
+                CallSnowplowChooseService(spId, pickedRedirectServ, getChannel());
 
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_NORMAL,
                         Boolean.FALSE);
@@ -2861,7 +2906,7 @@ public class Form {
             if (OkToContinue) {
 
                 //  Make a Snowplow call.  Changed service wanted has been decided on.
-                CallSnowplowChooseService(spId, pickedRedirectServ);
+                CallSnowplowChooseService(spId, pickedRedirectServ, getChannel());
 
                 final CmdParams params = new CmdParams();
                 params.userId = user.getUser().getId();
@@ -2946,7 +2991,7 @@ public class Form {
             if (OkToContinue) {
 
                 //  Make a Snowplow call.  Service wanted has been decided on.
-                CallSnowplowChooseService(spId, pickedRedirectServ);
+                CallSnowplowChooseService(spId, pickedRedirectServ, getChannel());
 
                 final CmdParams params = this.paramsForAddingInQueue(Uses.PRIORITY_VIP, Boolean.TRUE);
                 params.in_sequence = true;
