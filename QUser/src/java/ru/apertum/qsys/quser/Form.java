@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -284,6 +285,17 @@ public class Form {
         //                + "; Path: " + myPath + "; Env: " + myEnv);
 
         final Session sess = Sessions.getCurrent();
+        Map<String, Object> myAttrs = sess.getAttributes();
+
+        QLog.l().logQUser().debug("==> Session Attributes");
+        Set<String> myKeys = myAttrs.keySet();
+        
+        for (String myKey : myKeys) {
+            QLog.l().logQUser().debug("    --> Key: " + myKey + "; Value: " + myAttrs.get(myKey));
+        }
+
+        //  Try to set security on jsessionid.
+
         final User userL = (User) sess.getAttribute("userForQUser");
         setKeyRegimForUser(userL);
         setCFMSAttributes();
@@ -315,10 +327,6 @@ public class Form {
         trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
         trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
         
-        //  Test Snowplow.
-        //Executer.getInstance().TestSnowplow(99999L, 12, 12);
-        //Executer.getInstance().TestSnowplow(88888L, 13, 13);
-
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
 
         //  If a current user, get the office name and set it.
@@ -328,7 +336,6 @@ public class Form {
                 officeName = user.getUser().getOffice().getName();
             }
         }
-
     }
 
     public String getBeginServiceClass() {
