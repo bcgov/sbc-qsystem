@@ -368,7 +368,7 @@ public final class Executer {
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
 
     //  CM:  ==>  Start of Snowplow routine to choose a service.
-    public void SnowplowChooseService(Long spId, QUser csr, QService citizenService) {
+    public void SnowplowChooseService(Long spId, QUser csr, QService citizenService, String svcChannel) {
 
         //  Only call Snowplow if requested.
         if (snowplowCall) {
@@ -391,7 +391,6 @@ public final class Executer {
             Long agentId = csr.getId();
             String agentRole = (csr.getAdminAccess() ? "GA" : "CSR");
             Boolean agentQTxn = csr.getQuickTxn();
-            String svcChannel = "in-person";
             Long serviceId = citizenService.getId();
             Long parentId = citizenService.getParentId();
             String pgmName = citizenService.getParent().getName();

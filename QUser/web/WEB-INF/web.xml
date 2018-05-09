@@ -178,8 +178,10 @@ Copyright (C) 2004 Potix Corporation. All Rights Reserved.
 	<!-- /////////// -->
 	<!-- Miscellaneous -->
 	<session-config>
-		<session-timeout>600</session-timeout>
-		<timer-keep-alive>true</timer-keep-alive>
+        <cookie-config>
+            <http-only>true</http-only>
+            <secure>true</secure>
+        </cookie-config>
 	</session-config>
 
 	<!-- MIME mapping -->
