@@ -277,6 +277,11 @@ public class Form {
     public void init() {
         QLog.l().logQUser().debug("==> Loading page: init");
 
+        final Session sess = Sessions.getCurrent();
+        final User userL = (User) sess.getAttribute("userForQUser");
+        setKeyRegimForUser(userL);
+        setCFMSAttributes();
+
         // CM:  Get environment.
         //        String mySrvName = Executions.getCurrent().getServerName();
         //        String myContext = Executions.getCurrent().getContextPath();
@@ -284,24 +289,17 @@ public class Form {
         //        String myEnv = System.getenv("QSYSTEM_ENV");
         //        QLog.l().logQUser().debug("    --> Vars SrvName: " + mySrvName + "; Ctx: " + myContext
         //                + "; Path: " + myPath + "; Env: " + myEnv);
-
-        final Session sess = Sessions.getCurrent();
-        Map<String, Object> myAttrs = sess.getAttributes();
-        SimpleSession testSession = (SimpleSession) myAttrs.get("javax.zkoss.zk.ui.Session");
-        Map<String, Object> sessAttrs = testSession.getAttributes();
-
-        QLog.l().logQUser().debug("==> Session Attributes");
-        Set<String> myKeys = sessAttrs.keySet();
-        
-        for (String myKey : myKeys) {
-            QLog.l().logQUser().debug("    --> Key: " + myKey + "; Value: " + sessAttrs.get(myKey));
-        }
-
-        //  Try to set security on jsessionid.
-
-        final User userL = (User) sess.getAttribute("userForQUser");
-        setKeyRegimForUser(userL);
-        setCFMSAttributes();
+        //
+        //        Map<String, Object> myAttrs = sess.getAttributes();
+        //        SimpleSession testSession = (SimpleSession) myAttrs.get("javax.zkoss.zk.ui.Session");
+        //        Map<String, Object> sessAttrs = testSession.getAttributes();
+        //
+        //        QLog.l().logQUser().debug("==> Session Attributes");
+        //        Set<String> myKeys = sessAttrs.keySet();
+        //        
+        //        for (String myKey : myKeys) {
+        //            QLog.l().logQUser().debug("    --> Key: " + myKey + "; Value: " + sessAttrs.get(myKey));
+        //        }
 
         //QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
 
@@ -940,7 +938,7 @@ public class Form {
     private void CallSnowplowChooseService(Long spId, QService citizenService, String custChannel) {
 
         //  Log the channel.
-        QLog.l().logQUser().debug("==> Channel: " + custChannel);
+        //QLog.l().logQUser().debug("==> SPId: " + spId.toString() + "; Channel: " + custChannel);
 
         //  Create the arguments that Snowplow needs.
         QUser csr = user.getUser();
@@ -1835,6 +1833,10 @@ public class Form {
                 .getSelectedItem().getValue().toString();
         customer.setChannels(channels);
         customer.setChannelsIndex(channelIndex);
+
+        //  Track the channel change in Snowplow.  Need to get citizen service.
+        QService citizenService = customer.getService();
+        CallSnowplowChooseService(spId, citizenService, channels);
 
         //  CM:  Tracking.
         Executer.getInstance().TrackUserClick("Srv: Change Channel", "After", user.getUser(), user
