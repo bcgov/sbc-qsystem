@@ -2211,6 +2211,8 @@ public class Form {
                     .collect(Collectors.toList());
         }
 
+        QLog.l().logQUser().debug("==> Filter by User: Length is " + services.size());
+
         return services;
     }
 
@@ -2308,6 +2310,7 @@ public class Form {
         //EnableService(false);
 
         listServices.clear();
+        //listServices = new List<QService>();
         LinkedList<QService> allServices = QServiceTree.getInstance().getNodes();
         List<QService> requiredServices = null;
 
@@ -2358,6 +2361,8 @@ public class Form {
         pickedRedirectServ = null;
 
         listServices.clear();
+        //listServices = new List<QService>();
+
         LinkedList<QService> allServices = QServiceTree.getInstance().getNodes();
         List<QService> requiredServices;
 
