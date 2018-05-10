@@ -4,12 +4,6 @@
 
     <session-config>
         <session-manager></session-manager>
-<!--         
-        <cookie-config>
-            <http-only>true</http-only>
-            <secure>true</secure>
-        </cookie-config>
- -->        
     </session-config>
 
   <class-loader delegate="true"/>

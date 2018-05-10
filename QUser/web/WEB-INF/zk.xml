@@ -17,10 +17,6 @@ and open the template in the editor.
 	<session-config>
 		<session-timeout>600</session-timeout>
 		<timer-keep-alive>true</timer-keep-alive>
-        <cookie-config>
-            <http-only>true</http-only>
-            <secure>true</secure>
-        </cookie-config>
     <device-type>ajax</device-type>
     <automatic-timeout />
     <timeout-uri />
