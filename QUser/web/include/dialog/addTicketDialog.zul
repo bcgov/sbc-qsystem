@@ -64,7 +64,9 @@
           </vbox>
         </hbox>
         <div style="margin:10px 10px 10px 10px;"></div>
-        <listbox model="@load(fmodel.listServices)" selectedItem="@bind(fmodel.pickedRedirectServ)"
+        <listbox id="services_Available"
+                 model="@load(fmodel.listServices)"
+                 selectedItem="@bind(fmodel.pickedRedirectServ)"
                  width="100%" height="250px"
                  onAfterRender="self.setSelectedIndex(0)"
                  onSelect="@command('serviceSelected')">
