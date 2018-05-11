@@ -2211,8 +2211,6 @@ public class Form {
                     .collect(Collectors.toList());
         }
 
-        QLog.l().logQUser().debug("==> Filter by User: Length is " + services.size());
-
         return services;
     }
 
@@ -2225,7 +2223,7 @@ public class Form {
         this.filterCa = filterCa;
     }
 
-    @NotifyChange("listServices")
+    //@NotifyChange("listServices")
     @Command
     public void changeCategory(InputEvent event) {
 
@@ -2238,6 +2236,8 @@ public class Form {
         pickedRedirectServ = null;
         ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
         listServices = FilterServicesByCategory(false);
+
+        BindUtils.postNotifyChange(null, null, Form.this, "listServices");
 
         Executer.getInstance().TrackUserClick("Add: Select Category " + newCategory, "After",
                 user.getUser(), user.getUser().getCustomer());
@@ -2310,7 +2310,6 @@ public class Form {
         //EnableService(false);
 
         listServices.clear();
-        //listServices = new List<QService>();
         LinkedList<QService> allServices = QServiceTree.getInstance().getNodes();
         List<QService> requiredServices = null;
 
@@ -2361,7 +2360,6 @@ public class Form {
         pickedRedirectServ = null;
 
         listServices.clear();
-        //listServices = new List<QService>();
 
         LinkedList<QService> allServices = QServiceTree.getInstance().getNodes();
         List<QService> requiredServices;
