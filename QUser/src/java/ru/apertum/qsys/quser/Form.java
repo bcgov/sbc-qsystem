@@ -2225,7 +2225,7 @@ public class Form {
         this.filterCa = filterCa;
     }
 
-    @NotifyChange("listServices")
+    //@NotifyChange("listServices")
     @Command
     public void changeCategory(InputEvent event) {
 
@@ -2238,6 +2238,8 @@ public class Form {
         pickedRedirectServ = null;
         ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
         listServices = FilterServicesByCategory(false);
+
+        BindUtils.postNotifyChange(null, null, Form.this, "listServices");
 
         Executer.getInstance().TrackUserClick("Add: Select Category " + newCategory, "After",
                 user.getUser(), user.getUser().getCustomer());
