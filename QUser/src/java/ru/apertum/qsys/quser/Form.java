@@ -2103,17 +2103,21 @@ public class Form {
         //  CM:  Debug
         //QLog.l().logger().debug(msg);
 
-        //  CM:  For add, change, next options, service and category always blank.
-        ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
-        ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("");
-
         // Reset focus, if not reception.
         if (!getCFMSType()) {
             ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setFocus(true);
         }
 
+        //  Get a list of current services for this office.
         listServices = getAllListServices();
+
+        //  Because now setting default to be first service, also select it.
         pickedMainService = null;
+        pickedRedirectServ = listServices.get(0);
+        ((Textbox) addTicketDailogWindow.getFellow("typeservices"))
+                .setText(pickedRedirectServ.getName());
+        ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("");
+
         BindUtils.postNotifyChange(null, null, Form.this, "listServices");
     }
 
