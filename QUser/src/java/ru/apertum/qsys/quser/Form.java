@@ -2054,16 +2054,16 @@ public class Form {
         if (!newCustomer) {
 
             //  CM:  There is a customer.
-            msg += "==> RefreshAddWin: Cust: " + customer.getFullNumber();
+            msg += "==> RefreshAddWin: C: " + customer.getFullNumber();
 
             //  CM:  Retain reception or non-reception channel field, depending on office type.
             if (getCFMSType()) {
-                msg += "; Reception; Channel: " + customer.getChannels();
+                msg += "; RC: " + customer.getChannels();
                 ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options"))
                         .setSelectedIndex(customer.getChannelsIndex() - 1);
             }
             else {
-                msg += "; NonReception; Channel: " + customer.getChannels();
+                msg += "; NRC: " + customer.getChannels();
                 ((Combobox) addTicketDailogWindow.getFellow("general_Channels_options"))
                         .setSelectedIndex(customer.getChannelsIndex() - 1);
             }
@@ -2114,9 +2114,12 @@ public class Form {
         //  Because now setting default to be first service, also select it.
         pickedMainService = null;
         pickedRedirectServ = listServices.get(0);
+        String srvName = pickedRedirectServ.getName();
         ((Textbox) addTicketDailogWindow.getFellow("typeservices"))
-                .setText(pickedRedirectServ.getName());
+                .setText(srvName);
         ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("");
+
+        QLog.l().logQUser().debug(msg + "; Srv: " + srvName);
 
         BindUtils.postNotifyChange(null, null, Form.this, "listServices");
     }
