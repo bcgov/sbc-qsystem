@@ -924,25 +924,6 @@ public class Form {
         Executer.getInstance().TrackUserClick("Add: Click Service " + service, "Before", user
                 .getUser(), user.getUser().getCustomer());
 
-        //  If user clicked on the first service, pickedRedirectServe is null, set to first service.
-        //if ((pickedRedirectServ == null) && 1 == 1) {
-        if (1 == 1) {
-
-            //  services_Available
-            //            ((Combobox) addTicketDailogWindow.getFellow("reception_Channels_options"))
-            //            .setSelectedIndex(customer.getChannelsIndex() - 1);
-
-            Listbox myTest = (Listbox) addTicketDailogWindow.getFellow("services_Available");
-            if (myTest == null) {
-                QLog.l().logger().debug("    --> Service listbox not found");
-            }
-            else {
-                int myIndex = myTest.getSelectedIndex();
-                QLog.l().logger().debug("    --> Service listbox found: Selected index is "
-                        + myIndex);
-            }
-        }
-
         //  Call Snowplow to choose service.
         //CallSnowplowChooseService(spId, pickedRedirectServ);
 
