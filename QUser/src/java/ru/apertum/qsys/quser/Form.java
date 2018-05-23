@@ -1301,7 +1301,7 @@ public class Form {
         QLog.l().logQUser().debug("redirect");
 
         if (pickedRedirectServ != null) {
-            if (!pickedRedirectServ.isLeaf()) {
+            if ((pickedRedirectServ.getName().length() == 0) || (!pickedRedirectServ.isLeaf())) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
                 return;
@@ -2467,7 +2467,7 @@ public class Form {
         Boolean OkToContinue = true;
 
         if (pickedRedirectServ != null) {
-            if (!pickedRedirectServ.isLeaf()) {
+            if ((pickedRedirectServ.getName().length() == 0) || (!pickedRedirectServ.isLeaf())) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
                 return;
@@ -2586,7 +2586,7 @@ public class Form {
         String ticketStart = customerStart.getName();
 
         if (pickedRedirectServ != null) {
-            if (!pickedRedirectServ.isLeaf()) {
+            if ((pickedRedirectServ.getName().length() == 0) || (!pickedRedirectServ.isLeaf())) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
                 OkToContinue = false;
@@ -2729,7 +2729,7 @@ public class Form {
         String svcChannel = "";
 
         if (pickedRedirectServ != null) {
-            if (!pickedRedirectServ.isLeaf()) {
+            if ((pickedRedirectServ.getName().length() == 0) || (!pickedRedirectServ.isLeaf())) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
             }
@@ -2893,7 +2893,7 @@ public class Form {
         Boolean OkToContinue = true;
 
         if (pickedRedirectServ != null) {
-            if (!pickedRedirectServ.isLeaf()) {
+            if ((pickedRedirectServ.getName().length() == 0) || (!pickedRedirectServ.isLeaf())) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
                 OkToContinue = false;
@@ -2984,7 +2984,7 @@ public class Form {
 
         if (pickedRedirectServ != null) {
 
-            if (!pickedRedirectServ.isLeaf()) {
+            if ((pickedRedirectServ.getName().length() == 0) || (!pickedRedirectServ.isLeaf())) {
                 Messagebox.show(l("group_not_service"), l("selecting_service"), Messagebox.OK,
                         Messagebox.EXCLAMATION);
                 OkToContinue = false;
