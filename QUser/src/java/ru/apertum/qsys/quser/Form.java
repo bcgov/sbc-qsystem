@@ -52,6 +52,7 @@ import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.North;
 import org.zkoss.zul.Textbox;
@@ -219,6 +220,7 @@ public class Form {
     private String oldSt = "";
     private String filter = "";
     private List<QService> listServices;
+    private static QService blankService = null;
     private String officeName = "";
     private Combobox cboFmCompress;
     private String filterCa = "";
@@ -473,6 +475,18 @@ public class Form {
         else {
             btn_invite.setVisible(false);
         }
+
+        //  Set the blank service if necessary
+        if (blankService == null) {
+            List<QService> tempServices = getAllListServices();
+            blankService = tempServices.get(0);
+            QLog.l().logQUser().debug("==> Blank User was null: Now: '" + blankService.getName()
+                    + "'; Parent: " + blankService.getParent().getName());
+        }
+        else {
+            QLog.l().logQUser().debug("==> Blank User already set");
+        }
+
         // GA_list.setModel(GA_list.getModel());
         // GA_list.getModel();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -2000,6 +2014,14 @@ public class Form {
     }
 
     public QService getPickedMainService() {
+        
+        //  If pickedMainService is the blank one, set it to be null.
+        if (pickedMainService != null) {
+            if ("none (blank)".equals(pickedMainService.getName().toLowerCase())) {
+                pickedMainService = null;
+            }
+        }
+        
         return pickedMainService;
     }
 
@@ -2218,6 +2240,16 @@ public class Form {
                     .collect(Collectors.toList());
         }
 
+        //  If no services found, add the blank service.
+        if (services.isEmpty()) {
+            services.add(blankService);
+        }
+
+        //  If blank service not first, make it first.
+        if (services.get(0).getName().length() != 0) {
+            services.add(0, blankService);
+        }
+
         return services;
     }
 
@@ -2357,6 +2389,38 @@ public class Form {
     @Command
     public void doSearch() {
 
+        //        //  Debug.
+        //        String myPicked = "null";
+        //        String mySelectedName = "Not found";
+        //        int myIndex = -99;
+        //        Listbox myListbox = (Listbox) addTicketDailogWindow.getFellow("services_Available");
+        //
+        //        if (pickedRedirectServ != null) {
+        //            myPicked = pickedRedirectServ.getName();
+        //        }
+        //        else {
+        //            myPicked = "null";
+        //        }
+        //
+        //        if (myListbox != null) {
+        //            myIndex = myListbox.getSelectedIndex();
+        //            if (myIndex >= 0) {
+        //                mySelectedName = myListbox.getSelectedItem().toString();
+        //                Listitem myItem = myListbox.getSelectedItem();
+        //                mySelectedName = myItem.getLabel();
+        //            }
+        //        }
+        //        else {
+        //            myIndex = -99;
+        //            mySelectedName = "Not found";
+        //        }
+        //
+        //        QLog.l().logQUser().debug("==> Start: doSearch");
+        //        QLog.l().logQUser().debug("    --> Pick:     " + myPicked);
+        //        QLog.l().logQUser().debug("    --> Index:    " + myIndex);
+        //        QLog.l().logQUser().debug("    --> Selected: " + mySelectedName);
+
+        //  xxx
         //  CM:  If you start typing, clear the selected service.
         //EnableService(false);
 
@@ -2416,6 +2480,53 @@ public class Form {
                     .collect(Collectors.toList());
         }
         listServices = filterServicesByUser(requiredServices);
+        pickedRedirectServ = listServices.get(0);
+
+        //        if (pickedRedirectServ != null) {
+        //            myPicked = pickedRedirectServ.getName();
+        //        }
+        //        else {
+        //            myPicked = "null";
+        //        }
+        //
+        //        if (myListbox != null) {
+        //            myIndex = myListbox.getSelectedIndex();
+        //            if (myIndex >= 0) {
+        //                mySelectedName = myListbox.getSelectedItem().toString();
+        //                Listitem myItem = myListbox.getSelectedItem();
+        //                mySelectedName = myItem.getLabel();
+        //            }
+        //        }
+        //        else {
+        //            myIndex = -99;
+        //            mySelectedName = "Not found";
+        //        }
+        //
+        //        QLog.l().logQUser().debug("==> End: doSearch");
+        //        QLog.l().logQUser().debug("    --> Pick:     " + myPicked);
+        //        QLog.l().logQUser().debug("    --> Index:    " + myIndex);
+        //        QLog.l().logQUser().debug("    --> Selected: " + mySelectedName);
+
+        //  Fix services and selection.
+        //FixSearchResult();
+    }
+
+    public void FixSearchResult() {
+
+        //  xxx
+
+        //  If list services is null, add the blank service.
+        if (listServices.size() == 0) {
+            listServices.add(blankService);
+        }
+
+        //  Set the result to be the first selection.
+        pickedRedirectServ = listServices.get(0);
+        
+        //  Set the textbox too.
+        //String srvName = pickedRedirectServ.getName();
+        //((Textbox) addTicketDailogWindow.getFellow("typeservices"))
+        //        .setText(srvName);
     }
 
     public List<QService> getListServices() {
