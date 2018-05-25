@@ -44,6 +44,7 @@ node('maven') {
    }
 }
 
+/*
 node('bddstack') {
   stage('validate') {
     if (!params.quickPush) {
@@ -81,7 +82,7 @@ node('bddstack') {
   }
 }
 
-
+*/
 stage('deploy-test') {
     if (!params.quickPush) {
         input "Deploy to test?"
