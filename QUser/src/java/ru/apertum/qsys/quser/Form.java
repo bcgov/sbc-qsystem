@@ -52,6 +52,7 @@ import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Listbox;
+import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.North;
 import org.zkoss.zul.Textbox;
@@ -219,6 +220,7 @@ public class Form {
     private String oldSt = "";
     private String filter = "";
     private List<QService> listServices;
+    private static QService blankService = null;
     private String officeName = "";
     private Combobox cboFmCompress;
     private String filterCa = "";
@@ -473,6 +475,18 @@ public class Form {
         else {
             btn_invite.setVisible(false);
         }
+
+        //  Set the blank service if necessary
+        if (blankService == null) {
+            List<QService> tempServices = getAllListServices();
+            blankService = getFirstService(tempServices);
+            QLog.l().logQUser().debug("==> Blank User was null: Now: '" + blankService.getName()
+                    + "'; Parent: " + blankService.getParent().getName());
+        }
+        else {
+            QLog.l().logQUser().debug("==> Blank User already set");
+        }
+
         // GA_list.setModel(GA_list.getModel());
         // GA_list.getModel();
         BindUtils.postNotifyChange(null, null, Form.this, "*");
@@ -886,36 +900,6 @@ public class Form {
         return getCFMSType();
     }
 
-    public void EnableService(boolean enable) {
-
-        //  User wants to enable service.
-        //QLog.l().logger().debug("==> EnableService(" + enable + ")");
-
-        //        Button myAdd = (Button) addTicketDailogWindow.getFellow("addAndServeBtn");
-        //        if (myAdd != null) {
-        //            //QLog.l().logger().debug("    --> Begin button found!!!");
-        //            myAdd.setDisabled(true);
-        //        }
-        //        else {
-        //            //QLog.l().logger().debug("    --> Begin button not found ... Sigh ...");
-        //        }
-    }
-
-    //    @NotifyChange(value = { "pickedRedirectServ" })
-    //    public boolean isNoServiceSelected() {
-    //
-    //        //  CM:  Assume a service is selected.
-    //        boolean result = false;
-    //
-    //        //  No service selected.
-    //        if (pickedRedirectServ == null) {
-    //            result = true;
-    //        }
-    //
-    //        //  Return the result.
-    //        return result;
-    //    }
-    //
     @Command
     public void serviceSelected() {
 
@@ -2000,6 +1984,14 @@ public class Form {
     }
 
     public QService getPickedMainService() {
+        
+        //  If pickedMainService is the blank one, set it to be null.
+        if (pickedMainService != null) {
+            if ("none (blank)".equals(pickedMainService.getName().toLowerCase())) {
+                pickedMainService = null;
+            }
+        }
+
         return pickedMainService;
     }
 
@@ -2108,18 +2100,18 @@ public class Form {
             ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setFocus(true);
         }
 
-        //  Get a list of current services for this office.
+        //  Get a list of current services for this office, select first service.
         listServices = getAllListServices();
+        pickedRedirectServ = getFirstService(listServices);
 
         //  Because now setting default to be first service, also select it.
-        pickedMainService = null;
-        pickedRedirectServ = listServices.get(0);
         String srvName = pickedRedirectServ.getName();
         ((Textbox) addTicketDailogWindow.getFellow("typeservices"))
                 .setText(srvName);
         ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).setText("");
+        pickedMainService = null;
 
-        QLog.l().logQUser().debug(msg + "; Srv: " + srvName);
+        //QLog.l().logQUser().debug(msg + "; Srv: " + srvName);
 
         BindUtils.postNotifyChange(null, null, Form.this, "listServices");
     }
@@ -2218,6 +2210,16 @@ public class Form {
                     .collect(Collectors.toList());
         }
 
+        //  If no services found, add the blank service.
+        if (services.isEmpty()) {
+            services.add(blankService);
+        }
+
+        //  If blank service not first, make it first.
+        if (services.get(0).getName().length() != 0) {
+            services.add(0, blankService);
+        }
+
         return services;
     }
 
@@ -2235,7 +2237,11 @@ public class Form {
     public void changeCategory(InputEvent event) {
 
         //  CM:  Tracking.
-        String newCategory = pickedMainService.getName();
+        String newCategory = "";
+        if (pickedMainService != null) {
+            newCategory = pickedMainService.getName();
+        }
+
         Executer.getInstance().TrackUserClick("Add: Select Category " + newCategory, "Before",
                 user.getUser(), user.getUser().getCustomer());
 
@@ -2243,11 +2249,19 @@ public class Form {
         pickedRedirectServ = null;
         ((Textbox) addTicketDailogWindow.getFellow("typeservices")).setText("");
         listServices = FilterServicesByCategory(false);
+        pickedRedirectServ = getFirstService(listServices);
 
         BindUtils.postNotifyChange(null, null, Form.this, "listServices");
 
         Executer.getInstance().TrackUserClick("Add: Select Category " + newCategory, "After",
                 user.getUser(), user.getUser().getCustomer());
+    }
+
+    private QService getFirstService(List<QService> svcList) {
+        //  CM:  Reason for this call, rather than get(0) in in-line code, is for debugging,
+        //       for when the correct service doesn't seem to be getting set correctly.
+        //       Only need to put one debugging statement here, rather than throughout code.
+        return svcList.get(0);
     }
 
     private List<QService> FilterServicesByCategory(boolean BackOffice) {
@@ -2267,39 +2281,37 @@ public class Form {
                 }
             }
         }
+        
+        //  CM:  Get the main category selected.
+        String mainSvcName = "";
+        
+        //  If no picked main service (category), get any text user may have typed.
+        if (getPickedMainService() == null) {
+            mainSvcName = ((Combobox) addTicketDailogWindow.getFellow("cboFmCompress")).getValue().toLowerCase();
+        }
+        //  A main service (category) was picked.
+        else {
+            mainSvcName = getPickedMainService().getName().toLowerCase();
+        }
+        
+        //  If the category name is "none (blank)", set the string to be empty.
+        if ("none (blank)".equals(mainSvcName)) {
+            mainSvcName = "";
+        }
+
+        //  Need this line, as filter expression needs a final variable.
+        final String srchCategory = mainSvcName;
 
         //  CM:  Continue on as normal.
-        if (getPickedMainService() == null) {
-            //QLog.l().logQUser().debug("null category was selected");
-            requiredServices = allServices
-                    .stream()
-                    .filter(
-                            (QService service) -> service.getParentId() != null
-                                    && (service.getParent()
-                                            .getName()
-                                            .toLowerCase().contains(
-                                                    ((Combobox) addTicketDailogWindow
-                                                            .getFellow("cboFmCompress")).getValue()
-                                                                    .toLowerCase()))
-                                    && !service.getParentId().equals(1L))
-                    .collect(Collectors.toList());
-            //QLog.l().logQUser().debug("The getvalue() returns :");
-
-        }
-        else {
-            //QLog.l().logQUser().debug("--> Category selected: " + pickedMainService.getName());
-            requiredServices = allServices
-                    .stream()
-                    .filter(
-                            (QService service) -> service.getParentId() != null
-                                    && (service.getParent()
-                                            .getName()
-                                            .toLowerCase()
-                                            .contains(pickedMainService.getName().toLowerCase()))
-                                    && !service
-                                            .getParentId().equals(1L))
-                    .collect(Collectors.toList());
-        }
+        requiredServices = allServices
+                .stream()
+                .filter(
+                        (QService service) -> service.getParentId() != null
+                                && (service.getParent()
+                                        .getName()
+                                        .toLowerCase().contains(srchCategory))
+                                && !service.getParentId().equals(1L))
+                .collect(Collectors.toList());
 
         returnServices = filterServicesByUser(requiredServices);
         return returnServices;
@@ -2350,15 +2362,13 @@ public class Form {
         }
 
         listServices = filterServicesByUser(requiredServices);
+        pickedRedirectServ = getFirstService(listServices);
     }
 
     //@NotifyChange("listServices pickedRedirectServ")
     @NotifyChange("listServices")
     @Command
     public void doSearch() {
-
-        //  CM:  If you start typing, clear the selected service.
-        //EnableService(false);
 
         //  CM:  Get the new filter string.
         filter = ((Textbox) addTicketDailogWindow.getFellow("typeservices")).getText();
@@ -2416,6 +2426,7 @@ public class Form {
                     .collect(Collectors.toList());
         }
         listServices = filterServicesByUser(requiredServices);
+        pickedRedirectServ = getFirstService(listServices);
     }
 
     public List<QService> getListServices() {
