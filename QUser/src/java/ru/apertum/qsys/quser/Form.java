@@ -2487,9 +2487,6 @@ public class Form {
                 return;
             }
 
-            //  Make a Snowplow call.  Service wanted has been decided on.
-            CallSnowplowChooseService(spId, pickedRedirectServ, getChannel());
-
             final CmdParams params = new CmdParams();
 
             params.userId = user.getUser().getId();
@@ -2538,6 +2535,11 @@ public class Form {
             service_list.setModel(service_list.getModel());
             refreshListServices();
             service_list.invalidate();
+
+            //  Make a Snowplow call.  Service wanted has been decided on.
+            CallSnowplowChooseService(spId, pickedRedirectServ, getChannel());
+
+            //  Hide the add service window.
             addTicketDailogWindow.setVisible(false);
 
             // Reset the combobox to default value/placeHolder
@@ -2629,6 +2631,11 @@ public class Form {
 
                 //SleepSeconds(15);
                 this.invite();
+
+                //  Make a Snowplow call.  Service wanted has been decided on.
+                CallSnowplowChooseService(spId, pickedRedirectServ, getChannel());
+
+                //  Start the service.
                 this.begin();
                 this.refreshChannels();
                 if (getCFMSType()) {
@@ -2679,8 +2686,6 @@ public class Form {
                                 UserMsg);
                     }
                 }
-
-                //////////////////
             }
         }
 
