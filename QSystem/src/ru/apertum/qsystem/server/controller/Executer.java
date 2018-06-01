@@ -362,7 +362,7 @@ public final class Executer {
                     .eventData(addcitizenData)
                     .customContext(contexts)
                     .build());
-            //QLog.l().logger().debug("    --> After Snowplow addcitizen call");
+            //QLog.l().logger().debug("    ==> After Snowplow addcitizen call");
         }
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
@@ -400,7 +400,8 @@ public final class Executer {
             //QLog.l().logger().debug("==> Before Snowplow chooseservice call");
 
             // Create a Map of the data you want to include...
-            //QLog.l().logger().debug("    --> Client:  " + clientId.toString() + "; Count: " + svcCount);
+            //            QLog.l().logger().debug("    --> Client:  " + clientId.toString() + "; Count: "
+            //                    + svcCount);
             Map<String, Object> citizenMap = new HashMap<>();
             citizenMap.put("client_id", clientId);
             citizenMap.put("quick_txn", citizenQtxn);
@@ -456,7 +457,7 @@ public final class Executer {
                     .customContext(contexts)
                     .build());
 
-            //QLog.l().logger().debug("    --> After Snowplow chooseservice call");
+            //QLog.l().logger().debug("    ==> After Snowplow chooseservice call");
         }
     }
     //  CM:  ==>  End of Snowplow routine to choose a service.
@@ -651,7 +652,7 @@ public final class Executer {
                         .build());
             }
 
-            //QLog.l().logger().debug("    --> After Snowplow logevent call");
+            //QLog.l().logger().debug("    ==> After Snowplow logevent call");
         }
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
