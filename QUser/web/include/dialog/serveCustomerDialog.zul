@@ -87,7 +87,7 @@
                               sclass="text-style"
                               style="margin-left: 20px; font-weight: bold;"/>
                     <checkbox id="cust_qtxn" label=" Quick Txn"
-                              visible="@load(fmodel.isReceptionOffice())"
+                              visible="false"
                               sclass="text-style"
                               style="margin-left: 20px; margin-top: 20px; font-size: 14px;"/>
                 </vbox>
