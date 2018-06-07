@@ -137,6 +137,7 @@
             <columns>
                 <column hflex="2" label="Category" align="center"/>
                 <column hflex="2" label="Service" align="center" />
+                <column hflex="1" label="QTxn" align="center" />
                 <column hflex="2" label="Stand Time" align="center" />
                 <column hflex="1" label="Quantity" align="center" />
                 <column hflex="1" label="Change Service" align="center" />
@@ -147,6 +148,7 @@
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getParent().getName()))" />
                     <label sclass="general-text"
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" />
+                    <checkbox id="cust_qtxn" width="15px" height="15px" />
                     <label sclass="general-text"
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
                     <textbox id="customer_quantity" value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"

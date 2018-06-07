@@ -1077,6 +1077,10 @@ public class Form {
             //QLog.l().logQUser().debug("LGQ tempVal ==> " +  tempVal );
         }
 
+        //  Update the quick transaction checkbox.
+        ((Checkbox) serveCustomerDialogWindow.getFellow("cust_qtxn"))
+                .setChecked(customer.getTempQuickTxn());
+
         serveCustomerDialogWindow.setVisible(true);
         serveCustomerDialogWindow.doModal();
     }
@@ -1254,10 +1258,12 @@ public class Form {
         params.welcomeTime = user.getCustomerWelcomeTime();
         params.comments = ((Textbox) serveCustomerDialogWindow.getFellow("editable_comments"))
                 .getText();
+        params.custQtxn = ((Checkbox) serveCustomerDialogWindow.getFellow("cust_qtxn")).isChecked();
 
         customer = user.getUser().getCustomer();
         params.serviceId = user.getUser().getCustomer().getService().getId();
         customer.setTempComments(params.comments);
+        customer.setTempQuickTxn(params.custQtxn);
 
         // Set to User current Comments
         // QUser quser = QUserList.getInstance().getById(params.userId);
@@ -1749,6 +1755,7 @@ public class Form {
         params.userId = user.getUser().getId();
         params.postponedPeriod = ((Combobox) postponeCustomerDialog.getFellow("timeBox")).getSelectedIndex() * 5;
         params.comments = ((Textbox) postponeCustomerDialog.getFellow("tb_onHold")).getText();
+        params.custQtxn = ((Checkbox) serveCustomerDialogWindow.getFellow("cust_qtxn")).isChecked();
         Executer.getInstance().getTasks().get(Uses.TASK_CUSTOMER_TO_POSTPON).process(params, "", new byte[4]);
         QCustomer saveCustomer = customer;
         customer = null;
