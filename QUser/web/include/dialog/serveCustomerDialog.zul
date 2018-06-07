@@ -38,28 +38,23 @@
     
     <vlayout sclass="blue-background" height="200px">
         
+        <!--  Horizontal box for top ticket, channel, comments section -->
         <hbox>
+        
+            <!-- Horizontal box for ticket and channel information. -->
             <hbox>
+                <!--  Vertical box, Ticket # and Challens labels -->
                 <vbox style="margin-left: 26px; margin-top: 34px;">
                     <label id="customer_number_label" value="Ticket #: " sclass="top-text-style"
                            style="font-weight: bold;"/>
                     <label id="channels_label" value="Channels: " sclass="top-text-style" style="font-weight: bold;"/>                    
                 </vbox>
+                
+                <!--  Vertical box, customer number and channel dropdown box. --> 
                 <vbox style="margin-left: 13px; margin-top: 34px;">
                     <label id="customer_number"
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getFullNumber()))"
                            sclass="top-text-style bdd-ticket-id" style="font-style: oblique;  margin-left:24px;"/>
-                    <!--
-                    <label id="channel"
-                           value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getChannels()))"
-                           sclass="top-text-style" style="font-style: oblique; margin-left:24px; font-size : 16px; "/>
-                    -->
-                    <!-- 
-                    <zscript><![CDATA[
-                        int Channel_Selected = fmodel.customer.getChannels();
-                        
-                    ]]></zscript>
-                    -->
 
                     <combobox id="Change_Channels" sclass="bdd-channels-options" disabled="@load(!fmodel.btnsDisabled[2])"
                               readonly="true" autodrop="true" hflex="1" style="" onSelect="@command('ChangeChannels')"
@@ -80,14 +75,22 @@
                         <!-- <comboitem label="${c:l('25min')}"/> -->
                         <!-- <comboitem label="${c:l('30min')}"/> -->
                     </combobox>
-
                 </vbox>
-
             </hbox>
+
+            <!--  Horizontal box for Comments -->
             <hbox style="margin-left: 18px; margin-top: 34px;">
-                
-                <label id="comments_label" value="Comments:" sclass="text-style"
-                       style="margin-left: 20px; font-weight: bold;"/>
+
+                <!--  Vertical box for Comments label and QTxn checkbox -->                
+                <vbox>
+                    <label    id="comments_label" value="Comments:"
+                              sclass="text-style"
+                              style="margin-left: 20px; font-weight: bold;"/>
+                    <checkbox id="cust_qtxn" label=" Quick Txn"
+                              visible="@load(fmodel.isReceptionOffice())"
+                              sclass="text-style"
+                              style="margin-left: 20px; margin-top: 20px; font-size: 14px;"/>
+                </vbox>
 
                 <textbox id="editable_comments" rows="5" cols="40" style="margin-left: 16px; font-size:14px;"
                          onChange="@command('updateComments')" sclass="general-text"
@@ -121,7 +124,6 @@
                     autodisable="self"
                     visible="@load(fmodel.getCFMSType())" id="btn_redirect" height="38px" width="158px">
             </button>
-            <!--<checkbox style="margin-top: 18px;" id="inaccurateTimeCheckBox" label=" Inaccurate Time" />-->
         </hbox>
         
         <!--
@@ -137,7 +139,6 @@
             <columns>
                 <column hflex="2" label="Category" align="center"/>
                 <column hflex="2" label="Service" align="center" />
-                <column hflex="1" label="QTxn" align="center" />
                 <column hflex="2" label="Stand Time" align="center" />
                 <column hflex="1" label="Quantity" align="center" />
                 <column hflex="1" label="Change Service" align="center" />
@@ -148,7 +149,6 @@
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getParent().getName()))" />
                     <label sclass="general-text"
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.getService().getName()))" />
-                    <checkbox id="cust_qtxn" width="15px" height="15px" />
                     <label sclass="general-text"
                            value="@load( (fmodel.customer == null) ? '' : ('').concat(fmodel.customer.standTimeinHHMMSS()))" />
                     <textbox id="customer_quantity" value="@load(fmodel.customer.quantity) @save(fmodel.customer.quantity)" width = "40px"
@@ -242,16 +242,6 @@
                 <div height="12px" sclass="blue-background">
                 </div>
                 
-                <!--
-                <checkbox style="margin-left: 11px; font-size : 14px;" sclass="text-style"
-                          id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
-                -->
-                <!--
-                <checkbox  onCheck="@command('disableButtons')"
-                           style="margin-right: 30px;margin-top: 20px; font-size : 14px;"
-                           sclass="text-style bdd-inaccurate-time-check-box"
-                           id="inaccurateTimeCheckBox" label=" Inaccurate Time" />
-                -->
                 <checkbox  onCheck="@command('disableButtons')"
                            style="margin-right: 30px;margin-top: 20px; font-size : 14px;"
                            sclass="text-style bdd-inaccurate-time-check-box"
