@@ -1,6 +1,6 @@
 USE `qsystem`;
 
-DROP PROCEDURE IF EXISTS `get_wait_time`;
+DROP FUNCTION IF EXISTS `get_wait_time`;
 DELIMITER $$
 CREATE DEFINER=`root`@`%` FUNCTION `get_wait_time`(p_client_id BIGINT, p_service_id bigint) RETURNS int(11)
 BEGIN
