@@ -306,7 +306,7 @@ public final class Executer {
             QCustomer cust = csr.getCustomer();
             int svcCount = 0;
             if (cust == null) {
-                QLog.l().logger().debug("==> Null customer: Service count set to 1");
+                //QLog.l().logger().debug("==> Null customer: Service count set to 1");
                 svcCount = 1;
             }
             else {
@@ -382,7 +382,7 @@ public final class Executer {
             QCustomer cust = csr.getCustomer();
             int svcCount = 0;
             if (cust == null) {
-                QLog.l().logger().debug("==> Null customer: Service count set to 1");
+                //QLog.l().logger().debug("==> Null customer: Service count set to 1");
                 svcCount = 1;
             }
             else {
@@ -582,7 +582,9 @@ public final class Executer {
                     schema = "beginservice";
                     break;
                 case STATE_WORK_SECONDARY:  //  State 8, citizen being served
-                    schema = "beginservice";
+                    //  If called from hold queue, don't do a begin service call.
+                    schema = "ignore";
+                    allOK = false;
                     break;
                 case STATE_BACK:  //  State 9, 
                     schema = "Invalid";
@@ -638,6 +640,10 @@ public final class Executer {
             //----------------------------------------
             // Create your event data -- in this example the event has no data of its own
             if (allOK) {
+
+                //  Debug.
+                //                QLog.l().logger().debug("    --> Schema:  " + schema + "; State: " +
+                //                        qCitizen.getStateIn() + "; Count: " + svcCount);
 
                 //  If no extra parameters, use schema with no data.  Use right schema version.
                 if (noExtraParameters) {
@@ -2752,13 +2758,13 @@ public final class Executer {
                 //                QLog.l().logQUser().debug("    --> NPriA: " + customer.getPriority().get());
             }
             else {
-                QLog.l().logQUser().debug("==> NxtSvc same: OId: " + oldService.getId()
-                        + "; O: " + oldService.getName()
-                        + "; NId: " + cmdParams.serviceId);
-                QLog.l().logQUser().debug("    --> NPriB: " + customer.getPriority().get());
-                QLog.l().logQUser().debug("    --> Hi priority set anyway");
+                //                QLog.l().logQUser().debug("==> NxtSvc same: OId: " + oldService.getId()
+                //                        + "; O: " + oldService.getName()
+                //                        + "; NId: " + cmdParams.serviceId);
+                //                QLog.l().logQUser().debug("    --> NPriB: " + customer.getPriority().get());
+                //                QLog.l().logQUser().debug("    --> Hi priority set anyway");
                 customer.setPriority(Uses.PRIORITY_HI);
-                QLog.l().logQUser().debug("    --> NPriA: " + customer.getPriority().get());
+                //                QLog.l().logQUser().debug("    --> NPriA: " + customer.getPriority().get());
             }
             customer.setStandTime(new Date());
             newService.addCustomer(customer);
