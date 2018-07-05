@@ -46,6 +46,11 @@ public class QOffice implements IidGetter, Serializable {
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deleted;
 
+    @Expose
+    @Column(name = "office_number")
+    @SerializedName("office_number")
+    private Integer office_number;
+
     @ManyToMany(mappedBy = "offices", fetch = FetchType.LAZY)
     private Set<QService> services = new HashSet<>();
 
@@ -82,6 +87,14 @@ public class QOffice implements IidGetter, Serializable {
 
     public void setSmartboardType(String smartboard_type) {
         this.smartboard_type = smartboard_type;
+    }
+
+    public Integer getOfficeNumber() {
+        return office_number;
+    }
+
+    public void setOfficeNumber(Integer office_num) {
+        this.office_number = office_num;
     }
 
     public Date getDeleted() {

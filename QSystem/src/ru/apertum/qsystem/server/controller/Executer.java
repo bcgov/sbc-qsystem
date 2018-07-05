@@ -302,7 +302,7 @@ public final class Executer {
             //  Extract info Snowplow needs.
             Long clientId = spId;
             QOffice csrOffice = csr.getOffice();
-            Long officeId = csrOffice.getId();
+            Integer officeNumber = csrOffice.getOfficeNumber();
             QCustomer cust = csr.getCustomer();
             int svcCount = 0;
             if (cust == null) {
@@ -333,7 +333,7 @@ public final class Executer {
             //----------------------------------------
             //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
             Map<String, Object> officeMap = new HashMap<>();
-            officeMap.put("office_id", officeId);
+            officeMap.put("office_id", officeNumber);
             officeMap.put("office_type", officeType);
             SelfDescribingJson office = new SelfDescribingJson(
                     "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
@@ -362,7 +362,7 @@ public final class Executer {
                     .eventData(addcitizenData)
                     .customContext(contexts)
                     .build());
-            //QLog.l().logger().debug("    ==> After Snowplow addcitizen call");
+            QLog.l().logger().debug("    ==> After Snowplow addcitizen call");
         }
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
@@ -376,7 +376,7 @@ public final class Executer {
             //  Extract info Snowplow needs.
             Long clientId = spId;
             QOffice csrOffice = csr.getOffice();
-            Long officeId = csrOffice.getId();
+            Integer officeNumber = csrOffice.getOfficeNumber();
             String officeType = (csrOffice.getSmartboardType().toUpperCase().equals(
                     "NOCALLONSMARTBOARD") ? "non-reception" : "reception");
             QCustomer cust = csr.getCustomer();
@@ -412,7 +412,7 @@ public final class Executer {
             //----------------------------------------
             //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
             Map<String, Object> officeMap = new HashMap<>();
-            officeMap.put("office_id", officeId);
+            officeMap.put("office_id", officeNumber);
             officeMap.put("office_type", officeType);
             SelfDescribingJson office = new SelfDescribingJson(
                     "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
@@ -457,7 +457,7 @@ public final class Executer {
                     .customContext(contexts)
                     .build());
 
-            //QLog.l().logger().debug("    ==> After Snowplow chooseservice call");
+            QLog.l().logger().debug("    ==> After Snowplow chooseservice call");
         }
     }
     //  CM:  ==>  End of Snowplow routine to choose a service.
@@ -471,9 +471,12 @@ public final class Executer {
             //  Extract info Snowplow needs.
             Long clientId = qCitizen.getSpId();
             Boolean clientQTxn = qCitizen.getTempQuickTxn();
+            Integer citizenState = qCitizen.getStateIn();
+            String previousEvent = qCitizen.getEventPrevious();
             QUser csr = qCitizen.getUser();
             QOffice csrOffice = csr.getOffice();
-            Long officeId = csrOffice.getId();
+            Integer officeNumber = csrOffice.getOfficeNumber();
+            //String officeName = csrOffice.getName();
             QCustomer cust = csr.getCustomer();
             int svcCount = 0;
             if (cust == null) {
@@ -502,9 +505,9 @@ public final class Executer {
                     "iglu:ca.bc.gov.cfmspoc/citizen/jsonschema/3-0-0", citizenMap);
 
             //----------------------------------------
-            //QLog.l().logger().debug("    --> OfficeId: " + officeId + "; OType: " + officeType);
+            //QLog.l().logger().debug("    --> ONum: " + officeNumber + "; OName: " + officeName);
             Map<String, Object> officeMap = new HashMap<>();
-            officeMap.put("office_id", officeId);
+            officeMap.put("office_id", officeNumber);
             officeMap.put("office_type", officeType);
             SelfDescribingJson office = new SelfDescribingJson(
                     "iglu:ca.bc.gov.cfmspoc/office/jsonschema/1-0-0", officeMap);
@@ -583,8 +586,13 @@ public final class Executer {
                     break;
                 case STATE_WORK_SECONDARY:  //  State 8, citizen being served
                     //  If called from hold queue, don't do a begin service call.
-                    schema = "ignore";
-                    allOK = false;
+                    if (previousEvent.equals("invitefromhold")) {
+                        schema = "ignore";
+                        allOK = false;
+                    }
+                    else {
+                        schema = "beginservice";
+                    }
                     break;
                 case STATE_BACK:  //  State 9, 
                     schema = "Invalid";
@@ -638,6 +646,10 @@ public final class Executer {
             //                    qCitizen.getStateIn());
 
             //----------------------------------------
+
+            //  Set the previous schema.
+            qCitizen.setEventPrevious(schema);
+
             // Create your event data -- in this example the event has no data of its own
             if (allOK) {
 
@@ -656,6 +668,8 @@ public final class Executer {
                         .eventData(logData)
                         .customContext(contexts)
                         .build());
+                QLog.l().logger().debug("    ==> After Snowplow event: " + schema + "; Old: "
+                        + previousEvent);
             }
 
             //QLog.l().logger().debug("    ==> After Snowplow logevent call");

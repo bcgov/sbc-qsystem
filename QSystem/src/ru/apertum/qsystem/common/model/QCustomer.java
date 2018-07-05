@@ -168,6 +168,9 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
     @SerializedName("stateInPrevious")
     private Integer stateInPrevious = 0;
     @Expose
+    @SerializedName("eventPrevious")
+    private String eventPrevious = "";
+    @Expose
     @SerializedName("service_count")
     public int service_count = 1;
 
@@ -1082,5 +1085,14 @@ public final class QCustomer implements Comparable<QCustomer>, Serializable, Iid
 
     public void setStateInPrevious(Integer stateValue) {
         this.stateInPrevious = stateValue;
+    }
+
+    @Transient
+    public String getEventPrevious() {
+        return this.eventPrevious;
+    }
+
+    public void setEventPrevious(String eventName) {
+        this.eventPrevious = eventName;
     }
 }
