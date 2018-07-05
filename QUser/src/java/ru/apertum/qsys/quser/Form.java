@@ -237,6 +237,8 @@ public class Form {
     private static boolean trackQOnNextService = false;
     private static boolean trackQOnPreviousService = false;
 
+    private static String slackHookUrl = "";
+
     // public LinkedList<QUser> test2 = greed.get(2).getShadow();
     // public LinkedList<QUser> userList = QUserList.getInstance().getItems();
 
@@ -330,6 +332,12 @@ public class Form {
         trackQOnNextService = getEnvBoolean("QSYSTEM_TRACK_Q_NEXT");
         trackQOnPreviousService = getEnvBoolean("QSYSTEM_TRACK_Q_PREVIOUS");
         
+        //  Set the Slack URL, if not already set.
+        if (slackHookUrl.isEmpty()) {
+            slackHookUrl = getEnvString("SLACK_HOOK_URL");
+            QLog.l().logQUser().debug("==> Slack URL is '" + slackHookUrl + "'");
+        }
+
         QLog.l().logQUser().debug("    --> Number of Invite Times: " + inviteTimes.size());
 
         //  If a current user, get the office name and set it.
@@ -363,6 +371,20 @@ public class Form {
         QLog.l().logQUser().debug("--> Var " + envVar + (envBool ? ": True" : ": False"));
 
         return envBool;
+    }
+
+    public String getEnvString(String envVar) {
+
+        //  Get the environment variable, if it exists.
+        String envString = System.getenv(envVar);
+
+        //  If it didn't exist, set it to be no characters.
+        if (envString == null) {
+            envString = "";
+        }
+
+        //  Return the string.
+        return envString;
     }
 
     public String getBackgroundClass() {
@@ -656,37 +678,41 @@ public class Form {
         //package ru.apertum.qsys.quser;
         //import ru.apertum.qsystem.server.model.QUser;
 
-        SlackApi api = new SlackApi(
-                "https://hooks.slack.com/services/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");
-        // SlackMessage msg = null;
-        SlackMessage msg = new SlackMessage(null);
+        //  Only call Slack if the slackHookUrl has been set.
+        if (!slackHookUrl.isEmpty()) {
 
-        if (user.getUser() != null && user.getName() != null) {
-            Username = "CSR - " + user.getName();
-            if (user.getUser().getCustomer() != null) {
-                ReportTicket = user.getUser().getCustomer().getName();
+            SlackApi api = new SlackApi(slackHookUrl);
+
+            // SlackMessage msg = null;
+            SlackMessage msg = new SlackMessage(null);
+
+            if (user.getUser() != null && user.getName() != null) {
+                Username = "CSR - " + user.getName();
+                if (user.getUser().getCustomer() != null) {
+                    ReportTicket = user.getUser().getCustomer().getName();
+                }
+                else {
+                    ReportTicket = "Ticket number is not provided";
+                }
             }
             else {
-                ReportTicket = "Ticket number is not provided";
+                Username = "User is not logged in";
             }
-        }
-        else {
-            Username = "User is not logged in";
-        }
 
-        // if (user.getName() !=null && user.getUser().getCustomer()!=null){
-        // ReportTicket = user.getUser().getCustomer().getName();
-        // }else{
-        // ReportTicket = "Ticket numebr is not provided";
-        // }
-        ReportMsg = ReportMsg + Username + "\n" + "Office Name: " + getOfficeName() + "\n"
-                + "Ticket Number: " + ReportTicket + "\n\n" + BugMsg + "\n";
+            // if (user.getName() !=null && user.getUser().getCustomer()!=null){
+            // ReportTicket = user.getUser().getCustomer().getName();
+            // }else{
+            // ReportTicket = "Ticket numebr is not provided";
+            // }
+            ReportMsg = ReportMsg + Username + "\n" + "Office Name: " + getOfficeName() + "\n"
+                    + "Ticket Number: " + ReportTicket + "\n\n" + BugMsg + "\n";
 
-        msg.setIcon(CSRIcon);
-        msg.setText(ReportMsg);
-        msg.setUsername(Username);
-        // api.SlackMessage.setIcon(":information_desk_person:");
-        api.call(msg);
+            msg.setIcon(CSRIcon);
+            msg.setText(ReportMsg);
+            msg.setUsername(Username);
+            // api.SlackMessage.setIcon(":information_desk_person:");
+            api.call(msg);
+        }
 
         ReportingBugWindow.setVisible(false);
         ((Textbox) ReportingBugWindow.getFellow("Reportbugs")).setText("");
@@ -891,6 +917,10 @@ public class Form {
         if (qsb.equalsIgnoreCase("callbyname")) {
             checkCFMSType = true;
         }
+        if (quser.getParallelAccess()) {
+            checkCFMSType = true;
+        }
+
         return checkCFMSType;
     }
 

@@ -212,6 +212,9 @@ public final class Executer {
     private static final String collectorEndpoint = getEnvString("QSYSTEM_SNOWPLOW_ENDPOINT",
             "https://spm.gov.bc.ca");
 
+    //  For Slack calls.
+    private static String slackHookUrl = getEnvString("SLACK_HOOK_URL", "");
+
     //private static final String collectorEndpoint = "https://ca-bc-gov-main.collector.snplow.net";
     //private static final String collectorEndpoint = "https://spm.gov.bc.ca";
 
@@ -362,7 +365,7 @@ public final class Executer {
                     .eventData(addcitizenData)
                     .customContext(contexts)
                     .build());
-            QLog.l().logger().debug("    ==> After Snowplow addcitizen call");
+            //QLog.l().logger().debug("    ==> After Snowplow addcitizen call");
         }
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
@@ -457,7 +460,7 @@ public final class Executer {
                     .customContext(contexts)
                     .build());
 
-            QLog.l().logger().debug("    ==> After Snowplow chooseservice call");
+            //QLog.l().logger().debug("    ==> After Snowplow chooseservice call");
         }
     }
     //  CM:  ==>  End of Snowplow routine to choose a service.
@@ -668,8 +671,8 @@ public final class Executer {
                         .eventData(logData)
                         .customContext(contexts)
                         .build());
-                QLog.l().logger().debug("    ==> After Snowplow event: " + schema + "; Old: "
-                        + previousEvent);
+                //                QLog.l().logger().debug("    ==> After Snowplow event: " + schema + "; Old: "
+                //                        + previousEvent);
             }
 
             //QLog.l().logger().debug("    ==> After Snowplow logevent call");
@@ -2510,25 +2513,28 @@ public final class Executer {
 
     public void SendSlackMessage(QUser user, QCustomer customer, String errorMessage) {
 
-        //  CM:  Set slack variables.
-        String CSRIcon = ":information_desk_person:";
-        String Username = "";
-        SlackApi api = new SlackApi(
-                "https://hooks.slack.com/services/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");
-        SlackMessage slackMsg = new SlackMessage(null);
+        //  Only call Slack if the Slack hook variable is set.
+        if (!slackHookUrl.isEmpty()) {
 
-        //  Try and get user name.
-        if (user.getName() != null) {
-            Username = "CSR - " + user.getName();
-        }
-        else {
-            Username = "User is not logged in";
-        }
+            //  CM:  Set slack variables.
+            String CSRIcon = ":information_desk_person:";
+            String Username = "";
+            SlackApi api = new SlackApi(slackHookUrl);
+            SlackMessage slackMsg = new SlackMessage(null);
 
-        slackMsg.setIcon(CSRIcon);
-        slackMsg.setText(errorMessage);
-        slackMsg.setUsername(Username);
-        api.call(slackMsg);
+            //  Try and get user name.
+            if (user.getName() != null) {
+                Username = "CSR - " + user.getName();
+            }
+            else {
+                Username = "User is not logged in";
+            }
+
+            slackMsg.setIcon(CSRIcon);
+            slackMsg.setText(errorMessage);
+            slackMsg.setUsername(Username);
+            api.call(slackMsg);
+        }
     }
 
     //    public void SendEmailMessage(QUser user, QCustomer customer, String errorMessage) {
