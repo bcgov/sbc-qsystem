@@ -891,6 +891,10 @@ public class Form {
         if (qsb.equalsIgnoreCase("callbyname")) {
             checkCFMSType = true;
         }
+        if (quser.getParallelAccess()) {
+            checkCFMSType = true;
+        }
+
         return checkCFMSType;
     }
 
