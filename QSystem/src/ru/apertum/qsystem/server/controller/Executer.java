@@ -565,9 +565,15 @@ public final class Executer {
                     schema = "invitecitizen";
                     break;
                 case STATE_INVITED_SECONDARY:  //  State 5, citizen invited to CSR desk
+                    
+                    //                    QLog.l().logger().debug("--> Invite - PS: " + previousState + "; PE: "
+                    //                            + previousEvent);
 
                     //  Previous state determines which event to call.
                     switch (previousState) {
+                        case 6:
+                            schema = "invitecitizen";
+                            break;
                         case 11:
                             schema = "invitefromhold";
                             break;
