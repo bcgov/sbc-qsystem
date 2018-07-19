@@ -366,6 +366,8 @@ public final class Executer {
                     .customContext(contexts)
                     .build());
             //QLog.l().logger().debug("    ==> After Snowplow addcitizen call");
+            //            QLog.l().logger().debug("==> Event: addcitizen; ID: " + clientId + "; Count: "
+            //                    + svcCount);
         }
     }
     //  CM:  ==>  End of Snowplow routine to add a citizen to the queue.
@@ -461,6 +463,8 @@ public final class Executer {
                     .build());
 
             //QLog.l().logger().debug("    ==> After Snowplow chooseservice call");
+            //            QLog.l().logger().debug("==> Event: chooseservice; ID: " + clientId + "; Count: "
+            //                    + svcCount);
         }
     }
     //  CM:  ==>  End of Snowplow routine to choose a service.
@@ -677,8 +681,8 @@ public final class Executer {
                         .eventData(logData)
                         .customContext(contexts)
                         .build());
-                //                QLog.l().logger().debug("    ==> After Snowplow event: " + schema + "; Old: "
-                //                        + previousEvent);
+                //                QLog.l().logger().debug("==> Event: " + schema + "; ID: " + clientId + "; Count: "
+                //                        + svcCount);
             }
 
             //QLog.l().logger().debug("    ==> After Snowplow logevent call");
