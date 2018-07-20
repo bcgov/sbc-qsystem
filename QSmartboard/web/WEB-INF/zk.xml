@@ -1,5 +1,8 @@
 <zk>
 	<session-config>
-	  <timer-keep-alive>true</timer-keep-alive>
+	  <!-- <timer-keep-alive>true</timer-keep-alive> -->
+      <timer-keep-alive>false</timer-keep-alive>
+      <!-- <timeout-url></timeout-url> -->
+      
 	</session-config>
 </zk>
