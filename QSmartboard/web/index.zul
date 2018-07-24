@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/css/qsmartboard.css"?>
 <?script type="text/javascript" src="/js/qsmartboard.js"?>
+<?page automaticTimeout="false"?> 
 
 <zk xmlns="http://www.zkoss.org/2005/zul">
 
